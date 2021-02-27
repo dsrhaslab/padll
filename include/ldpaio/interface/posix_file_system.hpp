@@ -7,6 +7,7 @@
 #define LDPAIO_POSIX_FILE_SYSTEM_H
 
 #include <cstring>
+#include <unistd.h>
 
 ssize_t read (int fd, void* buf, size_t size);
 

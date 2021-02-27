@@ -50,12 +50,14 @@ target_sources(
     ldpaio
     PUBLIC
     ${PROJECT_SOURCE_DIR}/include/ldpaio/interface/posix_file_system.hpp
+    ${PROJECT_SOURCE_DIR}/include/ldpaio/interface/posix_passthrough.hpp
 )
 
 target_sources(
         ldpaio
         PRIVATE
         src/interface/posix_file_system.cpp
+        src/interface/posix_passthrough.cpp
 )
 
 # ---------------------------------------------------------------------------- #
