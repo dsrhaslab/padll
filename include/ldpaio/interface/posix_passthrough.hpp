@@ -6,6 +6,10 @@
 #ifndef LDPAIO_POSIX_PASSTHROUGH_HPP
 #define LDPAIO_POSIX_PASSTHROUGH_HPP
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 namespace ldpaio {
 
     ssize_t passthrough_read (int fd, void* buf, ssize_t counter);
