@@ -15,7 +15,7 @@ int main (int argc, char* argv[]) {
     ssize_t written_bytes = 0;
     char* buffer = static_cast<char*>(malloc(sizeof(char) * BUFFER_SIZE));
 
-    while ((read_bytes = read (STDIN_FILENO, buffer, BUFFER_SIZE)) > 0) {
+    while ((read_bytes = ::read (STDIN_FILENO, buffer, BUFFER_SIZE)) > 0) {
         written_bytes += write (STDOUT_FILENO, buffer, read_bytes);
     }
 
