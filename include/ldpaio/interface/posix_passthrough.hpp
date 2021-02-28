@@ -6,11 +6,18 @@
 #ifndef LDPAIO_POSIX_PASSTHROUGH_HPP
 #define LDPAIO_POSIX_PASSTHROUGH_HPP
 
+#define __USE_GNU
+#define _GNU_SOURCE
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <unistd.h>
+#include <dlfcn.h>
 
 namespace ldpaio {
+
+    typedef ssize_t (*real_read_t)(int, void*, size_t);
 
     ssize_t passthrough_read (int fd, void* buf, ssize_t counter);
 

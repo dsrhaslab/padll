@@ -17,6 +17,7 @@ option(LDPAIO_BUILD_TESTS "Build ldpaio's unit tests" ON)
 
 # Setup the basic C++ Compiler flags
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fPIC")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fPIC -Wl,--no-as-needed -ldl")
 
 # Test whether -Wthread-safety is available. See
 # https://clang.llvm.org/docs/ThreadSafetyAnalysis.html
@@ -49,7 +50,7 @@ target_link_libraries(ldpaio Threads::Threads)
 target_sources(
     ldpaio
     PUBLIC
-    ${PROJECT_SOURCE_DIR}/include/ldpaio/interface/posix_file_system.hpp
+#    ${PROJECT_SOURCE_DIR}/include/ldpaio/interface/posix_file_system.hpp
     ${PROJECT_SOURCE_DIR}/include/ldpaio/interface/posix_passthrough.hpp
 )
 

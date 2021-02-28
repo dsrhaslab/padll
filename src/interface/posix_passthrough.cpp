@@ -3,12 +3,13 @@
 *   Copyright (c) 2021 INESC TEC.
 **/
 
-#include <unistd.h>
+#include <ldpaio/interface/posix_passthrough.hpp>
 
 namespace ldpaio {
 
     ssize_t passthrough_read (int fd, void* buf, ssize_t counter) {
-        return ::read (fd, buf, counter);
+        return ((real_read_t) dlsym (RTLD_NEXT, "read"))(fd, buf, counter);
     }
+
 
 }
