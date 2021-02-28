@@ -28,11 +28,11 @@ ssize_t PosixPassthrough::passthrough_pwrite (int fd, const void* buf, ssize_t c
 }
 
 int PosixPassthrough::passthrough_open (const char* pathname, int flags) {
-    return ((real_open_t)dlsym (RTLD_NEXT, "open64")) (pathname, flags);
+    return ((real_open_t)dlsym (RTLD_NEXT, "open")) (pathname, flags);
 }
 
-int PosixPassthrough::passthrough_open (const char* pathname, int flags, mode_t mode) {
-    return ((real_open_2_t)dlsym (RTLD_NEXT, "open64")) (pathname, flags, mode);
+int PosixPassthrough::passthrough_open64 (const char* pathname, int flags, mode_t mode) {
+    return ((real_open64_t)dlsym (RTLD_NEXT, "open64")) (pathname, flags, mode);
 }
 
 } // namespace ldpaio

@@ -41,8 +41,8 @@ int open (const char* pathname, int flags) {
     return ldpaio::PosixPassthrough::passthrough_open (pathname, flags);
 }
 
-int open (const char* pathname, int flags, mode_t mode) {
-    std::cout << "One more open (w/ mode) ... \n";
-    return ldpaio::PosixPassthrough::passthrough_open (pathname, flags, mode);
+int open64 (const char* pathname, int flags, mode_t mode) {
+    std::cout << "One more open64 (w/ mode) ... \n";
+    return ldpaio::PosixPassthrough::passthrough_open64 (pathname, flags, mode);
 }
 
