@@ -119,5 +119,10 @@ int PosixPassthrough::passthrough_unlink (const char* pathname)
     return ((real_unlink_t)dlsym (RTLD_NEXT, "unlink")) (pathname);
 }
 
+int PosixPassthrough::passthrough_rename (const char* old_pathname, const char* new_pathname)
+{
+    std::cout << "One more rename ... \n";
+    return ((real_rename_t)dlsym (RTLD_NEXT, "rename")) (old_pathname, new_pathname);
+}
 
 } // namespace ldpaio

@@ -128,5 +128,13 @@ int link (const char* old_pathname, const char* new_pathname);
  */
 int unlink (const char* pathname);
 
+/**
+ * rename:
+ * @param old_pathname
+ * @param new_pathname
+ * @return
+ */
+int rename (const char* old_pathname, const char* new_pathname);
+
 
 #endif // LDPAIO_POSIX_FILE_SYSTEM_H

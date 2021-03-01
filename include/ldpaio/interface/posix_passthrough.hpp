@@ -34,6 +34,7 @@ typedef int (*real_truncate_t) (const char*, off_t);
 typedef int (*real_ftruncate_t) (int, off_t);
 typedef int (*real_link_t) (const char*, const char*);
 typedef int (*real_unlink_t) (const char*);
+typedef int (*real_rename_t) (const char*, const char*);
 
 class PosixPassthrough {
 
@@ -176,6 +177,13 @@ public:
      */
     static int passthrough_unlink (const char* old_pathname);
 
+    /**
+     * passthrough_rename:
+     * @param old_pathname
+     * @param new_pathname
+     * @return
+     */
+    static int passthrough_rename (const char* old_pathname, const char* new_pathname);
 
 };
 } // namespace ldpaio
