@@ -240,14 +240,4 @@ size_t PosixPassthrough::passthrough_fread (void* ptr, size_t size, size_t nmemb
     return ((real_fread_t)dlsym (RTLD_NEXT, "fread")) (ptr, size, nmemb, stream);
 }
 
-// passthrough_fwrite call. (...)
-size_t PosixPassthrough::passthrough_fwrite (const void* ptr,
-    size_t size,
-    size_t nmemb,
-    FILE* stream)
-{
-    std::cout << "One more fwrite ... \n";
-    return ((real_fwrite_t)dlsym (RTLD_NEXT, "fwrite")) (ptr, size, nmemb, stream);
-}
-
 } // namespace ldpaio

@@ -48,7 +48,6 @@ typedef ssize_t (*real_write_t) (int, const void*, size_t);
 typedef ssize_t (*real_pread_t) (int, void*, size_t, off_t);
 typedef ssize_t (*real_pwrite_t) (int, const void*, size_t, off_t);
 typedef size_t (*real_fread_t) (void*, size_t, size_t, FILE*);
-typedef size_t (*real_fwrite_t) (const void*, size_t, size_t, FILE*);
 
 /**
  * Directory calls
@@ -362,17 +361,6 @@ public:
      * @return
      */
     static size_t passthrough_fread (void* ptr, size_t size, size_t nmemb, FILE* stream);
-
-    /**
-     * passthrough_fwrite:
-     *  https://man7.org/linux/man-pages/man3/fwrite.3.html
-     * @param ptr
-     * @param size
-     * @param nmemb
-     * @param stream
-     * @return
-     */
-    static size_t passthrough_fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stream);
 
 };
 } // namespace ldpaio

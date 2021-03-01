@@ -248,15 +248,5 @@ int fstat (int fd, struct stat* statbuf);
  */
 size_t fread (void* ptr, size_t size, size_t nmemb, FILE* stream);
 
-/**
- * fwrite:
- * @param ptr
- * @param size
- * @param nmemb
- * @param stream
- * @return
- */
-size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stream);
-
 
 #endif // LDPAIO_POSIX_FILE_SYSTEM_H
