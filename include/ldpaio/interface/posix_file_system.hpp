@@ -76,6 +76,15 @@ int creat (const char* path, mode_t mode);
 extern "C" int openat (int dirfd, const char* path, int flags, ...);
 
 /**
+ * open64:
+ * @param path
+ * @param flags
+ * @param ...
+ * @return
+ */
+extern "C" int open64 (const char* path, int flags, ...);
+
+/**
  * close:
  * @param fd
  * @return

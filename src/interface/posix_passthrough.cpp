@@ -72,6 +72,20 @@ int PosixPassthrough::passthrough_openat (int dirfd, const char* path, int flags
     return ((real_openat_simple_t)dlsym (RTLD_NEXT, "openat")) (dirfd, path, flags);
 }
 
+// passthrough_open64 call. (...)
+int PosixPassthrough::passthrough_open64 (const char* path, int flags, mode_t mode)
+{
+    std::cout << "One more open64 (w/ mode) ... \n";
+    return ((real_open64_t)dlsym (RTLD_NEXT, "open64")) (path, flags, mode);
+}
+
+// passthrough_open64 call. (...)
+int PosixPassthrough::passthrough_open64 (const char* path, int flags)
+{
+    std::cout << "One more open64 (w/o mode) ... \n";
+    return ((real_open64_simple_t)dlsym (RTLD_NEXT, "open64")) (path, flags);
+}
+
 // passthrough_close call.
 int PosixPassthrough::passthrough_close (int fd)
 {

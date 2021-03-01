@@ -28,6 +28,8 @@ typedef int (*real_open_simple_t) (const char*, int);
 typedef int (*real_creat_t) (const char*, mode_t);
 typedef int (*real_openat_t) (int, const char*, int, ...);
 typedef int (*real_openat_simple_t) (int, const char*, int);
+typedef int (*real_open64_t) (const char*, int, ...);
+typedef int (*real_open64_simple_t) (const char*, int);
 typedef int (*real_close_t) (int);
 typedef int (*real_fsync_t) (int);
 typedef int (*real_fdatasync_t) (int);
@@ -136,6 +138,25 @@ public:
      * @return
      */
     static int passthrough_openat (int dirfd, const char* path, int flags);
+
+    /**
+     * passthrough_open64:
+     *  https://code.woboq.org/userspace/glibc/sysdeps/unix/sysv/linux/open64.c.html
+     * @param path
+     * @param flags
+     * @param mode
+     * @return
+     */
+    static int passthrough_open64 (const char* path, int flags, mode_t mode);
+
+    /**
+     * passthrough_open64:
+     *  https://code.woboq.org/userspace/glibc/sysdeps/unix/sysv/linux/open64.c.html
+     * @param path
+     * @param flags
+     * @return
+     */
+    static int passthrough_open64 (const char* path, int flags);
 
     /**
      * passthrough_close:

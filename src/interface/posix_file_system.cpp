@@ -67,6 +67,22 @@ int openat (int dirfd, const char* path, int flags, ...)
     }
 }
 
+// open64 call. (...)
+int open64 (const char* path, int flags, ...)
+{
+    if (flags & O_CREAT) {
+        va_list args;
+
+        va_start (args, flags);
+        mode_t mode = va_arg (args, int);
+        va_end (args);
+
+        return ldpaio::PosixPassthrough::passthrough_open64 (path, flags, mode);
+    } else {
+        return ldpaio::PosixPassthrough::passthrough_open64 (path, flags);
+    }
+}
+
 // close call. (...)
 int close (int fd)
 {
