@@ -39,37 +39,37 @@ ssize_t PosixPassthrough::passthrough_pwrite (int fd,
 }
 
 // passthrough_open call.
-int PosixPassthrough::passthrough_open (const char* pathname, int flags, mode_t mode)
+int PosixPassthrough::passthrough_open (const char* path, int flags, mode_t mode)
 {
     std::cout << "One more open (w/ mode) ... \n";
-    return ((real_open_t)dlsym (RTLD_NEXT, "open")) (pathname, flags, mode);
+    return ((real_open_t)dlsym (RTLD_NEXT, "open")) (path, flags, mode);
 }
 
 // passthrough_open call.
-int PosixPassthrough::passthrough_open (const char* pathname, int flags)
+int PosixPassthrough::passthrough_open (const char* path, int flags)
 {
     std::cout << "One more open (w/o mode) ... \n";
-    return ((real_open_simple_t)dlsym (RTLD_NEXT, "open")) (pathname, flags);
+    return ((real_open_simple_t)dlsym (RTLD_NEXT, "open")) (path, flags);
 }
 
 // passthrough_creat call.
-int PosixPassthrough::passthrough_creat (const char* pathname, mode_t mode) {
+int PosixPassthrough::passthrough_creat (const char* path, mode_t mode) {
     std::cout << "One more creat ... \n";
-    return ((real_creat_t)dlsym (RTLD_NEXT, "creat")) (pathname, mode);
+    return ((real_creat_t)dlsym (RTLD_NEXT, "creat")) (path, mode);
 }
 
 // passthrough_openat call.
-int PosixPassthrough::passthrough_openat (int dirfd, const char* pathname, int flags, mode_t mode)
+int PosixPassthrough::passthrough_openat (int dirfd, const char* path, int flags, mode_t mode)
 {
     std::cout << "One more openat (w/ mode) ... \n";
-    return ((real_openat_t)dlsym (RTLD_NEXT, "openat")) (dirfd, pathname, flags, mode);
+    return ((real_openat_t)dlsym (RTLD_NEXT, "openat")) (dirfd, path, flags, mode);
 }
 
 // passthrough_openat call.
-int PosixPassthrough::passthrough_openat (int dirfd, const char* pathname, int flags)
+int PosixPassthrough::passthrough_openat (int dirfd, const char* path, int flags)
 {
     std::cout << "One more openat (w/o mode) ... \n";
-    return ((real_openat_simple_t)dlsym (RTLD_NEXT, "openat")) (dirfd, pathname, flags);
+    return ((real_openat_simple_t)dlsym (RTLD_NEXT, "openat")) (dirfd, path, flags);
 }
 
 // passthrough_close call.
@@ -94,10 +94,10 @@ int PosixPassthrough::passthrough_fdatasync (int fd)
 }
 
 // passthrough_truncate call. (...)
-int PosixPassthrough::passthrough_truncate (const char* pathname, off_t length)
+int PosixPassthrough::passthrough_truncate (const char* path, off_t length)
 {
     std::cout << "One more truncate ... \n";
-    return ((real_truncate_t)dlsym (RTLD_NEXT, "truncate")) (pathname, length);
+    return ((real_truncate_t)dlsym (RTLD_NEXT, "truncate")) (path, length);
 }
 
 // passthrough_truncate call. (...)
@@ -107,22 +107,39 @@ int PosixPassthrough::passthrough_ftruncate (int fd, off_t length)
     return ((real_ftruncate_t)dlsym (RTLD_NEXT, "ftruncate")) (fd, length);
 }
 
-int PosixPassthrough::passthrough_link (const char* old_pathname, const char* new_pathname)
+// passthrough_link call. (...)
+int PosixPassthrough::passthrough_link (const char* old_path, const char* new_path)
 {
     std::cout << "One more link ... \n";
-    return ((real_link_t)dlsym (RTLD_NEXT, "link")) (old_pathname, new_pathname);
+    return ((real_link_t)dlsym (RTLD_NEXT, "link")) (old_path, new_path);
 }
 
-int PosixPassthrough::passthrough_unlink (const char* pathname)
+// passthrough_unlink call. (...)
+int PosixPassthrough::passthrough_unlink (const char* path)
 {
     std::cout << "One more unlink ... \n";
-    return ((real_unlink_t)dlsym (RTLD_NEXT, "unlink")) (pathname);
+    return ((real_unlink_t)dlsym (RTLD_NEXT, "unlink")) (path);
 }
 
-int PosixPassthrough::passthrough_rename (const char* old_pathname, const char* new_pathname)
+// passthrough_rename call. (...)
+int PosixPassthrough::passthrough_rename (const char* old_path, const char* new_path)
 {
     std::cout << "One more rename ... \n";
-    return ((real_rename_t)dlsym (RTLD_NEXT, "rename")) (old_pathname, new_pathname);
+    return ((real_rename_t)dlsym (RTLD_NEXT, "rename")) (old_path, new_path);
+}
+
+// passthrough_mkdir call. (...)
+int PosixPassthrough::passthrough_mkdir (const char* path)
+{
+    std::cout << "One more mkdir ... \n";
+    return ((real_mkdir_t)dlsym (RTLD_NEXT, "mkdir")) (path);
+}
+
+// passthrough_readdir call. (...)
+struct dirent* PosixPassthrough::passthrough_readdir (DIR* dirp)
+{
+    std::cout << "One more readdir ... \n";
+    return ((real_readdir_t)dlsym (RTLD_NEXT, "readdir")) (dirp);
 }
 
 } // namespace ldpaio

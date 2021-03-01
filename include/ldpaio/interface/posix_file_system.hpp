@@ -9,7 +9,6 @@
 #include <cstdarg>
 #include <cstring>
 #include <ldpaio/interface/posix_passthrough.hpp>
-#include <unistd.h>
 
 /**
  * read:
@@ -51,30 +50,30 @@ ssize_t pwrite (int fd, const void* buf, size_t size, off_t offset);
 
 /**
  * open:
- * @param pathname
+ * @param path
  * @param flags
  * @param ...
  * @return
  */
-extern "C" int open (const char* pathname, int flags, ...);
+extern "C" int open (const char* path, int flags, ...);
 
 /**
  * creat:
- * @param pathname
+ * @param path
  * @param mode
  * @return
  */
-int creat (const char* pathname, mode_t mode);
+int creat (const char* path, mode_t mode);
 
 /**
  * openat:
  * @param dirfd
- * @param pathname
+ * @param path
  * @param flags
  * @param ...
  * @return
  */
-extern "C" int openat (int dirfd, const char* pathname, int flags, ...);
+extern "C" int openat (int dirfd, const char* path, int flags, ...);
 
 /**
  * close:
@@ -99,11 +98,11 @@ int fdatasync (int fd);
 
 /**
  * truncate:
- * @param pathname
+ * @param path
  * @param length
  * @return
  */
-int truncate (const char* pathname, off_t length);
+int truncate (const char* path, off_t length);
 
 /**
  * ftruncate:
@@ -115,26 +114,40 @@ int ftruncate (int fd, off_t length);
 
 /**
  * link:
- * @param old_pathname
- * @param new_pathname
+ * @param old_path
+ * @param new_path
  * @return
  */
-int link (const char* old_pathname, const char* new_pathname);
+int link (const char* old_path, const char* new_path);
 
 /**
  * unlink:
- * @param pathname
+ * @param path
  * @return
  */
-int unlink (const char* pathname);
+int unlink (const char* path);
 
 /**
  * rename:
- * @param old_pathname
- * @param new_pathname
+ * @param old_path
+ * @param new_path
  * @return
  */
-int rename (const char* old_pathname, const char* new_pathname);
+int rename (const char* old_path, const char* new_path);
 
+/**
+ * mkdir:
+ * @param path
+ * @param mode
+ * @return
+ */
+int mkdir (const char* path, mode_t mode);
+
+/**
+ * readdir:
+ * @param dirp
+ * @return
+ */
+struct dirent* readdir (DIR* dirp);
 
 #endif // LDPAIO_POSIX_FILE_SYSTEM_H

@@ -30,7 +30,7 @@ ssize_t pwrite (int fd, const void* buf, size_t size, off_t offset)
 }
 
 // open call. (...)
-int open (const char* pathname, int flags, ...)
+int open (const char* path, int flags, ...)
 {
     if (flags & O_CREAT) {
         va_list args;
@@ -39,20 +39,20 @@ int open (const char* pathname, int flags, ...)
         mode_t mode = va_arg (args, int);
         va_end (args);
 
-        return ldpaio::PosixPassthrough::passthrough_open (pathname, flags, mode);
+        return ldpaio::PosixPassthrough::passthrough_open (path, flags, mode);
     } else {
-        return ldpaio::PosixPassthrough::passthrough_open (pathname, flags);
+        return ldpaio::PosixPassthrough::passthrough_open (path, flags);
     }
 }
 
 // creat call. (...)
-int creat (const char* pathname, mode_t mode)
+int creat (const char* path, mode_t mode)
 {
-    return ldpaio::PosixPassthrough::passthrough_creat (pathname, mode);
+    return ldpaio::PosixPassthrough::passthrough_creat (path, mode);
 }
 
 // openat call. (...)
-int openat (int dirfd, const char* pathname, int flags, ...)
+int openat (int dirfd, const char* path, int flags, ...)
 {
     if (flags & O_CREAT) {
         va_list args;
@@ -61,9 +61,9 @@ int openat (int dirfd, const char* pathname, int flags, ...)
         mode_t mode = va_arg (args, int);
         va_end (args);
 
-        return ldpaio::PosixPassthrough::passthrough_openat (dirfd, pathname, flags, mode);
+        return ldpaio::PosixPassthrough::passthrough_openat (dirfd, path, flags, mode);
     } else {
-        return ldpaio::PosixPassthrough::passthrough_openat (dirfd, pathname, flags);
+        return ldpaio::PosixPassthrough::passthrough_openat (dirfd, path, flags);
     }
 }
 
@@ -86,9 +86,9 @@ int fdatasync (int fd)
 }
 
 // truncate call. (...)
-int truncate (const char* pathname, off_t length)
+int truncate (const char* path, off_t length)
 {
-    return ldpaio::PosixPassthrough::passthrough_truncate (pathname, length);
+    return ldpaio::PosixPassthrough::passthrough_truncate (path, length);
 }
 
 // ftruncate call. (...)
@@ -98,19 +98,31 @@ int ftruncate (int fd, off_t length)
 }
 
 // link call. (...)
-int link (const char* old_pathname, const char* new_pathname)
+int link (const char* old_path, const char* new_path)
 {
-    return ldpaio::PosixPassthrough::passthrough_link (old_pathname, new_pathname);
+    return ldpaio::PosixPassthrough::passthrough_link (old_path, new_path);
 }
 
 // unlink call. (...)
-int unlink (const char* pathname)
+int unlink (const char* path)
 {
-    return ldpaio::PosixPassthrough::passthrough_unlink (pathname);
+    return ldpaio::PosixPassthrough::passthrough_unlink (path);
 }
 
 // rename call. (...)
-int rename (const char* old_pathname, const char* new_pathname)
+int rename (const char* old_path, const char* new_path)
 {
-    return ldpaio::PosixPassthrough::passthrough_rename (old_pathname, new_pathname);
+    return ldpaio::PosixPassthrough::passthrough_rename (old_path, new_path);
+}
+
+// mkdir call. (...)
+int mkdir (const char* path)
+{
+    return ldpaio::PosixPassthrough::passthrough_mkdir (path);
+}
+
+// readdir call. (...)
+struct dirent* readdir (DIR* dirp)
+{
+    return ldpaio::PosixPassthrough::passthrough_readdir (dirp);
 }

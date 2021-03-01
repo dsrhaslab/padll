@@ -15,6 +15,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <iostream>
+#include <dirent.h>
 
 namespace ldpaio {
 
@@ -35,6 +36,8 @@ typedef int (*real_ftruncate_t) (int, off_t);
 typedef int (*real_link_t) (const char*, const char*);
 typedef int (*real_unlink_t) (const char*);
 typedef int (*real_rename_t) (const char*, const char*);
+typedef int (*real_mkdir_t) (const char*);
+typedef struct dirent* (*real_readdir_t) (DIR*);
 
 class PosixPassthrough {
 
@@ -83,47 +86,47 @@ public:
      * Notes:
      *  https://github.com/fritzw/ld-preload-open/blob/master/path-mapping.c
      *  https://github.com/poliva/ldpreloadhook/blob/master/hook.c
-     * @param pathname
+     * @param path
      * @param flags
      * @param mode
      * @return
      */
-    static int passthrough_open (const char* pathname, int flags, mode_t mode);
+    static int passthrough_open (const char* path, int flags, mode_t mode);
 
     /**
      * passthrough_open:
-     * @param pathname
+     * @param path
      * @param flags
      * @return
      */
-    static int passthrough_open (const char* pathname, int flags);
+    static int passthrough_open (const char* path, int flags);
 
     /**
      * passthrough_creat:
-     * @param pathname
+     * @param path
      * @param mode
      * @return
      */
-    static int passthrough_creat (const char* pathname, mode_t mode);
+    static int passthrough_creat (const char* path, mode_t mode);
 
     /**
      * passthrough_openat:
      * @param dirfd
-     * @param pathname
+     * @param path
      * @param flags
      * @param mode
      * @return
      */
-    static int passthrough_openat (int dirfd, const char* pathname, int flags, mode_t mode);
+    static int passthrough_openat (int dirfd, const char* path, int flags, mode_t mode);
 
     /**
      * passthrough_openat:
      * @param dirfd
-     * @param pathname
+     * @param path
      * @param flags
      * @return
      */
-    static int passthrough_openat (int dirfd, const char* pathname, int flags);
+    static int passthrough_openat (int dirfd, const char* path, int flags);
 
     /**
      * passthrough_close:
@@ -148,11 +151,11 @@ public:
 
     /**
      * passthrough_truncate:
-     * @param pathname
+     * @param path
      * @param length
      * @return
      */
-    static int passthrough_truncate (const char* pathname, off_t length);
+    static int passthrough_truncate (const char* path, off_t length);
 
     /**
      * passthrough_ftruncate:
@@ -164,26 +167,42 @@ public:
 
     /**
      * passthrough_link:
-     * @param old_pathname
-     * @param new_pathname
+     * @param old_path
+     * @param new_path
      * @return
      */
-    static int passthrough_link (const char* old_pathname, const char* new_pathname);
+    static int passthrough_link (const char* old_path, const char* new_path);
 
     /**
      * passthrough_unlink:
-     * @param old_pathname
+     * @param old_path
      * @return
      */
-    static int passthrough_unlink (const char* old_pathname);
+    static int passthrough_unlink (const char* old_path);
 
     /**
      * passthrough_rename:
-     * @param old_pathname
-     * @param new_pathname
+     * @param old_path
+     * @param new_path
      * @return
      */
-    static int passthrough_rename (const char* old_pathname, const char* new_pathname);
+    static int passthrough_rename (const char* old_path, const char* new_path);
+
+    /**
+     * mkdir:
+     * @param path
+     * @return
+     */
+    static int passthrough_mkdir (const char* path);
+
+    /**
+     * readdir:
+     * @param dirp
+     * @return
+     */
+    static struct dirent* passthrough_readdir (DIR* dirp);
+
+
 
 };
 } // namespace ldpaio
