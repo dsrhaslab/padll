@@ -6,16 +6,10 @@
 #include <ldpaio/interface/posix_file_system.hpp>
 
 // read call. (...)
-ssize_t read (int fd, void* buf, size_t size)
-{
-    return ldpaio::PosixPassthrough::passthrough_read (fd, buf, size);
-}
+
 
 // write call. (...)
-ssize_t write (int fd, const void* buf, size_t size)
-{
-    return ldpaio::PosixPassthrough::passthrough_write (fd, buf, size);
-}
+
 
 // pread call. (...)
 ssize_t pread (int fd, void* buf, size_t size, off_t offset)
@@ -30,20 +24,7 @@ ssize_t pwrite (int fd, const void* buf, size_t size, off_t offset)
 }
 
 // open call. (...)
-int open (const char* path, int flags, ...)
-{
-    if (flags & O_CREAT) {
-        va_list args;
 
-        va_start (args, flags);
-        mode_t mode = va_arg (args, int);
-        va_end (args);
-
-        return ldpaio::PosixPassthrough::passthrough_open (path, flags, mode);
-    } else {
-        return ldpaio::PosixPassthrough::passthrough_open (path, flags);
-    }
-}
 
 // creat call. (...)
 int creat (const char* path, mode_t mode)
@@ -84,10 +65,7 @@ int open64 (const char* path, int flags, ...)
 }
 
 // close call. (...)
-int close (int fd)
-{
-    return ldpaio::PosixPassthrough::passthrough_close (fd);
-}
+
 
 // fsync call. (...)
 int fsync (int fd)
