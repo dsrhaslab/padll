@@ -156,3 +156,15 @@ ssize_t fgetxattr (int fd, const char* name, void* value, size_t size)
 {
     return ldpaio::PosixPassthrough::passthrough_fgetxattr (fd, name, value, size);
 }
+
+// setxattr call. (...)
+int setxattr (const char* path, const char* name, const void* value, size_t size, int flags)
+{
+    return ldpaio::PosixPassthrough::passthrough_setxattr (path, name, value, size, flags);
+}
+
+// fsetxaatr call. (...)
+int fsetxattr (int fd, const char* name, const void* value, size_t size, int flags)
+{
+    return ldpaio::PosixPassthrough::passthrough_fsetxattr (fd, name, value, size, flags);
+}

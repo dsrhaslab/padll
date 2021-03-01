@@ -183,5 +183,27 @@ ssize_t PosixPassthrough::passthrough_fgetxattr (int fd,
     return ((real_fgetxattr_t)dlsym (RTLD_NEXT, "fgetxattr")) (fd, name, value, size);
 }
 
+// passthrough_setxattr call. (...)
+int PosixPassthrough::passthrough_setxattr (const char* path,
+    const char* name,
+    const void* value,
+    size_t size,
+    int flags)
+{
+    std::cout << "One more setxattr ... \n";
+    return ((real_setxattr_t)dlsym (RTLD_NEXT, "setxattr")) (path, name, value, size, flags);
+}
+
+// passthrough_fsetxattr call. (...)
+int PosixPassthrough::passthrough_fsetxattr (int fd,
+    const char* name,
+    const void* value,
+    size_t size,
+    int flags)
+{
+    std::cout << "One more fsetxattr ... \n";
+    return ((real_fsetxattr_t)dlsym (RTLD_NEXT, "fsetxattr")) (fd, name, value, size, flags);
+}
+
 
 } // namespace ldpaio

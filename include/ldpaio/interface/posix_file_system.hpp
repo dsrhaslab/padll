@@ -191,4 +191,27 @@ ssize_t getxattr (const char* path, const char* name, void* value, size_t size);
  */
 ssize_t fgetxattr (int fd, const char* name, void* value, size_t size);
 
+/**
+ * setxattr:
+ * @param path
+ * @param name
+ * @param value
+ * @param size
+ * @param flags
+ * @return
+ */
+int setxattr (const char* path, const char* name, const void* value, size_t size, int flags);
+
+/**
+ * fsetxattr:
+ * @param fd
+ * @param name
+ * @param value
+ * @param size
+ * @param flags
+ * @return
+ */
+int fsetxattr (int fd, const char* name, const void* value, size_t size, int flags);
+
+
 #endif // LDPAIO_POSIX_FILE_SYSTEM_H

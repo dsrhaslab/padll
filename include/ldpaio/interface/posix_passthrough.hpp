@@ -43,6 +43,9 @@ typedef int (*real_closedir_t) (DIR*);
 typedef int (*real_rmdir_t) (const char*);
 typedef ssize_t (*real_getxattr_t) (const char*, const char*, void*, size_t);
 typedef ssize_t (*real_fgetxattr_t) (int, const char*, void*, size_t);
+typedef int (*real_setxattr_t) (const char*, const char*, const void*, size_t, int);
+typedef int (*real_fsetxattr_t) (int, const char*, const void*, size_t, int);
+
 
 class PosixPassthrough {
 
@@ -259,6 +262,40 @@ public:
         const char* name,
         void* value,
         size_t size);
+
+    /**
+     * passthrough_setxattr:
+     *  https://man7.org/linux/man-pages/man2/setxattr.2.html
+     * @param path
+     * @param name
+     * @param value
+     * @param size
+     * @param flags
+     * @return
+     */
+    static int passthrough_setxattr (const char* path,
+        const char* name,
+        const void* value,
+        size_t size,
+        int flags);
+
+    /**
+     * passthrough_fsetxattr:
+     *  https://man7.org/linux/man-pages/man2/fsetxattr.2.html
+     * @param fd
+     * @param name
+     * @param value
+     * @param size
+     * @param flags
+     * @return
+     */
+    static int passthrough_fsetxattr (int fd,
+        const char* name,
+        const void* value,
+        size_t size,
+        int flags);
+
+
 };
 } // namespace ldpaio
 
