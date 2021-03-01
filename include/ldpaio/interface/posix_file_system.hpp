@@ -171,5 +171,24 @@ int closedir (DIR* dirp);
  */
 int rmdir (const char* path);
 
+/**
+ * getxattr:
+ * @param path
+ * @param name
+ * @param value
+ * @param size
+ * @return
+ */
+ssize_t getxattr (const char* path, const char* name, void* value, size_t size);
+
+/**
+ * fgetxattr:
+ * @param fd
+ * @param name
+ * @param value
+ * @param size
+ * @return
+ */
+ssize_t fgetxattr (int fd, const char* name, void* value, size_t size);
 
 #endif // LDPAIO_POSIX_FILE_SYSTEM_H

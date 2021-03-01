@@ -163,6 +163,25 @@ int PosixPassthrough::passthrough_rmdir (const char* path)
     return ((real_rmdir_t)dlsym (RTLD_NEXT, "rmdir")) (path);
 }
 
+// passthrough_getxattr call. (...)
+ssize_t PosixPassthrough::passthrough_getxattr (const char* path,
+    const char* name,
+    void* value,
+    size_t size)
+{
+    std::cout << "One more getxattr ... \n";
+    return ((real_getxattr_t)dlsym (RTLD_NEXT, "getxattr")) (path, name, value, size);
+}
+
+// passthrough_fgetxattr call. (...)
+ssize_t PosixPassthrough::passthrough_fgetxattr (int fd,
+    const char* name,
+    void* value,
+    size_t size)
+{
+    std::cout << "One more fgetxattr ... \n";
+    return ((real_fgetxattr_t)dlsym (RTLD_NEXT, "fgetxattr")) (fd, name, value, size);
+}
 
 
 } // namespace ldpaio

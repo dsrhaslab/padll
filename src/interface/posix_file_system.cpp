@@ -144,3 +144,15 @@ int rmdir (const char* path)
 {
     return ldpaio::PosixPassthrough::passthrough_rmdir (path);
 }
+
+// getxattr call. (...)
+ssize_t getxattr (const char* path, const char* name, void* value, size_t size)
+{
+    return ldpaio::PosixPassthrough::passthrough_getxattr (path, name, value, size);
+}
+
+// fgetxattr call. (...)
+ssize_t fgetxattr (int fd, const char* name, void* value, size_t size)
+{
+    return ldpaio::PosixPassthrough::passthrough_fgetxattr (fd, name, value, size);
+}

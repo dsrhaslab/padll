@@ -41,6 +41,8 @@ typedef struct dirent* (*real_readdir_t) (DIR*);
 typedef DIR* (*real_opendir_t) (const char*);
 typedef int (*real_closedir_t) (DIR*);
 typedef int (*real_rmdir_t) (const char*);
+typedef ssize_t (*real_getxattr_t) (const char*, const char*, void*, size_t);
+typedef ssize_t (*real_fgetxattr_t) (int, const char*, void*, size_t);
 
 class PosixPassthrough {
 
@@ -230,6 +232,33 @@ public:
      */
     static int passthrough_rmdir (const char* path);
 
+    /**
+     * passthrough_getxattr:
+     *  https://man7.org/linux/man-pages/man2/getxattr.2.html
+     * @param path
+     * @param name
+     * @param value
+     * @param size
+     * @return
+     */
+    static ssize_t passthrough_getxattr (const char* path,
+        const char* name,
+        void* value,
+        size_t size);
+
+    /**
+     * passthrough_fgetxattr:
+     *  https://man7.org/linux/man-pages/man2/fgetxattr.2.html
+     * @param fd
+     * @param name
+     * @param value
+     * @param size
+     * @return
+     */
+    static ssize_t passthrough_fgetxattr (int fd,
+        const char* name,
+        void* value,
+        size_t size);
 };
 } // namespace ldpaio
 
