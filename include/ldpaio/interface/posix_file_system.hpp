@@ -17,10 +17,7 @@
  * @param size
  * @return
  */
-ssize_t read (int fd, void* buf, size_t size)
-{
-    return ldpaio::PosixPassthrough::passthrough_read (fd, buf, size);
-}
+ssize_t read (int fd, void* buf, size_t size);
 
 /**
  * write:
@@ -29,10 +26,7 @@ ssize_t read (int fd, void* buf, size_t size)
  * @param size
  * @return
  */
-ssize_t write (int fd, const void* buf, size_t size)
-{
-    return ldpaio::PosixPassthrough::passthrough_write (fd, buf, size);
-}
+ssize_t write (int fd, const void* buf, size_t size);
 
 /**
  * pread:
@@ -61,20 +55,7 @@ ssize_t pwrite (int fd, const void* buf, size_t size, off_t offset);
  * @param ...
  * @return
  */
-extern "C" int open (const char* path, int flags, ...)
-{
-    if (flags & O_CREAT) {
-        va_list args;
-
-        va_start (args, flags);
-        mode_t mode = va_arg (args, int);
-        va_end (args);
-
-        return ldpaio::PosixPassthrough::passthrough_open (path, flags, mode);
-    } else {
-        return ldpaio::PosixPassthrough::passthrough_open (path, flags);
-    }
-}
+extern "C" int open (const char* path, int flags, ...);
 
 /**
  * creat:
@@ -108,10 +89,7 @@ extern "C" int open64 (const char* path, int flags, ...);
  * @param fd
  * @return
  */
-int close (int fd)
-{
-    return ldpaio::PosixPassthrough::passthrough_close (fd);
-}
+int close (int fd);
 
 /**
  * fsync:

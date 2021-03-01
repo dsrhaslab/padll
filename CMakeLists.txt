@@ -57,7 +57,7 @@ target_sources(
 target_sources(
         ldpaio
         PRIVATE
-#        src/interface/posix_file_system.cpp
+        src/interface/posix_file_system.cpp
         src/interface/posix_passthrough.cpp
 )
 
