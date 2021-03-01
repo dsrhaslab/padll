@@ -45,7 +45,8 @@ typedef ssize_t (*real_getxattr_t) (const char*, const char*, void*, size_t);
 typedef ssize_t (*real_fgetxattr_t) (int, const char*, void*, size_t);
 typedef int (*real_setxattr_t) (const char*, const char*, const void*, size_t, int);
 typedef int (*real_fsetxattr_t) (int, const char*, const void*, size_t, int);
-
+typedef int (*real_stat_t) (const char*, struct stat*);
+typedef int (*real_fstat_t) (int fd, struct stat*);
 
 class PosixPassthrough {
 
@@ -294,6 +295,24 @@ public:
         const void* value,
         size_t size,
         int flags);
+
+    /**
+     * passthrough_stat:
+     *  https://man7.org/linux/man-pages/man2/stat.2.html
+     * @param path
+     * @param statbuf
+     * @return
+     */
+    static int passthrough_stat (const char* path, struct stat* statbuf);
+
+    /**
+     * passthrough_fstat:
+     *  https://man7.org/linux/man-pages/man2/fstat.2.html
+     * @param fd
+     * @param statbuf
+     * @return
+     */
+    static int passthrough_fstat (int fd, struct stat* statbuf);
 
 
 };

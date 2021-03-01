@@ -213,5 +213,21 @@ int setxattr (const char* path, const char* name, const void* value, size_t size
  */
 int fsetxattr (int fd, const char* name, const void* value, size_t size, int flags);
 
+/**
+ * stat:
+ * @param path
+ * @param statbuf
+ * @return
+ */
+int stat (const char* path, struct stat* statbuf);
+
+/**
+ * fstat:
+ * @param fd
+ * @param statbuf
+ * @return
+ */
+int fstat (int fd, struct stat* statbuf);
+
 
 #endif // LDPAIO_POSIX_FILE_SYSTEM_H

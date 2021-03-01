@@ -168,3 +168,15 @@ int fsetxattr (int fd, const char* name, const void* value, size_t size, int fla
 {
     return ldpaio::PosixPassthrough::passthrough_fsetxattr (fd, name, value, size, flags);
 }
+
+// stat call. (...)
+int stat (const char* path, struct stat* statbuf)
+{
+    return ldpaio::PosixPassthrough::passthrough_stat (path, statbuf);
+}
+
+// fstat call. (...)
+int fstat (int fd, struct stat* statbuf)
+{
+    return ldpaio::PosixPassthrough::passthrough_fstat (fd, statbuf);
+}

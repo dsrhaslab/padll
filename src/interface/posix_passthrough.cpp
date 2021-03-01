@@ -205,5 +205,19 @@ int PosixPassthrough::passthrough_fsetxattr (int fd,
     return ((real_fsetxattr_t)dlsym (RTLD_NEXT, "fsetxattr")) (fd, name, value, size, flags);
 }
 
+// passthrough_stat call. (...)
+int PosixPassthrough::passthrough_stat (const char* path, struct stat* statbuf)
+{
+    std::cout << "One more stat ... \n";
+    return ((real_stat_t)dlsym (RTLD_NEXT, "stat")) (path, statbuf);
+}
+
+// passthrough_fstat call. (...)
+int PosixPassthrough::passthrough_fstat (int fd, struct stat* statbuf)
+{
+    std::cout << "One more fstat ... \n";
+    return ((real_fstat_t)dlsym (RTLD_NEXT, "fstat")) (fd, statbuf);
+}
+
 
 } // namespace ldpaio
