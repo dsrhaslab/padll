@@ -17,9 +17,9 @@ ssize_t pread (int fd, void* buf, size_t size, off_t offset);
 
 ssize_t pwrite (int fd, const void* buf, size_t size, off_t offset);
 
-int open (const char* pathname, int flags);
+// int open (const char* pathname, int flags);
 
-int open64 (const char* pathname, int flags, mode_t mode);
+extern "C" int open (const char* pathname, int flags, ...);
 
 
 #endif // LDPAIO_POSIX_FILE_SYSTEM_H

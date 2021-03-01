@@ -36,13 +36,22 @@ ssize_t pwrite (int fd, const void* buf, size_t size, off_t offset)
     return ldpaio::PosixPassthrough::passthrough_pwrite (fd, buf, size, offset);
 }
 
-int open (const char* pathname, int flags) {
-    std::cout << "One more open ... \n";
-    return ldpaio::PosixPassthrough::passthrough_open (pathname, flags);
-}
+//int open (const char* pathname, int flags) {
+//    std::cout << "One more open ... \n";
+//    return ldpaio::PosixPassthrough::passthrough_open (pathname, flags);
+//}
 
-int open64 (const char* pathname, int flags, mode_t mode) {
-    std::cout << "One more open64 (w/ mode) ... \n";
-    return ldpaio::PosixPassthrough::passthrough_open64 (pathname, flags, mode);
+int open (const char* pathname, int flags, ...) {
+    std::cout << "One more open (w/ mode) ... \n";
+
+    va_list args;
+    mode_t mode;
+
+    va_start (args, flags);
+    mode = va_arg (args, int);
+    va_end (args);
+
+
+    return ldpaio::PosixPassthrough::passthrough_open (pathname, flags, mode);
 }
 
