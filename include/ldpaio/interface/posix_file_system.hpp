@@ -8,9 +8,8 @@
 
 #include <cstdarg>
 #include <cstring>
-#include <iostream>
-#include <unistd.h>
 #include <ldpaio/interface/posix_passthrough.hpp>
+#include <unistd.h>
 
 /**
  * read:
@@ -65,6 +64,5 @@ extern "C" int open (const char* pathname, int flags, ...);
  * @return
  */
 int close (int fd);
-
 
 #endif // LDPAIO_POSIX_FILE_SYSTEM_H
