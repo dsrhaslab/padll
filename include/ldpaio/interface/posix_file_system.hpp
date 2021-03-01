@@ -150,4 +150,26 @@ int mkdir (const char* path, mode_t mode);
  */
 struct dirent* readdir (DIR* dirp);
 
+/**
+ * opendir:
+ * @param path
+ * @return
+ */
+DIR* opendir (const char* path);
+
+/**
+ * closedir:
+ * @param dirp
+ * @return
+ */
+int closedir (DIR* dirp);
+
+/**
+ * rmdir:
+ * @param path
+ * @return
+ */
+int rmdir (const char* path);
+
+
 #endif // LDPAIO_POSIX_FILE_SYSTEM_H

@@ -142,4 +142,27 @@ struct dirent* PosixPassthrough::passthrough_readdir (DIR* dirp)
     return ((real_readdir_t)dlsym (RTLD_NEXT, "readdir")) (dirp);
 }
 
+// passthrough_opendir call. (...)
+DIR* PosixPassthrough::passthrough_opendir (const char* path)
+{
+    std::cout << "One more opendir ... \n";
+    return ((real_opendir_t)dlsym (RTLD_NEXT, "opendir")) (path);
+}
+
+// passthrough_closedir call. (...)
+int PosixPassthrough::passthrough_closedir (DIR* dirp)
+{
+    std::cout << "One more closedir ... \n";
+    return ((real_closedir_t)dlsym (RTLD_NEXT, "closedir")) (dirp);
+}
+
+// passthrough_rmdir call. (...)
+int PosixPassthrough::passthrough_rmdir (const char* path)
+{
+    std::cout << "One more rmdir ... \n";
+    return ((real_rmdir_t)dlsym (RTLD_NEXT, "rmdir")) (path);
+}
+
+
+
 } // namespace ldpaio

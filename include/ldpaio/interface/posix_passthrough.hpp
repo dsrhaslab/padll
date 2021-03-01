@@ -38,6 +38,9 @@ typedef int (*real_unlink_t) (const char*);
 typedef int (*real_rename_t) (const char*, const char*);
 typedef int (*real_mkdir_t) (const char*);
 typedef struct dirent* (*real_readdir_t) (DIR*);
+typedef DIR* (*real_opendir_t) (const char*);
+typedef int (*real_closedir_t) (DIR*);
+typedef int (*real_rmdir_t) (const char*);
 
 class PosixPassthrough {
 
@@ -197,12 +200,35 @@ public:
 
     /**
      * readdir:
+     *  https://man7.org/linux/man-pages/man3/readdir.3.html
      * @param dirp
      * @return
      */
     static struct dirent* passthrough_readdir (DIR* dirp);
 
+    /**
+     * opendir:
+     *  https://man7.org/linux/man-pages/man3/opendir.3.html
+     * @param path
+     * @return
+     */
+    static DIR* passthrough_opendir (const char* path);
 
+    /**
+     * closedir:
+     *  https://man7.org/linux/man-pages/man3/closedir.3.html
+     * @param dirp
+     * @return
+     */
+    static int passthrough_closedir (DIR* dirp);
+
+    /**
+     * rmdir:
+     *  https://man7.org/linux/man-pages/man2/rmdir.2.html
+     * @param path
+     * @return
+     */
+    static int passthrough_rmdir (const char* path);
 
 };
 } // namespace ldpaio

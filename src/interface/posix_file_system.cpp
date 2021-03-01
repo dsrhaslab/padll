@@ -126,3 +126,21 @@ struct dirent* readdir (DIR* dirp)
 {
     return ldpaio::PosixPassthrough::passthrough_readdir (dirp);
 }
+
+// opendir call. (...)
+DIR* opendir (const char* path)
+{
+    return ldpaio::PosixPassthrough::passthrough_opendir (path);
+}
+
+// closedir call. (...)
+int closedir (DIR* dirp)
+{
+    return ldpaio::PosixPassthrough::passthrough_closedir (dirp);
+}
+
+// rmdir call. (...)
+int rmdir (const char* path)
+{
+    return ldpaio::PosixPassthrough::passthrough_rmdir (path);
+}
