@@ -24,6 +24,9 @@ typedef ssize_t (*real_pread_t) (int, void*, size_t, off_t);
 typedef ssize_t (*real_pwrite_t) (int, const void*, size_t, off_t);
 typedef int (*real_open_t) (const char*, int, ...);
 typedef int (*real_open_simple_t) (const char*, int);
+typedef int (*real_creat_t) (const char*, mode_t);
+typedef int (*real_openat_t) (int, const char*, int, ...);
+typedef int (*real_openat_simple_t) (int, const char*, int);
 typedef int (*real_close_t) (int);
 
 class PosixPassthrough {
@@ -101,19 +104,19 @@ public:
      * @param dirfd
      * @param pathname
      * @param flags
+     * @param mode
      * @return
      */
-    static int passthrough_openat (int dirfd, const char* pathname, int flags);
+    static int passthrough_openat (int dirfd, const char* pathname, int flags, mode_t mode);
 
     /**
      * passthrough_openat:
      * @param dirfd
      * @param pathname
      * @param flags
-     * @param mode
      * @return
      */
-    static int passthrough_openat (int dirfd, const char* pathname, int flags, mode_t mode);
+    static int passthrough_openat (int dirfd, const char* pathname, int flags);
 
     /**
      * passthrough_close:

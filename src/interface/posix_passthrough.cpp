@@ -52,6 +52,26 @@ int PosixPassthrough::passthrough_open (const char* pathname, int flags)
     return ((real_open_simple_t)dlsym (RTLD_NEXT, "open")) (pathname, flags);
 }
 
+// passthrough_creat call.
+int PosixPassthrough::passthrough_creat (const char* pathname, mode_t mode) {
+    std::cout << "One more creat ... \n";
+    return ((real_creat_t)dlsym (RTLD_NEXT, "creat")) (pathname, mode);
+}
+
+// passthrough_openat call.
+int PosixPassthrough::passthrough_openat (int dirfd, const char* pathname, int flags, mode_t mode)
+{
+    std::cout << "One more openat (w/ mode) ... \n";
+    return ((real_openat_t)dlsym (RTLD_NEXT, "openat")) (dirfd, pathname, flags, mode);
+}
+
+// passthrough_openat call.
+int PosixPassthrough::passthrough_openat (int dirfd, const char* pathname, int flags)
+{
+    std::cout << "One more openat (w/o mode) ... \n";
+    return ((real_openat_simple_t)dlsym (RTLD_NEXT, "openat")) (dirfd, pathname, flags);
+}
+
 // passthrough_close call.
 int PosixPassthrough::passthrough_close (int fd)
 {

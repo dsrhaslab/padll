@@ -59,6 +59,24 @@ ssize_t pwrite (int fd, const void* buf, size_t size, off_t offset);
 extern "C" int open (const char* pathname, int flags, ...);
 
 /**
+ * creat:
+ * @param pathname
+ * @param mode
+ * @return
+ */
+int creat (const char* pathname, mode_t mode);
+
+/**
+ * openat:
+ * @param dirfd
+ * @param pathname
+ * @param flags
+ * @param ...
+ * @return
+ */
+extern "C" int openat (int dirfd, const char* pathname, int flags, ...);
+
+/**
  * close:
  * @param fd
  * @return
