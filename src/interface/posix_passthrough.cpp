@@ -4,7 +4,6 @@
  **/
 
 #include <ldpaio/interface/posix_passthrough.hpp>
-#include <cstdarg>
 
 namespace ldpaio {
 
@@ -28,15 +27,13 @@ ssize_t PosixPassthrough::passthrough_pwrite (int fd, const void* buf, ssize_t c
     return ((real_pwrite_t)dlsym (RTLD_NEXT, "pwrite")) (fd, buf, counter, offset);
 }
 
-//int PosixPassthrough::passthrough_open (const char* pathname, int flags) {
-//    return ((real_open_t)dlsym (RTLD_NEXT, "open")) (pathname, flags);
-//}
-
 int PosixPassthrough::passthrough_open (const char* pathname, int flags, mode_t mode) {
-//    https://github.com/fritzw/ld-preload-open/blob/master/path-mapping.c
-//    https://github.com/poliva/ldpreloadhook/blob/master/hook.c
-
     return ((real_open_t)dlsym (RTLD_NEXT, "open")) (pathname, flags, mode);
 }
+
+int PosixPassthrough::passthrough_open (const char* pathname, int flags) {
+    return ((real_open_simple_t)dlsym (RTLD_NEXT, "open")) (pathname, flags);
+}
+
 
 } // namespace ldpaio

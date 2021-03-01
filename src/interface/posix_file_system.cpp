@@ -3,10 +3,7 @@
  *   Copyright (c) 2021 INESC TEC.
  **/
 
-#include <cstring>
-#include <iostream>
 #include <ldpaio/interface/posix_file_system.hpp>
-#include <ldpaio/interface/posix_passthrough.hpp>
 
 // read call. ...
 ssize_t read (int fd, void* buf, size_t size)
@@ -36,22 +33,20 @@ ssize_t pwrite (int fd, const void* buf, size_t size, off_t offset)
     return ldpaio::PosixPassthrough::passthrough_pwrite (fd, buf, size, offset);
 }
 
-//int open (const char* pathname, int flags) {
-//    std::cout << "One more open ... \n";
-//    return ldpaio::PosixPassthrough::passthrough_open (pathname, flags);
-//}
-
+// open call. ...
 int open (const char* pathname, int flags, ...) {
-    std::cout << "One more open (w/ mode) ... \n";
+    if (flags & O_CREAT) {
+        va_list args;
 
-    va_list args;
-    mode_t mode;
+        va_start (args, flags);
+        mode_t mode = va_arg (args, int);
+        va_end (args);
 
-    va_start (args, flags);
-    mode = va_arg (args, int);
-    va_end (args);
-
-
-    return ldpaio::PosixPassthrough::passthrough_open (pathname, flags, mode);
+        std::cout << "One more open (w/ mode) ... \n";
+        return ldpaio::PosixPassthrough::passthrough_open (pathname, flags, mode);
+    } else {
+        std::cout << "One more open (w/o mode) ... \n";
+        return ldpaio::PosixPassthrough::passthrough_open (pathname, flags);
+    }
 }
 
