@@ -83,4 +83,18 @@ extern "C" int openat (int dirfd, const char* pathname, int flags, ...);
  */
 int close (int fd);
 
+/**
+ * fsync:
+ * @param fd
+ * @return
+ */
+int fsync (int fd);
+
+/**
+ * fdatasync:
+ * @param fd
+ * @return
+ */
+int fdatasync (int fd);
+
 #endif // LDPAIO_POSIX_FILE_SYSTEM_H

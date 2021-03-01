@@ -79,5 +79,19 @@ int PosixPassthrough::passthrough_close (int fd)
     return ((real_close_t)dlsym (RTLD_NEXT, "close")) (fd);
 }
 
+// passthrough_fsync call. (...)
+int PosixPassthrough::passthrough_fsync (int fd)
+{
+    std::cout << "One mode fsync ...\n";
+    return ((real_fsync_t)dlsym (RTLD_NEXT, "fsync")) (fd);
+}
+
+// passthrough_fdatasync call. (...)
+int PosixPassthrough::passthrough_fdatasync (int fd)
+{
+    std::cout << "One mode fdatasync ...\n";
+    return ((real_fdatasync_t)dlsym (RTLD_NEXT, "fdatasync")) (fd);
+}
+
 
 } // namespace ldpaio

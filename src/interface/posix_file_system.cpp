@@ -72,3 +72,15 @@ int close (int fd)
 {
     return ldpaio::PosixPassthrough::passthrough_close (fd);
 }
+
+// fsync call. (...)
+int fsync (int fd)
+{
+    return ldpaio::PosixPassthrough::passthrough_fsync (fd);
+}
+
+// fdatasync call. (...)
+int fdatasync (int fd)
+{
+    return ldpaio::PosixPassthrough::passthrough_fdatasync (fd);
+}
