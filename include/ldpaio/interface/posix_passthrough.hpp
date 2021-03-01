@@ -30,6 +30,8 @@ typedef int (*real_openat_simple_t) (int, const char*, int);
 typedef int (*real_close_t) (int);
 typedef int (*real_fsync_t) (int);
 typedef int (*real_fdatasync_t) (int);
+typedef int (*real_truncate_t) (const char*, off_t);
+typedef int (*real_ftruncate_t) (int, off_t);
 
 class PosixPassthrough {
 
@@ -140,6 +142,24 @@ public:
      * @return
      */
     static int passthrough_fdatasync (int fd);
+
+    /**
+     * passthrough_truncate:
+     * @param pathname
+     * @param length
+     * @return
+     */
+    static int passthrough_truncate (const char* pathname, off_t length);
+
+    /**
+     * passthrough_ftruncate:
+     * @param fd
+     * @param length
+     * @return
+     */
+    static int passthrough_ftruncate (int fd, off_t length);
+
+
 
 };
 } // namespace ldpaio

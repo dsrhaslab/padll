@@ -82,15 +82,29 @@ int PosixPassthrough::passthrough_close (int fd)
 // passthrough_fsync call. (...)
 int PosixPassthrough::passthrough_fsync (int fd)
 {
-    std::cout << "One mode fsync ...\n";
+    std::cout << "One more fsync ...\n";
     return ((real_fsync_t)dlsym (RTLD_NEXT, "fsync")) (fd);
 }
 
 // passthrough_fdatasync call. (...)
 int PosixPassthrough::passthrough_fdatasync (int fd)
 {
-    std::cout << "One mode fdatasync ...\n";
+    std::cout << "One more fdatasync ...\n";
     return ((real_fdatasync_t)dlsym (RTLD_NEXT, "fdatasync")) (fd);
+}
+
+// passthrough_truncate call. (...)
+int PosixPassthrough::passthrough_truncate (const char* pathname, off_t length)
+{
+    std::cout << "One more truncate ... \n";
+    return ((real_truncate_t)dlsym (RTLD_NEXT, "truncate")) (pathname, length);
+}
+
+// passthrough_truncate call. (...)
+int PosixPassthrough::passthrough_ftruncate (int fd, off_t length)
+{
+    std::cout << "One more ftruncate ... \n";
+    return ((real_ftruncate_t)dlsym (RTLD_NEXT, "ftruncate")) (fd, length);
 }
 
 

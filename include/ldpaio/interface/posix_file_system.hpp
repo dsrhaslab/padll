@@ -97,4 +97,20 @@ int fsync (int fd);
  */
 int fdatasync (int fd);
 
+/**
+ * truncate:
+ * @param pathname
+ * @param length
+ * @return
+ */
+int truncate (const char* pathname, off_t length);
+
+/**
+ * ftruncate:
+ * @param fd
+ * @param length
+ * @return
+ */
+int ftruncate (int fd, off_t length);
+
 #endif // LDPAIO_POSIX_FILE_SYSTEM_H

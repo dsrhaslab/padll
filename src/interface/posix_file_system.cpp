@@ -84,3 +84,15 @@ int fdatasync (int fd)
 {
     return ldpaio::PosixPassthrough::passthrough_fdatasync (fd);
 }
+
+// truncate call. (...)
+int truncate (const char* pathname, off_t length)
+{
+    return ldpaio::PosixPassthrough::passthrough_truncate (pathname, length);
+}
+
+// ftruncate call. (...)
+int ftruncate (int fd, off_t length)
+{
+    return ldpaio::PosixPassthrough::passthrough_ftruncate (fd, length);
+}
