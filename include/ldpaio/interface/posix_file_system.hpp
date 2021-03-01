@@ -113,4 +113,20 @@ int truncate (const char* pathname, off_t length);
  */
 int ftruncate (int fd, off_t length);
 
+/**
+ * link:
+ * @param old_pathname
+ * @param new_pathname
+ * @return
+ */
+int link (const char* old_pathname, const char* new_pathname);
+
+/**
+ * unlink:
+ * @param pathname
+ * @return
+ */
+int unlink (const char* pathname);
+
+
 #endif // LDPAIO_POSIX_FILE_SYSTEM_H

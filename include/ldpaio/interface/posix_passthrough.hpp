@@ -32,6 +32,8 @@ typedef int (*real_fsync_t) (int);
 typedef int (*real_fdatasync_t) (int);
 typedef int (*real_truncate_t) (const char*, off_t);
 typedef int (*real_ftruncate_t) (int, off_t);
+typedef int (*real_link_t) (const char*, const char*);
+typedef int (*real_unlink_t) (const char*);
 
 class PosixPassthrough {
 
@@ -159,6 +161,20 @@ public:
      */
     static int passthrough_ftruncate (int fd, off_t length);
 
+    /**
+     * passthrough_link:
+     * @param old_pathname
+     * @param new_pathname
+     * @return
+     */
+    static int passthrough_link (const char* old_pathname, const char* new_pathname);
+
+    /**
+     * passthrough_unlink:
+     * @param old_pathname
+     * @return
+     */
+    static int passthrough_unlink (const char* old_pathname);
 
 
 };

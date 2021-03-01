@@ -96,3 +96,14 @@ int ftruncate (int fd, off_t length)
 {
     return ldpaio::PosixPassthrough::passthrough_ftruncate (fd, length);
 }
+
+int link (const char* old_pathname, const char* new_pathname)
+{
+    return ldpaio::PosixPassthrough::passthrough_link (old_pathname, new_pathname);
+}
+
+int unlink (const char* pathname)
+{
+    return ldpaio::PosixPassthrough::passthrough_unlink (pathname);
+}
+

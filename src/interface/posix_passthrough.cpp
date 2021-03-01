@@ -107,5 +107,17 @@ int PosixPassthrough::passthrough_ftruncate (int fd, off_t length)
     return ((real_ftruncate_t)dlsym (RTLD_NEXT, "ftruncate")) (fd, length);
 }
 
+int PosixPassthrough::passthrough_link (const char* old_pathname, const char* new_pathname)
+{
+    std::cout << "One more link ... \n";
+    return ((real_link_t)dlsym (RTLD_NEXT, "link")) (old_pathname, new_pathname);
+}
+
+int PosixPassthrough::passthrough_unlink (const char* pathname)
+{
+    std::cout << "One more unlink ... \n";
+    return ((real_unlink_t)dlsym (RTLD_NEXT, "unlink")) (pathname);
+}
+
 
 } // namespace ldpaio
