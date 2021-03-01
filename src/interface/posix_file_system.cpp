@@ -196,3 +196,15 @@ int fstat (int fd, struct stat* statbuf)
 {
     return ldpaio::PosixPassthrough::passthrough_fstat (fd, statbuf);
 }
+
+// fread call. (...)
+size_t fread (void* ptr, size_t size, size_t nmemb, FILE* stream)
+{
+    return ldpaio::PosixPassthrough::passthrough_fread (ptr, size, nmemb, stream);
+}
+
+// fwrite call. (...)
+size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stream)
+{
+    return ldpaio::PosixPassthrough::passthrough_fwrite (ptr, size, nmemb, stream);
+}

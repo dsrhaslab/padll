@@ -19,10 +19,9 @@
 
 namespace ldpaio {
 
-typedef ssize_t (*real_read_t) (int, void*, size_t);
-typedef ssize_t (*real_write_t) (int, const void*, size_t);
-typedef ssize_t (*real_pread_t) (int, void*, size_t, off_t);
-typedef ssize_t (*real_pwrite_t) (int, const void*, size_t, off_t);
+/**
+ * Metadata calls.
+ */
 typedef int (*real_open_t) (const char*, int, ...);
 typedef int (*real_open_simple_t) (const char*, int);
 typedef int (*real_creat_t) (const char*, mode_t);
@@ -35,20 +34,38 @@ typedef int (*real_fsync_t) (int);
 typedef int (*real_fdatasync_t) (int);
 typedef int (*real_truncate_t) (const char*, off_t);
 typedef int (*real_ftruncate_t) (int, off_t);
+typedef int (*real_stat_t) (const char*, struct stat*);
+typedef int (*real_fstat_t) (int fd, struct stat*);
 typedef int (*real_link_t) (const char*, const char*);
 typedef int (*real_unlink_t) (const char*);
 typedef int (*real_rename_t) (const char*, const char*);
+
+/**
+ * Data calls.
+ */
+typedef ssize_t (*real_read_t) (int, void*, size_t);
+typedef ssize_t (*real_write_t) (int, const void*, size_t);
+typedef ssize_t (*real_pread_t) (int, void*, size_t, off_t);
+typedef ssize_t (*real_pwrite_t) (int, const void*, size_t, off_t);
+typedef size_t (*real_fread_t) (void*, size_t, size_t, FILE*);
+typedef size_t (*real_fwrite_t) (const void*, size_t, size_t, FILE*);
+
+/**
+ * Directory calls
+ */
 typedef int (*real_mkdir_t) (const char*);
 typedef struct dirent* (*real_readdir_t) (DIR*);
 typedef DIR* (*real_opendir_t) (const char*);
 typedef int (*real_closedir_t) (DIR*);
 typedef int (*real_rmdir_t) (const char*);
+
+/**
+ * Extended attributes calls.
+ */
 typedef ssize_t (*real_getxattr_t) (const char*, const char*, void*, size_t);
 typedef ssize_t (*real_fgetxattr_t) (int, const char*, void*, size_t);
 typedef int (*real_setxattr_t) (const char*, const char*, const void*, size_t, int);
 typedef int (*real_fsetxattr_t) (int, const char*, const void*, size_t, int);
-typedef int (*real_stat_t) (const char*, struct stat*);
-typedef int (*real_fstat_t) (int fd, struct stat*);
 
 class PosixPassthrough {
 
@@ -335,6 +352,27 @@ public:
      */
     static int passthrough_fstat (int fd, struct stat* statbuf);
 
+    /**
+     * passthrough_fread:
+     *  https://man7.org/linux/man-pages/man3/fread.3.html
+     * @param ptr
+     * @param size
+     * @param nmemb
+     * @param stream
+     * @return
+     */
+    static size_t passthrough_fread (void* ptr, size_t size, size_t nmemb, FILE* stream);
+
+    /**
+     * passthrough_fwrite:
+     *  https://man7.org/linux/man-pages/man3/fwrite.3.html
+     * @param ptr
+     * @param size
+     * @param nmemb
+     * @param stream
+     * @return
+     */
+    static size_t passthrough_fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stream);
 
 };
 } // namespace ldpaio
