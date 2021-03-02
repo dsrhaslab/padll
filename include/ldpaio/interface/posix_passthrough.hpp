@@ -70,15 +70,17 @@ typedef int (*real_fsetxattr_t) (int, const char*, const void*, size_t, int);
 class PosixPassthrough {
 
 public:
-    int m_counter { 0 };
-    std::mutex m_lock;
+    /**
+     * PosixPassthrough default constructor.
+     */
+    PosixPassthrough ();
 
-    __attribute__((constructor)) void init_method (void)
-    {
-        std::cout << "First time: " << this->m_counter << "\n";
-        this->m_counter = 10;
-        std::cout << "Second time: " << this->m_counter << "\n";
-    }
+    /**
+     * PosixPassthrough default destructor.
+     */
+    ~PosixPassthrough();
+
+    std::string to_string ();
 
     /**
      * passthrough_read:
@@ -87,7 +89,7 @@ public:
      * @param counter
      * @return
      */
-    static ssize_t passthrough_read (int fd, void* buf, ssize_t counter);
+    ssize_t passthrough_read (int fd, void* buf, ssize_t counter);
 
     /**
      * passthrough_write:
@@ -96,7 +98,7 @@ public:
      * @param counter
      * @return
      */
-    static ssize_t passthrough_write (int fd, const void* buf, ssize_t counter);
+    ssize_t passthrough_write (int fd, const void* buf, ssize_t counter);
 
     /**
      * passthrough_pread:
@@ -106,7 +108,7 @@ public:
      * @param offset
      * @return
      */
-    static ssize_t passthrough_pread (int fd, void* buf, ssize_t counter, off_t offset);
+    ssize_t passthrough_pread (int fd, void* buf, ssize_t counter, off_t offset);
 
     /**
      * passthrough_pwrite:
@@ -116,7 +118,7 @@ public:
      * @param offset
      * @return
      */
-    static ssize_t passthrough_pwrite (int fd, const void* buf, ssize_t counter, off_t offset);
+    ssize_t passthrough_pwrite (int fd, const void* buf, ssize_t counter, off_t offset);
 
     /**
      * passthrough_open:
@@ -128,7 +130,7 @@ public:
      * @param mode
      * @return
      */
-    static int passthrough_open (const char* path, int flags, mode_t mode);
+    int passthrough_open (const char* path, int flags, mode_t mode);
 
     /**
      * passthrough_open:
@@ -136,7 +138,7 @@ public:
      * @param flags
      * @return
      */
-    static int passthrough_open (const char* path, int flags);
+    int passthrough_open (const char* path, int flags);
 
     /**
      * passthrough_creat:
@@ -144,7 +146,7 @@ public:
      * @param mode
      * @return
      */
-    static int passthrough_creat (const char* path, mode_t mode);
+    int passthrough_creat (const char* path, mode_t mode);
 
     /**
      * passthrough_openat:
@@ -154,7 +156,7 @@ public:
      * @param mode
      * @return
      */
-    static int passthrough_openat (int dirfd, const char* path, int flags, mode_t mode);
+    int passthrough_openat (int dirfd, const char* path, int flags, mode_t mode);
 
     /**
      * passthrough_openat:
@@ -163,7 +165,7 @@ public:
      * @param flags
      * @return
      */
-    static int passthrough_openat (int dirfd, const char* path, int flags);
+    int passthrough_openat (int dirfd, const char* path, int flags);
 
     /**
      * passthrough_open64:
@@ -173,7 +175,7 @@ public:
      * @param mode
      * @return
      */
-    static int passthrough_open64 (const char* path, int flags, mode_t mode);
+    int passthrough_open64 (const char* path, int flags, mode_t mode);
 
     /**
      * passthrough_open64:
@@ -182,28 +184,28 @@ public:
      * @param flags
      * @return
      */
-    static int passthrough_open64 (const char* path, int flags);
+    int passthrough_open64 (const char* path, int flags);
 
     /**
      * passthrough_close:
      * @param fd
      * @return
      */
-    static int passthrough_close (int fd);
+    int passthrough_close (int fd);
 
     /**
      * passthrough_fsync:
      * @param fd
      * @return
      */
-    static int passthrough_fsync (int fd);
+    int passthrough_fsync (int fd);
 
     /**
      * passthrough_fdatasync:
      * @param fd
      * @return
      */
-    static int passthrough_fdatasync (int fd);
+    int passthrough_fdatasync (int fd);
 
     /**
      * passthrough_truncate:
@@ -211,7 +213,7 @@ public:
      * @param length
      * @return
      */
-    static int passthrough_truncate (const char* path, off_t length);
+    int passthrough_truncate (const char* path, off_t length);
 
     /**
      * passthrough_ftruncate:
@@ -219,7 +221,7 @@ public:
      * @param length
      * @return
      */
-    static int passthrough_ftruncate (int fd, off_t length);
+    int passthrough_ftruncate (int fd, off_t length);
 
     /**
      * passthrough_link:
@@ -227,14 +229,14 @@ public:
      * @param new_path
      * @return
      */
-    static int passthrough_link (const char* old_path, const char* new_path);
+    int passthrough_link (const char* old_path, const char* new_path);
 
     /**
      * passthrough_unlink:
      * @param old_path
      * @return
      */
-    static int passthrough_unlink (const char* old_path);
+    int passthrough_unlink (const char* old_path);
 
     /**
      * passthrough_rename:
@@ -242,14 +244,14 @@ public:
      * @param new_path
      * @return
      */
-    static int passthrough_rename (const char* old_path, const char* new_path);
+    int passthrough_rename (const char* old_path, const char* new_path);
 
     /**
      * mkdir:
      * @param path
      * @return
      */
-    static int passthrough_mkdir (const char* path);
+    int passthrough_mkdir (const char* path);
 
     /**
      * readdir:
@@ -257,7 +259,7 @@ public:
      * @param dirp
      * @return
      */
-    static struct dirent* passthrough_readdir (DIR* dirp);
+    struct dirent* passthrough_readdir (DIR* dirp);
 
     /**
      * opendir:
@@ -265,7 +267,7 @@ public:
      * @param path
      * @return
      */
-    static DIR* passthrough_opendir (const char* path);
+    DIR* passthrough_opendir (const char* path);
 
     /**
      * closedir:
@@ -273,7 +275,7 @@ public:
      * @param dirp
      * @return
      */
-    static int passthrough_closedir (DIR* dirp);
+    int passthrough_closedir (DIR* dirp);
 
     /**
      * rmdir:
@@ -281,7 +283,7 @@ public:
      * @param path
      * @return
      */
-    static int passthrough_rmdir (const char* path);
+    int passthrough_rmdir (const char* path);
 
     /**
      * passthrough_getxattr:
@@ -292,10 +294,7 @@ public:
      * @param size
      * @return
      */
-    static ssize_t passthrough_getxattr (const char* path,
-        const char* name,
-        void* value,
-        size_t size);
+    ssize_t passthrough_getxattr (const char* path, const char* name, void* value, size_t size);
 
     /**
      * passthrough_fgetxattr:
@@ -306,10 +305,7 @@ public:
      * @param size
      * @return
      */
-    static ssize_t passthrough_fgetxattr (int fd,
-        const char* name,
-        void* value,
-        size_t size);
+    ssize_t passthrough_fgetxattr (int fd, const char* name, void* value, size_t size);
 
     /**
      * passthrough_setxattr:
@@ -321,7 +317,7 @@ public:
      * @param flags
      * @return
      */
-    static int passthrough_setxattr (const char* path,
+    int passthrough_setxattr (const char* path,
         const char* name,
         const void* value,
         size_t size,
@@ -337,11 +333,7 @@ public:
      * @param flags
      * @return
      */
-    static int passthrough_fsetxattr (int fd,
-        const char* name,
-        const void* value,
-        size_t size,
-        int flags);
+    int passthrough_fsetxattr (int fd, const char* name, const void* value, size_t size, int flags);
 
     /**
      * passthrough_stat:
@@ -350,7 +342,7 @@ public:
      * @param statbuf
      * @return
      */
-    static int passthrough_stat (const char* path, struct stat* statbuf);
+    int passthrough_stat (const char* path, struct stat* statbuf);
 
     /**
      * passthrough_fstat:
@@ -359,7 +351,7 @@ public:
      * @param statbuf
      * @return
      */
-    static int passthrough_fstat (int fd, struct stat* statbuf);
+    int passthrough_fstat (int fd, struct stat* statbuf);
 
     /**
      * passthrough_fread:
@@ -370,7 +362,7 @@ public:
      * @param stream
      * @return
      */
-    static size_t passthrough_fread (void* ptr, size_t size, size_t nmemb, FILE* stream);
+    size_t passthrough_fread (void* ptr, size_t size, size_t nmemb, FILE* stream);
 
 };
 } // namespace ldpaio

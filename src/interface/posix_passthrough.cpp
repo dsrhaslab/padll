@@ -7,6 +7,19 @@
 
 namespace ldpaio {
 
+PosixPassthrough::PosixPassthrough () {
+    std::cout << "posix passthrough default constructor\n";
+}
+
+PosixPassthrough::~PosixPassthrough () {
+    std::cout << "posix passthrough default destructor\n";
+}
+
+std::string PosixPassthrough::to_string ()
+{
+    return "Hello world from PosixPassthrough";
+}
+
 // passthrough_read call.
 ssize_t PosixPassthrough::passthrough_read (int fd, void* buf, ssize_t counter)
 {

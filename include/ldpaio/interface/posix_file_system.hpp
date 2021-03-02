@@ -10,6 +10,33 @@
 #include <cstring>
 #include <ldpaio/interface/posix_passthrough.hpp>
 
+ldpaio::PosixPassthrough m_posix_passthrough {};
+
+/**
+ * init_method: constructor of the PosixFileSystem.
+ * This method is executed before the program executes its main (). Under shared objects, this
+ * occurs at load time.
+ */
+static __attribute__((constructor))
+void init_method ()
+{
+    std::cout << "PosixFileSystem constructor\n";
+    std::string hello = m_posix_passthrough.to_string();
+    std::cout << "-> " << hello << "\n";
+}
+
+/**
+ * destroy_method: destructor of the PosixFileSystem.
+ * This method will execute once the main process (main ()) has returned or exit() is called.
+ */
+static __attribute__((destructor))
+void destroy_method ()
+{
+    std::cout << "PosixFileSystem destructor\n";
+    std::string hello = m_posix_passthrough.to_string();
+    std::cout << "-> " << hello << "\n";
+}
+
 /**
  * read:
  * @param fd
