@@ -9,6 +9,7 @@
 #include <cstdarg>
 #include <cstring>
 #include <ldpaio/interface/posix_passthrough.hpp>
+#include <thread>
 
 ldpaio::PosixPassthrough m_posix_passthrough {};
 
@@ -16,13 +17,17 @@ ldpaio::PosixPassthrough m_posix_passthrough {};
  * init_method: constructor of the PosixFileSystem.
  * This method is executed before the program executes its main (). Under shared objects, this
  * occurs at load time.
+ * The method needs to use printf instead of std::cout due to a static initialization order problem.
+ * (https://stackoverflow.com/questions/16746166/using-cout-in-constructor-gives-segmentation-fault)
  */
 static __attribute__((constructor))
 void init_method ()
 {
-    std::cout << "PosixFileSystem constructor\n";
+    std::printf ("PosixFileSystem constructor\n");
+    std::this_thread::sleep_for (std::chrono::seconds(1));
+
     std::string hello = m_posix_passthrough.to_string();
-    std::cout << "-> " << hello << "\n";
+    std::printf ("-> %s\n", hello.data());
 }
 
 /**
@@ -32,9 +37,9 @@ void init_method ()
 static __attribute__((destructor))
 void destroy_method ()
 {
-    std::cout << "PosixFileSystem destructor\n";
+    std::printf ("PosixFileSystem destructor\n");
     std::string hello = m_posix_passthrough.to_string();
-    std::cout << "-> " << hello << "\n";
+    std::printf ("-> %s\n", hello.data());
 }
 
 /**
