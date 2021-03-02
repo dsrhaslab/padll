@@ -50,7 +50,7 @@ target_link_libraries(ldpaio Threads::Threads)
 target_sources(
     ldpaio
     PUBLIC
-#    ${PROJECT_SOURCE_DIR}/include/ldpaio/interface/posix_file_system.hpp
+    ${PROJECT_SOURCE_DIR}/include/ldpaio/interface/posix_file_system.hpp
     ${PROJECT_SOURCE_DIR}/include/ldpaio/interface/posix_passthrough.hpp
 )
 

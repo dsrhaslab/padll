@@ -48,6 +48,7 @@ typedef ssize_t (*real_write_t) (int, const void*, size_t);
 typedef ssize_t (*real_pread_t) (int, void*, size_t, off_t);
 typedef ssize_t (*real_pwrite_t) (int, const void*, size_t, off_t);
 typedef size_t (*real_fread_t) (void*, size_t, size_t, FILE*);
+// removed fwrite (segfault) ... need to add later
 
 /**
  * Directory calls
@@ -69,6 +70,15 @@ typedef int (*real_fsetxattr_t) (int, const char*, const void*, size_t, int);
 class PosixPassthrough {
 
 public:
+    int m_counter { 0 };
+    std::mutex m_lock;
+
+    __attribute__((constructor)) void init_method (void)
+    {
+        std::cout << "First time: " << this->m_counter << "\n";
+        this->m_counter = 10;
+        std::cout << "Second time: " << this->m_counter << "\n";
+    }
 
     /**
      * passthrough_read:
