@@ -11,7 +11,8 @@ Tutorial to install and test ldpaio.
 ```shell
 $ cd ldpaio; mkdir build; cd build;
 $ cmake -DCMAKE_INSTALL_PREFIX:PATH=. ..
-$ make install -j  
+$ make install -j
+$ export PATH_LDPAIO=$PWD
 ```
 
 2. <b>Setup microbenchmark</b>
@@ -24,7 +25,7 @@ $ cd ..
 3. <b>Run microbenchmark</b>
 ```shell
 $ cd ldpaio
-$ LD_PRELOAD=build/libldpaio.so ./tests/libc_calls_test
+$ LD_PRELOAD=$PATH_LDPAIO/libldpaio.so ./tests/libc_calls_test
 ```
 
 ## Features
