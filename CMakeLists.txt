@@ -53,6 +53,8 @@ target_sources(
     ${PROJECT_SOURCE_DIR}/include/ldpaio/interface/posix_file_system.hpp
     ${PROJECT_SOURCE_DIR}/include/ldpaio/interface/posix_passthrough.hpp
     ${PROJECT_SOURCE_DIR}/include/ldpaio/statistics/statistic_entry.hpp
+    ${PROJECT_SOURCE_DIR}/include/ldpaio/statistics/statistics.hpp
+    ${PROJECT_SOURCE_DIR}/include/ldpaio/utils/operation_utils.hpp
 )
 
 target_sources(
@@ -61,6 +63,7 @@ target_sources(
         src/interface/posix_file_system.cpp
         src/interface/posix_passthrough.cpp
         src/statistics/statistic_entry.cpp
+        src/statistics/statistics.cpp
 )
 
 # ---------------------------------------------------------------------------- #

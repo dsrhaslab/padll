@@ -1,7 +1,7 @@
 /**
-*   Written by Ricardo Macedo.
-*   Copyright (c) 2021 INESC TEC.
-**/
+ *   Written by Ricardo Macedo.
+ *   Copyright (c) 2021 INESC TEC.
+ **/
 
 #include <ldpaio/statistics/statistic_entry.hpp>
 #include <utility>
@@ -12,8 +12,13 @@ namespace ldpaio {
 StatisticEntry::StatisticEntry () = default;
 
 // StatisticEntry parameterized constructor.
-StatisticEntry::StatisticEntry (std::string name) :
-    m_entry_name { std::move (name) }
+StatisticEntry::StatisticEntry (std::string name) : m_entry_name { std::move (name) }
+{ }
+
+StatisticEntry::StatisticEntry (const StatisticEntry& entry) :
+    m_entry_name { entry.m_entry_name },
+    m_operation_counter { entry.m_operation_counter },
+    m_byte_counter { entry.m_byte_counter }
 {}
 
 // StatisticEntry default destructor.
@@ -63,7 +68,7 @@ std::string StatisticEntry::to_string ()
     stream << this->m_operation_counter << ", ";
     stream << this->m_byte_counter << "}";
 
-    return stream.str();
+    return stream.str ();
 }
 
-}
+} // namespace ldpaio
