@@ -9,13 +9,13 @@
 #define __USE_GNU
 #define _GNU_SOURCE
 
+#include <dirent.h>
 #include <dlfcn.h>
 #include <fcntl.h>
+#include <iostream>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <iostream>
-#include <dirent.h>
 
 namespace ldpaio {
 
@@ -78,7 +78,7 @@ public:
     /**
      * PosixPassthrough default destructor.
      */
-    ~PosixPassthrough();
+    ~PosixPassthrough ();
 
     std::string to_string ();
 
@@ -363,7 +363,6 @@ public:
      * @return
      */
     size_t passthrough_fread (void* ptr, size_t size, size_t nmemb, FILE* stream);
-
 };
 } // namespace ldpaio
 

@@ -7,11 +7,13 @@
 
 namespace ldpaio {
 
-PosixPassthrough::PosixPassthrough () {
+PosixPassthrough::PosixPassthrough ()
+{
     std::cout << "posix passthrough default constructor\n";
 }
 
-PosixPassthrough::~PosixPassthrough () {
+PosixPassthrough::~PosixPassthrough ()
+{
     std::cout << "posix passthrough default destructor\n";
 }
 
@@ -42,10 +44,8 @@ ssize_t PosixPassthrough::passthrough_pread (int fd, void* buf, ssize_t counter,
 }
 
 // passthrough_pwrite call.
-ssize_t PosixPassthrough::passthrough_pwrite (int fd,
-    const void* buf,
-    ssize_t counter,
-    off_t offset)
+ssize_t
+PosixPassthrough::passthrough_pwrite (int fd, const void* buf, ssize_t counter, off_t offset)
 {
     std::cout << "One more pwrite ...\n";
     return ((real_pwrite_t)dlsym (RTLD_NEXT, "pwrite")) (fd, buf, counter, offset);
@@ -66,7 +66,8 @@ int PosixPassthrough::passthrough_open (const char* path, int flags)
 }
 
 // passthrough_creat call.
-int PosixPassthrough::passthrough_creat (const char* path, mode_t mode) {
+int PosixPassthrough::passthrough_creat (const char* path, mode_t mode)
+{
     std::cout << "One more creat ... \n";
     return ((real_creat_t)dlsym (RTLD_NEXT, "creat")) (path, mode);
 }
@@ -201,10 +202,7 @@ ssize_t PosixPassthrough::passthrough_getxattr (const char* path,
 }
 
 // passthrough_fgetxattr call. (...)
-ssize_t PosixPassthrough::passthrough_fgetxattr (int fd,
-    const char* name,
-    void* value,
-    size_t size)
+ssize_t PosixPassthrough::passthrough_fgetxattr (int fd, const char* name, void* value, size_t size)
 {
     std::cout << "One more fgetxattr ... \n";
     return ((real_fgetxattr_t)dlsym (RTLD_NEXT, "fgetxattr")) (fd, name, value, size);

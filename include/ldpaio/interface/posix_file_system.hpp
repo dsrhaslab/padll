@@ -20,26 +20,24 @@ ldpaio::PosixPassthrough m_posix_passthrough {};
  * The method needs to use printf instead of std::cout due to a static initialization order problem.
  * (https://stackoverflow.com/questions/16746166/using-cout-in-constructor-gives-segmentation-fault)
  */
-static __attribute__((constructor))
-void init_method ()
+static __attribute__ ((constructor)) void init_method ()
 {
     std::printf ("PosixFileSystem constructor\n");
-    std::this_thread::sleep_for (std::chrono::seconds(1));
+    std::this_thread::sleep_for (std::chrono::seconds (1));
 
-    std::string hello = m_posix_passthrough.to_string();
-    std::printf ("-> %s\n", hello.data());
+    std::string hello = m_posix_passthrough.to_string ();
+    std::printf ("-> %s\n", hello.data ());
 }
 
 /**
  * destroy_method: destructor of the PosixFileSystem.
  * This method will execute once the main process (main ()) has returned or exit() is called.
  */
-static __attribute__((destructor))
-void destroy_method ()
+static __attribute__ ((destructor)) void destroy_method ()
 {
     std::printf ("PosixFileSystem destructor\n");
-    std::string hello = m_posix_passthrough.to_string();
-    std::printf ("-> %s\n", hello.data());
+    std::string hello = m_posix_passthrough.to_string ();
+    std::printf ("-> %s\n", hello.data ());
 }
 
 /**
@@ -279,6 +277,5 @@ int fstat (int fd, struct stat* statbuf);
  * @return
  */
 size_t fread (void* ptr, size_t size, size_t nmemb, FILE* stream);
-
 
 #endif // LDPAIO_POSIX_FILE_SYSTEM_H
