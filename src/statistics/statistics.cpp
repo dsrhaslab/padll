@@ -11,6 +11,7 @@ Statistics::Statistics () = default;
 
 Statistics::~Statistics () = default;
 
+// initialize call. (...)
 void Statistics::initialize (const OperationType& operation_type)
 {
     std::unique_lock<std::mutex> lock (this->m_stats_mutex);
@@ -18,13 +19,11 @@ void Statistics::initialize (const OperationType& operation_type)
     switch (operation_type) {
         case OperationType::metadata_calls: {
             // assign size of statistics container
-            this->m_stats_size = magic_enum::enum_count<Metadata> ();
+            this->m_stats_size = Metadata::_size();
             // retrieves all Metadata operations' names in order
-            constexpr auto& operation_names = magic_enum::enum_names<Metadata> ();
-
-            // initialize all statistics entries
-            for (auto element : operation_names) {
-                this->m_statistic_entries.emplace_back (element.data ());
+            for (Metadata elem : Metadata::_values()) {
+                std::cout << "-- " << elem._to_string () << "\n";
+                this->m_statistic_entries.emplace_back (elem._to_string ());
             }
 
             break;
@@ -32,13 +31,11 @@ void Statistics::initialize (const OperationType& operation_type)
 
         case OperationType::data_calls: {
             // assign size of statistics container
-            this->m_stats_size = magic_enum::enum_count<Data> ();
+            this->m_stats_size = Data::_size();
             // retrieves all Data operations' names in order
-            constexpr auto& operation_names = magic_enum::enum_names<Data> ();
-
-            // initialize all statistics entries
-            for (auto element : operation_names) {
-                this->m_statistic_entries.emplace_back (element.data ());
+            for (Data elem : Data::_values()) {
+                std::cout << "-- " << elem._to_string () << "\n";
+                this->m_statistic_entries.emplace_back (elem._to_string ());
             }
 
             break;
@@ -46,13 +43,11 @@ void Statistics::initialize (const OperationType& operation_type)
 
         case OperationType::directory_calls: {
             // assign size of statistics container
-            this->m_stats_size = magic_enum::enum_count<Directory> ();
+            this->m_stats_size = Directory::_size();
             // retrieves all Directory operations' names in order
-            constexpr auto& operation_names = magic_enum::enum_names<Directory> ();
-
-            // initialize all statistics entries
-            for (auto element : operation_names) {
-                this->m_statistic_entries.emplace_back (element.data ());
+            for (Directory elem : Directory::_values()) {
+                std::cout << "-- " << elem._to_string () << "\n";
+                this->m_statistic_entries.emplace_back (elem._to_string ());
             }
 
             break;
@@ -60,13 +55,11 @@ void Statistics::initialize (const OperationType& operation_type)
 
         case OperationType::ext_attr_calls: {
             // assign size of statistics container
-            this->m_stats_size = magic_enum::enum_count<ExtendedAttributes> ();
+            this->m_stats_size = ExtendedAttributes::_size();
             // retrieves all ExtendedAttributes operations' names in order
-            constexpr auto& operation_names = magic_enum::enum_names<ExtendedAttributes> ();
-
-            // initialize all statistics entries
-            for (auto element : operation_names) {
-                this->m_statistic_entries.emplace_back (element.data ());
+            for (ExtendedAttributes elem : ExtendedAttributes::_values()) {
+                std::cout << "-- " << elem._to_string () << "\n";
+                this->m_statistic_entries.emplace_back (elem._to_string ());
             }
 
             break;

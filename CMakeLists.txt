@@ -5,7 +5,7 @@ include(FetchContent)
 
 project(ldpaio VERSION 1.0.0 DESCRIPTION "ldpaio: ...")
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -53,6 +53,7 @@ target_sources(
     ${PROJECT_SOURCE_DIR}/include/ldpaio/statistics/statistic_entry.hpp
     ${PROJECT_SOURCE_DIR}/include/ldpaio/statistics/statistics.hpp
     ${PROJECT_SOURCE_DIR}/include/ldpaio/utils/operation_utils.hpp
+    ${PROJECT_SOURCE_DIR}/include/ldpaio/thrid_party/enum.h
 )
 
 target_sources(
@@ -81,15 +82,15 @@ target_link_libraries(ldpaio spdlog)
 # ---------------------------------------------------------------------------- #
 # magic_enum -- extended enum library
 
-FetchContent_Declare(magic_enum
-        URL https://github.com/Neargye/magic_enum/archive/v0.7.2.tar.gz
-        UPDATE_COMMAND ""
-        INSTALL_COMMAND ""
-        )
-
-FetchContent_MakeAvailable(magic_enum)
-
-target_link_libraries(ldpaio magic_enum)
+#FetchContent_Declare(magic_enum
+#        URL https://github.com/Neargye/magic_enum/archive/v0.7.2.tar.gz
+#        UPDATE_COMMAND ""
+#        INSTALL_COMMAND ""
+#        )
+#
+#FetchContent_MakeAvailable(magic_enum)
+#
+#target_link_libraries(ldpaio magic_enum)
 
 # ---------------------------------------------------------------------------- #
 # tests

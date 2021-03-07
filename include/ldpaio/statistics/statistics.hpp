@@ -9,7 +9,6 @@
 #include <iostream>
 #include <ldpaio/statistics/statistic_entry.hpp>
 #include <ldpaio/utils/operation_utils.hpp>
-#include <magic_enum.hpp>
 #include <vector>
 
 namespace ldpaio {

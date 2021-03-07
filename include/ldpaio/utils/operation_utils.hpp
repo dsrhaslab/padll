@@ -6,22 +6,25 @@
 #ifndef LDPAIO_OPERATION_UTILS_HPP
 #define LDPAIO_OPERATION_UTILS_HPP
 
+#include <ldpaio/thrid_party/enum.h>
+
 namespace ldpaio {
 
 /**
  * OperationType class.
  */
-enum class OperationType {
+BETTER_ENUM (OperationType, int,
     metadata_calls = 1,
     data_calls = 2,
     directory_calls = 3,
     ext_attr_calls = 4
-};
+);
 
 /**
  * Metadata Definitions.
  */
-enum class Metadata {
+BETTER_ENUM (Metadata, int,
+    no_op = 0,
     open = 1,
     open_simple = 2,
     creat = 3,
@@ -38,30 +41,36 @@ enum class Metadata {
     fstat = 14,
     link = 15,
     unlink = 16,
-    rename = 17,
-    no_op = 0
-};
+    rename = 17
+);
 
 /**
  * Data Definitions.
  */
-enum class Data { read = 1, write = 2, pread = 3, pwrite = 4, fread = 5, no_op = 0 };
+BETTER_ENUM (Data, int, no_op = 0, read = 1, write = 2, pread = 3, pwrite = 4, fread = 5 );
 
 /**
  * Directory Definitions.
  */
-enum class Directory { mkdir = 1, readdir = 2, opendir = 3, closedir = 4, rmdir = 6, no_op = 0 };
+BETTER_ENUM (Directory, int,
+    no_op = 0,
+    mkdir = 1,
+    readdir = 2,
+    opendir = 3,
+    closedir = 4,
+    rmdir = 6
+);
 
 /**
  * ExtendedAttributes Definitions.
  */
-enum class ExtendedAttributes {
+BETTER_ENUM (ExtendedAttributes, int,
+    no_op = 0,
     getxattr = 1,
     fgetxattr = 2,
     setxattr = 3,
-    fsetxattr = 4,
-    no_op = 0
-};
+    fsetxattr = 4
+);
 
 } // namespace ldpaio
 
