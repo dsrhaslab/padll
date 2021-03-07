@@ -1,7 +1,7 @@
 /**
-*   Written by Ricardo Macedo.
-*   Copyright (c) 2021 INESC TEC.
-**/
+ *   Written by Ricardo Macedo.
+ *   Copyright (c) 2021 INESC TEC.
+ **/
 
 #include <ldpaio/statistics/statistics.hpp>
 
@@ -9,36 +9,71 @@ namespace ldpaio {
 
 Statistics::Statistics () = default;
 
-Statistics::~Statistics() = default;
+Statistics::~Statistics () = default;
 
 void Statistics::initialize (const OperationType& operation_type)
 {
     std::unique_lock<std::mutex> lock (this->m_stats_mutex);
 
     switch (operation_type) {
-        case OperationType::metadata_calls:
-            this->m_stats_size = metadata_calls_size;
-            break;
+        case OperationType::metadata_calls: {
+            // assign size of statistics container
+            this->m_stats_size = magic_enum::enum_count<Metadata> ();
+            // retrieves all Metadata operations' names in order
+            constexpr auto& operation_names = magic_enum::enum_names<Metadata> ();
 
-        case OperationType::data_calls:
-            this->m_stats_size = data_calls_size;
-            break;
+            // initialize all statistics entries
+            for (auto element : operation_names) {
+                this->m_statistic_entries.emplace_back (element.data ());
+            }
 
-        case OperationType::directory_calls:
-            this->m_stats_size = directory_calls_size;
             break;
+        }
 
-        case OperationType::ext_attr_calls:
-            this->m_stats_size = ext_attr_calls_size;
+        case OperationType::data_calls: {
+            // assign size of statistics container
+            this->m_stats_size = magic_enum::enum_count<Data> ();
+            // retrieves all Data operations' names in order
+            constexpr auto& operation_names = magic_enum::enum_names<Data> ();
+
+            // initialize all statistics entries
+            for (auto element : operation_names) {
+                this->m_statistic_entries.emplace_back (element.data ());
+            }
+
             break;
+        }
+
+        case OperationType::directory_calls: {
+            // assign size of statistics container
+            this->m_stats_size = magic_enum::enum_count<Directory> ();
+            // retrieves all Directory operations' names in order
+            constexpr auto& operation_names = magic_enum::enum_names<Directory> ();
+
+            // initialize all statistics entries
+            for (auto element : operation_names) {
+                this->m_statistic_entries.emplace_back (element.data ());
+            }
+
+            break;
+        }
+
+        case OperationType::ext_attr_calls: {
+            // assign size of statistics container
+            this->m_stats_size = magic_enum::enum_count<ExtendedAttributes> ();
+            // retrieves all ExtendedAttributes operations' names in order
+            constexpr auto& operation_names = magic_enum::enum_names<ExtendedAttributes> ();
+
+            // initialize all statistics entries
+            for (auto element : operation_names) {
+                this->m_statistic_entries.emplace_back (element.data ());
+            }
+
+            break;
+        }
 
         default:
             break;
-    }
-
-    for (int i = 0; i < this->m_stats_size; i++) {
-        std::string operation_name { static_cast<char>(i) };
-        this->m_statistic_entries.emplace_back (operation_name);
     }
 }
 
@@ -54,4 +89,21 @@ void Statistics::update_statistic_entry (const int& operation_type,
     this->m_statistic_entries[position].increment_byte_counter (byte_value);
 }
 
+int Statistics::get_stats_size () const
+{
+    return this->m_stats_size;
 }
+
+std::string Statistics::to_string ()
+{
+    std::stringstream stream;
+    stream << "Statistics { \n";
+    for (auto& elem : this->m_statistic_entries) {
+        stream << elem.to_string () << ";";
+    }
+    stream << " }";
+
+    return stream.str ();
+}
+
+} // namespace ldpaio

@@ -4,7 +4,6 @@
  **/
 
 #include <ldpaio/statistics/statistic_entry.hpp>
-#include <utility>
 
 namespace ldpaio {
 
@@ -19,7 +18,7 @@ StatisticEntry::StatisticEntry (const StatisticEntry& entry) :
     m_entry_name { entry.m_entry_name },
     m_operation_counter { entry.m_operation_counter },
     m_byte_counter { entry.m_byte_counter }
-{}
+{ }
 
 // StatisticEntry default destructor.
 StatisticEntry::~StatisticEntry () = default;

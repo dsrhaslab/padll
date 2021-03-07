@@ -1,13 +1,16 @@
 /**
-*   Written by Ricardo Macedo.
-*   Copyright (c) 2021 INESC TEC.
-**/
+ *   Written by Ricardo Macedo.
+ *   Copyright (c) 2021 INESC TEC.
+ **/
 
 #ifndef LDPAIO_OPERATION_UTILS_HPP
 #define LDPAIO_OPERATION_UTILS_HPP
 
 namespace ldpaio {
 
+/**
+ * OperationType class.
+ */
 enum class OperationType {
     metadata_calls = 1,
     data_calls = 2,
@@ -15,12 +18,10 @@ enum class OperationType {
     ext_attr_calls = 4
 };
 
-// ------------------------------------------------------------------------------------
-
 /**
- * METADATA_CALLS Definitions.
+ * Metadata Definitions.
  */
-enum class METADATA {
+enum class Metadata {
     open = 1,
     open_simple = 2,
     creat = 3,
@@ -41,37 +42,20 @@ enum class METADATA {
     no_op = 0
 };
 
-const int metadata_calls_size = 18;
+/**
+ * Data Definitions.
+ */
+enum class Data { read = 1, write = 2, pread = 3, pwrite = 4, fread = 5, no_op = 0 };
 
-// ------------------------------------------------------------------------------------
+/**
+ * Directory Definitions.
+ */
+enum class Directory { mkdir = 1, readdir = 2, opendir = 3, closedir = 4, rmdir = 6, no_op = 0 };
 
-enum class DATA {
-    read = 1,
-    write = 2,
-    pread = 3,
-    pwrite = 4,
-    fread = 5,
-    no_op = 0
-};
-
-const int data_calls_size = 6;
-
-// ------------------------------------------------------------------------------------
-
-enum class DIRECTORY {
-    mkdir = 1,
-    readdir = 2,
-    opendir = 3,
-    closedir = 4,
-    rmdir = 6,
-    no_op = 0
-};
-
-const int directory_calls_size = 7;
-
-// ------------------------------------------------------------------------------------
-
-enum class EXT_ATTR {
+/**
+ * ExtendedAttributes Definitions.
+ */
+enum class ExtendedAttributes {
     getxattr = 1,
     fgetxattr = 2,
     setxattr = 3,
@@ -79,9 +63,6 @@ enum class EXT_ATTR {
     no_op = 0
 };
 
-const int ext_attr_calls_size = 5;
+} // namespace ldpaio
 
-}
-
-
-#endif //LDPAIO_OPERATION_UTILS_HPP
+#endif // LDPAIO_OPERATION_UTILS_HPP
