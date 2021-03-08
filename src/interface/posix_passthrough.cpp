@@ -148,8 +148,11 @@ int PosixPassthrough::passthrough_open (const char* path, int flags, mode_t mode
                 1,
                 0);
         } else {
-            this->m_metadata_stats
-                .update_statistic_entry (static_cast<int> (Metadata::open_variadic), 1, 0, 1);
+            this->m_metadata_stats.update_statistic_entry (
+                    static_cast<int> (Metadata::open_variadic),
+                    1,
+                    0,
+                    1);
         }
     }
 
@@ -224,8 +227,11 @@ int PosixPassthrough::passthrough_openat (int dirfd, const char* path, int flags
                 1,
                 0);
         } else {
-            this->m_metadata_stats
-                .update_statistic_entry (static_cast<int> (Metadata::openat_variadic), 1, 0, 1);
+            this->m_metadata_stats.update_statistic_entry (
+                    static_cast<int> (Metadata::openat_variadic),
+                    1,
+                    0,
+                    1);
         }
     }
 
@@ -276,8 +282,11 @@ int PosixPassthrough::passthrough_open64 (const char* path, int flags, mode_t mo
                 1,
                 0);
         } else {
-            this->m_metadata_stats
-                .update_statistic_entry (static_cast<int> (Metadata::open64_variadic), 1, 0, 1);
+            this->m_metadata_stats.update_statistic_entry (
+                    static_cast<int> (Metadata::open64_variadic),
+                    1,
+                    0,
+                    1);
         }
     }
 
@@ -606,9 +615,9 @@ int PosixPassthrough::passthrough_rename (const char* old_path, const char* new_
 {
     // logging message
     Logging::log_debug (
-        "passthrough-fstat (" + std::string (old_path) + ", " + std::string (new_path) + ")");
+        "passthrough-rename (" + std::string (old_path) + ", " + std::string (new_path) + ")");
 
-    // perform original POSIX fstat operation
+    // perform original POSIX rename operation
     int result = ((real_rename_t)dlsym (RTLD_NEXT, "rename")) (old_path, new_path);
 
     // update statistic entry
@@ -631,36 +640,133 @@ int PosixPassthrough::passthrough_rename (const char* old_path, const char* new_
 // passthrough_mkdir call. (...)
 int PosixPassthrough::passthrough_mkdir (const char* path)
 {
-    std::cout << "One more mkdir ... \n";
-    return ((real_mkdir_t)dlsym (RTLD_NEXT, "mkdir")) (path);
+    // logging message
+    Logging::log_debug ("passthrough-mkdir (" + std::string (path) +")");
+
+    // perform original POSIX mkdir operation
+    int result = ((real_mkdir_t)dlsym (RTLD_NEXT, "mkdir")) (path);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result == 0) {
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::mkdir),
+                                                           1,
+                                                           0);
+        } else {
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::mkdir),
+                                                           1,
+                                                           0,
+                                                           1);
+        }
+    }
+
+    return result;
 }
 
 // passthrough_readdir call. (...)
 struct dirent* PosixPassthrough::passthrough_readdir (DIR* dirp)
 {
-    std::cout << "One more readdir ... \n";
-    return ((real_readdir_t)dlsym (RTLD_NEXT, "readdir")) (dirp);
+    // logging message
+    Logging::log_debug ("passthrough-readdir");
+    struct dirent* entry;
+
+    // perform original POSIX readdir operation
+    entry = ((real_readdir_t)dlsym (RTLD_NEXT, "readdir")) (dirp);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (entry != nullptr) {
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::readdir),
+                                                      1,
+                                                      0);
+        } else {
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::readdir),
+                                                      1,
+                                                      0,
+                                                      1);
+        }
+    }
+
+    return entry;
 }
 
 // passthrough_opendir call. (...)
 DIR* PosixPassthrough::passthrough_opendir (const char* path)
 {
-    std::cout << "One more opendir ... \n";
-    return ((real_opendir_t)dlsym (RTLD_NEXT, "opendir")) (path);
+    // logging message
+    Logging::log_debug ("passthrough-opendir (" + std::string (path) + ")");
+    DIR* folder;
+
+    // perform original POSIX opendir operation
+    folder = ((real_opendir_t)dlsym (RTLD_NEXT, "opendir")) (path);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (folder != nullptr) {
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::opendir),
+                                                      1,
+                                                      0);
+        } else {
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::opendir),
+                                                      1,
+                                                      0,
+                                                      1);
+        }
+    }
+
+    return folder;
 }
 
 // passthrough_closedir call. (...)
 int PosixPassthrough::passthrough_closedir (DIR* dirp)
 {
-    std::cout << "One more closedir ... \n";
-    return ((real_closedir_t)dlsym (RTLD_NEXT, "closedir")) (dirp);
+    // logging message
+    Logging::log_debug ("passthrough-closedir");
+
+    // perform original POSIX closedir operation
+    int result = ((real_closedir_t)dlsym (RTLD_NEXT, "closedir")) (dirp);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result == 0) {
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::closedir),
+                                                      1,
+                                                      0);
+        } else {
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::closedir),
+                                                      1,
+                                                      0,
+                                                      1);
+        }
+    }
+
+    return result;
 }
 
 // passthrough_rmdir call. (...)
 int PosixPassthrough::passthrough_rmdir (const char* path)
 {
-    std::cout << "One more rmdir ... \n";
-    return ((real_rmdir_t)dlsym (RTLD_NEXT, "rmdir")) (path);
+    // logging message
+    Logging::log_debug ("passthrough-rmdir");
+
+    // perform original POSIX rmdir operation
+    int result = ((real_rmdir_t)dlsym (RTLD_NEXT, "rmdir")) (path);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result == 0) {
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::rmdir),
+                                                      1,
+                                                      0);
+        } else {
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::rmdir),
+                                                      1,
+                                                      0,
+                                                      1);
+        }
+    }
+
+    return result;
 }
 
 // passthrough_getxattr call. (...)
