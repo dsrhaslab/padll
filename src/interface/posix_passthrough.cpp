@@ -32,6 +32,25 @@ void PosixPassthrough::set_statistic_collection (bool value)
     this->m_collect.store (value);
 }
 
+// get_statistic_entry call.
+StatisticEntry PosixPassthrough::get_statistic_entry (const OperationType& operation_type,
+    const int& operation_entry)
+{
+    switch (operation_type) {
+        case OperationType::metadata_calls:
+            return this->m_metadata_stats.get_statistic_entry (operation_entry);
+
+        case OperationType::data_calls:
+            return this->m_data_stats.get_statistic_entry (operation_entry);
+
+        case OperationType::directory_calls:
+            return this->m_dir_stats.get_statistic_entry (operation_entry);
+
+        case OperationType::ext_attr_calls:
+            return this->m_ext_attr_stats.get_statistic_entry (operation_entry);
+    }
+}
+
 // to_string call. (...)
 std::string PosixPassthrough::to_string ()
 {

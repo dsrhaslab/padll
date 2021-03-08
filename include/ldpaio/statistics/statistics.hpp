@@ -56,6 +56,14 @@ public:
     void initialize (const OperationType& operation_type);
 
     /**
+     * get_statistic_entry: copy a given StatisticObject of the m_statistics_entries container.
+     * This method is thread-safe.
+     * @param operation Defines the operation entry to be retrieved.
+     * @return Returns a copy of the respective StatisticEntry object.
+     */
+    StatisticEntry get_statistic_entry (const int& operation);
+
+    /**
      * update_statistic_entry: update both byte and operation counters of a specific StatisticEntry
      * of the m_statistics_entries container.
      * @param operation_type Defines the operation entry to be registered.

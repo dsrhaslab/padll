@@ -84,6 +84,16 @@ std::string Statistics::get_stats_identifier () const
     return this->m_stats_identifier;
 }
 
+// get_statistic_entry call. (...)
+StatisticEntry Statistics::get_statistic_entry (const int& operation)
+{
+    std::unique_lock<std::mutex> unique_lock (this->m_stats_mutex);
+    // calculate the operation's position in the statistics container
+    int position = operation % this->m_stats_size;
+
+    return StatisticEntry { this->m_statistic_entries[position] };
+}
+
 // update_statistics_entry call. (...)
 void Statistics::update_statistic_entry (const int& operation_type,
     const uint64_t& operation_value,

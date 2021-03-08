@@ -99,6 +99,15 @@ public:
     ~PosixPassthrough ();
 
     /**
+     * get_statistic_entry:
+     * @param operation_type
+     * @param operation_entry
+     * @return
+     */
+    StatisticEntry get_statistic_entry (const OperationType& operation_type,
+        const int& operation_entry);
+
+    /**
      * set_statistic_collection:
      * @param value
      * @return

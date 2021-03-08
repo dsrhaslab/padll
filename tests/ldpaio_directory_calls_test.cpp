@@ -17,6 +17,16 @@ void test_readdir_call (const std::string& pathname)
     std::cout << "Test readdir call\n";
 }
 
+/**
+ * test_opendir_call:
+ *
+ * Validation: the StatisticsEntry 'opendir' of the Statistics' container reserved for
+ * directory-based calls (PosixPassthrough::m_m_dir_stats), should contain:
+ *  - {1, 0, 0} for valid paths (success);
+ *  - {1, 0, 1} for invalid paths (error).
+ * @param pathname
+ * @return
+ */
 int test_opendir_call (const char* pathname)
 {
     std::cout << "Test opendir call\n";
