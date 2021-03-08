@@ -148,11 +148,8 @@ int PosixPassthrough::passthrough_open (const char* path, int flags, mode_t mode
                 1,
                 0);
         } else {
-            this->m_metadata_stats.update_statistic_entry (
-                    static_cast<int> (Metadata::open_variadic),
-                    1,
-                    0,
-                    1);
+            this->m_metadata_stats
+                .update_statistic_entry (static_cast<int> (Metadata::open_variadic), 1, 0, 1);
         }
     }
 
@@ -227,11 +224,8 @@ int PosixPassthrough::passthrough_openat (int dirfd, const char* path, int flags
                 1,
                 0);
         } else {
-            this->m_metadata_stats.update_statistic_entry (
-                    static_cast<int> (Metadata::openat_variadic),
-                    1,
-                    0,
-                    1);
+            this->m_metadata_stats
+                .update_statistic_entry (static_cast<int> (Metadata::openat_variadic), 1, 0, 1);
         }
     }
 
@@ -282,11 +276,8 @@ int PosixPassthrough::passthrough_open64 (const char* path, int flags, mode_t mo
                 1,
                 0);
         } else {
-            this->m_metadata_stats.update_statistic_entry (
-                    static_cast<int> (Metadata::open64_variadic),
-                    1,
-                    0,
-                    1);
+            this->m_metadata_stats
+                .update_statistic_entry (static_cast<int> (Metadata::open64_variadic), 1, 0, 1);
         }
     }
 
@@ -641,7 +632,7 @@ int PosixPassthrough::passthrough_rename (const char* old_path, const char* new_
 int PosixPassthrough::passthrough_mkdir (const char* path)
 {
     // logging message
-    Logging::log_debug ("passthrough-mkdir (" + std::string (path) +")");
+    Logging::log_debug ("passthrough-mkdir (" + std::string (path) + ")");
 
     // perform original POSIX mkdir operation
     int result = ((real_mkdir_t)dlsym (RTLD_NEXT, "mkdir")) (path);
@@ -649,14 +640,9 @@ int PosixPassthrough::passthrough_mkdir (const char* path)
     // update statistic entry
     if (this->m_collect) {
         if (result == 0) {
-            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::mkdir),
-                                                           1,
-                                                           0);
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::mkdir), 1, 0);
         } else {
-            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::mkdir),
-                                                           1,
-                                                           0,
-                                                           1);
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::mkdir), 1, 0, 1);
         }
     }
 
@@ -676,14 +662,12 @@ struct dirent* PosixPassthrough::passthrough_readdir (DIR* dirp)
     // update statistic entry
     if (this->m_collect) {
         if (entry != nullptr) {
-            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::readdir),
-                                                      1,
-                                                      0);
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::readdir), 1, 0);
         } else {
             this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::readdir),
-                                                      1,
-                                                      0,
-                                                      1);
+                1,
+                0,
+                1);
         }
     }
 
@@ -703,14 +687,12 @@ DIR* PosixPassthrough::passthrough_opendir (const char* path)
     // update statistic entry
     if (this->m_collect) {
         if (folder != nullptr) {
-            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::opendir),
-                                                      1,
-                                                      0);
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::opendir), 1, 0);
         } else {
             this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::opendir),
-                                                      1,
-                                                      0,
-                                                      1);
+                1,
+                0,
+                1);
         }
     }
 
@@ -729,14 +711,12 @@ int PosixPassthrough::passthrough_closedir (DIR* dirp)
     // update statistic entry
     if (this->m_collect) {
         if (result == 0) {
-            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::closedir),
-                                                      1,
-                                                      0);
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::closedir), 1, 0);
         } else {
             this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::closedir),
-                                                      1,
-                                                      0,
-                                                      1);
+                1,
+                0,
+                1);
         }
     }
 
@@ -755,14 +735,9 @@ int PosixPassthrough::passthrough_rmdir (const char* path)
     // update statistic entry
     if (this->m_collect) {
         if (result == 0) {
-            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::rmdir),
-                                                      1,
-                                                      0);
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::rmdir), 1, 0);
         } else {
-            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::rmdir),
-                                                      1,
-                                                      0,
-                                                      1);
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::rmdir), 1, 0, 1);
         }
     }
 
@@ -775,15 +750,53 @@ ssize_t PosixPassthrough::passthrough_getxattr (const char* path,
     void* value,
     size_t size)
 {
-    std::cout << "One more getxattr ... \n";
-    return ((real_getxattr_t)dlsym (RTLD_NEXT, "getxattr")) (path, name, value, size);
+    // logging message
+    Logging::log_debug (
+        "passthrough-getxattr (" + std::string (path) + ", " + std::string (name) + ")");
+
+    // perform original POSIX getxattr operation
+    ssize_t result = ((real_getxattr_t)dlsym (RTLD_NEXT, "getxattr")) (path, name, value, size);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result != -1) {
+            this->m_ext_attr_stats.update_statistic_entry (
+                static_cast<int> (ExtendedAttributes::getxattr),
+                1,
+                0);
+        } else {
+            this->m_ext_attr_stats
+                .update_statistic_entry (static_cast<int> (ExtendedAttributes::getxattr), 1, 0, 1);
+        }
+    }
+
+    return result;
 }
 
 // passthrough_fgetxattr call. (...)
 ssize_t PosixPassthrough::passthrough_fgetxattr (int fd, const char* name, void* value, size_t size)
 {
-    std::cout << "One more fgetxattr ... \n";
-    return ((real_fgetxattr_t)dlsym (RTLD_NEXT, "fgetxattr")) (fd, name, value, size);
+    // logging message
+    Logging::log_debug (
+        "passthrough-fgetxattr (" + std::to_string (fd) + ", " + std::string (name) + ")");
+
+    // perform original POSIX getxattr operation
+    ssize_t result = ((real_fgetxattr_t)dlsym (RTLD_NEXT, "fgetxattr")) (fd, name, value, size);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result != -1) {
+            this->m_ext_attr_stats.update_statistic_entry (
+                static_cast<int> (ExtendedAttributes::fgetxattr),
+                1,
+                0);
+        } else {
+            this->m_ext_attr_stats
+                .update_statistic_entry (static_cast<int> (ExtendedAttributes::fgetxattr), 1, 0, 1);
+        }
+    }
+
+    return result;
 }
 
 // passthrough_setxattr call. (...)
@@ -793,8 +806,28 @@ int PosixPassthrough::passthrough_setxattr (const char* path,
     size_t size,
     int flags)
 {
-    std::cout << "One more setxattr ... \n";
-    return ((real_setxattr_t)dlsym (RTLD_NEXT, "setxattr")) (path, name, value, size, flags);
+    // logging message
+    Logging::log_debug (
+        "passthrough-setxattr (" + std::string (path) + ", " + std::string (name) + ")");
+
+    // perform original POSIX getxattr operation
+    ssize_t result
+        = ((real_setxattr_t)dlsym (RTLD_NEXT, "setxattr")) (path, name, value, size, flags);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result != -1) {
+            this->m_ext_attr_stats.update_statistic_entry (
+                static_cast<int> (ExtendedAttributes::setxattr),
+                1,
+                0);
+        } else {
+            this->m_ext_attr_stats
+                .update_statistic_entry (static_cast<int> (ExtendedAttributes::setxattr), 1, 0, 1);
+        }
+    }
+
+    return result;
 }
 
 // passthrough_fsetxattr call. (...)
@@ -804,8 +837,28 @@ int PosixPassthrough::passthrough_fsetxattr (int fd,
     size_t size,
     int flags)
 {
-    std::cout << "One more fsetxattr ... \n";
-    return ((real_fsetxattr_t)dlsym (RTLD_NEXT, "fsetxattr")) (fd, name, value, size, flags);
+    // logging message
+    Logging::log_debug (
+        "passthrough-fsetxattr (" + std::to_string (fd) + ", " + std::string (name) + ")");
+
+    // perform original POSIX getxattr operation
+    ssize_t result
+        = ((real_fsetxattr_t)dlsym (RTLD_NEXT, "fsetxattr")) (fd, name, value, size, flags);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result != -1) {
+            this->m_ext_attr_stats.update_statistic_entry (
+                static_cast<int> (ExtendedAttributes::fsetxattr),
+                1,
+                0);
+        } else {
+            this->m_ext_attr_stats
+                .update_statistic_entry (static_cast<int> (ExtendedAttributes::fsetxattr), 1, 0, 1);
+        }
+    }
+
+    return result;
 }
 
 // passthrough_fread call. (...)
