@@ -73,7 +73,7 @@ typedef int (*real_fsetxattr_t) (int, const char*, const void*, size_t, int);
 class PosixPassthrough {
 
 private:
-    std::atomic<bool> m_is_logging_enabled { option_default_logging };
+    std::atomic<bool> m_collect { option_default_statistic_collection };
     Statistics m_metadata_stats { "posix-passthrough-metadata", OperationType::metadata_calls };
     Statistics m_data_stats { "posix-passthrough-data", OperationType::data_calls };
     Statistics m_dir_stats { "posix-passthrough-directory", OperationType::directory_calls };
@@ -87,9 +87,9 @@ public:
 
     /**
      * PosixPassthrough parameterized constructor.
-     * @param logging Boolean that defines if logging is enabled or disabled.
+     * @param stat_collection Boolean that defines if statistic collection is enabled or disabled.
      */
-    explicit PosixPassthrough (bool logging);
+    explicit PosixPassthrough (bool stat_collection);
 
     /**
      * PosixPassthrough default destructor.
@@ -97,11 +97,11 @@ public:
     ~PosixPassthrough ();
 
     /**
-     * set_logging:
+     * set_statistic_collection:
      * @param value
      * @return
      */
-    void set_logging (bool value);
+    void set_statistic_collection (bool value);
 
     /**
      * to_string:

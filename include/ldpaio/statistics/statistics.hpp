@@ -67,6 +67,19 @@ public:
         const uint64_t& byte_value);
 
     /**
+     * update_statistic_entry: update both byte, operation, and error counters of a specific
+     * StatisticEntry of the m_statistics_entries container.
+     * @param operation_type Defines the operation entry to be registered.
+     * @param operation_value Defines the value to be incremented in the operation counter.
+     * @param byte_value Defines the value to be incremented in the bytes counter.
+     * @param error_value Defines the value to be incremented in the error counter.
+     */
+    void update_statistic_entry (const int& operation_type,
+        const uint64_t& operation_value,
+        const uint64_t& byte_value,
+        const uint64_t& error_value);
+
+    /**
      * get_stats_identifier_call: get the identifier of the Statistics object.
      * @return Returns a copy of the m_stats_identifier parameter.
      */

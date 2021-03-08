@@ -97,6 +97,21 @@ void Statistics::update_statistic_entry (const int& operation_type,
     this->m_statistic_entries[position].increment_byte_counter (byte_value);
 }
 
+// update_statistics_entry call. (...)
+void Statistics::update_statistic_entry (const int& operation_type,
+    const uint64_t& operation_value,
+    const uint64_t& byte_value,
+    const uint64_t& error_value)
+{
+    // calculate the operation's position in the statistics container
+    int position = operation_type % this->m_stats_size;
+
+    // update operation, byte, and error counters
+    this->m_statistic_entries[position].increment_operation_counter (operation_value);
+    this->m_statistic_entries[position].increment_byte_counter (byte_value);
+    this->m_statistic_entries[position].increment_error_counter (error_value);
+}
+
 // get_stats_size call. (...)
 int Statistics::get_stats_size () const
 {

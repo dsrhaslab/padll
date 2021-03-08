@@ -17,7 +17,8 @@ StatisticEntry::StatisticEntry (std::string name) : m_entry_name { std::move (na
 StatisticEntry::StatisticEntry (const StatisticEntry& entry) :
     m_entry_name { entry.m_entry_name },
     m_operation_counter { entry.m_operation_counter },
-    m_byte_counter { entry.m_byte_counter }
+    m_byte_counter { entry.m_byte_counter },
+    m_error_counter { entry.m_error_counter }
 { }
 
 // StatisticEntry default destructor.
@@ -43,6 +44,13 @@ uint64_t StatisticEntry::get_byte_counter ()
     return this->m_byte_counter;
 }
 
+// get_error_counter call. Get the number of registered errors.
+uint64_t StatisticEntry::get_error_counter ()
+{
+    std::unique_lock<std::mutex> unique_lock (this->m_lock);
+    return this->m_error_counter;
+}
+
 // increment_operation_counter call. Increments the number of operations.
 void StatisticEntry::increment_operation_counter (const uint64_t& count)
 {
@@ -57,6 +65,13 @@ void StatisticEntry::increment_byte_counter (const uint64_t& bytes)
     this->m_byte_counter += bytes;
 }
 
+// increment_error_counter call. Increments the number of errors.
+void StatisticEntry::increment_error_counter (const uint64_t& count)
+{
+    std::unique_lock<std::mutex> unique_lock (this->m_lock);
+    this->m_error_counter += count;
+}
+
 // to_string call. Generate a string-based format of the contents of the StatisticEntry object.
 std::string StatisticEntry::to_string ()
 {
@@ -65,7 +80,8 @@ std::string StatisticEntry::to_string ()
 
     stream << "{" << this->m_entry_name << ": ";
     stream << this->m_operation_counter << ", ";
-    stream << this->m_byte_counter << "}";
+    stream << this->m_byte_counter << ", ";
+    stream << this->m_error_counter << "}";
 
     return stream.str ();
 }

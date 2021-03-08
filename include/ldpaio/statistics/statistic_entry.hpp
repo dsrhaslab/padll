@@ -23,6 +23,7 @@ private:
     std::string m_entry_name {};
     uint64_t m_operation_counter { 0 };
     uint64_t m_byte_counter { 0 };
+    uint64_t m_error_counter { 0 };
     std::mutex m_lock;
 
 public:
@@ -71,6 +72,14 @@ public:
     uint64_t get_byte_counter ();
 
     /**
+     * get_error_counter: Get the total number of errors registered (counted) at the StatisticEntry
+     * object.
+     * This method is thread-safe.
+     * @return Returns a copy of the m_error_counter parameter.
+     */
+    uint64_t get_error_counter ();
+
+    /**
      * increment_operation_counter: Increments the total number of operations of the StatisticEntry
      * object by count.
      * This method is thread-safe.
@@ -85,6 +94,13 @@ public:
      * @param bytes Defines the amount of bytes to be incremented.
      */
     void increment_byte_counter (const uint64_t& bytes);
+
+    /**
+     * increment_error_counter: Increments the total times that a given syscalls had an error.
+     * This method is thread-safe.
+     * @param count Defines the amount of errors to be incremented.
+     */
+    void increment_error_counter (const uint64_t& count);
 
     /**
      * to_string: generate a string-based format of the contents of the StatisticEntry object.

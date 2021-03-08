@@ -9,9 +9,9 @@
 namespace ldpaio {
 
 /**
- * option_default_logging:
+ * option_default_statistic_collection:
  */
-const bool option_default_logging { true };
+const bool option_default_statistic_collection { true };
 
 } // namespace ldpaio
 
