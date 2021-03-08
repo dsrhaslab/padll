@@ -26,14 +26,24 @@ std::string PosixPassthrough::to_string ()
 ssize_t PosixPassthrough::passthrough_read (int fd, void* buf, ssize_t counter)
 {
     std::cout << "One more read ...\n";
-    return ((real_read_t)dlsym (RTLD_NEXT, "read")) (fd, buf, counter);
+    int result =  ((real_read_t)dlsym (RTLD_NEXT, "read")) (fd, buf, counter);
+
+    if (result >= 0) {
+        this->m_data_stats.update_statistic_entry (static_cast<int>(Data::read), 1, result);
+    }
+    return result;
 }
 
 // passthrough_write call.
 ssize_t PosixPassthrough::passthrough_write (int fd, const void* buf, ssize_t counter)
 {
     std::cout << "One more write ...\n";
-    return ((real_write_t)dlsym (RTLD_NEXT, "write")) (fd, buf, counter);
+    int result = ((real_write_t)dlsym (RTLD_NEXT, "write")) (fd, buf, counter);
+
+    if (result >= 0) {
+        this->m_data_stats.update_statistic_entry (static_cast<int>(Data::write), 1, result);
+    }
+    return result;
 }
 
 // passthrough_pread call.
