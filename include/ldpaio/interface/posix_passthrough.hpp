@@ -294,7 +294,11 @@ public:
      * @param flags
      * @return
      */
-    int passthrough_linkat (int olddirfd, const char* old_path, int newdirfd, const char* new_path, int flags);
+    int passthrough_linkat (int olddirfd,
+        const char* old_path,
+        int newdirfd,
+        const char* new_path,
+        int flags);
 
     /**
      * passthrough_unlinkat:
