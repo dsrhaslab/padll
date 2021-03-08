@@ -58,7 +58,7 @@ typedef size_t (*real_fread_t) (void*, size_t, size_t, FILE*);
 /**
  * Directory calls
  */
-typedef int (*real_mkdir_t) (const char*);
+typedef int (*real_mkdir_t) (const char*, mode_t);
 typedef struct dirent* (*real_readdir_t) (DIR*);
 typedef DIR* (*real_opendir_t) (const char*);
 typedef int (*real_closedir_t) (DIR*);
@@ -329,9 +329,10 @@ public:
     /**
      * mkdir:
      * @param path
+     * @param mode
      * @return
      */
-    int passthrough_mkdir (const char* path);
+    int passthrough_mkdir (const char* path, mode_t mode);
 
     /**
      * readdir:

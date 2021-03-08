@@ -651,13 +651,13 @@ int PosixPassthrough::passthrough_rename (const char* old_path, const char* new_
 }
 
 // passthrough_mkdir call. (...)
-int PosixPassthrough::passthrough_mkdir (const char* path)
+int PosixPassthrough::passthrough_mkdir (const char* path, mode_t mode)
 {
     // logging message
     Logging::log_debug ("passthrough-mkdir (" + std::string (path) + ")");
 
     // perform original POSIX mkdir operation
-    int result = ((real_mkdir_t)dlsym (RTLD_NEXT, "mkdir")) (path);
+    int result = ((real_mkdir_t)dlsym (RTLD_NEXT, "mkdir")) (path, mode);
 
     // update statistic entry
     if (this->m_collect) {

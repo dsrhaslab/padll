@@ -156,9 +156,9 @@ int rename (const char* old_path, const char* new_path)
 }
 
 // mkdir call. (...)
-int mkdir (const char* path)
+int mkdir (const char* path, mode_t mode)
 {
-    return m_posix_passthrough.passthrough_mkdir (path);
+    return m_posix_passthrough.passthrough_mkdir (path, mode);
 }
 
 // readdir call. (...)
