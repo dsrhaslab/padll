@@ -13,6 +13,7 @@
 #include <dlfcn.h>
 #include <fcntl.h>
 #include <iostream>
+#include <sstream>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -23,13 +24,13 @@ namespace ldpaio {
 /**
  * Metadata calls.
  */
-typedef int (*real_open_t) (const char*, int, ...);
-typedef int (*real_open_simple_t) (const char*, int);
+typedef int (*real_open_variadic_t) (const char*, int, ...);
+typedef int (*real_open_t) (const char*, int);
 typedef int (*real_creat_t) (const char*, mode_t);
-typedef int (*real_openat_t) (int, const char*, int, ...);
-typedef int (*real_openat_simple_t) (int, const char*, int);
-typedef int (*real_open64_t) (const char*, int, ...);
-typedef int (*real_open64_simple_t) (const char*, int);
+typedef int (*real_openat_variadic_t) (int, const char*, int, ...);
+typedef int (*real_openat_t) (int, const char*, int);
+typedef int (*real_open64_variadic_t) (const char*, int, ...);
+typedef int (*real_open64_t) (const char*, int);
 typedef int (*real_close_t) (int);
 typedef int (*real_fsync_t) (int);
 typedef int (*real_fdatasync_t) (int);
@@ -69,6 +70,7 @@ typedef int (*real_setxattr_t) (const char*, const char*, const void*, size_t, i
 typedef int (*real_fsetxattr_t) (int, const char*, const void*, size_t, int);
 
 class PosixPassthrough {
+
 private:
     Statistics m_metadata_stats { "posix-passthrough-metadata", OperationType::metadata_calls };
     Statistics m_data_stats { "posix-passthrough-data", OperationType::data_calls };
