@@ -61,7 +61,7 @@ BETTER_ENUM (Directory,
     readdir = 2,
     opendir = 3,
     closedir = 4,
-    rmdir = 6);
+    rmdir = 5);
 
 /**
  * ExtendedAttributes Definitions.

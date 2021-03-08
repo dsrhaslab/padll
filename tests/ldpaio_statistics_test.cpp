@@ -49,7 +49,7 @@ public:
         for (int i = 0; i < (iterations / 10); i++) {
             int operation = static_cast<int> (random ()) % stats->get_stats_size ();
             auto entry = stats->get_statistic_entry (operation);
-            std::cout << entry.to_string() << "\n";
+            std::cout << entry.to_string () << "\n";
         }
     }
 

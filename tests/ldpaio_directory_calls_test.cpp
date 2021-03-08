@@ -3,8 +3,8 @@
  *   Copyright (c) 2021 INESC TEC.
  **/
 
-#include <iostream>
 #include <dirent.h>
+#include <iostream>
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -16,7 +16,7 @@
  */
 int test_mkdir_call (const char* pathname, mode_t mode)
 {
-    std::cout << "Test mkdir call (" << pathname << "\n";
+    std::cout << "Test mkdir call (" << pathname << ")\n";
     // create directory
     int result = ::mkdir (pathname, mode);
 
@@ -34,7 +34,7 @@ int test_mkdir_call (const char* pathname, mode_t mode)
  */
 int test_readdir_call (const char* pathname)
 {
-    std::cout << "Test readdir call (" << pathname << "\n";
+    std::cout << "Test readdir call (" << pathname << ")\n";
     // open directory
     DIR* folder = ::opendir (pathname);
 
@@ -76,7 +76,7 @@ int test_readdir_call (const char* pathname)
  */
 int test_opendir_closedir_call (const char* pathname)
 {
-    std::cout << "Test opendir and closedir calls (" << pathname << "\n";
+    std::cout << "Test opendir and closedir calls (" << pathname << ")\n";
     DIR* folder = ::opendir (pathname);
 
     if (folder == nullptr) {
@@ -97,7 +97,7 @@ int test_opendir_closedir_call (const char* pathname)
  */
 void test_rmdir_call (const char* pathname)
 {
-    std::cout << "Test rmdir call (" << pathname << "\n";
+    std::cout << "Test rmdir call (" << pathname << ")\n";
     int result = ::rmdir (pathname);
 
     if (result != 0) {
@@ -105,21 +105,19 @@ void test_rmdir_call (const char* pathname)
     }
 }
 
-
-
 int main (int argc, char** argv)
 {
     if (argc > 1) {
-        test_mkdir_call(argv[1], 0777);
-        test_opendir_closedir_call(argv[1]);
-        test_readdir_call(argv[1]);
+        test_mkdir_call (argv[1], 0777);
+        test_opendir_closedir_call (argv[1]);
+        test_readdir_call (argv[1]);
     } else {
         std::string path = "/tmp/newdir";
 
         test_mkdir_call (path.data (), 0777);
         test_opendir_closedir_call (path.data ());
         test_readdir_call (path.data ());
-        test_rmdir_call (path.data());
+        test_rmdir_call (path.data ());
     }
 
     return 0;
