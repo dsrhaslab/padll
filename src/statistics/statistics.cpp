@@ -29,9 +29,9 @@ void Statistics::initialize (const OperationType& operation_type)
     switch (operation_type) {
         case OperationType::metadata_calls: {
             // assign size of statistics container
-            this->m_stats_size = Metadata::_size();
+            this->m_stats_size = Metadata::_size ();
             // retrieves all Metadata operations' names in order
-            for (Metadata elem : Metadata::_values()) {
+            for (Metadata elem : Metadata::_values ()) {
                 this->m_statistic_entries.emplace_back (elem._to_string ());
             }
 
@@ -40,9 +40,9 @@ void Statistics::initialize (const OperationType& operation_type)
 
         case OperationType::data_calls: {
             // assign size of statistics container
-            this->m_stats_size = Data::_size();
+            this->m_stats_size = Data::_size ();
             // retrieves all Data operations' names in order
-            for (Data elem : Data::_values()) {
+            for (Data elem : Data::_values ()) {
                 this->m_statistic_entries.emplace_back (elem._to_string ());
             }
 
@@ -51,9 +51,9 @@ void Statistics::initialize (const OperationType& operation_type)
 
         case OperationType::directory_calls: {
             // assign size of statistics container
-            this->m_stats_size = Directory::_size();
+            this->m_stats_size = Directory::_size ();
             // retrieves all Directory operations' names in order
-            for (Directory elem : Directory::_values()) {
+            for (Directory elem : Directory::_values ()) {
                 this->m_statistic_entries.emplace_back (elem._to_string ());
             }
 
@@ -62,9 +62,9 @@ void Statistics::initialize (const OperationType& operation_type)
 
         case OperationType::ext_attr_calls: {
             // assign size of statistics container
-            this->m_stats_size = ExtendedAttributes::_size();
+            this->m_stats_size = ExtendedAttributes::_size ();
             // retrieves all ExtendedAttributes operations' names in order
-            for (ExtendedAttributes elem : ExtendedAttributes::_values()) {
+            for (ExtendedAttributes elem : ExtendedAttributes::_values ()) {
                 this->m_statistic_entries.emplace_back (elem._to_string ());
             }
 
@@ -76,7 +76,6 @@ void Statistics::initialize (const OperationType& operation_type)
     }
 
     Logging::log_debug (this->to_string ());
-
 }
 
 // get_stats_identifier call. (...)

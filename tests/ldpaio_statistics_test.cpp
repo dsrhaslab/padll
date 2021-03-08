@@ -11,17 +11,16 @@ namespace ldpaio {
 class StatisticsTest {
 
 public:
-
     /**
      * test_statistics_constructors:
      */
     void test_statistics_constructors ()
     {
         Statistics stats {};
-        Logging::log_info (stats.to_string());
+        Logging::log_info (stats.to_string ());
 
         Statistics stats_param { "stats-parameterized-test", OperationType::metadata_calls };
-        Logging::log_info (stats_param.to_string());
+        Logging::log_info (stats_param.to_string ());
     }
 
     /**
@@ -42,7 +41,7 @@ public:
     void test_update_entries (Statistics* stats, int iterations)
     {
         for (int i = 0; i < iterations; i++) {
-            int operation = static_cast<int>(random ()) % stats->get_stats_size ();
+            int operation = static_cast<int> (random ()) % stats->get_stats_size ();
             stats->update_statistic_entry (operation, 1, 1);
         }
         std::cout << stats->to_string () << "\n";
@@ -58,5 +57,5 @@ int main (int argc, char** argv)
     test.test_initialize_statistics (&stats_obj, ldpaio::OperationType::metadata_calls);
     test.test_update_entries (&stats_obj, 1000);
 
-    test.test_statistics_constructors();
+    test.test_statistics_constructors ();
 }

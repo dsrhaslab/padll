@@ -78,6 +78,6 @@ public:
      */
     static bool is_debug_enabled ();
 };
-} // namespace paio
+} // namespace ldpaio
 
 #endif // LDPAIO_LOGGING_HPP

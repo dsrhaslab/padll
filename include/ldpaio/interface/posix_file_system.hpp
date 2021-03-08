@@ -12,8 +12,8 @@
 #include <ldpaio/utils/logging.hpp>
 #include <thread>
 
-ldpaio::PosixPassthrough m_posix_passthrough {};
 ldpaio::Logging m_logger { true };
+ldpaio::PosixPassthrough m_posix_passthrough {};
 
 /**
  * init_method: constructor of the PosixFileSystem.
@@ -26,9 +26,6 @@ static __attribute__ ((constructor)) void init_method ()
 {
     std::printf ("PosixFileSystem constructor\n");
     std::this_thread::sleep_for (std::chrono::seconds (1));
-
-    std::string hello = m_posix_passthrough.to_string ();
-    std::printf ("-> %s\n", hello.data ());
 }
 
 /**
@@ -38,8 +35,6 @@ static __attribute__ ((constructor)) void init_method ()
 static __attribute__ ((destructor)) void destroy_method ()
 {
     std::printf ("PosixFileSystem destructor\n");
-    std::string hello = m_posix_passthrough.to_string ();
-    std::printf ("-> %s\n", hello.data ());
 }
 
 /**

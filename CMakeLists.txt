@@ -54,6 +54,7 @@ target_sources(
     ${PROJECT_SOURCE_DIR}/include/ldpaio/statistics/statistics.hpp
     ${PROJECT_SOURCE_DIR}/include/ldpaio/utils/logging.hpp
     ${PROJECT_SOURCE_DIR}/include/ldpaio/utils/operation_utils.hpp
+    ${PROJECT_SOURCE_DIR}/include/ldpaio/utils/options.hpp
     ${PROJECT_SOURCE_DIR}/include/ldpaio/thrid_party/enum.h
 )
 

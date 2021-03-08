@@ -55,4 +55,4 @@ bool Logging::is_debug_enabled ()
     return m_debug_enabled;
 }
 
-} // namespace paio
+} // namespace ldpaio

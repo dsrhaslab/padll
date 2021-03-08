@@ -13,11 +13,23 @@ PosixPassthrough::PosixPassthrough ()
     Logging::log_info ("PosixPassthrough default constructor.");
 }
 
+// PosixPassthrough parameterized constructor.
+PosixPassthrough::PosixPassthrough (bool logging) : m_is_logging_enabled { logging }
+{
+    Logging::log_info ("PosixPassthrough parameterized constructor.");
+}
+
 // PosixPassthrough default destructor.
 PosixPassthrough::~PosixPassthrough ()
 {
     Logging::log_info ("PosixPassthrough default destructor.");
-    Logging::log_debug (this->to_string());
+    Logging::log_debug (this->to_string ());
+}
+
+// set_logging call. (...)
+void PosixPassthrough::set_logging (bool value)
+{
+    this->m_is_logging_enabled.store (value);
 }
 
 // to_string call. (...)
@@ -25,30 +37,27 @@ std::string PosixPassthrough::to_string ()
 {
     std::stringstream stream;
     stream << "PosixPassthrough {\n";
-    stream << "\t" << this->m_metadata_stats.to_string() << "\n";
-    stream << "\t" << this->m_data_stats.to_string() << "\n";
-    stream << "\t" << this->m_dir_stats.to_string() << "\n";
-    stream << "\t" << this->m_ext_attr_stats.to_string() << "\n";
+    stream << "\t" << this->m_metadata_stats.to_string () << "\n";
+    stream << "\t" << this->m_data_stats.to_string () << "\n";
+    stream << "\t" << this->m_dir_stats.to_string () << "\n";
+    stream << "\t" << this->m_ext_attr_stats.to_string () << "\n";
     stream << "}";
 
-    return stream.str();
+    return stream.str ();
 }
 
 // passthrough_read call.
 ssize_t PosixPassthrough::passthrough_read (int fd, void* buf, ssize_t counter)
 {
     // logging message
-    Logging::log_debug ("passthrough-read (" + std::to_string(fd) + ")");
+    Logging::log_debug ("passthrough-read (" + std::to_string (fd) + ")");
 
     // perform original POSIX read operation
-    int result =  ((real_read_t)dlsym (RTLD_NEXT, "read")) (fd, buf, counter);
+    int result = ((real_read_t)dlsym (RTLD_NEXT, "read")) (fd, buf, counter);
 
     // update statistic entry
-    if (result >= 0) {
-        this->m_data_stats.update_statistic_entry (
-                static_cast<int>(Data::read),
-                1,
-                result);
+    if (result >= 0 && this->m_is_logging_enabled) {
+        this->m_data_stats.update_statistic_entry (static_cast<int> (Data::read), 1, result);
     }
 
     return result;
@@ -58,17 +67,14 @@ ssize_t PosixPassthrough::passthrough_read (int fd, void* buf, ssize_t counter)
 ssize_t PosixPassthrough::passthrough_write (int fd, const void* buf, ssize_t counter)
 {
     // logging message
-    Logging::log_debug ("passthrough-write (" + std::to_string(fd) + ")");
+    Logging::log_debug ("passthrough-write (" + std::to_string (fd) + ")");
 
     // perform original POSIX write operation
     int result = ((real_write_t)dlsym (RTLD_NEXT, "write")) (fd, buf, counter);
 
     // update statistic entry
-    if (result >= 0) {
-        this->m_data_stats.update_statistic_entry (
-                static_cast<int>(Data::write),
-                1,
-                result);
+    if (result >= 0 && this->m_is_logging_enabled) {
+        this->m_data_stats.update_statistic_entry (static_cast<int> (Data::write), 1, result);
     }
 
     return result;
@@ -78,17 +84,14 @@ ssize_t PosixPassthrough::passthrough_write (int fd, const void* buf, ssize_t co
 ssize_t PosixPassthrough::passthrough_pread (int fd, void* buf, ssize_t counter, off_t offset)
 {
     // logging message
-    Logging::log_debug ("passthrough-pread (" + std::to_string(fd) + ")");
+    Logging::log_debug ("passthrough-pread (" + std::to_string (fd) + ")");
 
     // perform original POSIX pread operation
-    int result =  ((real_pread_t)dlsym (RTLD_NEXT, "pread")) (fd, buf, counter, offset);
+    int result = ((real_pread_t)dlsym (RTLD_NEXT, "pread")) (fd, buf, counter, offset);
 
     // update statistic entry
-    if (result >= 0) {
-        this->m_data_stats.update_statistic_entry (
-                static_cast<int>(Data::pread),
-                1,
-                result);
+    if (result >= 0 && this->m_is_logging_enabled) {
+        this->m_data_stats.update_statistic_entry (static_cast<int> (Data::pread), 1, result);
     }
 
     return result;
@@ -99,17 +102,14 @@ ssize_t
 PosixPassthrough::passthrough_pwrite (int fd, const void* buf, ssize_t counter, off_t offset)
 {
     // logging message
-    Logging::log_debug ("passthrough-pwrite (" + std::to_string(fd) + ")");
+    Logging::log_debug ("passthrough-pwrite (" + std::to_string (fd) + ")");
 
     // perform original POSIX pwrite operation
     int result = ((real_pwrite_t)dlsym (RTLD_NEXT, "pwrite")) (fd, buf, counter, offset);
 
     // update statistic entry
-    if (result >= 0) {
-        this->m_data_stats.update_statistic_entry (
-                static_cast<int>(Data::pwrite),
-                1,
-                result);
+    if (result >= 0 && this->m_is_logging_enabled) {
+        this->m_data_stats.update_statistic_entry (static_cast<int> (Data::pwrite), 1, result);
     }
 
     return result;
@@ -119,17 +119,16 @@ PosixPassthrough::passthrough_pwrite (int fd, const void* buf, ssize_t counter, 
 int PosixPassthrough::passthrough_open (const char* path, int flags, mode_t mode)
 {
     // logging message
-    Logging::log_debug ("passthrough-open-variadic (" + std::string(path) + ")");
+    Logging::log_debug ("passthrough-open-variadic (" + std::string (path) + ")");
 
     // perform original POSIX open operation
     int fd = ((real_open_variadic_t)dlsym (RTLD_NEXT, "open")) (path, flags, mode);
 
     // update statistic entry
-    if (fd >= 0) {
-        this->m_metadata_stats.update_statistic_entry (
-                static_cast<int>(Metadata::open_variadic),
-                1,
-                0);
+    if (fd >= 0 && this->m_is_logging_enabled) {
+        this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::open_variadic),
+            1,
+            0);
     }
 
     return fd;
@@ -139,17 +138,14 @@ int PosixPassthrough::passthrough_open (const char* path, int flags, mode_t mode
 int PosixPassthrough::passthrough_open (const char* path, int flags)
 {
     // logging message
-    Logging::log_debug ("passthrough-open (" + std::string(path) + ")");
+    Logging::log_debug ("passthrough-open (" + std::string (path) + ")");
 
     // perform original POSIX open operation
     int fd = ((real_open_t)dlsym (RTLD_NEXT, "open")) (path, flags);
 
     // update statistic entry
-    if (fd >= 0) {
-        this->m_metadata_stats.update_statistic_entry (
-                static_cast<int>(Metadata::open),
-                1,
-                0);
+    if (fd >= 0 && this->m_is_logging_enabled) {
+        this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::open), 1, 0);
     }
 
     return fd;
@@ -159,17 +155,14 @@ int PosixPassthrough::passthrough_open (const char* path, int flags)
 int PosixPassthrough::passthrough_creat (const char* path, mode_t mode)
 {
     // logging message
-    Logging::log_debug ("passthrough-creat (" + std::string(path) + ")");
+    Logging::log_debug ("passthrough-creat (" + std::string (path) + ")");
 
     // perform original POSIX open operation
     int fd = ((real_creat_t)dlsym (RTLD_NEXT, "creat")) (path, mode);
 
     // update statistic entry
-    if (fd >= 0) {
-        this->m_metadata_stats.update_statistic_entry (
-                static_cast<int>(Metadata::creat),
-                1,
-                0);
+    if (fd >= 0 && this->m_is_logging_enabled) {
+        this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::creat), 1, 0);
     }
 
     return fd;
@@ -179,18 +172,17 @@ int PosixPassthrough::passthrough_creat (const char* path, mode_t mode)
 int PosixPassthrough::passthrough_openat (int dirfd, const char* path, int flags, mode_t mode)
 {
     // logging message
-    Logging::log_debug ("passthrough-openat-variadic (" + std::to_string(dirfd) +
-        ", " + std::string(path) + ")");
+    Logging::log_debug (
+        "passthrough-openat-variadic (" + std::to_string (dirfd) + ", " + std::string (path) + ")");
 
     // perform original POSIX openat operation
     int fd = ((real_openat_variadic_t)dlsym (RTLD_NEXT, "openat")) (dirfd, path, flags, mode);
 
     // update statistic entry
-    if (fd >= 0) {
-        this->m_metadata_stats.update_statistic_entry (
-                static_cast<int>(Metadata::openat_variadic),
-                1,
-                0);
+    if (fd >= 0 && this->m_is_logging_enabled) {
+        this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::openat_variadic),
+            1,
+            0);
     }
 
     return fd;
@@ -200,18 +192,15 @@ int PosixPassthrough::passthrough_openat (int dirfd, const char* path, int flags
 int PosixPassthrough::passthrough_openat (int dirfd, const char* path, int flags)
 {
     // logging message
-    Logging::log_debug ("passthrough-openat (" + std::to_string(dirfd) +
-        ", " + std::string(path) + ")");
+    Logging::log_debug (
+        "passthrough-openat (" + std::to_string (dirfd) + ", " + std::string (path) + ")");
 
     // perform original POSIX openat operation
     int fd = ((real_openat_t)dlsym (RTLD_NEXT, "openat")) (dirfd, path, flags);
 
     // update statistic entry
-    if (fd >= 0) {
-        this->m_metadata_stats.update_statistic_entry (
-                static_cast<int>(Metadata::openat),
-                1,
-                0);
+    if (fd >= 0 && this->m_is_logging_enabled) {
+        this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::openat), 1, 0);
     }
 
     return fd;
@@ -221,17 +210,16 @@ int PosixPassthrough::passthrough_openat (int dirfd, const char* path, int flags
 int PosixPassthrough::passthrough_open64 (const char* path, int flags, mode_t mode)
 {
     // logging message
-    Logging::log_debug ("passthrough-open64-variadic (" + std::string(path) + ")");
+    Logging::log_debug ("passthrough-open64-variadic (" + std::string (path) + ")");
 
     // perform original POSIX open64 operation
     int fd = ((real_open64_variadic_t)dlsym (RTLD_NEXT, "open64")) (path, flags, mode);
 
     // update statistic entry
-    if (fd >= 0) {
-        this->m_metadata_stats.update_statistic_entry (
-                static_cast<int>(Metadata::open64_variadic),
-                1,
-                0);
+    if (fd >= 0 && this->m_is_logging_enabled) {
+        this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::open64_variadic),
+            1,
+            0);
     }
 
     return fd;
@@ -241,17 +229,14 @@ int PosixPassthrough::passthrough_open64 (const char* path, int flags, mode_t mo
 int PosixPassthrough::passthrough_open64 (const char* path, int flags)
 {
     // logging message
-    Logging::log_debug ("passthrough-open64 (" + std::string(path) + ")");
+    Logging::log_debug ("passthrough-open64 (" + std::string (path) + ")");
 
     // perform original POSIX open64 operation
     int fd = ((real_open64_t)dlsym (RTLD_NEXT, "open64")) (path, flags);
 
     // update statistic entry
-    if (fd >= 0) {
-        this->m_metadata_stats.update_statistic_entry (
-                static_cast<int>(Metadata::open64),
-                1,
-                0);
+    if (fd >= 0 && this->m_is_logging_enabled) {
+        this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::open64), 1, 0);
     }
 
     return fd;
@@ -267,11 +252,8 @@ int PosixPassthrough::passthrough_close (int fd)
     int result = ((real_close_t)dlsym (RTLD_NEXT, "close")) (fd);
 
     // update statistic entry
-    if (fd >= 0) {
-        this->m_metadata_stats.update_statistic_entry (
-                static_cast<int>(Metadata::close),
-                1,
-                0);
+    if (fd >= 0 && this->m_is_logging_enabled) {
+        this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::close), 1, 0);
     }
 
     return result;

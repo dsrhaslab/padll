@@ -13,11 +13,12 @@
 #include <dlfcn.h>
 #include <fcntl.h>
 #include <iostream>
+#include <ldpaio/statistics/statistics.hpp>
+#include <ldpaio/utils/options.hpp>
 #include <sstream>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <ldpaio/statistics/statistics.hpp>
 
 namespace ldpaio {
 
@@ -72,6 +73,7 @@ typedef int (*real_fsetxattr_t) (int, const char*, const void*, size_t, int);
 class PosixPassthrough {
 
 private:
+    std::atomic<bool> m_is_logging_enabled { option_default_logging };
     Statistics m_metadata_stats { "posix-passthrough-metadata", OperationType::metadata_calls };
     Statistics m_data_stats { "posix-passthrough-data", OperationType::data_calls };
     Statistics m_dir_stats { "posix-passthrough-directory", OperationType::directory_calls };
@@ -84,10 +86,27 @@ public:
     PosixPassthrough ();
 
     /**
+     * PosixPassthrough parameterized constructor.
+     * @param logging Boolean that defines if logging is enabled or disabled.
+     */
+    explicit PosixPassthrough (bool logging);
+
+    /**
      * PosixPassthrough default destructor.
      */
     ~PosixPassthrough ();
 
+    /**
+     * set_logging:
+     * @param value
+     * @return
+     */
+    void set_logging (bool value);
+
+    /**
+     * to_string:
+     * @return
+     */
     std::string to_string ();
 
     /**
