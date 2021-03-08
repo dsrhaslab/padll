@@ -20,10 +20,35 @@ int test_mkdir_call (const char* pathname, mode_t mode)
     return result;
 }
 
-// readdir: https://c-for-dummies.com/blog/?p=3246
-void test_readdir_call (const std::string& pathname)
+int test_readdir_call (const char* pathname)
 {
     std::cout << "Test readdir call\n";
+    DIR* folder = ::opendir (pathname);
+
+    if (folder == nullptr) {
+        std::cerr << "Error while opening directory (" << errno << ")\n";
+    }
+
+    dirent* entry;
+    int num_files = 0;
+
+    while ((entry = ::readdir (folder))) {
+        num_files++;
+        std::cout << "file " << num_files << " {";
+        std::cout << entry->d_ino << ", ";
+        std::cout << entry->d_name << ", ";
+        std::cout << entry->d_namlen << ", ";
+        std::cout << entry->d_reclen << ", ";
+        std::cout << entry->d_type << ", ";
+        std::cout << entry->d_seekoff << "}\n";
+    }
+
+    int result = ::closedir (folder);
+    if (result != 0) {
+        std::cerr << "Error while closing directory (" << errno << ")\n";
+    }
+
+    return result;
 }
 
 /**
@@ -65,5 +90,10 @@ int main (int argc, char** argv)
 {
     int mkdir_result = test_mkdir_call (argv[1], 0777);
     test_opendir_closedir_call (argv[1]);
+
+    if (mkdir_result == 0) {
+        test_readdir_call (argv[1]);
+    }
+
     return 0;
 }
