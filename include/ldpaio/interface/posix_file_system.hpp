@@ -149,6 +149,22 @@ int truncate (const char* path, off_t length);
 int ftruncate (int fd, off_t length);
 
 /**
+ * stat:
+ * @param path
+ * @param statbuf
+ * @return
+ */
+int stat (const char* path, struct stat* statbuf);
+
+/**
+ * fstat:
+ * @param fd
+ * @param statbuf
+ * @return
+ */
+int fstat (int fd, struct stat* statbuf);
+
+/**
  * link:
  * @param old_path
  * @param new_path
@@ -162,6 +178,26 @@ int link (const char* old_path, const char* new_path);
  * @return
  */
 int unlink (const char* path);
+
+/**
+ * linkat:
+ * @param olddirfd
+ * @param old_path
+ * @param newdirfd
+ * @param new_path
+ * @param flags
+ * @return
+ */
+int linkat (int olddirfd, const char* old_path, int newdirfd, const char* new_path, int flags);
+
+/**
+ * unlinkat:
+ * @param dirfd
+ * @param pathname
+ * @param flags
+ * @return
+ */
+int unlinkat (int dirfd, const char* pathname, int flags);
 
 /**
  * rename:
@@ -248,22 +284,6 @@ int setxattr (const char* path, const char* name, const void* value, size_t size
  * @return
  */
 int fsetxattr (int fd, const char* name, const void* value, size_t size, int flags);
-
-/**
- * stat:
- * @param path
- * @param statbuf
- * @return
- */
-int stat (const char* path, struct stat* statbuf);
-
-/**
- * fstat:
- * @param fd
- * @param statbuf
- * @return
- */
-int fstat (int fd, struct stat* statbuf);
 
 /**
  * fread:

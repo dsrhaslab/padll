@@ -42,7 +42,9 @@ BETTER_ENUM (Metadata,
     fstat = 14,
     link = 15,
     unlink = 16,
-    rename = 17);
+    linkat = 17,
+    unlinkat = 18,
+    rename = 19);
 
 /**
  * Data Definitions.

@@ -41,6 +41,8 @@ typedef int (*real_stat_t) (const char*, struct stat*);
 typedef int (*real_fstat_t) (int fd, struct stat*);
 typedef int (*real_link_t) (const char*, const char*);
 typedef int (*real_unlink_t) (const char*);
+typedef int (*real_linkat_t) (int, const char*, int, const char*, int);
+typedef int (*real_unlinkat_t) (int, const char*, int);
 typedef int (*real_rename_t) (const char*, const char*);
 
 /**
@@ -251,6 +253,24 @@ public:
     int passthrough_ftruncate (int fd, off_t length);
 
     /**
+     * passthrough_stat:
+     *  https://man7.org/linux/man-pages/man2/stat.2.html
+     * @param path
+     * @param statbuf
+     * @return
+     */
+    int passthrough_stat (const char* path, struct stat* statbuf);
+
+    /**
+     * passthrough_fstat:
+     *  https://man7.org/linux/man-pages/man2/fstat.2.html
+     * @param fd
+     * @param statbuf
+     * @return
+     */
+    int passthrough_fstat (int fd, struct stat* statbuf);
+
+    /**
      * passthrough_link:
      * @param old_path
      * @param new_path
@@ -264,6 +284,26 @@ public:
      * @return
      */
     int passthrough_unlink (const char* old_path);
+
+    /**
+     * passthrough_linkat:
+     * @param olddirfd
+     * @param old_path
+     * @param newdirfd
+     * @param new_path
+     * @param flags
+     * @return
+     */
+    int passthrough_linkat (int olddirfd, const char* old_path, int newdirfd, const char* new_path, int flags);
+
+    /**
+     * passthrough_unlinkat:
+     * @param dirfd
+     * @param pathname
+     * @param flags
+     * @return
+     */
+    int passthrough_unlinkat (int dirfd, const char* pathname, int flags);
 
     /**
      * passthrough_rename:
@@ -361,24 +401,6 @@ public:
      * @return
      */
     int passthrough_fsetxattr (int fd, const char* name, const void* value, size_t size, int flags);
-
-    /**
-     * passthrough_stat:
-     *  https://man7.org/linux/man-pages/man2/stat.2.html
-     * @param path
-     * @param statbuf
-     * @return
-     */
-    int passthrough_stat (const char* path, struct stat* statbuf);
-
-    /**
-     * passthrough_fstat:
-     *  https://man7.org/linux/man-pages/man2/fstat.2.html
-     * @param fd
-     * @param statbuf
-     * @return
-     */
-    int passthrough_fstat (int fd, struct stat* statbuf);
 
     /**
      * passthrough_fread:

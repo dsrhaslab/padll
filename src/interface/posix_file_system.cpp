@@ -113,6 +113,18 @@ int ftruncate (int fd, off_t length)
     return m_posix_passthrough.passthrough_ftruncate (fd, length);
 }
 
+// stat call. (...)
+int stat (const char* path, struct stat* statbuf)
+{
+    return m_posix_passthrough.passthrough_stat (path, statbuf);
+}
+
+// fstat call. (...)
+int fstat (int fd, struct stat* statbuf)
+{
+    return m_posix_passthrough.passthrough_fstat (fd, statbuf);
+}
+
 // link call. (...)
 int link (const char* old_path, const char* new_path)
 {
@@ -123,6 +135,18 @@ int link (const char* old_path, const char* new_path)
 int unlink (const char* path)
 {
     return m_posix_passthrough.passthrough_unlink (path);
+}
+
+// linkat call. (...)
+int linkat (int olddirfd, const char* old_path, int newdirfd, const char* new_path, int flags)
+{
+    return m_posix_passthrough.passthrough_linkat (olddirfd, old_path, newdirfd, new_path, flags);
+}
+
+// unlinkat call. (...)
+int unlinkat (int dirfd, const char* pathname, int flags)
+{
+    return m_posix_passthrough.passthrough_unlinkat (dirfd, pathname, flags);
 }
 
 // rename call. (...)
@@ -183,18 +207,6 @@ int setxattr (const char* path, const char* name, const void* value, size_t size
 int fsetxattr (int fd, const char* name, const void* value, size_t size, int flags)
 {
     return m_posix_passthrough.passthrough_fsetxattr (fd, name, value, size, flags);
-}
-
-// stat call. (...)
-int stat (const char* path, struct stat* statbuf)
-{
-    return m_posix_passthrough.passthrough_stat (path, statbuf);
-}
-
-// fstat call. (...)
-int fstat (int fd, struct stat* statbuf)
-{
-    return m_posix_passthrough.passthrough_fstat (fd, statbuf);
 }
 
 // fread call. (...)
