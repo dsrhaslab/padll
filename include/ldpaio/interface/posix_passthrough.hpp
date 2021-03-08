@@ -16,6 +16,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <ldpaio/statistics/statistics.hpp>
 
 namespace ldpaio {
 
@@ -68,6 +69,11 @@ typedef int (*real_setxattr_t) (const char*, const char*, const void*, size_t, i
 typedef int (*real_fsetxattr_t) (int, const char*, const void*, size_t, int);
 
 class PosixPassthrough {
+private:
+    Statistics m_metadata_stats { "posix-passthrough-metadata", OperationType::metadata_calls };
+    Statistics m_data_stats { "posix-passthrough-data", OperationType::data_calls };
+    Statistics m_dir_stats { "posix-passthrough-directory", OperationType::directory_calls };
+    Statistics m_ext_attr_stats { "posix-passthrough-ext-attr", OperationType::ext_attr_calls };
 
 public:
     /**

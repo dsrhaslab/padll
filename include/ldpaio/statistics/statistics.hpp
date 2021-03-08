@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <ldpaio/statistics/statistic_entry.hpp>
+#include <ldpaio/utils/logging.hpp>
 #include <ldpaio/utils/operation_utils.hpp>
 #include <vector>
 
@@ -20,6 +21,7 @@ namespace ldpaio {
 class Statistics {
 
 private:
+    std::string m_stats_identifier { "stats" };
     int m_stats_size { 0 };
     std::vector<StatisticEntry> m_statistic_entries {};
     std::mutex m_stats_mutex;
@@ -31,6 +33,12 @@ public:
     Statistics ();
 
     /**
+     * Statistics parameterized constructor.
+     * @param operation_type
+     */
+    Statistics (std::string identifier, const OperationType& operation_type);
+
+    /**
      * Statistics default destructor.
      */
     ~Statistics ();
@@ -39,7 +47,7 @@ public:
      * initialize: initializes the m_statistic_entries container with the respective operations
      * to be collected.
      * This method is thread-safe.
-     * @param operation_type DEfines hte type of statistics to be collected.
+     * @param operation_type Defines hte type of statistics to be collected.
      *  - OperationType::metadata_calls receives Metadata-based operations;
      *  - OperationType::data_calls receives Data-based operations;
      *  - OperationType::directory_calls receives Directory-based operations;
@@ -59,10 +67,16 @@ public:
         const uint64_t& byte_value);
 
     /**
+     * get_stats_identifier_call: get the identifier of the Statistics object.
+     * @return Returns a copy of the m_stats_identifier parameter.
+     */
+    std::string get_stats_identifier () const;
+
+    /**
      * get_stats_size: Get the total of statistics entries stored in the container.
      * @return Returns a copy of the m_stats_size parameter.
      */
-    [[nodiscard]] int get_stats_size () const;
+    int get_stats_size () const;
 
     /**
      * to_string: generate a string with all statistic entries stored in the m_statistic_entries

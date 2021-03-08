@@ -52,6 +52,7 @@ target_sources(
     ${PROJECT_SOURCE_DIR}/include/ldpaio/interface/posix_passthrough.hpp
     ${PROJECT_SOURCE_DIR}/include/ldpaio/statistics/statistic_entry.hpp
     ${PROJECT_SOURCE_DIR}/include/ldpaio/statistics/statistics.hpp
+    ${PROJECT_SOURCE_DIR}/include/ldpaio/utils/logging.hpp
     ${PROJECT_SOURCE_DIR}/include/ldpaio/utils/operation_utils.hpp
     ${PROJECT_SOURCE_DIR}/include/ldpaio/thrid_party/enum.h
 )
@@ -63,6 +64,7 @@ target_sources(
         src/interface/posix_passthrough.cpp
         src/statistics/statistic_entry.cpp
         src/statistics/statistics.cpp
+        src/utils/logging.cpp
 )
 
 # ---------------------------------------------------------------------------- #

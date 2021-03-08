@@ -9,7 +9,20 @@
 namespace ldpaio {
 
 class StatisticsTest {
+
 public:
+
+    /**
+     * test_statistics_constructors:
+     */
+    void test_statistics_constructors ()
+    {
+        Statistics stats {};
+        Logging::log_info (stats.to_string());
+
+        Statistics stats_param { "stats-parameterized-test", OperationType::metadata_calls };
+        Logging::log_info (stats_param.to_string());
+    }
 
     /**
      * test_initialize_statistics:
@@ -44,4 +57,6 @@ int main (int argc, char** argv)
 
     test.test_initialize_statistics (&stats_obj, ldpaio::OperationType::metadata_calls);
     test.test_update_entries (&stats_obj, 1000);
+
+    test.test_statistics_constructors();
 }

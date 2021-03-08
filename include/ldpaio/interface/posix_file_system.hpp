@@ -9,9 +9,11 @@
 #include <cstdarg>
 #include <cstring>
 #include <ldpaio/interface/posix_passthrough.hpp>
+#include <ldpaio/utils/logging.hpp>
 #include <thread>
 
 ldpaio::PosixPassthrough m_posix_passthrough {};
+ldpaio::Logging m_logger { true };
 
 /**
  * init_method: constructor of the PosixFileSystem.
