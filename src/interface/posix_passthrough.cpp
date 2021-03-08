@@ -48,6 +48,9 @@ StatisticEntry PosixPassthrough::get_statistic_entry (const OperationType& opera
 
         case OperationType::ext_attr_calls:
             return this->m_ext_attr_stats.get_statistic_entry (operation_entry);
+
+        default:
+            return StatisticEntry {};
     }
 }
 

@@ -27,23 +27,23 @@ void test_readdir_call (const std::string& pathname)
  * @param pathname
  * @return
  */
-int test_opendir_call (const char* pathname)
+int test_open_closedir_call (const char* pathname)
 {
     std::cout << "Test opendir call\n";
     DIR* folder = ::opendir (pathname);
 
     if (folder == nullptr) {
-        std::cerr << "Error while reading directory (" << errno << ")\n";
-        return 1;
+        std::cerr << "Error while opening directory (" << errno << ")\n";
     }
 
-    return 0;
+    int result = ::closedir (folder);
+    if (result != 0) {
+        std::cerr << "Error while closing directory (" << errno << ")\n";
+    }
+
+    return result;
 }
 
-void test_closedir_call ()
-{
-    std::cout << "Test closedir call\n";
-}
 
 void test_rmdir_call ()
 {
@@ -53,6 +53,6 @@ void test_rmdir_call ()
 int main (int argc, char** argv)
 {
 
-    test_opendir_call (argv[1]);
+    test_open_closedir_call (argv[1]);
     return 0;
 }
