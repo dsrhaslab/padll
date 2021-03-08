@@ -443,15 +443,51 @@ int PosixPassthrough::passthrough_ftruncate (int fd, off_t length)
 // passthrough_stat call. (...)
 int PosixPassthrough::passthrough_stat (const char* path, struct stat* statbuf)
 {
-    std::cout << "One more stat ... \n";
-    return ((real_stat_t)dlsym (RTLD_NEXT, "stat")) (path, statbuf);
+    // logging message
+    Logging::log_debug ("passthrough-stat (" + std::string (path) + ")");
+
+    // perform original POSIX stat operation
+    int result = ((real_stat_t)dlsym (RTLD_NEXT, "stat")) (path, statbuf);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result == 0) {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::stat), 1, 0);
+        } else {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::stat),
+                1,
+                0,
+                1);
+        }
+    }
+
+    return result;
 }
 
 // passthrough_fstat call. (...)
 int PosixPassthrough::passthrough_fstat (int fd, struct stat* statbuf)
 {
-    std::cout << "One more fstat ... \n";
-    return ((real_fstat_t)dlsym (RTLD_NEXT, "fstat")) (fd, statbuf);
+    // logging message
+    Logging::log_debug ("passthrough-fstat (" + std::to_string (fd) + ")");
+
+    // perform original POSIX fstat operation
+    int result = ((real_fstat_t)dlsym (RTLD_NEXT, "fstat")) (fd, statbuf);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result == 0) {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fstat),
+                1,
+                0);
+        } else {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fstat),
+                1,
+                0,
+                1);
+        }
+    }
+
+    return result;
 }
 
 // passthrough_link call. (...)
@@ -568,8 +604,28 @@ int PosixPassthrough::passthrough_unlinkat (int dirfd, const char* pathname, int
 // passthrough_rename call. (...)
 int PosixPassthrough::passthrough_rename (const char* old_path, const char* new_path)
 {
-    std::cout << "One more rename ... \n";
-    return ((real_rename_t)dlsym (RTLD_NEXT, "rename")) (old_path, new_path);
+    // logging message
+    Logging::log_debug (
+        "passthrough-fstat (" + std::string (old_path) + ", " + std::string (new_path) + ")");
+
+    // perform original POSIX fstat operation
+    int result = ((real_rename_t)dlsym (RTLD_NEXT, "rename")) (old_path, new_path);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result == 0) {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::rename),
+                1,
+                0);
+        } else {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::rename),
+                1,
+                0,
+                1);
+        }
+    }
+
+    return result;
 }
 
 // passthrough_mkdir call. (...)
