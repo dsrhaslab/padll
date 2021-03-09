@@ -16,34 +16,29 @@
 int test_getxattr_call (const char* path, const char* xattr)
 {
     std::cout << "Test getxattr call (" << path << ", " << xattr << ")\n";
-    ssize_t value_size = 64;
-    char* value = static_cast<char *>(malloc(sizeof(char) * value_size));
-    // get extended attribute value
-    ssize_t info_size = ::getxattr (path, xattr, value, value_size
+
+    // get size of extended attribute
+    ssize_t info_size = ::getxattr (path, xattr, nullptr, 0
         #if defined(__APPLE__)
             , 0, 0
         #endif
         );
 
-    std::cout << "-> " << value << "\n";
-    
-    if (info_size != 0) {
+    if (info_size == 0) {
         std::cerr << "Error while getting attribute\n";
         return -1;
     }
 
     char* info = static_cast<char*> (malloc (info_size));
 
+    // get extended attribute
     int return_value = ::getxattr (path, xattr, info, info_size
         #if defined(__APPLE__)
                     , 0, 0
         #endif
             );
 
-    if (return_value != 0) {
-        std::cerr << "Error while getting attribute-2 (" << errno << ")\n";
-        return -1;
-    }
+    std::cout << "-> " << info  << " - " << info_size << " - " << return_value << "\n";
 
     return return_value;
 }
@@ -129,7 +124,6 @@ int test_listxattr (const char* path)
     }
 
     free (buf);
-    free (key);
 
     return EXIT_SUCCESS;
 }
