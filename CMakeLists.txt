@@ -105,6 +105,7 @@ if (LDPAIO_BUILD_TESTS)
     ldpaio_test("tests/ldpaio_test.cpp")
     ldpaio_test("tests/ldpaio_statistics_test.cpp")
     ldpaio_test("tests/ldpaio_directory_calls_test.cpp")
+    ldpaio_test("tests/ldpaio_extended_attributes_calls_test.cpp")
 
 endif (LDPAIO_BUILD_TESTS)
 
