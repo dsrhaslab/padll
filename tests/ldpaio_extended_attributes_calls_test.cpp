@@ -16,16 +16,19 @@
 int test_getxattr_call (const char* path, const char* xattr)
 {
     std::cout << "Test getxattr call (" << path << ", " << xattr << ")\n";
-
+    ssize_t value_size = 64;
+    char* value = static_cast<char *>(malloc(sizeof(char) * value_size));
     // get extended attribute value
-    ssize_t info_size = ::getxattr (path, xattr, nullptr, 0
+    ssize_t info_size = ::getxattr (path, xattr, value, value_size
         #if defined(__APPLE__)
             , 0, 0
         #endif
         );
 
+    std::cout << "-> " << value << "\n";
+    
     if (info_size != 0) {
-        std::cerr << "Error while getting attribute (" << errno << ")\n";
+        std::cerr << "Error while getting attribute\n";
         return -1;
     }
 
@@ -38,7 +41,7 @@ int test_getxattr_call (const char* path, const char* xattr)
             );
 
     if (return_value != 0) {
-        std::cerr << "Error while getting attribute (" << errno << ")\n";
+        std::cerr << "Error while getting attribute-2 (" << errno << ")\n";
         return -1;
     }
 
@@ -57,9 +60,9 @@ int test_setxattr_call (const char* path, const char* xattr, const char* value)
     std::cout << "Test setxattr call (" << path << ", " << xattr << ", " << value << ")\n";
 
     // set extended attribute value
-    int return_value = ::setxattr (path, xattr, value, std::strlen (value)
+    int return_value = ::setxattr (path, xattr, value, std::strlen (value), 0
         #if defined(__APPLE__)
-                    , 0, 0
+                    , 0
         #endif
         );
 
@@ -138,7 +141,8 @@ int main (int argc, char** argv)
         std::string xattr = "user.tmp";
         std::string value = "xyz-value";
 
-        test_setxattr_call (path.data (), xattr.data (), value.data ());
+        int return_value = test_setxattr_call (path.data (), xattr.data (), value.data ());
+        std::cout << "setxattr (" << return_value << ")\n";
         test_listxattr (path.data ());
         test_getxattr_call (path.data (), xattr.data ());
     } else {
