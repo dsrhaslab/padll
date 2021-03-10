@@ -188,24 +188,28 @@ int rmdir (const char* path)
 // getxattr call. (...)
 ssize_t getxattr (const char* path, const char* name, void* value, size_t size)
 {
+    std::cout << "--- getxattr ---\n";
     return m_posix_passthrough.passthrough_getxattr (path, name, value, size);
 }
 
 // fgetxattr call. (...)
 ssize_t fgetxattr (int fd, const char* name, void* value, size_t size)
 {
+    std::cout << "--- fgetxattr ---\n";
     return m_posix_passthrough.passthrough_fgetxattr (fd, name, value, size);
 }
 
 // setxattr call. (...)
 int setxattr (const char* path, const char* name, const void* value, size_t size, int flags)
 {
+    std::cout << "--- setxattr ---\n";
     return m_posix_passthrough.passthrough_setxattr (path, name, value, size, flags);
 }
 
 // fsetxaatr call. (...)
 int fsetxattr (int fd, const char* name, const void* value, size_t size, int flags)
 {
+    std::cout << "--- fsetxattr ---\n";
     return m_posix_passthrough.passthrough_fsetxattr (fd, name, value, size, flags);
 }
 

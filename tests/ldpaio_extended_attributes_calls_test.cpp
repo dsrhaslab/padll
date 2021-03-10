@@ -6,6 +6,7 @@
 #include <sys/xattr.h>
 #include <cstring>
 #include <iostream>
+#include <fcntl.h>
 
 /**
  * test_getxattr_call:
@@ -54,12 +55,30 @@ int test_setxattr_call (const char* path, const char* xattr, const char* value)
 {
     std::cout << "Test setxattr call (" << path << ", " << xattr << ", " << value << ")\n";
 
-    // set extended attribute value
-    int return_value = ::setxattr (path, xattr, value, std::strlen (value), 0
-        #if defined(__APPLE__)
-                    , 0
-        #endif
-        );
+    int return_value;
+    #if defined(__APPLE__)
+        return_value = ::setxattr (path, xattr, value, std::strlen (value), 0, 0);
+    #else
+        return_value = ::setxattr (path, xattr, value, std::strlen (value), 0);
+    #endif
+
+    if (return_value != 0) {
+        std::cerr << "Error while getting attribute (" << errno << ")\n";
+    }
+
+    return return_value;
+}
+
+int test_fsetxattr_call (int fd, const char* xattr, const char* value)
+{
+    std::cout << "Test setxattr call (" << fd << ", " << xattr << ", " << value << ")\n";
+
+    int return_value;
+    #if defined(__APPLE__)
+        return_value = ::fsetxattr (fd, xattr, value, std::strlen (value), 0, 0);
+    #else
+        return_value = ::fsetxattr (fd, xattr, value, std::strlen (value), 0);
+    #endif
 
     if (return_value != 0) {
         std::cerr << "Error while getting attribute (" << errno << ")\n";
@@ -137,8 +156,12 @@ int main (int argc, char** argv)
 
         int return_value = test_setxattr_call (path.data (), xattr.data (), value.data ());
         std::cout << "setxattr (" << return_value << ")\n";
-        test_listxattr (path.data ());
-        test_getxattr_call (path.data (), xattr.data ());
+        int fd = ::open (path.data(), O_RDWR);
+        return_value = test_fsetxattr_call (fd, xattr.data (), value.data());
+        std::cout << "fsetxattr (" << return_value << ")\n";
+
+//        test_listxattr (path.data ());
+//        test_getxattr_call (path.data (), xattr.data ());
     } else {
         test_listxattr (argv[1]);
     }
