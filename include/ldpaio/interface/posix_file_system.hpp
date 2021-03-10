@@ -44,7 +44,7 @@ static __attribute__ ((destructor)) void destroy_method ()
  * @param size
  * @return
  */
-ssize_t read (int fd, void* buf, size_t size);
+extern "C" ssize_t read (int fd, void* buf, size_t size);
 
 /**
  * write:
@@ -53,7 +53,7 @@ ssize_t read (int fd, void* buf, size_t size);
  * @param size
  * @return
  */
-ssize_t write (int fd, const void* buf, size_t size);
+extern "C" ssize_t write (int fd, const void* buf, size_t size);
 
 /**
  * pread:
@@ -63,7 +63,7 @@ ssize_t write (int fd, const void* buf, size_t size);
  * @param offset
  * @return
  */
-ssize_t pread (int fd, void* buf, size_t size, off_t offset);
+extern "C" ssize_t pread (int fd, void* buf, size_t size, off_t offset);
 
 /**
  * pwrite:
@@ -73,7 +73,7 @@ ssize_t pread (int fd, void* buf, size_t size, off_t offset);
  * @param offset
  * @return
  */
-ssize_t pwrite (int fd, const void* buf, size_t size, off_t offset);
+extern "C" ssize_t pwrite (int fd, const void* buf, size_t size, off_t offset);
 
 /**
  * open:
@@ -90,7 +90,7 @@ extern "C" int open (const char* path, int flags, ...);
  * @param mode
  * @return
  */
-int creat (const char* path, mode_t mode);
+extern "C" int creat (const char* path, mode_t mode);
 
 /**
  * openat:
@@ -116,21 +116,21 @@ extern "C" int open64 (const char* path, int flags, ...);
  * @param fd
  * @return
  */
-int close (int fd);
+extern "C" int close (int fd);
 
 /**
  * fsync:
  * @param fd
  * @return
  */
-int fsync (int fd);
+extern "C" int fsync (int fd);
 
 /**
  * fdatasync:
  * @param fd
  * @return
  */
-int fdatasync (int fd);
+extern "C" int fdatasync (int fd);
 
 /**
  * truncate:
@@ -138,7 +138,7 @@ int fdatasync (int fd);
  * @param length
  * @return
  */
-int truncate (const char* path, off_t length);
+extern "C" int truncate (const char* path, off_t length);
 
 /**
  * ftruncate:
@@ -146,7 +146,7 @@ int truncate (const char* path, off_t length);
  * @param length
  * @return
  */
-int ftruncate (int fd, off_t length);
+extern "C" int ftruncate (int fd, off_t length);
 
 /**
  * stat:
@@ -154,7 +154,7 @@ int ftruncate (int fd, off_t length);
  * @param statbuf
  * @return
  */
-int stat (const char* path, struct stat* statbuf);
+extern "C" int stat (const char* path, struct stat* statbuf);
 
 /**
  * fstat:
@@ -162,7 +162,7 @@ int stat (const char* path, struct stat* statbuf);
  * @param statbuf
  * @return
  */
-int fstat (int fd, struct stat* statbuf);
+extern "C" int fstat (int fd, struct stat* statbuf);
 
 /**
  * link:
@@ -170,14 +170,14 @@ int fstat (int fd, struct stat* statbuf);
  * @param new_path
  * @return
  */
-int link (const char* old_path, const char* new_path);
+extern "C" int link (const char* old_path, const char* new_path);
 
 /**
  * unlink:
  * @param path
  * @return
  */
-int unlink (const char* path);
+extern "C" int unlink (const char* path);
 
 /**
  * linkat:
@@ -188,7 +188,7 @@ int unlink (const char* path);
  * @param flags
  * @return
  */
-int linkat (int olddirfd, const char* old_path, int newdirfd, const char* new_path, int flags);
+extern "C" int linkat (int olddirfd, const char* old_path, int newdirfd, const char* new_path, int flags);
 
 /**
  * unlinkat:
@@ -197,7 +197,7 @@ int linkat (int olddirfd, const char* old_path, int newdirfd, const char* new_pa
  * @param flags
  * @return
  */
-int unlinkat (int dirfd, const char* pathname, int flags);
+extern "C" int unlinkat (int dirfd, const char* pathname, int flags);
 
 /**
  * rename:
@@ -205,7 +205,7 @@ int unlinkat (int dirfd, const char* pathname, int flags);
  * @param new_path
  * @return
  */
-int rename (const char* old_path, const char* new_path);
+extern "C" int rename (const char* old_path, const char* new_path);
 
 /**
  * mkdir:
@@ -213,35 +213,35 @@ int rename (const char* old_path, const char* new_path);
  * @param mode
  * @return
  */
-int mkdir (const char* path, mode_t mode);
+extern "C" int mkdir (const char* path, mode_t mode);
 
 /**
  * readdir:
  * @param dirp
  * @return
  */
-struct dirent* readdir (DIR* dirp);
+extern "C" struct dirent* readdir (DIR* dirp);
 
 /**
  * opendir:
  * @param path
  * @return
  */
-DIR* opendir (const char* path);
+extern "C" DIR* opendir (const char* path);
 
 /**
  * closedir:
  * @param dirp
  * @return
  */
-int closedir (DIR* dirp);
+extern "C" int closedir (DIR* dirp);
 
 /**
  * rmdir:
  * @param path
  * @return
  */
-int rmdir (const char* path);
+extern "C" int rmdir (const char* path);
 
 /**
  * getxattr:
@@ -251,7 +251,7 @@ int rmdir (const char* path);
  * @param size
  * @return
  */
-ssize_t getxattr (const char* path, const char* name, void* value, size_t size);
+extern "C" ssize_t getxattr (const char* path, const char* name, void* value, size_t size);
 
 /**
  * fgetxattr:
@@ -261,7 +261,7 @@ ssize_t getxattr (const char* path, const char* name, void* value, size_t size);
  * @param size
  * @return
  */
-ssize_t fgetxattr (int fd, const char* name, void* value, size_t size);
+extern "C" ssize_t fgetxattr (int fd, const char* name, void* value, size_t size);
 
 /**
  * setxattr:
@@ -272,7 +272,7 @@ ssize_t fgetxattr (int fd, const char* name, void* value, size_t size);
  * @param flags
  * @return
  */
-int setxattr (const char* path, const char* name, const void* value, size_t size, int flags);
+extern "C" int setxattr (const char* path, const char* name, const void* value, size_t size, int flags);
 
 /**
  * fsetxattr:
@@ -283,7 +283,7 @@ int setxattr (const char* path, const char* name, const void* value, size_t size
  * @param flags
  * @return
  */
-int fsetxattr (int fd, const char* name, const void* value, size_t size, int flags);
+extern "C" int fsetxattr (int fd, const char* name, const void* value, size_t size, int flags);
 
 /**
  * fread:
@@ -293,6 +293,6 @@ int fsetxattr (int fd, const char* name, const void* value, size_t size, int fla
  * @param stream
  * @return
  */
-size_t fread (void* ptr, size_t size, size_t nmemb, FILE* stream);
+extern "C" size_t fread (void* ptr, size_t size, size_t nmemb, FILE* stream);
 
 #endif // LDPAIO_POSIX_FILE_SYSTEM_H
