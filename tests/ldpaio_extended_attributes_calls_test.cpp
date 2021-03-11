@@ -399,6 +399,85 @@ int test_flistxattr (int fd)
 }
 
 /**
+ * test_removexattr:
+ * @param path
+ * @param name
+ * @return
+ */
+int test_removexattr (const char* path, const char* name)
+{
+    std::cout << "Test removexattr call (" << path << ", " << name << ")\n";
+
+    int return_value;
+    // remove extended attribute value to a given file
+    // verify if the test is running on an Apple device and use the respective xattr calls
+#if defined(__APPLE__)
+    return_value = ::removexattr (path, name, 0);
+#else
+    return_value = ::removexattr (path, name);
+#endif
+
+    // validate return_value
+    if (return_value != 0) {
+        std::cerr << "Error while removing attribute (" << errno << ")\n";
+    }
+
+    return return_value;
+}
+
+/**
+ * test_lremovexattr:
+ * @param path
+ * @param name
+ * @return
+ */
+int test_lremovexattr (const char* path, const char* name)
+{
+    std::cout << "Test lremovexattr call (" << path << ", " << name << ")\n";
+
+    int return_value = -1;
+    // remove extended attribute value to a given file
+    // verify if the test is running on an Apple device and use the respective xattr calls
+#if defined(__unix__) || defined(__linux__)
+    return_value = ::lremovexattr (path, name);
+#endif
+
+    // validate return_value
+    if (return_value != 0) {
+        std::cerr << "Error while removing attribute (" << errno << ")\n";
+    }
+
+    return return_value;
+}
+
+/**
+ * test_fremovexattr:
+ * @param path
+ * @param name
+ * @return
+ */
+int test_fremovexattr (int fd, const char* name)
+{
+    std::cout << "Test fremovexattr call (" << fd << ", " << name << ")\n";
+
+    int return_value;
+    // remove extended attribute value to a given file
+    // verify if the test is running on an Apple device and use the respective xattr calls
+#if defined(__APPLE__)
+    return_value = ::fremovexattr (fd, name, 0);
+#else
+    return_value = ::fremovexattr (fd, name);
+#endif
+
+    // validate return_value
+    if (return_value != 0) {
+        std::cerr << "Error while removing attribute (" << errno << ")\n";
+    }
+
+    return return_value;
+}
+
+/**
  * test_ext_attributes:
  * @param path
  * @param xattr
@@ -417,7 +496,8 @@ void test_ext_attributes (const std::string& path,
     return_value = test_getxattr_call (path.data (), xattr.data ());
     std::cout << "getxattr (" << return_value << ")\n";
 
-    // missing removexattr
+    return_value = test_removexattr (path.data (), xattr.data ());
+    std::cout << "removexattr (" << return_value << ")\n";
 }
 
 /**
@@ -439,7 +519,8 @@ void test_lext_attributes (const std::string& path,
     return_value = test_lgetxattr_call (path.data (), xattr.data ());
     std::cout << "lgetxattr (" << return_value << ")\n";
 
-    // missing lremovexattr
+    return_value = test_lremovexattr (path.data (), xattr.data ());
+    std::cout << "lremovexattr (" << return_value << ")\n";
 }
 
 /**
@@ -467,7 +548,8 @@ void test_fext_attributes (const std::string& path,
     return_value = test_fgetxattr_call (fd, xattr.data ());
     std::cout << "fgetxattr (" << return_value << ")\n";
 
-    // missing fremovexattr
+    return_value = test_fremovexattr (fd, xattr.data ());
+    std::cout << "fremovexattr (" << return_value << ")\n";
 
     ::close (fd);
 }
