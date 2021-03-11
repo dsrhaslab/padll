@@ -68,9 +68,17 @@ typedef int (*real_rmdir_t) (const char*);
  * Extended attributes calls.
  */
 typedef ssize_t (*real_getxattr_t) (const char*, const char*, void*, size_t);
+typedef ssize_t (*real_lgetxattr_t) (const char*, const char*, void*, size_t);
 typedef ssize_t (*real_fgetxattr_t) (int, const char*, void*, size_t);
 typedef int (*real_setxattr_t) (const char*, const char*, const void*, size_t, int);
+typedef int (*real_lsetxattr_t) (const char*, const char*, const void*, size_t, int);
 typedef int (*real_fsetxattr_t) (int, const char*, const void*, size_t, int);
+typedef ssize_t (*real_listxattr_t) (const char*, char*, size_t);
+typedef ssize_t (*real_llistxattr_t) (const char*, char*, size_t);
+typedef ssize_t (*real_flistxattr_t) (int, char*, size_t);
+typedef int (*real_removexattr_t) (const char*, const char*);
+typedef int (*real_lremovexattr_t) (const char*, const char*);
+typedef int (*real_fremovexattr_t) (int, const char*);
 
 class PosixPassthrough {
 
@@ -378,6 +386,17 @@ public:
     ssize_t passthrough_getxattr (const char* path, const char* name, void* value, size_t size);
 
     /**
+     * passthrough_lgetxattr:
+     *  https://linux.die.net/man/2/lgetxattr
+     * @param path
+     * @param name
+     * @param value
+     * @param size
+     * @return
+     */
+    ssize_t passthrough_lgetxattr (const char* path, const char* name, void* value, size_t size);
+
+    /**
      * passthrough_fgetxattr:
      *  https://man7.org/linux/man-pages/man2/fgetxattr.2.html
      * @param fd
@@ -405,6 +424,22 @@ public:
         int flags);
 
     /**
+     * passthrough_lsetxattr:
+     *  https://linux.die.net/man/2/lsetxattr
+     * @param path
+     * @param name
+     * @param value
+     * @param size
+     * @param flags
+     * @return
+     */
+    int passthrough_lsetxattr (const char* path,
+        const char* name,
+        const void* value,
+        size_t size,
+        int flags);
+
+    /**
      * passthrough_fsetxattr:
      *  https://man7.org/linux/man-pages/man2/fsetxattr.2.html
      * @param fd
@@ -415,6 +450,63 @@ public:
      * @return
      */
     int passthrough_fsetxattr (int fd, const char* name, const void* value, size_t size, int flags);
+
+    /**
+     * passthrough_listxattr:
+     *  https://linux.die.net/man/2/listxattr
+     * @param path
+     * @param list
+     * @param size
+     * @return
+     */
+    ssize_t passthrough_listxattr (const char* path, char* list, size_t size);
+
+    /**
+     * passthrough_llistxattr:
+     *  https://linux.die.net/man/2/llistxattr
+     * @param path
+     * @param list
+     * @param size
+     * @return
+     */
+    ssize_t passthrough_llistxattr (const char* path, char* list, size_t size);
+
+    /**
+     * passthrough_flistxattr:
+     *  https://linux.die.net/man/2/flistxattr
+     * @param fd
+     * @param list
+     * @param size
+     * @return
+     */
+    ssize_t passthrough_flistxattr (int fd, char* list, size_t size);
+
+    /**
+     * passthrough_removexattr:
+     *  https://linux.die.net/man/2/removexattr
+     * @param path
+     * @param name
+     * @return
+     */
+    int passthrough_removexattr (const char* path, const char* name);
+
+    /**
+     * passthrough_lremovexattr:
+     *  https://linux.die.net/man/2/lremovexattr
+     * @param path
+     * @param name
+     * @return
+     */
+    int passthrough_lremovexattr (const char* path, const char* name);
+
+    /**
+     * passthrough_fremovexattr:
+     *  https://linux.die.net/man/2/fremovexattr
+     * @param fd
+     * @param name
+     * @return
+     */
+    int passthrough_fremovexattr (int fd, const char* name);
 
     /**
      * passthrough_fread:

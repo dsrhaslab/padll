@@ -70,9 +70,17 @@ BETTER_ENUM (ExtendedAttributes,
     int,
     no_op = 0,
     getxattr = 1,
-    fgetxattr = 2,
-    setxattr = 3,
-    fsetxattr = 4);
+    lgetxattr = 2,
+    fgetxattr = 3,
+    setxattr = 4,
+    lsetxattr = 5,
+    fsetxattr = 6,
+    listxattr = 7,
+    llistxattr = 8,
+    flistxattr = 9,
+    removexattr = 10,
+    lremovexattr = 11,
+    fremovexattr = 12);
 
 } // namespace ldpaio
 

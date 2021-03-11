@@ -254,6 +254,16 @@ extern "C" int rmdir (const char* path);
 extern "C" ssize_t getxattr (const char* path, const char* name, void* value, size_t size);
 
 /**
+ * lgetxattr:
+ * @param path
+ * @param name
+ * @param value
+ * @param size
+ * @return
+ */
+extern "C" ssize_t lgetxattr (const char* path, const char* name, void* value, size_t size);
+
+/**
  * fgetxattr:
  * @param fd
  * @param name
@@ -275,6 +285,17 @@ extern "C" ssize_t fgetxattr (int fd, const char* name, void* value, size_t size
 extern "C" int setxattr (const char* path, const char* name, const void* value, size_t size, int flags);
 
 /**
+ * lsetxattr:
+ * @param path
+ * @param name
+ * @param value
+ * @param size
+ * @param flags
+ * @return
+ */
+extern "C" int lsetxattr (const char* path, const char* name, const void* value, size_t size, int flags);
+
+/**
  * fsetxattr:
  * @param fd
  * @param name
@@ -284,6 +305,57 @@ extern "C" int setxattr (const char* path, const char* name, const void* value, 
  * @return
  */
 extern "C" int fsetxattr (int fd, const char* name, const void* value, size_t size, int flags);
+
+/**
+ * listxattr:
+ * @param path
+ * @param list
+ * @param size
+ * @return
+ */
+extern "C" ssize_t listxattr (const char* path, char* list, size_t size);
+
+/**
+ * llistxattr:
+ * @param path
+ * @param list
+ * @param size
+ * @return
+ */
+extern "C" ssize_t llistxattr (const char* path, char* list, size_t size);
+
+/**
+ * flistxattr:
+ * @param fd
+ * @param list
+ * @param size
+ * @return
+ */
+extern "C" ssize_t flistxattr (int fd, char* list, size_t size);
+
+/**
+ * removexattr:
+ * @param path
+ * @param name
+ * @return
+ */
+extern "C" int removexattr (const char* path, const char* name);
+
+/**
+ * lremovexattr:
+ * @param path
+ * @param name
+ * @return
+ */
+extern "C" int lremovexattr (const char* path, const char* name);
+
+/**
+ * fremovexattr:
+ * @param fd
+ * @param name
+ * @return
+ */
+extern "C" int fremovexattr (int fd, const char* name);
 
 /**
  * fread:

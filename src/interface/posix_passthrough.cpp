@@ -795,6 +795,35 @@ ssize_t PosixPassthrough::passthrough_getxattr (const char* path,
     return result;
 }
 
+// passthrough_lgetxattr call. (...)
+ssize_t PosixPassthrough::passthrough_lgetxattr (const char* path,
+    const char* name,
+    void* value,
+    size_t size)
+{
+    // logging message
+    Logging::log_debug (
+            "passthrough-lgetxattr (" + std::string (path) + ", " + std::string (name) + ")");
+
+    // perform original POSIX lgetxattr operation
+    ssize_t result = ((real_lgetxattr_t)dlsym (RTLD_NEXT, "lgetxattr")) (path, name, value, size);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result != -1) {
+            this->m_ext_attr_stats.update_statistic_entry (
+                    static_cast<int> (ExtendedAttributes::lgetxattr),
+                    1,
+                    0);
+        } else {
+            this->m_ext_attr_stats
+                    .update_statistic_entry (static_cast<int> (ExtendedAttributes::lgetxattr), 1, 0, 1);
+        }
+    }
+
+    return result;
+}
+
 // passthrough_fgetxattr call. (...)
 ssize_t PosixPassthrough::passthrough_fgetxattr (int fd, const char* name, void* value, size_t size)
 {
@@ -852,6 +881,37 @@ int PosixPassthrough::passthrough_setxattr (const char* path,
     return result;
 }
 
+// passthrough_lsetxattr call. (...)
+int PosixPassthrough::passthrough_lsetxattr (const char* path,
+    const char* name,
+    const void* value,
+    size_t size,
+    int flags)
+{
+    // logging message
+    Logging::log_debug (
+            "passthrough-lsetxattr (" + std::string (path) + ", " + std::string (name) + ")");
+
+    // perform original POSIX lgetxattr operation
+    ssize_t result
+            = ((real_lsetxattr_t)dlsym (RTLD_NEXT, "lsetxattr")) (path, name, value, size, flags);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result != -1) {
+            this->m_ext_attr_stats.update_statistic_entry (
+                    static_cast<int> (ExtendedAttributes::lsetxattr),
+                    1,
+                    0);
+        } else {
+            this->m_ext_attr_stats
+                    .update_statistic_entry (static_cast<int> (ExtendedAttributes::lsetxattr), 1, 0, 1);
+        }
+    }
+
+    return result;
+}
+
 // passthrough_fsetxattr call. (...)
 int PosixPassthrough::passthrough_fsetxattr (int fd,
     const char* name,
@@ -877,6 +937,156 @@ int PosixPassthrough::passthrough_fsetxattr (int fd,
         } else {
             this->m_ext_attr_stats
                 .update_statistic_entry (static_cast<int> (ExtendedAttributes::fsetxattr), 1, 0, 1);
+        }
+    }
+
+    return result;
+}
+
+// passthrough_listxattr call. (...)
+ssize_t PosixPassthrough::passthrough_listxattr (const char* path, char* list, size_t size)
+{
+    // logging message
+    Logging::log_debug ("passthrough-listxattr (" + std::string (path) + ")");
+
+    // perform original POSIX listxattr operation
+    ssize_t result = ((real_listxattr_t)dlsym (RTLD_NEXT, "listxattr")) (path, list, size);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result != -1) {
+            this->m_ext_attr_stats.update_statistic_entry (
+                    static_cast<int> (ExtendedAttributes::listxattr),
+                    1,
+                    0);
+        } else {
+            this->m_ext_attr_stats
+                    .update_statistic_entry (static_cast<int> (ExtendedAttributes::listxattr), 1, 0, 1);
+        }
+    }
+
+    return result;
+}
+
+// passthrough_llistxattr call. (...)
+ssize_t PosixPassthrough::passthrough_llistxattr (const char* path, char* list, size_t size)
+{
+    // logging message
+    Logging::log_debug ("passthrough-llistxattr (" + std::string (path) + ")");
+
+    // perform original POSIX llistxattr operation
+    ssize_t result = ((real_llistxattr_t)dlsym (RTLD_NEXT, "llistxattr")) (path, list, size);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result != -1) {
+            this->m_ext_attr_stats.update_statistic_entry (
+                    static_cast<int> (ExtendedAttributes::llistxattr),
+                    1,
+                    0);
+        } else {
+            this->m_ext_attr_stats
+                    .update_statistic_entry (static_cast<int> (ExtendedAttributes::llistxattr), 1, 0, 1);
+        }
+    }
+
+    return result;
+}
+
+// passthrough_flistxattr call. (...)
+ssize_t PosixPassthrough::passthrough_flistxattr (int fd, char* list, size_t size)
+{
+    // logging message
+    Logging::log_debug ("passthrough-flistxattr (" + std::to_string (fd) + ")");
+
+    // perform original POSIX flistxattr operation
+    ssize_t result = ((real_flistxattr_t)dlsym (RTLD_NEXT, "flistxattr")) (fd, list, size);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result != -1) {
+            this->m_ext_attr_stats.update_statistic_entry (
+                    static_cast<int> (ExtendedAttributes::flistxattr),
+                    1,
+                    0);
+        } else {
+            this->m_ext_attr_stats
+                    .update_statistic_entry (static_cast<int> (ExtendedAttributes::flistxattr), 1, 0, 1);
+        }
+    }
+
+    return result;
+}
+
+// passthrough_removexattr call. (...)
+int PosixPassthrough::passthrough_removexattr (const char* path, const char* name)
+{
+    // logging message
+    Logging::log_debug ("passthrough-removexattr (" + std::string (path) + ", " + std::string (name) + ")");
+
+    // perform original POSIX removexattr operation
+    int result = ((real_removexattr_t)dlsym (RTLD_NEXT, "removexattr")) (path, name);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result != -1) {
+            this->m_ext_attr_stats.update_statistic_entry (
+                    static_cast<int> (ExtendedAttributes::removexattr),
+                    1,
+                    0);
+        } else {
+            this->m_ext_attr_stats
+                    .update_statistic_entry (static_cast<int> (ExtendedAttributes::removexattr), 1, 0, 1);
+        }
+    }
+
+    return result;
+}
+
+// passthrough_lremovexattr call. (...)
+int PosixPassthrough::passthrough_lremovexattr (const char* path, const char* name)
+{
+    // logging message
+    Logging::log_debug ("passthrough-lremovexattr (" + std::string (path) + ", " + std::string (name) + ")");
+
+    // perform original POSIX lremovexattr operation
+    int result = ((real_lremovexattr_t)dlsym (RTLD_NEXT, "lremovexattr")) (path, name);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result != -1) {
+            this->m_ext_attr_stats.update_statistic_entry (
+                    static_cast<int> (ExtendedAttributes::lremovexattr),
+                    1,
+                    0);
+        } else {
+            this->m_ext_attr_stats
+                    .update_statistic_entry (static_cast<int> (ExtendedAttributes::lremovexattr), 1, 0, 1);
+        }
+    }
+
+    return result;
+}
+
+// passthrough_fremovexattr call. (...)
+int PosixPassthrough::passthrough_fremovexattr (int fd, const char* name)
+{
+    // logging message
+    Logging::log_debug ("passthrough-fremovexattr (" + std::to_string (fd) + ", " + std::string (name) + ")");
+
+    // perform original POSIX fremovexattr operation
+    int result = ((real_fremovexattr_t)dlsym (RTLD_NEXT, "fremovexattr")) (fd, name);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result != -1) {
+            this->m_ext_attr_stats.update_statistic_entry (
+                    static_cast<int> (ExtendedAttributes::fremovexattr),
+                    1,
+                    0);
+        } else {
+            this->m_ext_attr_stats
+                    .update_statistic_entry (static_cast<int> (ExtendedAttributes::fremovexattr), 1, 0, 1);
         }
     }
 
