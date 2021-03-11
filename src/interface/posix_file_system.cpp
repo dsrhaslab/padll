@@ -249,23 +249,25 @@ ssize_t flistxattr (int fd, char* list, size_t size)
 }
 
 // removexattr call. (...)
-int removexattr (const char* path, const char* name) {
+int removexattr (const char* path, const char* name)
+{
     std::cout << "--- removexattr ---\n";
     return m_posix_passthrough.passthrough_removexattr (path, name);
 }
 
 // lremovexattr call. (...)
-int lremovexattr (const char* path, const char* name) {
+int lremovexattr (const char* path, const char* name)
+{
     std::cout << "--- lremovexattr ---\n";
     return m_posix_passthrough.passthrough_lremovexattr (path, name);
 }
 
 // fremovexattr call. (...)
-int fremovexattr (int fd, const char* name) {
+int fremovexattr (int fd, const char* name)
+{
     std::cout << "--- fremovexattr ---\n";
     return m_posix_passthrough.passthrough_fremovexattr (fd, name);
 }
-
 
 // fread call. (...)
 size_t fread (void* ptr, size_t size, size_t nmemb, FILE* stream)

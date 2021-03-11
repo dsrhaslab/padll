@@ -1,12 +1,12 @@
 /**
-*   Written by Ricardo Macedo.
-*   Copyright (c) 2021 INESC TEC.
-**/
+ *   Written by Ricardo Macedo.
+ *   Copyright (c) 2021 INESC TEC.
+ **/
 
-#include <sys/xattr.h>
 #include <cstring>
-#include <iostream>
 #include <fcntl.h>
+#include <iostream>
+#include <sys/xattr.h>
 #include <unistd.h>
 
 /**
@@ -20,13 +20,13 @@ int test_getxattr_call (const char* path, const char* xattr)
     std::cout << "Test getxattr call (" << path << ", " << xattr << ")\n";
 
     ssize_t info_size;
-    // get size of extended attribute
-    // verify if the test is running on an Apple device and use the respective xattr calls
-    #if defined(__APPLE__)
-        info_size = ::getxattr (path, xattr, nullptr, 0, 0, 0);
-    #else
-        info_size = ::getxattr (path, xattr, nullptr, 0);
-    #endif
+// get size of extended attribute
+// verify if the test is running on an Apple device and use the respective xattr calls
+#if defined(__APPLE__)
+    info_size = ::getxattr (path, xattr, nullptr, 0, 0, 0);
+#else
+    info_size = ::getxattr (path, xattr, nullptr, 0);
+#endif
 
     // validate info_size result after getxattr
     if (info_size == 0) {
@@ -35,21 +35,20 @@ int test_getxattr_call (const char* path, const char* xattr)
     }
 
     // allocate size for
-//    char* info = static_cast<char*> (malloc (info_size));
     char* info = new char[info_size];
 
     ssize_t return_value;
-    // get extended attribute
-    // verify if the test is running on an Apple device and use the respective xattr calls
-    #if defined(__APPLE__)
-        return_value = ::getxattr (path, xattr, info, info_size, 0, 0);
-    #else
-        return_value = ::getxattr (path, xattr, info, info_size);
-    #endif
+// get extended attribute
+// verify if the test is running on an Apple device and use the respective xattr calls
+#if defined(__APPLE__)
+    return_value = ::getxattr (path, xattr, info, info_size, 0, 0);
+#else
+    return_value = ::getxattr (path, xattr, info, info_size);
+#endif
 
-    std::cout << "\tresult {" << info  << ", " << info_size << ", " << return_value << "}\n";
+    std::cout << "\tresult {" << info << ", " << info_size << ", " << return_value << "}\n";
 
-    delete [] info;
+    delete[] info;
 
     return return_value;
 }
@@ -66,13 +65,13 @@ int test_setxattr_call (const char* path, const char* xattr, const char* value)
     std::cout << "Test setxattr call (" << path << ", " << xattr << ", " << value << ")\n";
 
     int return_value;
-    // set new extended attribute value to a given file
-    // verify if the test is running on an Apple device and use the respective xattr calls
-    #if defined(__APPLE__)
-        return_value = ::setxattr (path, xattr, value, std::strlen (value), 0, 0);
-    #else
-        return_value = ::setxattr (path, xattr, value, std::strlen (value), 0);
-    #endif
+// set new extended attribute value to a given file
+// verify if the test is running on an Apple device and use the respective xattr calls
+#if defined(__APPLE__)
+    return_value = ::setxattr (path, xattr, value, std::strlen (value), 0, 0);
+#else
+    return_value = ::setxattr (path, xattr, value, std::strlen (value), 0);
+#endif
 
     // validate return_value
     if (return_value != 0) {
@@ -95,13 +94,13 @@ int test_fsetxattr_call (const char* path, const char* xattr, const char* value)
 
     int fd = ::open (path, O_RDWR);
     int return_value;
-    // set new extended attribute value to a given file
-    // verify if the test is running on an Apple device and use the respective xattr calls
-    #if defined(__APPLE__)
-        return_value = ::fsetxattr (fd, xattr, value, std::strlen (value), 0, 0);
-    #else
-        return_value = ::fsetxattr (fd, xattr, value, std::strlen (value), 0);
-    #endif
+// set new extended attribute value to a given file
+// verify if the test is running on an Apple device and use the respective xattr calls
+#if defined(__APPLE__)
+    return_value = ::fsetxattr (fd, xattr, value, std::strlen (value), 0, 0);
+#else
+    return_value = ::fsetxattr (fd, xattr, value, std::strlen (value), 0);
+#endif
 
     // validate return value
     if (return_value != 0) {
@@ -125,13 +124,13 @@ int test_listxattr (const char* path)
     ssize_t buflen, keylen;
     char *buf, *key;
 
-    // determine the length of the buffer needed
-    // verify if the test is running on an Apple device and use the respective xattr calls
-    #if defined(__APPLE__)
-        buflen = ::listxattr (path, nullptr, 0, 0);
-    #else
-        buflen = ::listxattr (path, nullptr, 0);
-    #endif
+// determine the length of the buffer needed
+// verify if the test is running on an Apple device and use the respective xattr calls
+#if defined(__APPLE__)
+    buflen = ::listxattr (path, nullptr, 0, 0);
+#else
+    buflen = ::listxattr (path, nullptr, 0);
+#endif
 
     switch (buflen) {
         case -1:
@@ -147,16 +146,15 @@ int test_listxattr (const char* path)
     }
 
     // allocate size for buffer
-    // buf = static_cast<char*> (malloc (buflen));
     buf = new char[buflen];
 
-    // list extended attribute elements of a given file
-    // verify if the test is running on an Apple device and use the respective xattr calls
-    #if defined(__APPLE__)
-        buflen = ::listxattr (path, buf, buflen, 0);
-    #else
-        buflen = ::listxattr (path, buf, buflen);
-    #endif
+// list extended attribute elements of a given file
+// verify if the test is running on an Apple device and use the respective xattr calls
+#if defined(__APPLE__)
+    buflen = ::listxattr (path, buf, buflen, 0);
+#else
+    buflen = ::listxattr (path, buf, buflen);
+#endif
 
     // validate return value
     if (buflen == -1) {
@@ -168,13 +166,12 @@ int test_listxattr (const char* path)
     key = buf;
     while (buflen > 0) {
         std::cout << key << "\n";
-        keylen = std::strlen(key) + 1;
+        keylen = std::strlen (key) + 1;
         buflen -= keylen;
         key += keylen;
     }
 
-    // free (buf);
-    delete [] buf;
+    delete[] buf;
 
     return EXIT_SUCCESS;
 }
@@ -189,7 +186,7 @@ int main (int argc, char** argv)
         int return_value = test_setxattr_call (path.data (), xattr.data (), value.data ());
         std::cout << "setxattr (" << return_value << ")\n";
 
-        return_value = test_fsetxattr_call (path.data(), xattr.data (), value.data());
+        return_value = test_fsetxattr_call (path.data (), xattr.data (), value.data ());
         std::cout << "fsetxattr (" << return_value << ")\n";
 
         return_value = test_listxattr (path.data ());
@@ -201,5 +198,3 @@ int main (int argc, char** argv)
         test_listxattr (argv[1]);
     }
 }
-
-

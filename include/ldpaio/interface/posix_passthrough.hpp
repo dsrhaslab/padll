@@ -25,60 +25,60 @@ namespace ldpaio {
 /**
  * Metadata calls.
  */
-typedef int (*real_open_variadic_t) (const char*, int, ...);
-typedef int (*real_open_t) (const char*, int);
-typedef int (*real_creat_t) (const char*, mode_t);
-typedef int (*real_openat_variadic_t) (int, const char*, int, ...);
-typedef int (*real_openat_t) (int, const char*, int);
-typedef int (*real_open64_variadic_t) (const char*, int, ...);
-typedef int (*real_open64_t) (const char*, int);
-typedef int (*real_close_t) (int);
-typedef int (*real_fsync_t) (int);
-typedef int (*real_fdatasync_t) (int);
-typedef int (*real_truncate_t) (const char*, off_t);
-typedef int (*real_ftruncate_t) (int, off_t);
-typedef int (*real_stat_t) (const char*, struct stat*);
-typedef int (*real_fstat_t) (int fd, struct stat*);
-typedef int (*real_link_t) (const char*, const char*);
-typedef int (*real_unlink_t) (const char*);
-typedef int (*real_linkat_t) (int, const char*, int, const char*, int);
-typedef int (*real_unlinkat_t) (int, const char*, int);
-typedef int (*real_rename_t) (const char*, const char*);
+typedef int (*libc_open_variadic_t) (const char*, int, ...);
+typedef int (*libc_open_t) (const char*, int);
+typedef int (*libc_creat_t) (const char*, mode_t);
+typedef int (*libc_openat_variadic_t) (int, const char*, int, ...);
+typedef int (*libc_openat_t) (int, const char*, int);
+typedef int (*libc_open64_variadic_t) (const char*, int, ...);
+typedef int (*libc_open64_t) (const char*, int);
+typedef int (*libc_close_t) (int);
+typedef int (*libc_fsync_t) (int);
+typedef int (*libc_fdatasync_t) (int);
+typedef int (*libc_truncate_t) (const char*, off_t);
+typedef int (*libc_ftruncate_t) (int, off_t);
+typedef int (*libc_stat_t) (const char*, struct stat*);
+typedef int (*libc_fstat_t) (int fd, struct stat*);
+typedef int (*libc_link_t) (const char*, const char*);
+typedef int (*libc_unlink_t) (const char*);
+typedef int (*libc_linkat_t) (int, const char*, int, const char*, int);
+typedef int (*libc_unlinkat_t) (int, const char*, int);
+typedef int (*libc_rename_t) (const char*, const char*);
 
 /**
  * Data calls.
  */
-typedef ssize_t (*real_read_t) (int, void*, size_t);
-typedef ssize_t (*real_write_t) (int, const void*, size_t);
-typedef ssize_t (*real_pread_t) (int, void*, size_t, off_t);
-typedef ssize_t (*real_pwrite_t) (int, const void*, size_t, off_t);
-typedef size_t (*real_fread_t) (void*, size_t, size_t, FILE*);
+typedef ssize_t (*libc_read_t) (int, void*, size_t);
+typedef ssize_t (*libc_write_t) (int, const void*, size_t);
+typedef ssize_t (*libc_pread_t) (int, void*, size_t, off_t);
+typedef ssize_t (*libc_pwrite_t) (int, const void*, size_t, off_t);
+typedef size_t (*libc_fread_t) (void*, size_t, size_t, FILE*);
 // removed fwrite (segfault) ... need to add later
 
 /**
  * Directory calls
  */
-typedef int (*real_mkdir_t) (const char*, mode_t);
-typedef struct dirent* (*real_readdir_t) (DIR*);
-typedef DIR* (*real_opendir_t) (const char*);
-typedef int (*real_closedir_t) (DIR*);
-typedef int (*real_rmdir_t) (const char*);
+typedef int (*libc_mkdir_t) (const char*, mode_t);
+typedef struct dirent* (*libc_readdir_t) (DIR*);
+typedef DIR* (*libc_opendir_t) (const char*);
+typedef int (*libc_closedir_t) (DIR*);
+typedef int (*libc_rmdir_t) (const char*);
 
 /**
  * Extended attributes calls.
  */
-typedef ssize_t (*real_getxattr_t) (const char*, const char*, void*, size_t);
-typedef ssize_t (*real_lgetxattr_t) (const char*, const char*, void*, size_t);
-typedef ssize_t (*real_fgetxattr_t) (int, const char*, void*, size_t);
-typedef int (*real_setxattr_t) (const char*, const char*, const void*, size_t, int);
-typedef int (*real_lsetxattr_t) (const char*, const char*, const void*, size_t, int);
-typedef int (*real_fsetxattr_t) (int, const char*, const void*, size_t, int);
-typedef ssize_t (*real_listxattr_t) (const char*, char*, size_t);
-typedef ssize_t (*real_llistxattr_t) (const char*, char*, size_t);
-typedef ssize_t (*real_flistxattr_t) (int, char*, size_t);
-typedef int (*real_removexattr_t) (const char*, const char*);
-typedef int (*real_lremovexattr_t) (const char*, const char*);
-typedef int (*real_fremovexattr_t) (int, const char*);
+typedef ssize_t (*libc_getxattr_t) (const char*, const char*, void*, size_t);
+typedef ssize_t (*libc_lgetxattr_t) (const char*, const char*, void*, size_t);
+typedef ssize_t (*libc_fgetxattr_t) (int, const char*, void*, size_t);
+typedef int (*libc_setxattr_t) (const char*, const char*, const void*, size_t, int);
+typedef int (*libc_lsetxattr_t) (const char*, const char*, const void*, size_t, int);
+typedef int (*libc_fsetxattr_t) (int, const char*, const void*, size_t, int);
+typedef ssize_t (*libc_listxattr_t) (const char*, char*, size_t);
+typedef ssize_t (*libc_llistxattr_t) (const char*, char*, size_t);
+typedef ssize_t (*libc_flistxattr_t) (int, char*, size_t);
+typedef int (*libc_removexattr_t) (const char*, const char*);
+typedef int (*libc_lremovexattr_t) (const char*, const char*);
+typedef int (*libc_fremovexattr_t) (int, const char*);
 
 class PosixPassthrough {
 

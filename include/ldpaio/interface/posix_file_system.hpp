@@ -188,7 +188,8 @@ extern "C" int unlink (const char* path);
  * @param flags
  * @return
  */
-extern "C" int linkat (int olddirfd, const char* old_path, int newdirfd, const char* new_path, int flags);
+extern "C" int
+linkat (int olddirfd, const char* old_path, int newdirfd, const char* new_path, int flags);
 
 /**
  * unlinkat:
@@ -282,7 +283,8 @@ extern "C" ssize_t fgetxattr (int fd, const char* name, void* value, size_t size
  * @param flags
  * @return
  */
-extern "C" int setxattr (const char* path, const char* name, const void* value, size_t size, int flags);
+extern "C" int
+setxattr (const char* path, const char* name, const void* value, size_t size, int flags);
 
 /**
  * lsetxattr:
@@ -293,7 +295,8 @@ extern "C" int setxattr (const char* path, const char* name, const void* value, 
  * @param flags
  * @return
  */
-extern "C" int lsetxattr (const char* path, const char* name, const void* value, size_t size, int flags);
+extern "C" int
+lsetxattr (const char* path, const char* name, const void* value, size_t size, int flags);
 
 /**
  * fsetxattr:
