@@ -155,7 +155,33 @@ int test_setxattr_call (const char* path, const char* xattr, const char* value)
 
     // validate return_value
     if (return_value != 0) {
-        std::cerr << "Error while getting attribute (" << errno << ")\n";
+        std::cerr << "Error while setting attribute (" << errno << ")\n";
+    }
+
+    return return_value;
+}
+
+
+/**
+ * test_lsetxattr_call:
+ * @param path
+ * @param xattr
+ * @param value
+ * @return
+ */
+int test_lsetxattr_call (const char* path, const char* xattr, const char* value)
+{
+    std::cout << "Test lsetxattr call (" << path << ", " << xattr << ", " << value << ")\n";
+
+    int return_value = -1;
+    // set new extended attribute value to a given file
+#if defined(__unix__) || defined(__linux__)
+    return_value = ::lsetxattr (path, xattr, value, std::strlen (value), 0);
+#endif
+
+    // validate return_value
+    if (return_value != 0) {
+        std::cerr << "Error while setting attribute (" << errno << ")\n";
     }
 
     return return_value;
@@ -183,7 +209,7 @@ int test_fsetxattr_call (int fd, const char* xattr, const char* value)
 
     // validate return value
     if (return_value != 0) {
-        std::cerr << "Error while getting attribute (" << errno << ")\n";
+        std::cerr << "Error while setting attribute (" << errno << ")\n";
     }
 
     return return_value;
@@ -252,7 +278,62 @@ int test_listxattr (const char* path)
     return EXIT_SUCCESS;
 }
 
+/**
+ * test_llistxattr:
+ * @param path
+ * @return
+ */
+int test_llistxattr (const char* path)
+{
+    std::cout << "Test llistxattr call (" << path << ")\n";
 
+    ssize_t buflen = 0, keylen;
+    char *buf, *key;
+
+    // determine the length of the buffer needed
+#if defined(__unix__) || defined(__linux__)
+    buflen = ::llistxattr (path, nullptr, 0);
+#endif
+
+    switch (buflen) {
+        case -1:
+            std::cerr << "Error in llistxattr (" << errno << ")\n";
+            return EXIT_FAILURE;
+
+        case 0:
+            std::cout << path << " has no attributes.\n";
+            return EXIT_SUCCESS;
+
+        default:
+            break;
+    }
+
+    // allocate size for buffer
+    buf = new char[buflen];
+
+    // list extended attribute elements of a given file
+#if defined(__unix__) || defined(__linux__)
+    buflen = ::llistxattr (path, buf, buflen);
+#endif
+
+    // validate return value
+    if (buflen == -1) {
+        std::cerr << "Error in llistxattr (" << errno << ")\n";
+        return EXIT_FAILURE;
+    }
+
+    // loop over the list of zero terminated strings with the attribute keys
+    key = buf;
+    while (buflen > 0) {
+        std::cout << key << "\n";
+        keylen = std::strlen (key) + 1;
+        buflen -= keylen;
+        key += keylen;
+    }
+
+    delete[] buf;
+    return EXIT_SUCCESS;
+}
 
 /**
  * test_flistxattr:
@@ -349,14 +430,14 @@ void test_lext_attributes (const std::string& path,
                            const std::string& xattr,
                            const std::string& value)
 {
-//    int return_value = test_lsetxattr_call (path.data (), xattr.data (), value.data ());
-//    std::cout << "lsetxattr (" << return_value << ")\n";
+    int return_value = test_lsetxattr_call (path.data (), xattr.data (), value.data ());
+    std::cout << "lsetxattr (" << return_value << ")\n";
 
-//    return_value = test_llistxattr (path.data ());
-//    std::cout << "llistxattr (" << return_value << ")\n";
+    return_value = test_llistxattr (path.data ());
+    std::cout << "llistxattr (" << return_value << ")\n";
 
-//    return_value = test_lgetxattr_call (path.data (), xattr.data ());
-//    std::cout << "lgetxattr (" << return_value << ")\n";
+    return_value = test_lgetxattr_call (path.data (), xattr.data ());
+    std::cout << "lgetxattr (" << return_value << ")\n";
 
     // missing lremovexattr
 }
@@ -387,6 +468,8 @@ void test_fext_attributes (const std::string& path,
     std::cout << "fgetxattr (" << return_value << ")\n";
 
     // missing fremovexattr
+
+    ::close (fd);
 }
 
 /**
