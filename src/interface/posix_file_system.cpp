@@ -188,84 +188,72 @@ int rmdir (const char* path)
 // getxattr call. (...)
 ssize_t getxattr (const char* path, const char* name, void* value, size_t size)
 {
-    std::cout << "--- getxattr ---\n";
     return m_posix_passthrough.passthrough_getxattr (path, name, value, size);
 }
 
 // lgetxattr call. (...)
 ssize_t lgetxattr (const char* path, const char* name, void* value, size_t size)
 {
-    std::cout << "--- lgetxattr ---\n";
     return m_posix_passthrough.passthrough_lgetxattr (path, name, value, size);
 }
 
 // fgetxattr call. (...)
 ssize_t fgetxattr (int fd, const char* name, void* value, size_t size)
 {
-    std::cout << "--- fgetxattr ---\n";
     return m_posix_passthrough.passthrough_fgetxattr (fd, name, value, size);
 }
 
 // setxattr call. (...)
 int setxattr (const char* path, const char* name, const void* value, size_t size, int flags)
 {
-    std::cout << "--- setxattr ---\n";
     return m_posix_passthrough.passthrough_setxattr (path, name, value, size, flags);
 }
 
 // lsetxattr call. (...)
 int lsetxattr (const char* path, const char* name, const void* value, size_t size, int flags)
 {
-    std::cout << "--- lsetxattr ---\n";
     return m_posix_passthrough.passthrough_lsetxattr (path, name, value, size, flags);
 }
 
 // fsetxaatr call. (...)
 int fsetxattr (int fd, const char* name, const void* value, size_t size, int flags)
 {
-    std::cout << "--- fsetxattr ---\n";
     return m_posix_passthrough.passthrough_fsetxattr (fd, name, value, size, flags);
 }
 
 // listxattr call. (...)
 ssize_t listxattr (const char* path, char* list, size_t size)
 {
-    std::cout << "--- listxattr ---\n";
     return m_posix_passthrough.passthrough_listxattr (path, list, size);
 }
 
 // llistxattr call. (...)
 ssize_t llistxattr (const char* path, char* list, size_t size)
 {
-    std::cout << "--- llistxattr ---\n";
     return m_posix_passthrough.passthrough_llistxattr (path, list, size);
 }
 
 // flistxattr call. (...)
 ssize_t flistxattr (int fd, char* list, size_t size)
 {
-    std::cout << "--- flistxattr ---\n";
     return m_posix_passthrough.passthrough_flistxattr (fd, list, size);
 }
 
 // removexattr call. (...)
 int removexattr (const char* path, const char* name)
 {
-    std::cout << "--- removexattr ---\n";
     return m_posix_passthrough.passthrough_removexattr (path, name);
 }
 
 // lremovexattr call. (...)
 int lremovexattr (const char* path, const char* name)
 {
-    std::cout << "--- lremovexattr ---\n";
     return m_posix_passthrough.passthrough_lremovexattr (path, name);
 }
 
 // fremovexattr call. (...)
 int fremovexattr (int fd, const char* name)
 {
-    std::cout << "--- fremovexattr ---\n";
     return m_posix_passthrough.passthrough_fremovexattr (fd, name);
 }
 

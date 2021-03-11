@@ -50,7 +50,6 @@ int test_getxattr_call (const char* path, const char* xattr)
     std::cout << "\tresult {" << info << ", " << info_size << ", " << return_value << "}\n";
 
     delete[] info;
-
     return return_value;
 }
 
@@ -83,6 +82,49 @@ int test_lgetxattr_call (const char* path, const char* xattr)
     // get extended attribute
 #if defined(__unix__) || defined(__linux__)
     return_value = ::lgetxattr (path, xattr, info, info_size);
+#endif
+
+    std::cout << "\tresult {" << info << ", " << info_size << ", " << return_value << "}\n";
+
+    delete[] info;
+    return return_value;
+}
+
+/**
+ * test_fgetxattr_call:
+ * @param fd
+ * @param xattr
+ * @return
+ */
+int test_fgetxattr_call (int fd, const char* xattr)
+{
+    std::cout << "Test fgetxattr call (" << fd << ", " << xattr << ")\n";
+
+    ssize_t info_size;
+    // get size of extended attribute
+    // verify if the test is running on an Apple device and use the respective xattr calls
+#if defined(__APPLE__)
+    info_size = ::fgetxattr (fd, xattr, nullptr, 0, 0, 0);
+#else
+    info_size = ::fgetxattr (fd, xattr, nullptr, 0);
+#endif
+
+    // validate info_size result after fgetxattr
+    if (info_size == 0) {
+        std::cerr << "Error while getting attribute\n";
+        return -1;
+    }
+
+    // allocate size for
+    char* info = new char[info_size];
+
+    ssize_t return_value;
+    // get extended attribute
+    // verify if the test is running on an Apple device and use the respective xattr calls
+#if defined(__APPLE__)
+    return_value = ::fgetxattr (fd, xattr, info, info_size, 0, 0);
+#else
+    return_value = ::fgetxattr (fd, xattr, info, info_size);
 #endif
 
     std::cout << "\tresult {" << info << ", " << info_size << ", " << return_value << "}\n";
@@ -126,11 +168,10 @@ int test_setxattr_call (const char* path, const char* xattr, const char* value)
  * @param value
  * @return
  */
-int test_fsetxattr_call (const char* path, const char* xattr, const char* value)
+int test_fsetxattr_call (int fd, const char* xattr, const char* value)
 {
-    std::cout << "Test setxattr call (" << path << ", " << xattr << ", " << value << ")\n";
+    std::cout << "Test setxattr call (" << fd << ", " << xattr << ", " << value << ")\n";
 
-    int fd = ::open (path, O_RDWR);
     int return_value;
     // set new extended attribute value to a given file
     // verify if the test is running on an Apple device and use the respective xattr calls
@@ -144,8 +185,6 @@ int test_fsetxattr_call (const char* path, const char* xattr, const char* value)
     if (return_value != 0) {
         std::cerr << "Error while getting attribute (" << errno << ")\n";
     }
-
-    ::close (fd);
 
     return return_value;
 }
@@ -210,7 +249,71 @@ int test_listxattr (const char* path)
     }
 
     delete[] buf;
+    return EXIT_SUCCESS;
+}
 
+
+
+/**
+ * test_flistxattr:
+ * @param path
+ * @return
+ */
+int test_flistxattr (int fd)
+{
+    std::cout << "Test listxattr call (" << fd << ")\n";
+
+    ssize_t buflen, keylen;
+    char *buf, *key;
+
+    // determine the length of the buffer needed
+    // verify if the test is running on an Apple device and use the respective xattr calls
+#if defined(__APPLE__)
+    buflen = ::flistxattr (fd, nullptr, 0, 0);
+#else
+    buflen = ::flistxattr (fd, nullptr, 0);
+#endif
+
+    switch (buflen) {
+        case -1:
+            std::cerr << "Error in flistxattr (" << errno << ")\n";
+            return EXIT_FAILURE;
+
+        case 0:
+            std::cout << fd << " has no attributes.\n";
+            return EXIT_SUCCESS;
+
+        default:
+            break;
+    }
+
+    // allocate size for buffer
+    buf = new char[buflen];
+
+    // list extended attribute elements of a given file
+    // verify if the test is running on an Apple device and use the respective xattr calls
+#if defined(__APPLE__)
+    buflen = ::flistxattr (fd, buf, buflen, 0);
+#else
+    buflen = ::flistxattr (fd, buf, buflen);
+#endif
+
+    // validate return value
+    if (buflen == -1) {
+        std::cerr << "Error in listxattr (" << errno << ")\n";
+        return EXIT_FAILURE;
+    }
+
+    // loop over the list of zero terminated strings with the attribute keys
+    key = buf;
+    while (buflen > 0) {
+        std::cout << key << "\n";
+        keylen = std::strlen (key) + 1;
+        buflen -= keylen;
+        key += keylen;
+    }
+
+    delete[] buf;
     return EXIT_SUCCESS;
 }
 
@@ -268,14 +371,20 @@ void test_fext_attributes (const std::string& path,
     const std::string& xattr,
     const std::string& value)
 {
-//    int return_value = test_fsetxattr_call (path.data (), xattr.data (), value.data ());
-//    std::cout << "fsetxattr (" << return_value << ")\n";
+    int fd = ::open (path.data(), O_RDWR);
+    if (fd == -1) {
+        std::cerr << "Error while opening file " << path << ".\n";
+        return;
+    }
 
-//    return_value = test_flistxattr (path.data ());
-//    std::cout << "flistxattr (" << return_value << ")\n";
+    int return_value = test_fsetxattr_call (fd, xattr.data (), value.data ());
+    std::cout << "fsetxattr (" << return_value << ")\n";
 
-//    return_value = test_fgetxattr_call (path.data (), xattr.data ());
-//    std::cout << "fgetxattr (" << return_value << ")\n";
+    return_value = test_flistxattr (fd);
+    std::cout << "flistxattr (" << return_value << ")\n";
+
+    return_value = test_fgetxattr_call (fd, xattr.data ());
+    std::cout << "fgetxattr (" << return_value << ")\n";
 
     // missing fremovexattr
 }
