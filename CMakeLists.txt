@@ -15,13 +15,15 @@ option(LDPAIO_BUILD_LDPAIO_TESTS "Build ldpaio's unit tests" ON)
 option(LDPAIO_BUILD_LIBC_TESTS "Build libc tests" ON)
 
 # Setup the basic C++ Compiler flags
-if (Apple)
+if (APPLE)
+    message(STATUS "Detecting Apple")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fPIC")
-endif (Apple)
+endif (APPLE)
 
-if (Linux)
+if (UNIX AND NOT APPLE)
+    message(STATUS "Detecting UNIX (!Apple)")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fPIC -Wl,--no-as-needed -ldl")
-endif (Linux)
+endif ()
 
 
 # Test whether -Wthread-safety is available. See
