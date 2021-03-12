@@ -209,6 +209,23 @@ extern "C" int unlinkat (int dirfd, const char* pathname, int flags);
 extern "C" int rename (const char* old_path, const char* new_path);
 
 /**
+ * symlink:
+ * @param target
+ * @param linkpath
+ * @return
+ */
+extern "C" int symlink (const char* target, const char* linkpath);
+
+/**
+ * symlinkat:
+ * @param target
+ * @param newdirfd
+ * @param linkpath
+ * @return
+ */
+extern "C" int symlinkat (const char* target, int newdirfd, const char* linkpath);
+
+/**
  * mkdir:
  * @param path
  * @param mode

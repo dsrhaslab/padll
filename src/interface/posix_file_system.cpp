@@ -155,6 +155,18 @@ int rename (const char* old_path, const char* new_path)
     return m_posix_passthrough.passthrough_rename (old_path, new_path);
 }
 
+// symlink call. (...)
+int symlink (const char* target, const char* linkpath)
+{
+    return m_posix_passthrough.passthrough_symlink (target, linkpath);
+}
+
+// symlinkat call. (...)
+int symlinkat (const char* target, int newdirfd, const char* linkpath)
+{
+    return m_posix_passthrough.passthrough_symlinkat (target, newdirfd, linkpath);
+}
+
 // mkdir call. (...)
 int mkdir (const char* path, mode_t mode)
 {

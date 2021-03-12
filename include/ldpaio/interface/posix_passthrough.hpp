@@ -44,6 +44,8 @@ typedef int (*libc_unlink_t) (const char*);
 typedef int (*libc_linkat_t) (int, const char*, int, const char*, int);
 typedef int (*libc_unlinkat_t) (int, const char*, int);
 typedef int (*libc_rename_t) (const char*, const char*);
+typedef int (*libc_symlink_t) (const char*, const char*);
+typedef int (*libc_symlinkat_t) (const char*, int, const char*);
 
 /**
  * Data calls.
@@ -336,6 +338,23 @@ public:
      * @return
      */
     int passthrough_rename (const char* old_path, const char* new_path);
+
+    /**
+     * passthrough_symlink:
+     * @param target
+     * @param linkpath
+     * @return
+     */
+    int passthrough_symlink (const char* target, const char* linkpath);
+
+    /**
+     * passthrough_symlinkat:
+     * @param target
+     * @param newdirfd
+     * @param linkpath
+     * @return
+     */
+    int passthrough_symlinkat (const char* target, int newdirfd, const char* linkpath);
 
     /**
      * passthrough_mkdir:

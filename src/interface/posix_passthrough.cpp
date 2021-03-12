@@ -650,6 +650,60 @@ int PosixPassthrough::passthrough_rename (const char* old_path, const char* new_
     return result;
 }
 
+// passthrough_symlink call. (...)
+int PosixPassthrough::passthrough_symlink (const char* target, const char* linkpath)
+{
+    // logging message
+    Logging::log_debug (
+            "passthrough-symlink (" + std::string (target) + ", " + std::string (linkpath) + ")");
+
+    // perform original POSIX symlink operation
+    int result = ((libc_symlink_t)dlsym (RTLD_NEXT, "symlink")) (target, linkpath);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result == 0) {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::symlink),
+                                                           1,
+                                                           0);
+        } else {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::symlink),
+                                                           1,
+                                                           0,
+                                                           1);
+        }
+    }
+
+    return result;
+}
+
+// passthrough_symlinkat call. (...)
+int PosixPassthrough::passthrough_symlinkat (const char* target, int newdirfd, const char* linkpath)
+{
+    // logging message
+    Logging::log_debug ("passthrough-symlinkat (" + std::string (target) + ", " +
+        std::to_string (newdirfd) + ", " + std::string (linkpath) + ")");
+
+    // perform original POSIX symlinkat operation
+    int result = ((libc_symlinkat_t)dlsym (RTLD_NEXT, "symlinkat")) (target, newdirfd, linkpath);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result == 0) {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::symlinkat),
+                                                           1,
+                                                           0);
+        } else {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::symlinkat),
+                                                           1,
+                                                           0,
+                                                           1);
+        }
+    }
+
+    return result;
+}
+
 // passthrough_mkdir call. (...)
 int PosixPassthrough::passthrough_mkdir (const char* path, mode_t mode)
 {
