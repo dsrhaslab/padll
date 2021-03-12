@@ -655,7 +655,7 @@ int PosixPassthrough::passthrough_symlink (const char* target, const char* linkp
 {
     // logging message
     Logging::log_debug (
-            "passthrough-symlink (" + std::string (target) + ", " + std::string (linkpath) + ")");
+        "passthrough-symlink (" + std::string (target) + ", " + std::string (linkpath) + ")");
 
     // perform original POSIX symlink operation
     int result = ((libc_symlink_t)dlsym (RTLD_NEXT, "symlink")) (target, linkpath);
@@ -664,13 +664,13 @@ int PosixPassthrough::passthrough_symlink (const char* target, const char* linkp
     if (this->m_collect) {
         if (result == 0) {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::symlink),
-                                                           1,
-                                                           0);
+                1,
+                0);
         } else {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::symlink),
-                                                           1,
-                                                           0,
-                                                           1);
+                1,
+                0,
+                1);
         }
     }
 
@@ -681,8 +681,8 @@ int PosixPassthrough::passthrough_symlink (const char* target, const char* linkp
 int PosixPassthrough::passthrough_symlinkat (const char* target, int newdirfd, const char* linkpath)
 {
     // logging message
-    Logging::log_debug ("passthrough-symlinkat (" + std::string (target) + ", " +
-        std::to_string (newdirfd) + ", " + std::string (linkpath) + ")");
+    Logging::log_debug ("passthrough-symlinkat (" + std::string (target) + ", "
+        + std::to_string (newdirfd) + ", " + std::string (linkpath) + ")");
 
     // perform original POSIX symlinkat operation
     int result = ((libc_symlinkat_t)dlsym (RTLD_NEXT, "symlinkat")) (target, newdirfd, linkpath);
@@ -691,13 +691,13 @@ int PosixPassthrough::passthrough_symlinkat (const char* target, int newdirfd, c
     if (this->m_collect) {
         if (result == 0) {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::symlinkat),
-                                                           1,
-                                                           0);
+                1,
+                0);
         } else {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::symlinkat),
-                                                           1,
-                                                           0,
-                                                           1);
+                1,
+                0,
+                1);
         }
     }
 
@@ -717,13 +717,13 @@ ssize_t PosixPassthrough::passthrough_readlink (const char* path, char* buf, siz
     if (this->m_collect) {
         if (result >= 0) {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::readlink),
-                                                           1,
-                                                           result);
+                1,
+                result);
         } else {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::readlink),
-                                                           1,
-                                                           0,
-                                                           1);
+                1,
+                0,
+                1);
         }
     }
 
@@ -731,29 +731,28 @@ ssize_t PosixPassthrough::passthrough_readlink (const char* path, char* buf, siz
 }
 
 // passthrough_readlinkat call. (...)
-ssize_t PosixPassthrough::passthrough_readlinkat (int dirfd,
-    const char* path,
-    char* buf,
-    size_t bufsize)
+ssize_t
+PosixPassthrough::passthrough_readlinkat (int dirfd, const char* path, char* buf, size_t bufsize)
 {
     // logging message
     Logging::log_debug (
-            "passthrough-readlinkat (" + std::to_string (dirfd) + ", " + std::string (path) + ")");
+        "passthrough-readlinkat (" + std::to_string (dirfd) + ", " + std::string (path) + ")");
 
     // perform original POSIX readlinkat operation
-    ssize_t result = ((libc_readlinkat_t)dlsym (RTLD_NEXT, "readlinkat")) (dirfd, path, buf, bufsize);
+    ssize_t result
+        = ((libc_readlinkat_t)dlsym (RTLD_NEXT, "readlinkat")) (dirfd, path, buf, bufsize);
 
     // update statistic entry
     if (this->m_collect) {
         if (result >= 0) {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::readlinkat),
-                                                           1,
-                                                           result);
+                1,
+                result);
         } else {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::readlinkat),
-                                                           1,
-                                                           0,
-                                                           1);
+                1,
+                0,
+                1);
         }
     }
 
