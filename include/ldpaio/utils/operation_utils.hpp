@@ -46,7 +46,9 @@ BETTER_ENUM (Metadata,
     unlinkat = 18,
     rename = 19,
     symlink = 20,
-    symlinkat = 21);
+    symlinkat = 21,
+    readlink = 22,
+    readlinkat = 23);
 
 /**
  * Data Definitions.

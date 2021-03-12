@@ -226,6 +226,25 @@ extern "C" int symlink (const char* target, const char* linkpath);
 extern "C" int symlinkat (const char* target, int newdirfd, const char* linkpath);
 
 /**
+ * readlink:
+ * @param path
+ * @param buf
+ * @param bufsize
+ * @return
+ */
+extern "C" ssize_t readlink (const char* path, char* buf, size_t bufsize);
+
+/**
+ * readlinkat:
+ * @param dirfd
+ * @param path
+ * @param buf
+ * @param bufsize
+ * @return
+ */
+extern "C" ssize_t readlinkat (int dirfd, const char* path, char* buf, size_t bufsize);
+
+/**
  * mkdir:
  * @param path
  * @param mode

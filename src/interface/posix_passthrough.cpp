@@ -704,6 +704,62 @@ int PosixPassthrough::passthrough_symlinkat (const char* target, int newdirfd, c
     return result;
 }
 
+// passthrough_readlink call. (...)
+ssize_t PosixPassthrough::passthrough_readlink (const char* path, char* buf, size_t bufsize)
+{
+    // logging message
+    Logging::log_debug ("passthrough-readlink (" + std::string (path) + ")");
+
+    // perform original POSIX readlink operation
+    ssize_t result = ((libc_readlink_t)dlsym (RTLD_NEXT, "readlink")) (path, buf, bufsize);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result >= 0) {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::readlink),
+                                                           1,
+                                                           result);
+        } else {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::readlink),
+                                                           1,
+                                                           0,
+                                                           1);
+        }
+    }
+
+    return result;
+}
+
+// passthrough_readlinkat call. (...)
+ssize_t PosixPassthrough::passthrough_readlinkat (int dirfd,
+    const char* path,
+    char* buf,
+    size_t bufsize)
+{
+    // logging message
+    Logging::log_debug (
+            "passthrough-readlinkat (" + std::to_string (dirfd) + ", " + std::string (path) + ")");
+
+    // perform original POSIX readlinkat operation
+    ssize_t result = ((libc_readlinkat_t)dlsym (RTLD_NEXT, "readlinkat")) (dirfd, path, buf, bufsize);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result >= 0) {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::readlinkat),
+                                                           1,
+                                                           result);
+        } else {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::readlinkat),
+                                                           1,
+                                                           0,
+                                                           1);
+        }
+    }
+
+    return result;
+}
+
 // passthrough_mkdir call. (...)
 int PosixPassthrough::passthrough_mkdir (const char* path, mode_t mode)
 {

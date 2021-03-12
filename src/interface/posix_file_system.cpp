@@ -167,6 +167,18 @@ int symlinkat (const char* target, int newdirfd, const char* linkpath)
     return m_posix_passthrough.passthrough_symlinkat (target, newdirfd, linkpath);
 }
 
+// readlink call. (...)
+ssize_t readlink (const char* path, char* buf, size_t bufsize)
+{
+    return m_posix_passthrough.passthrough_readlink (path, buf, bufsize);
+}
+
+// readlinkat call. (...)
+ssize_t readlinkat (int dirfd, const char* path, char* buf, size_t bufsize)
+{
+    return m_posix_passthrough.passthrough_readlinkat (dirfd, path, buf, bufsize);
+}
+
 // mkdir call. (...)
 int mkdir (const char* path, mode_t mode)
 {

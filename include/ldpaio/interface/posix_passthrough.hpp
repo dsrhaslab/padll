@@ -46,6 +46,8 @@ typedef int (*libc_unlinkat_t) (int, const char*, int);
 typedef int (*libc_rename_t) (const char*, const char*);
 typedef int (*libc_symlink_t) (const char*, const char*);
 typedef int (*libc_symlinkat_t) (const char*, int, const char*);
+typedef ssize_t (*libc_readlink_t) (const char*, char*, size_t);
+typedef ssize_t (*libc_readlinkat_t) (int, const char*, char*, size_t);
 
 /**
  * Data calls.
@@ -341,6 +343,7 @@ public:
 
     /**
      * passthrough_symlink:
+     *  https://man7.org/linux/man-pages/man2/symlink.2.html
      * @param target
      * @param linkpath
      * @return
@@ -355,6 +358,26 @@ public:
      * @return
      */
     int passthrough_symlinkat (const char* target, int newdirfd, const char* linkpath);
+
+    /**
+     * passthrough_readlink:
+     *  https://www.man7.org/linux/man-pages/man2/readlink.2.html
+     * @param path
+     * @param buf
+     * @param bufsize
+     * @return
+     */
+    ssize_t passthrough_readlink (const char* path, char* buf, size_t bufsize);
+
+    /**
+     * passthrough_readlinkat:
+     * @param dirfd
+     * @param path
+     * @param buf
+     * @param bufsize
+     * @return
+     */
+    ssize_t passthrough_readlinkat (int dirfd, const char* path, char* buf, size_t bufsize);
 
     /**
      * passthrough_mkdir:
