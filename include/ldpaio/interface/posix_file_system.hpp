@@ -157,6 +157,24 @@ extern "C" int ftruncate (int fd, off_t length);
 extern "C" int stat (const char* path, struct stat* statbuf);
 
 /**
+ * lstat:
+ * @param path
+ * @param statbuf
+ * @return
+ */
+extern "C" int lstat (const char* path, struct stat* statbuf);
+
+/**
+ * fstatat:
+ * @param dirfd
+ * @param path
+ * @param statbuf
+ * @param flags
+ * @return
+ */
+extern "C" int fstatat (int dirfd, const char* path, struct stat* statbuf, int flags);
+
+/**
  * fstat:
  * @param fd
  * @param statbuf

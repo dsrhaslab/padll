@@ -486,6 +486,32 @@ int PosixPassthrough::passthrough_stat (const char* path, struct stat* statbuf)
     return result;
 }
 
+// passthrough_lstat call. (...)
+int PosixPassthrough::passthrough_lstat (const char* path, struct stat* statbuf)
+{
+    // logging message
+    Logging::log_debug ("passthrough-lstat (" + std::string (path) + ")");
+
+    // perform original POSIX lstat operation
+    int result = ((libc_lstat_t)dlsym (RTLD_NEXT, "lstat")) (path, statbuf);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result == 0) {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::lstat),
+                1,
+                0);
+        } else {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::lstat),
+                1,
+                0,
+                1);
+        }
+    }
+
+    return result;
+}
+
 // passthrough_fstat call. (...)
 int PosixPassthrough::passthrough_fstat (int fd, struct stat* statbuf)
 {
@@ -503,6 +529,36 @@ int PosixPassthrough::passthrough_fstat (int fd, struct stat* statbuf)
                 0);
         } else {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fstat),
+                1,
+                0,
+                1);
+        }
+    }
+
+    return result;
+}
+
+// passthrough_fstatat call. (...)
+int PosixPassthrough::passthrough_fstatat (int dirfd,
+    const char* path,
+    struct stat* statbuf,
+    int flags)
+{
+    // logging message
+    Logging::log_debug (
+        "passthrough-fstatat (" + std::to_string (dirfd) + ", " + std::string (path) + ")");
+
+    // perform original POSIX fstatat operation
+    int result = ((libc_fstatat_t)dlsym (RTLD_NEXT, "fstatat")) (dirfd, path, statbuf, flags);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result == 0) {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fstatat),
+                1,
+                0);
+        } else {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fstatat),
                 1,
                 0,
                 1);

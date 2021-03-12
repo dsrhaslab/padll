@@ -119,10 +119,22 @@ int stat (const char* path, struct stat* statbuf)
     return m_posix_passthrough.passthrough_stat (path, statbuf);
 }
 
+// lstat call. (...)
+int lstat (const char* path, struct stat* statbuf)
+{
+    return m_posix_passthrough.passthrough_lstat (path, statbuf);
+}
+
 // fstat call. (...)
 int fstat (int fd, struct stat* statbuf)
 {
     return m_posix_passthrough.passthrough_fstat (fd, statbuf);
+}
+
+// fstatat call. (...)
+int fstatat (int dirfd, const char* path, struct stat* statbuf, int flags)
+{
+    return m_posix_passthrough.passthrough_fstatat (dirfd, path, statbuf, flags);
 }
 
 // link call. (...)

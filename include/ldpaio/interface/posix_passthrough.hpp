@@ -38,7 +38,9 @@ typedef int (*libc_fdatasync_t) (int);
 typedef int (*libc_truncate_t) (const char*, off_t);
 typedef int (*libc_ftruncate_t) (int, off_t);
 typedef int (*libc_stat_t) (const char*, struct stat*);
-typedef int (*libc_fstat_t) (int fd, struct stat*);
+typedef int (*libc_lstat_t) (const char*, struct stat*);
+typedef int (*libc_fstat_t) (int, struct stat*);
+typedef int (*libc_fstatat_t) (int, const char*, struct stat*, int);
 typedef int (*libc_link_t) (const char*, const char*);
 typedef int (*libc_unlink_t) (const char*);
 typedef int (*libc_linkat_t) (int, const char*, int, const char*, int);
@@ -287,6 +289,15 @@ public:
     int passthrough_stat (const char* path, struct stat* statbuf);
 
     /**
+     * passthrough_lstat:
+     *  https://man7.org/linux/man-pages/man2/stat.2.html
+     * @param path
+     * @param statbuf
+     * @return
+     */
+    int passthrough_lstat (const char* path, struct stat* statbuf);
+
+    /**
      * passthrough_fstat:
      *  https://man7.org/linux/man-pages/man2/fstat.2.html
      * @param fd
@@ -294,6 +305,17 @@ public:
      * @return
      */
     int passthrough_fstat (int fd, struct stat* statbuf);
+
+    /**
+     * passthrough_fstatat:
+     *  https://man7.org/linux/man-pages/man2/fstatat.2.html
+     * @param dirfd
+     * @param path
+     * @param statbuf
+     * @param flags
+     * @return
+     */
+    int passthrough_fstatat (int dirfd, const char* path, struct stat* statbuf, int flags);
 
     /**
      * passthrough_link:
