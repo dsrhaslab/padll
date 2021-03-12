@@ -202,11 +202,23 @@ extern "C" int unlinkat (int dirfd, const char* pathname, int flags);
 
 /**
  * rename:
+ *  https://man7.org/linux/man-pages/man2/rename.2.html
  * @param old_path
  * @param new_path
  * @return
  */
 extern "C" int rename (const char* old_path, const char* new_path);
+
+/**
+ * renameat:
+ *  https://man7.org/linux/man-pages/man2/renameat.2.html
+ * @param olddirfd
+ * @param old_path
+ * @param newdirfd
+ * @param new_path
+ * @return
+ */
+extern "C" int renameat (int olddirfd, const char* old_path, int newdirfd, const char* new_path);
 
 /**
  * symlink:

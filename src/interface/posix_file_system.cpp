@@ -155,6 +155,12 @@ int rename (const char* old_path, const char* new_path)
     return m_posix_passthrough.passthrough_rename (old_path, new_path);
 }
 
+// renameat call. (...)
+int renameat (int olddirfd, const char* old_path, int newdirfd, const char* new_path)
+{
+    return m_posix_passthrough.passthrough_renameat (olddirfd, old_path, newdirfd, new_path);
+}
+
 // symlink call. (...)
 int symlink (const char* target, const char* linkpath)
 {

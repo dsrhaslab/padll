@@ -44,6 +44,7 @@ typedef int (*libc_unlink_t) (const char*);
 typedef int (*libc_linkat_t) (int, const char*, int, const char*, int);
 typedef int (*libc_unlinkat_t) (int, const char*, int);
 typedef int (*libc_rename_t) (const char*, const char*);
+typedef int (*libc_renameat_t) (int, const char*, int, const char*);
 typedef int (*libc_symlink_t) (const char*, const char*);
 typedef int (*libc_symlinkat_t) (const char*, int, const char*);
 typedef ssize_t (*libc_readlink_t) (const char*, char*, size_t);
@@ -340,6 +341,17 @@ public:
      * @return
      */
     int passthrough_rename (const char* old_path, const char* new_path);
+
+    /**
+     * passthrough_renameat:
+     * @param olddirfd
+     * @param old_path
+     * @param newdirfd
+     * @param new_path
+     * @return
+     */
+    int
+    passthrough_renameat (int olddirfd, const char* old_path, int newdirfd, const char* new_path);
 
     /**
      * passthrough_symlink:

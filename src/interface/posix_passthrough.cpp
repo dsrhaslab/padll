@@ -650,6 +650,38 @@ int PosixPassthrough::passthrough_rename (const char* old_path, const char* new_
     return result;
 }
 
+// passthrough_renameat call. (...)
+int PosixPassthrough::passthrough_renameat (int olddirfd,
+    const char* old_path,
+    int newdirfd,
+    const char* new_path)
+{
+    // logging message
+    Logging::log_debug ("passthrough-renameat (" + std::to_string (olddirfd) + ", "
+        + std::string (old_path) + ", " + std::to_string (newdirfd) + ", " + std::string (new_path)
+        + ")");
+
+    // perform original POSIX renameat operation
+    int result
+        = ((libc_renameat_t)dlsym (RTLD_NEXT, "renameat")) (olddirfd, old_path, newdirfd, new_path);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result == 0) {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::renameat),
+                1,
+                0);
+        } else {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::renameat),
+                1,
+                0,
+                1);
+        }
+    }
+
+    return result;
+}
+
 // passthrough_symlink call. (...)
 int PosixPassthrough::passthrough_symlink (const char* target, const char* linkpath)
 {

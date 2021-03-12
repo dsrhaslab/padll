@@ -425,8 +425,9 @@
     X (f, l, 11)                                                                                   \
     X (f, l, 12)                                                                                   \
     X (f, l, 13)                                                                                   \
-    X (f, l, 14) X (f, l, 15) X (f, l, 16) X (f, l, 17) X (f, l, 18) X (f, l, 19) X (f, l, 20)     \
-        X (f, l, 21) X (f, l, 22) X (f, l, 23)
+    X (f, l, 14)                                                                                   \
+    X (f, l, 15) X (f, l, 16) X (f, l, 17) X (f, l, 18) X (f, l, 19) X (f, l, 20) X (f, l, 21)     \
+        X (f, l, 22) X (f, l, 23)
 
 #endif // #ifdef BETTER_ENUMS_MACRO_FILE else case
 
