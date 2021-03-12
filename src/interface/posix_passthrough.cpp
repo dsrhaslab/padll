@@ -671,6 +671,28 @@ int PosixPassthrough::passthrough_mkdir (const char* path, mode_t mode)
     return result;
 }
 
+// passthrough_mkdirat call. (...)
+int PosixPassthrough::passthrough_mkdirat (int dirfd, const char* path, mode_t mode)
+{
+    // logging message
+    Logging::log_debug ("passthrough-mkdirat (" + std::to_string (dirfd) + ", " +
+        std::string (path) + ")");
+
+    // perform original POSIX mkdirat operation
+    int result = ((libc_mkdirat_t)dlsym (RTLD_NEXT, "mkdirat")) (dirfd, path, mode);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result == 0) {
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::mkdirat), 1, 0);
+        } else {
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::mkdirat), 1, 0, 1);
+        }
+    }
+
+    return result;
+}
+
 // passthrough_readdir call. (...)
 struct dirent* PosixPassthrough::passthrough_readdir (DIR* dirp)
 {
@@ -721,6 +743,31 @@ DIR* PosixPassthrough::passthrough_opendir (const char* path)
     return folder;
 }
 
+// passthrough_fopendir call. (...)
+DIR* PosixPassthrough::passthrough_fopendir (int fd)
+{
+    // logging message
+    Logging::log_debug ("passthrough-fopendir (" + std::to_string (fd) + ")");
+    DIR* folder;
+
+    // perform original POSIX fopendir operation
+    folder = ((libc_fopendir_t)dlsym (RTLD_NEXT, "fopendir")) (fd);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (folder != nullptr) {
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::fopendir), 1, 0);
+        } else {
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::fopendir),
+                                                      1,
+                                                      0,
+                                                      1);
+        }
+    }
+
+    return folder;
+}
+
 // passthrough_closedir call. (...)
 int PosixPassthrough::passthrough_closedir (DIR* dirp)
 {
@@ -760,6 +807,27 @@ int PosixPassthrough::passthrough_rmdir (const char* path)
             this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::rmdir), 1, 0);
         } else {
             this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::rmdir), 1, 0, 1);
+        }
+    }
+
+    return result;
+}
+
+// passthrough_dirfd call. (...)
+int PosixPassthrough::passthrough_dirfd (DIR* dirp)
+{
+    // logging message
+    Logging::log_debug ("passthrough-dirfd");
+
+    // perform original POSIX dirfd operation
+    int result = ((libc_dirfd_t)dlsym (RTLD_NEXT, "dirfd")) (dirp);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result == 0) {
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::dirfd), 1, 0);
+        } else {
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::dirfd), 1, 0, 1);
         }
     }
 

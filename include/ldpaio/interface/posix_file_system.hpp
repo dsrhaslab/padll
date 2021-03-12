@@ -217,6 +217,15 @@ extern "C" int rename (const char* old_path, const char* new_path);
 extern "C" int mkdir (const char* path, mode_t mode);
 
 /**
+ * mkdirat:
+ * @param dirfd
+ * @param path
+ * @param mode
+ * @return
+ */
+extern "C" int mkdirat (int dirfd, const char* path, mode_t mode);
+
+/**
  * readdir:
  * @param dirp
  * @return
@@ -231,6 +240,13 @@ extern "C" struct dirent* readdir (DIR* dirp);
 extern "C" DIR* opendir (const char* path);
 
 /**
+ * fopendir:
+ * @param fd
+ * @return
+ */
+extern "C" DIR* fopendir (int fd);
+
+/**
  * closedir:
  * @param dirp
  * @return
@@ -243,6 +259,13 @@ extern "C" int closedir (DIR* dirp);
  * @return
  */
 extern "C" int rmdir (const char* path);
+
+/**
+ * dirfd:
+ * @param dirp
+ * @return
+ */
+extern "C" int dirfd (DIR* dirp);
 
 /**
  * getxattr:

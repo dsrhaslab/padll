@@ -58,10 +58,13 @@ BETTER_ENUM (Directory,
     int,
     no_op = 0,
     mkdir = 1,
-    readdir = 2,
-    opendir = 3,
-    closedir = 4,
-    rmdir = 5);
+    mkdirat = 2,
+    readdir = 3,
+    opendir = 4,
+    fopendir = 5,
+    closedir = 6,
+    rmdir = 7,
+    dirfd = 8);
 
 /**
  * ExtendedAttributes Definitions.

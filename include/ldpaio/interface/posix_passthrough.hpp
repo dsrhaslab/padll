@@ -59,10 +59,13 @@ typedef size_t (*libc_fread_t) (void*, size_t, size_t, FILE*);
  * Directory calls
  */
 typedef int (*libc_mkdir_t) (const char*, mode_t);
+typedef int (*libc_mkdirat_t) (int, const char*, mode_t);
 typedef struct dirent* (*libc_readdir_t) (DIR*);
 typedef DIR* (*libc_opendir_t) (const char*);
+typedef DIR* (*libc_fopendir_t) (int);
 typedef int (*libc_closedir_t) (DIR*);
 typedef int (*libc_rmdir_t) (const char*);
+typedef int (*libc_dirfd_t) (DIR*);
 
 /**
  * Extended attributes calls.
@@ -335,7 +338,7 @@ public:
     int passthrough_rename (const char* old_path, const char* new_path);
 
     /**
-     * mkdir:
+     * passthrough_mkdir:
      * @param path
      * @param mode
      * @return
@@ -343,7 +346,17 @@ public:
     int passthrough_mkdir (const char* path, mode_t mode);
 
     /**
-     * readdir:
+     * passthrough_mkdirat:
+     *  https://man7.org/linux/man-pages/man2/mkdirat.2.html
+     * @param dirfd
+     * @param path
+     * @param mode
+     * @return
+     */
+    int passthrough_mkdirat (int dirfd, const char* path, mode_t mode);
+
+    /**
+     * passthrough_readdir:
      *  https://man7.org/linux/man-pages/man3/readdir.3.html
      * @param dirp
      * @return
@@ -351,7 +364,7 @@ public:
     struct dirent* passthrough_readdir (DIR* dirp);
 
     /**
-     * opendir:
+     * passthrough_opendir:
      *  https://man7.org/linux/man-pages/man3/opendir.3.html
      * @param path
      * @return
@@ -359,7 +372,15 @@ public:
     DIR* passthrough_opendir (const char* path);
 
     /**
-     * closedir:
+     * passthrough_fopendir:
+     *  https://man7.org/linux/man-pages/man3/opendir.3.html
+     * @param fd
+     * @return
+     */
+    DIR* passthrough_fopendir (int fd);
+
+    /**
+     * passthrough_closedir:
      *  https://man7.org/linux/man-pages/man3/closedir.3.html
      * @param dirp
      * @return
@@ -367,12 +388,20 @@ public:
     int passthrough_closedir (DIR* dirp);
 
     /**
-     * rmdir:
+     * passthrough_rmdir:
      *  https://man7.org/linux/man-pages/man2/rmdir.2.html
      * @param path
      * @return
      */
     int passthrough_rmdir (const char* path);
+
+    /**
+     * passthrough_dirfd:
+     *  https://man7.org/linux/man-pages/man3/dirfd.3.html
+     * @param dirp
+     * @return
+     */
+    int passthrough_dirfd (DIR* dirp);
 
     /**
      * passthrough_getxattr:

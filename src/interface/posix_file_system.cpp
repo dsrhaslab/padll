@@ -161,6 +161,12 @@ int mkdir (const char* path, mode_t mode)
     return m_posix_passthrough.passthrough_mkdir (path, mode);
 }
 
+// mkdirat call. (...)
+int mkdirat (int dirfd, const char* path, mode_t mode)
+{
+    return m_posix_passthrough.passthrough_mkdirat (dirfd, path, mode);
+}
+
 // readdir call. (...)
 struct dirent* readdir (DIR* dirp)
 {
@@ -173,6 +179,12 @@ DIR* opendir (const char* path)
     return m_posix_passthrough.passthrough_opendir (path);
 }
 
+// fopendir call. (...)
+DIR* fopendir (int fd)
+{
+    return m_posix_passthrough.passthrough_fopendir (fd);
+}
+
 // closedir call. (...)
 int closedir (DIR* dirp)
 {
@@ -183,6 +195,12 @@ int closedir (DIR* dirp)
 int rmdir (const char* path)
 {
     return m_posix_passthrough.passthrough_rmdir (path);
+}
+
+// dirfd call. (...)
+int dirfd (DIR* dirp)
+{
+    return m_posix_passthrough.passthrough_dirfd (dirp);
 }
 
 // getxattr call. (...)
