@@ -165,6 +165,14 @@ extern "C" int stat (const char* path, struct stat* statbuf);
 extern "C" int lstat (const char* path, struct stat* statbuf);
 
 /**
+ * fstat:
+ * @param fd
+ * @param statbuf
+ * @return
+ */
+extern "C" int fstat (int fd, struct stat* statbuf);
+
+/**
  * fstatat:
  * @param dirfd
  * @param path
@@ -175,12 +183,20 @@ extern "C" int lstat (const char* path, struct stat* statbuf);
 extern "C" int fstatat (int dirfd, const char* path, struct stat* statbuf, int flags);
 
 /**
- * fstat:
- * @param fd
- * @param statbuf
+ * statfs:
+ * @param path
+ * @param buf
  * @return
  */
-extern "C" int fstat (int fd, struct stat* statbuf);
+extern "C" int statfs (const char* path, struct statfs* buf);
+
+/**
+ * fstatfs:
+ * @param fd
+ * @param buf
+ * @return
+ */
+extern "C" int fstatfs (int fd, struct statfs* buf);
 
 /**
  * link:

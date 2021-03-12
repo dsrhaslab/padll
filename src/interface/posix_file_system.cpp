@@ -137,6 +137,18 @@ int fstatat (int dirfd, const char* path, struct stat* statbuf, int flags)
     return m_posix_passthrough.passthrough_fstatat (dirfd, path, statbuf, flags);
 }
 
+// statfs call. (...)
+int statfs (const char* path, struct statfs* buf)
+{
+    return m_posix_passthrough.passthrough_statfs (path, buf);
+}
+
+// fstatfs call. (...)
+int fstatfs (int fd, struct statfs* buf)
+{
+    return m_posix_passthrough.passthrough_fstatfs (fd, buf);
+}
+
 // link call. (...)
 int link (const char* old_path, const char* new_path)
 {

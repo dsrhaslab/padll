@@ -568,6 +568,58 @@ int PosixPassthrough::passthrough_fstatat (int dirfd,
     return result;
 }
 
+// passthrough_statfs call. (...)
+int PosixPassthrough::passthrough_statfs (const char* path, struct statfs* buf)
+{
+    // logging message
+    Logging::log_debug ("passthrough-statfs (" + std::string (path) + ")");
+
+    // perform original POSIX statfs operation
+    int result = ((libc_statfs_t)dlsym (RTLD_NEXT, "statfs")) (path, buf);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result == 0) {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::statfs),
+                                                           1,
+                                                           0);
+        } else {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::statfs),
+                                                           1,
+                                                           0,
+                                                           1);
+        }
+    }
+
+    return result;
+}
+
+// passthrough_fstatfs call. (...)
+int PosixPassthrough::passthrough_fstatfs (int fd, struct statfs* buf)
+{
+    // logging message
+    Logging::log_debug ("passthrough-fstatfs (" + std::to_string (fd) + ")");
+
+    // perform original POSIX fstatfs operation
+    int result = ((libc_fstatfs_t)dlsym (RTLD_NEXT, "fstatfs")) (fd, buf);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result == 0) {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fstatfs),
+                                                           1,
+                                                           0);
+        } else {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fstatfs),
+                                                           1,
+                                                           0,
+                                                           1);
+        }
+    }
+
+    return result;
+}
+
 // passthrough_link call. (...)
 int PosixPassthrough::passthrough_link (const char* old_path, const char* new_path)
 {

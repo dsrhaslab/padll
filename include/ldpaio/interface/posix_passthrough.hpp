@@ -20,6 +20,12 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#ifdef __linux__
+#include <sys/vfs.h>
+#elif __APPLE__
+#include <sys/mount.h>
+#endif
+
 namespace ldpaio {
 
 /**
@@ -35,12 +41,16 @@ typedef int (*libc_open64_t) (const char*, int);
 typedef int (*libc_close_t) (int);
 typedef int (*libc_fsync_t) (int);
 typedef int (*libc_fdatasync_t) (int);
+typedef void (*libc_sync_t) ();
+typedef int (*libc_syncfs_t) (int);
 typedef int (*libc_truncate_t) (const char*, off_t);
 typedef int (*libc_ftruncate_t) (int, off_t);
 typedef int (*libc_stat_t) (const char*, struct stat*);
 typedef int (*libc_lstat_t) (const char*, struct stat*);
 typedef int (*libc_fstat_t) (int, struct stat*);
 typedef int (*libc_fstatat_t) (int, const char*, struct stat*, int);
+typedef int (*libc_statfs_t) (const char*, struct statfs*);
+typedef int (*libc_fstatfs_t) (int, struct statfs*);
 typedef int (*libc_link_t) (const char*, const char*);
 typedef int (*libc_unlink_t) (const char*);
 typedef int (*libc_linkat_t) (int, const char*, int, const char*, int);
@@ -316,6 +326,24 @@ public:
      * @return
      */
     int passthrough_fstatat (int dirfd, const char* path, struct stat* statbuf, int flags);
+
+    /**
+     * passthrough_statfs:
+     *  https://man7.org/linux/man-pages/man2/statfs.2.html
+     * @param path
+     * @param buf
+     * @return
+     */
+    int passthrough_statfs (const char* path, struct statfs* buf);
+
+    /**
+     * passthrough_fstatfs
+     *  https://man7.org/linux/man-pages/man2/fstatfs.2.html
+     * @param fd
+     * @param buf
+     * @return
+     */
+    int passthrough_fstatfs (int fd, struct statfs* buf);
 
     /**
      * passthrough_link:
