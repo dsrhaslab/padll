@@ -149,19 +149,9 @@ int test_fdopendir_closedir_call (const char* pathname)
         std::cerr << "Error while opening directory (" << errno << ")\n";
     }
 
-    int result = ::closedir (folder);
-    if (result != 0) {
-        std::cerr << "Error while closing directory (" << errno << ")\n";
-    }
-
-    result = ::closedir (new_folder);
+    int result = ::closedir (new_folder);
     if (result != 0) {
         std::cerr << "Error while closing (new) directory (" << errno << ")\n";
-    }
-
-    result = ::close (dirfd);
-    if (result != 0) {
-        std::cerr << "Error while closing fd (" << errno << ")\n";
     }
 
     return result;
@@ -197,8 +187,8 @@ int main (int argc, char** argv)
 
         std::cout << "------\n";
         DIR* dir = ::opendir ("/tmp");
-        test_mkdirat_call (dir, path.data(), 0777);
-        test_fdopendir_closedir_call (path.data());
+        test_mkdirat_call (dir, path.data (), 0777);
+        test_fdopendir_closedir_call (path.data ());
     }
 
     return 0;
