@@ -829,7 +829,7 @@ int PosixPassthrough::passthrough_dirfd (DIR* dirp)
 
     // update statistic entry
     if (this->m_collect) {
-        if (result == 0) {
+        if (result >= 0) {
             this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::dirfd), 1, 0);
         } else {
             this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::dirfd), 1, 0, 1);
