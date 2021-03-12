@@ -179,10 +179,10 @@ DIR* opendir (const char* path)
     return m_posix_passthrough.passthrough_opendir (path);
 }
 
-// fopendir call. (...)
-DIR* fopendir (int fd)
+// fdopendir call. (...)
+DIR* fdopendir (int fd)
 {
-    return m_posix_passthrough.passthrough_fopendir (fd);
+    return m_posix_passthrough.passthrough_fdopendir (fd);
 }
 
 // closedir call. (...)

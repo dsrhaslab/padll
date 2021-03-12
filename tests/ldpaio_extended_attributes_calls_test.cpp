@@ -6,8 +6,8 @@
 #include <cstring>
 #include <fcntl.h>
 #include <iostream>
-#include <sys/xattr.h>
 #include <sys/types.h>
+#include <sys/xattr.h>
 #include <unistd.h>
 
 /**
@@ -160,7 +160,6 @@ int test_setxattr_call (const char* path, const char* xattr, const char* value)
 
     return return_value;
 }
-
 
 /**
  * test_lsetxattr_call:
@@ -507,8 +506,8 @@ void test_ext_attributes (const std::string& path,
  * @param value
  */
 void test_lext_attributes (const std::string& path,
-                           const std::string& xattr,
-                           const std::string& value)
+    const std::string& xattr,
+    const std::string& value)
 {
     int return_value = test_lsetxattr_call (path.data (), xattr.data (), value.data ());
     std::cout << "lsetxattr (" << return_value << ")\n";
@@ -533,7 +532,7 @@ void test_fext_attributes (const std::string& path,
     const std::string& xattr,
     const std::string& value)
 {
-    int fd = ::open (path.data(), O_RDWR);
+    int fd = ::open (path.data (), O_RDWR);
     if (fd == -1) {
         std::cerr << "Error while opening file " << path << ".\n";
         return;

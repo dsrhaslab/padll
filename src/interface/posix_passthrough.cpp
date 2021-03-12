@@ -675,8 +675,8 @@ int PosixPassthrough::passthrough_mkdir (const char* path, mode_t mode)
 int PosixPassthrough::passthrough_mkdirat (int dirfd, const char* path, mode_t mode)
 {
     // logging message
-    Logging::log_debug ("passthrough-mkdirat (" + std::to_string (dirfd) + ", " +
-        std::string (path) + ")");
+    Logging::log_debug (
+        "passthrough-mkdirat (" + std::to_string (dirfd) + ", " + std::string (path) + ")");
 
     // perform original POSIX mkdirat operation
     int result = ((libc_mkdirat_t)dlsym (RTLD_NEXT, "mkdirat")) (dirfd, path, mode);
@@ -686,7 +686,10 @@ int PosixPassthrough::passthrough_mkdirat (int dirfd, const char* path, mode_t m
         if (result == 0) {
             this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::mkdirat), 1, 0);
         } else {
-            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::mkdirat), 1, 0, 1);
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::mkdirat),
+                1,
+                0,
+                1);
         }
     }
 
@@ -743,25 +746,27 @@ DIR* PosixPassthrough::passthrough_opendir (const char* path)
     return folder;
 }
 
-// passthrough_fopendir call. (...)
-DIR* PosixPassthrough::passthrough_fopendir (int fd)
+// passthrough_fdopendir call. (...)
+DIR* PosixPassthrough::passthrough_fdopendir (int fd)
 {
     // logging message
-    Logging::log_debug ("passthrough-fopendir (" + std::to_string (fd) + ")");
+    Logging::log_debug ("passthrough-fdopendir (" + std::to_string (fd) + ")");
     DIR* folder;
 
     // perform original POSIX fopendir operation
-    folder = ((libc_fopendir_t)dlsym (RTLD_NEXT, "fopendir")) (fd);
+    folder = ((libc_fdopendir_t)dlsym (RTLD_NEXT, "fdopendir")) (fd);
 
     // update statistic entry
     if (this->m_collect) {
         if (folder != nullptr) {
-            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::fopendir), 1, 0);
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::fdopendir),
+                1,
+                0);
         } else {
-            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::fopendir),
-                                                      1,
-                                                      0,
-                                                      1);
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::fdopendir),
+                1,
+                0,
+                1);
         }
     }
 

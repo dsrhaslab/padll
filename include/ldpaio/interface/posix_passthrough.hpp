@@ -62,7 +62,7 @@ typedef int (*libc_mkdir_t) (const char*, mode_t);
 typedef int (*libc_mkdirat_t) (int, const char*, mode_t);
 typedef struct dirent* (*libc_readdir_t) (DIR*);
 typedef DIR* (*libc_opendir_t) (const char*);
-typedef DIR* (*libc_fopendir_t) (int);
+typedef DIR* (*libc_fdopendir_t) (int);
 typedef int (*libc_closedir_t) (DIR*);
 typedef int (*libc_rmdir_t) (const char*);
 typedef int (*libc_dirfd_t) (DIR*);
@@ -372,12 +372,12 @@ public:
     DIR* passthrough_opendir (const char* path);
 
     /**
-     * passthrough_fopendir:
-     *  https://man7.org/linux/man-pages/man3/opendir.3.html
+     * passthrough_fdopendir:
+     *  https://linux.die.net/man/3/fdopendir
      * @param fd
      * @return
      */
-    DIR* passthrough_fopendir (int fd);
+    DIR* passthrough_fdopendir (int fd);
 
     /**
      * passthrough_closedir:

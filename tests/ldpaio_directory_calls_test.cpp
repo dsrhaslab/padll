@@ -29,6 +29,35 @@ int test_mkdir_call (const char* pathname, mode_t mode)
 }
 
 /**
+ * test_mkdirat_call:
+ * @param folder
+ * @param path
+ * @param mode
+ * @return
+ */
+int test_mkdirat_call (DIR* folder, const char* path, mode_t mode)
+{
+    std::cout << "Test mkdirat call (" << path << ")\n";
+    // get file descriptor from directory pointer
+    int dirfd = ::dirfd (folder);
+
+    // validate if directory file descriptor is valid
+    if (dirfd == -1) {
+        std::cerr << "Error while getting file descriptor from directory (" << errno << ")\n";
+    }
+
+    // create directory
+    int result = ::mkdirat (dirfd, path, mode);
+
+    // validate if creation was successful or not
+    if (result != 0) {
+        std::cerr << "Error while creating directory (" << errno << ")\n";
+    }
+
+    return result;
+}
+
+/**
  * test_readdir_call:
  * @param pathname
  */
@@ -68,9 +97,7 @@ int test_readdir_call (const char* pathname)
  * test_opendir_closedir_call:
  *
  * Validation: the statistic entries 'opendir' and 'closedir' of the Statistics' container reserved
- * for directory-based calls (PosixPassthrough::m_dir_stats), should contain (each):
- *  - {1, 0, 0} for valid paths (success);
- *  - {1, 0, 1} for invalid paths (error).
+ * for directory-based calls (PosixPassthrough::m_dir_stats) should be updated.
  * @param pathname
  * @return
  */
@@ -84,6 +111,55 @@ int test_opendir_closedir_call (const char* pathname)
     }
 
     int result = ::closedir (folder);
+    if (result != 0) {
+        std::cerr << "Error while closing directory (" << errno << ")\n";
+    }
+
+    return result;
+}
+
+/**
+ * test_fdopendir_closedir_call:
+ * @param pathname
+ * @return
+ */
+int test_fdopendir_closedir_call (const char* pathname)
+{
+    std::cout << "Test opendir and closedir calls (" << pathname << ")\n";
+    DIR* folder = ::opendir (pathname);
+
+    // validate if directory was successfully open
+    if (folder == nullptr) {
+        std::cerr << "Error while opening directory (" << errno << ")\n";
+    }
+
+    // get file descriptor from directory pointer
+    int dirfd = ::dirfd (folder);
+
+    // validate if directory file descriptor is valid
+    if (dirfd == -1) {
+        std::cerr << "Error while getting file descriptor from directory (" << errno << ")\n";
+    }
+
+    // open directory through file descriptor
+    DIR* new_folder = ::fdopendir (dirfd);
+
+    // validate if directory was successfully open
+    if (folder == nullptr) {
+        std::cerr << "Error while opening directory (" << errno << ")\n";
+    }
+
+    int result = ::closedir (folder);
+    if (result != 0) {
+        std::cerr << "Error while closing directory (" << errno << ")\n";
+    }
+
+    result = ::closedir (new_folder);
+    if (result != 0) {
+        std::cerr << "Error while closing directory (" << errno << ")\n";
+    }
+
+    result = ::close (dirfd);
     if (result != 0) {
         std::cerr << "Error while closing directory (" << errno << ")\n";
     }

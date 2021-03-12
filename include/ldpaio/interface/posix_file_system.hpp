@@ -240,11 +240,11 @@ extern "C" struct dirent* readdir (DIR* dirp);
 extern "C" DIR* opendir (const char* path);
 
 /**
- * fopendir:
+ * fdopendir:
  * @param fd
  * @return
  */
-extern "C" DIR* fopendir (int fd);
+extern "C" DIR* fdopendir (int fd);
 
 /**
  * closedir:

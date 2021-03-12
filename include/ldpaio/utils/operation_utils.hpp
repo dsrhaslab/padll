@@ -61,7 +61,7 @@ BETTER_ENUM (Directory,
     mkdirat = 2,
     readdir = 3,
     opendir = 4,
-    fopendir = 5,
+    fdopendir = 5,
     closedir = 6,
     rmdir = 7,
     dirfd = 8);
