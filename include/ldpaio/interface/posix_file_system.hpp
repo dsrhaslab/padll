@@ -133,6 +133,17 @@ extern "C" int fsync (int fd);
 extern "C" int fdatasync (int fd);
 
 /**
+ * sync:
+ */
+extern "C" void sync ();
+
+/**
+ * syncfs:
+ * @param fd
+ */
+extern "C" int syncfs (int fd);
+
+/**
  * truncate:
  * @param path
  * @param length

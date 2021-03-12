@@ -36,8 +36,8 @@ BETTER_ENUM (Metadata,
     close = 8,
     fsync = 9,
     fdatasync = 10,
-    sync = 11,      // missing
-    syncfs = 12,    // missing
+    sync = 11,
+    syncfs = 12,
     truncate = 13,
     ftruncate = 14,
     stat = 15,

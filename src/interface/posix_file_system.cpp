@@ -101,6 +101,18 @@ int fdatasync (int fd)
     return m_posix_passthrough.passthrough_fdatasync (fd);
 }
 
+// sync call. (...)
+void sync ()
+{
+    return m_posix_passthrough.passthrough_sync ();
+}
+
+// syncfs call. (...)
+int syncfs (int fd)
+{
+    return m_posix_passthrough.passthrough_syncfs (fd);
+}
+
 // truncate call. (...)
 int truncate (const char* path, off_t length)
 {

@@ -274,6 +274,20 @@ public:
     int passthrough_fdatasync (int fd);
 
     /**
+     * passthrough_sync:
+     *  https://linux.die.net/man/2/sync
+     */
+    void passthrough_sync ();
+
+    /**
+     * passthrough_syncfs:
+     *  https://linux.die.net/man/2/syncfs
+     * @param fd
+     * @return
+     */
+    int passthrough_syncfs (int fd);
+
+    /**
      * passthrough_truncate:
      * @param path
      * @param length

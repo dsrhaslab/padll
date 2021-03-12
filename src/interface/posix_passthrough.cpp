@@ -390,7 +390,7 @@ int PosixPassthrough::passthrough_fdatasync (int fd)
     // logging message
     Logging::log_debug ("passthrough-fdatasync (" + std::to_string (fd) + ")");
 
-    // perform original POSIX fsync operation
+    // perform original POSIX fdatasync operation
     int result = ((libc_fdatasync_t)dlsym (RTLD_NEXT, "fdatasync")) (fd);
 
     // update statistic entry
@@ -401,6 +401,47 @@ int PosixPassthrough::passthrough_fdatasync (int fd)
                 0);
         } else {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fdatasync),
+                1,
+                0,
+                1);
+        }
+    }
+
+    return result;
+}
+
+// passthrough_sync call. (...)
+void PosixPassthrough::passthrough_sync ()
+{
+    // logging message
+    Logging::log_debug ("passthrough-sync");
+
+    // perform original POSIX sync operation
+    ((libc_sync_t)dlsym (RTLD_NEXT, "sync")) ();
+
+    // update statistic entry
+    if (this->m_collect) {
+        this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::sync), 1, 0);
+    }
+}
+
+// passthrough_syncfs call. (...)
+int PosixPassthrough::passthrough_syncfs (int fd)
+{
+    // logging message
+    Logging::log_debug ("passthrough-syncfs (" + std::to_string (fd) + ")");
+
+    // perform original POSIX syncfs operation
+    int result = ((libc_syncfs_t)dlsym (RTLD_NEXT, "syncfs")) (fd);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result == 0) {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::syncfs),
+                1,
+                0);
+        } else {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::syncfs),
                 1,
                 0,
                 1);
@@ -581,13 +622,13 @@ int PosixPassthrough::passthrough_statfs (const char* path, struct statfs* buf)
     if (this->m_collect) {
         if (result == 0) {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::statfs),
-                                                           1,
-                                                           0);
+                1,
+                0);
         } else {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::statfs),
-                                                           1,
-                                                           0,
-                                                           1);
+                1,
+                0,
+                1);
         }
     }
 
@@ -607,13 +648,13 @@ int PosixPassthrough::passthrough_fstatfs (int fd, struct statfs* buf)
     if (this->m_collect) {
         if (result == 0) {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fstatfs),
-                                                           1,
-                                                           0);
+                1,
+                0);
         } else {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fstatfs),
-                                                           1,
-                                                           0,
-                                                           1);
+                1,
+                0,
+                1);
         }
     }
 
