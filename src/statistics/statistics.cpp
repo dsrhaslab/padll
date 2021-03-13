@@ -4,6 +4,7 @@
  **/
 
 #include <ldpaio/statistics/statistics.hpp>
+#include <numeric>
 
 namespace ldpaio {
 
@@ -74,8 +75,6 @@ void Statistics::initialize (const OperationType& operation_type)
         default:
             break;
     }
-
-    Logging::log_debug (this->to_string ());
 }
 
 // get_stats_identifier call. (...)
@@ -138,7 +137,109 @@ std::string Statistics::to_string ()
     }
     stream << " }";
 
+    this->tabulate_results ();
+
     return stream.str ();
+}
+
+// aggregate_counters call. (...)
+long Statistics::aggregate_counters (int counter_type)
+{
+    long sum_value = 0;
+    switch (counter_type) {
+        // aggregate operation counter
+        case 0:
+            for (auto& element : this->m_statistic_entries) {
+                sum_value += element.get_operation_counter ();
+            }
+            break;
+
+        // aggregate byte counter
+        case 1:
+            for (auto& element : this->m_statistic_entries) {
+                sum_value += element.get_byte_counter ();
+            }
+            break;
+
+        // aggregate error counter
+        case 2:
+            for (auto& element : this->m_statistic_entries) {
+                sum_value += element.get_error_counter ();
+            }
+            break;
+
+        default:
+            return 0;
+    }
+
+    return sum_value;
+}
+
+// tabulate_results call.
+void Statistics::tabulate_results ()
+{
+    int rows = 0;
+    int columns = 4;
+    Table table_stats;
+
+    // add table header
+    table_stats.add_row ({ this->m_stats_identifier, "#iops", "#bytes", "#errors" });
+    rows++;
+
+    // format table title
+    table_stats[0][0]
+        .format ()
+        .font_color (Color::yellow)
+        .font_align (FontAlign::left)
+        .font_style ({ FontStyle::bold })
+        .width (20);
+
+    // add statistic entries
+    for (auto& elem : this->m_statistic_entries) {
+        table_stats.add_row ({
+            elem.get_entry_name (),
+            std::to_string (elem.get_operation_counter ()),
+            std::to_string (elem.get_byte_counter ()),
+            std::to_string (elem.get_error_counter ()),
+        });
+        rows++;
+    }
+
+    // cumulative statistics entry
+    table_stats.add_row ({ "total",
+        std::to_string (this->aggregate_counters (0)),
+        std::to_string (this->aggregate_counters (1)),
+        std::to_string (this->aggregate_counters (2)) });
+    rows++;
+
+    // format header cells
+    for (int i = 1; i < columns; i++) {
+        table_stats[0][i]
+            .format ()
+            .font_color (Color::yellow)
+            .font_align (FontAlign::center)
+            .font_style ({ FontStyle::bold })
+            .width (10);
+    }
+
+    // format columns alignment
+    for (int i = 1; i < columns; i++) {
+        table_stats.column (i).format ().font_align (FontAlign::center);
+    }
+
+    // format first column elements
+    for (int i = 0; i < rows; i++) {
+        table_stats[i][0].format ().font_style ({ FontStyle::bold });
+    }
+
+    // format cumulative statistic entry
+    table_stats[rows - 1][0].format ().font_style ({ FontStyle::bold, FontStyle::underline });
+    table_stats[rows - 1][1].format ().font_color (Color::green).font_style ({ FontStyle::bold });
+    table_stats[rows - 1][2].format ().font_color (Color::yellow).font_style ({ FontStyle::bold });
+    table_stats[rows - 1][3].format ().font_color (Color::red).font_style ({ FontStyle::bold });
+
+    // print to stdout
+    std::cout << table_stats << std::endl;
 }
 
 } // namespace ldpaio

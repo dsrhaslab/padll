@@ -8,9 +8,12 @@
 
 #include <iostream>
 #include <ldpaio/statistics/statistic_entry.hpp>
+#include <ldpaio/thrid_party/tabulate.hpp>
 #include <ldpaio/utils/logging.hpp>
 #include <ldpaio/utils/operation_utils.hpp>
 #include <vector>
+
+using namespace tabulate;
 
 namespace ldpaio {
 
@@ -25,6 +28,8 @@ private:
     int m_stats_size { 0 };
     std::vector<StatisticEntry> m_statistic_entries {};
     std::mutex m_stats_mutex;
+
+    long aggregate_counters (int type);
 
 public:
     /**
@@ -105,6 +110,8 @@ public:
      * @return Returns the description of all StatisticEntry objects in string-based format.
      */
     std::string to_string ();
+
+    void tabulate_results ();
 };
 } // namespace ldpaio
 

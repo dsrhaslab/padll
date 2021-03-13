@@ -13,6 +13,8 @@ namespace ldpaio {
  */
 const bool option_default_statistic_collection { true };
 
+const bool option_default_table_format { true };
+
 } // namespace ldpaio
 
 #endif // LDPAIO_OPTIONS_HPP

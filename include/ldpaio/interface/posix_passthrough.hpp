@@ -104,10 +104,10 @@ class PosixPassthrough {
 
 private:
     std::atomic<bool> m_collect { option_default_statistic_collection };
-    Statistics m_metadata_stats { "posix-passthrough-metadata", OperationType::metadata_calls };
-    Statistics m_data_stats { "posix-passthrough-data", OperationType::data_calls };
-    Statistics m_dir_stats { "posix-passthrough-directory", OperationType::directory_calls };
-    Statistics m_ext_attr_stats { "posix-passthrough-ext-attr", OperationType::ext_attr_calls };
+    Statistics m_metadata_stats { "metadata", OperationType::metadata_calls };
+    Statistics m_data_stats { "data", OperationType::data_calls };
+    Statistics m_dir_stats { "directory", OperationType::directory_calls };
+    Statistics m_ext_attr_stats { "ext-attr", OperationType::ext_attr_calls };
 
 public:
     /**

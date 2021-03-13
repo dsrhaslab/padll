@@ -23,7 +23,19 @@ PosixPassthrough::PosixPassthrough (bool stat_collection) : m_collect { stat_col
 PosixPassthrough::~PosixPassthrough ()
 {
     Logging::log_info ("PosixPassthrough default destructor.");
-    Logging::log_debug (this->to_string ());
+
+    if (option_default_table_format) {
+        this->m_metadata_stats.tabulate_results ();
+        std::cout << "\n";
+        this->m_data_stats.tabulate_results ();
+        std::cout << "\n";
+        this->m_dir_stats.tabulate_results ();
+        std::cout << "\n";
+        this->m_ext_attr_stats.tabulate_results ();
+        std::cout << "\n";
+    } else {
+        Logging::log_debug (this->to_string ());
+    }
 }
 
 // set_statistic_collection call. (...)
