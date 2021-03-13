@@ -250,10 +250,10 @@ void Statistics::tabulate_results ()
     table_stats[rows - 1][3].format ().font_color (Color::red).font_style ({ FontStyle::bold });
 
     // format statistic entries - underline values greater 0
-    for (int i = 1; i < rows; i++) {
+    for (int i = 1; i < (rows - 1); i++) {
         for (int j = 1; j < columns; j++) {
             if (std::stol(table_stats[i][j].get_text()) > 0) {
-                table_stats[i][j].format().font_style ({ FontStyle::underline });
+                table_stats[i][j].format().font_style ({ FontStyle::bold, FontStyle::underline });
             }
         }
     }
