@@ -180,6 +180,27 @@ PosixPassthrough::passthrough_pwrite (int fd, const void* buf, ssize_t counter, 
     return result;
 }
 
+// passthrough_fread call. (...)
+size_t PosixPassthrough::passthrough_fread (void* ptr, size_t size, size_t nmemb, FILE* stream)
+{
+    // logging message
+    Logging::log_debug ("passthrough-fpread");
+
+    // perform original POSIX fread operation
+    ssize_t result =  ((libc_fread_t)dlsym (RTLD_NEXT, "fread")) (ptr, size, nmemb, stream);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result >= 0) {
+            this->m_data_stats.update_statistic_entry (static_cast<int> (Data::fread), 1, result);
+        } else {
+            this->m_data_stats.update_statistic_entry (static_cast<int> (Data::fread), 1, 0, 1);
+        }
+    }
+
+    return result;
+}
+
 // passthrough_open call.
 int PosixPassthrough::passthrough_open (const char* path, int flags, mode_t mode)
 {
@@ -1497,13 +1518,6 @@ int PosixPassthrough::passthrough_fremovexattr (int fd, const char* name)
     }
 
     return result;
-}
-
-// passthrough_fread call. (...)
-size_t PosixPassthrough::passthrough_fread (void* ptr, size_t size, size_t nmemb, FILE* stream)
-{
-    std::cout << "One more fread ... \n";
-    return ((libc_fread_t)dlsym (RTLD_NEXT, "fread")) (ptr, size, nmemb, stream);
 }
 
 // passthrough_chmod call. (...)

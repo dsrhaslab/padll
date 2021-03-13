@@ -76,6 +76,16 @@ extern "C" ssize_t pread (int fd, void* buf, size_t size, off_t offset);
 extern "C" ssize_t pwrite (int fd, const void* buf, size_t size, off_t offset);
 
 /**
+ * fread:
+ * @param ptr
+ * @param size
+ * @param nmemb
+ * @param stream
+ * @return
+ */
+extern "C" size_t fread (void* ptr, size_t size, size_t nmemb, FILE* stream);
+
+/**
  * open:
  * @param path
  * @param flags
@@ -475,16 +485,6 @@ extern "C" int lremovexattr (const char* path, const char* name);
  * @return
  */
 extern "C" int fremovexattr (int fd, const char* name);
-
-/**
- * fread:
- * @param ptr
- * @param size
- * @param nmemb
- * @param stream
- * @return
- */
-extern "C" size_t fread (void* ptr, size_t size, size_t nmemb, FILE* stream);
 
 /**
  * chmod:

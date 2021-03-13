@@ -70,7 +70,7 @@ typedef ssize_t (*libc_write_t) (int, const void*, size_t);
 typedef ssize_t (*libc_pread_t) (int, void*, size_t, off_t);
 typedef ssize_t (*libc_pwrite_t) (int, const void*, size_t, off_t);
 typedef size_t (*libc_fread_t) (void*, size_t, size_t, FILE*);
-// removed fwrite (segfault) ... need to add later
+typedef size_t (*libc_fwrite_t) (const void*, size_t, size_t, FILE*);
 
 /**
  * Directory calls.
@@ -709,7 +709,7 @@ public:
 
     /**
      * passthrough_chown:
-     *
+     *  https://linux.die.net/man/2/chmod
      * @param pathname
      * @param owner
      * @param group
@@ -719,7 +719,7 @@ public:
 
     /**
      * passthrough_lchown:
-     *
+     *  https://linux.die.net/man/2/lchmod
      * @param pathname
      * @param owner
      * @param group
@@ -729,7 +729,7 @@ public:
 
     /**
      * passthrough_fchown:
-     *
+     *  https://linux.die.net/man/2/fchmod
      * @param fd
      * @param owner
      * @param group
@@ -739,6 +739,7 @@ public:
 
     /**
      * passthrough_fchownat:
+     *  https://linux.die.net/man/2/fchmodat
      * @param dirfd
      * @param pathname
      * @param owner

@@ -29,6 +29,12 @@ ssize_t pwrite (int fd, const void* buf, size_t size, off_t offset)
     return m_posix_passthrough.passthrough_pwrite (fd, buf, size, offset);
 }
 
+// fread call. (...)
+size_t fread (void* ptr, size_t size, size_t nmemb, FILE* stream)
+{
+    return m_posix_passthrough.passthrough_fread (ptr, size, nmemb, stream);
+}
+
 // open call. (...)
 int open (const char* path, int flags, ...)
 {
@@ -339,12 +345,6 @@ int lremovexattr (const char* path, const char* name)
 int fremovexattr (int fd, const char* name)
 {
     return m_posix_passthrough.passthrough_fremovexattr (fd, name);
-}
-
-// fread call. (...)
-size_t fread (void* ptr, size_t size, size_t nmemb, FILE* stream)
-{
-    return m_posix_passthrough.passthrough_fread (ptr, size, nmemb, stream);
 }
 
 // chmod call. (...)
