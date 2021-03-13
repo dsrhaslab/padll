@@ -18,7 +18,8 @@ BETTER_ENUM (OperationType,
     metadata_calls = 1,
     data_calls = 2,
     directory_calls = 3,
-    ext_attr_calls = 4);
+    ext_attr_calls = 4,
+    file_mode_calls = 5);
 
 /**
  * Metadata Definitions.
@@ -95,6 +96,20 @@ BETTER_ENUM (ExtendedAttributes,
     removexattr = 10,
     lremovexattr = 11,
     fremovexattr = 12);
+
+/**
+ * FileModes definitions.
+ */
+BETTER_ENUM (FileModes,
+    int,
+    no_op = 0,
+    chmod = 1,
+    fchmod = 2,
+    fchmodat = 3,
+    chown = 4,
+    lchown = 5,
+    fchown = 6,
+    fchownat = 7);
 
 } // namespace ldpaio
 

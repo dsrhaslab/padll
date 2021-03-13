@@ -346,3 +346,21 @@ size_t fread (void* ptr, size_t size, size_t nmemb, FILE* stream)
 {
     return m_posix_passthrough.passthrough_fread (ptr, size, nmemb, stream);
 }
+
+// chmod call. (...)
+int chmod (const char* pathname, mode_t mode)
+{
+    return m_posix_passthrough.passthrough_chmod (pathname, mode);
+}
+
+// fchmod call. (...)
+int fchmod (int fd, mode_t mode)
+{
+    return m_posix_passthrough.passthrough_fchmod (fd, mode);
+}
+
+// fchmodat call. (...)
+int fchmodat (int dirfd, const char* pathname, mode_t mode, int flags)
+{
+    return m_posix_passthrough.passthrough_fchmodat (dirfd, pathname, mode, flags);
+}

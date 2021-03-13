@@ -25,13 +25,24 @@ PosixPassthrough::~PosixPassthrough ()
     Logging::log_info ("PosixPassthrough default destructor.");
 
     if (option_default_table_format) {
+        // print to stdout metadata-based statistics in tabular format
         this->m_metadata_stats.tabulate_results ();
         std::cout << "\n";
+
+        // print to stdout data-based statistics in tabular format
         this->m_data_stats.tabulate_results ();
         std::cout << "\n";
+
+        // print to stdout directory-based statistics in tabular format
         this->m_dir_stats.tabulate_results ();
         std::cout << "\n";
+
+        // print to stdout extended attributes based statistics in tabular format
         this->m_ext_attr_stats.tabulate_results ();
+        std::cout << "\n";
+
+        // print to stdout file modes based statistics in tabular format
+        this->m_file_mode_stats.tabulate_results ();
         std::cout << "\n";
     } else {
         Logging::log_debug (this->to_string ());
@@ -61,6 +72,9 @@ StatisticEntry PosixPassthrough::get_statistic_entry (const OperationType& opera
         case OperationType::ext_attr_calls:
             return this->m_ext_attr_stats.get_statistic_entry (operation_entry);
 
+        case OperationType::file_mode_calls:
+            return this->m_file_mode_stats.get_statistic_entry (operation_entry);
+
         default:
             return StatisticEntry {};
     }
@@ -75,6 +89,7 @@ std::string PosixPassthrough::to_string ()
     stream << "\t" << this->m_data_stats.to_string () << "\n";
     stream << "\t" << this->m_dir_stats.to_string () << "\n";
     stream << "\t" << this->m_ext_attr_stats.to_string () << "\n";
+    stream << "\t" << this->m_file_mode_stats.to_string () << "\n";
     stream << "}";
 
     return stream.str ();
@@ -1489,6 +1504,85 @@ size_t PosixPassthrough::passthrough_fread (void* ptr, size_t size, size_t nmemb
 {
     std::cout << "One more fread ... \n";
     return ((libc_fread_t)dlsym (RTLD_NEXT, "fread")) (ptr, size, nmemb, stream);
+}
+
+// passthrough_chmod call. (...)
+int PosixPassthrough::passthrough_chmod (const char* path, mode_t mode)
+{
+    // logging message
+    Logging::log_debug ("passthrough-chmod (" + std::string (path) + ")");
+
+    // perform original POSIX chmod operation
+    int result = ((libc_chmod_t)dlsym (RTLD_NEXT, "chmod")) (path, mode);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result == 0) {
+            this->m_file_mode_stats.update_statistic_entry (static_cast<int> (FileModes::chmod),
+                1,
+                0);
+        } else {
+            this->m_file_mode_stats.update_statistic_entry (static_cast<int> (FileModes::chmod),
+                1,
+                0,
+                1);
+        }
+    }
+
+    return result;
+}
+
+// passthrough_fchmod call. (...)
+int PosixPassthrough::passthrough_fchmod (int fd, mode_t mode)
+{
+    // logging message
+    Logging::log_debug ("passthrough-fchmod (" + std::to_string (fd) + ")");
+
+    // perform original POSIX fchmod operation
+    int result = ((libc_fchmod_t)dlsym (RTLD_NEXT, "fchmod")) (fd, mode);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result == 0) {
+            this->m_file_mode_stats.update_statistic_entry (static_cast<int> (FileModes::fchmod),
+                1,
+                0);
+        } else {
+            this->m_file_mode_stats.update_statistic_entry (static_cast<int> (FileModes::fchmod),
+                1,
+                0,
+                1);
+        }
+    }
+
+    return result;
+}
+
+// passthrough_fchmodat call. (...)
+int PosixPassthrough::passthrough_fchmodat (int dirfd, const char* path, mode_t mode, int flags)
+{
+    // logging message
+    Logging::log_debug (
+        "passthrough-fchmodat (" + std::to_string (dirfd) + ", " + std::string (path) + ")");
+
+    // perform original POSIX fchmodat operation
+    int result = ((libc_fchmodat_t)dlsym (RTLD_NEXT, "fchmodat")) (dirfd, path, mode, flags);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result == 0) {
+            this->m_file_mode_stats.update_statistic_entry (static_cast<int> (FileModes::fchmodat),
+                1,
+                0);
+        } else {
+            this->m_file_mode_stats.update_statistic_entry (static_cast<int> (FileModes::fchmodat),
+                1,
+                0,
+                1);
+        }
+    }
+
+    return result;
 }
 
 } // namespace ldpaio

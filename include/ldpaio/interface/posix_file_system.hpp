@@ -486,4 +486,30 @@ extern "C" int fremovexattr (int fd, const char* name);
  */
 extern "C" size_t fread (void* ptr, size_t size, size_t nmemb, FILE* stream);
 
+/**
+ * chmod:
+ * @param pathname
+ * @param mode
+ * @return
+ */
+extern "C" int chmod (const char* pathname, mode_t mode);
+
+/**
+ * fchmod:
+ * @param fd
+ * @param mode
+ * @return
+ */
+extern "C" int fchmod (int fd, mode_t mode);
+
+/**
+ * fchmodat:
+ * @param dirfd
+ * @param pathname
+ * @param mode
+ * @param flags
+ * @return
+ */
+extern "C" int fchmodat (int dirfd, const char* pathname, mode_t mode, int flags);
+
 #endif // LDPAIO_POSIX_FILE_SYSTEM_H

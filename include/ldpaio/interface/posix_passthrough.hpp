@@ -73,7 +73,7 @@ typedef size_t (*libc_fread_t) (void*, size_t, size_t, FILE*);
 // removed fwrite (segfault) ... need to add later
 
 /**
- * Directory calls
+ * Directory calls.
  */
 typedef int (*libc_mkdir_t) (const char*, mode_t);
 typedef int (*libc_mkdirat_t) (int, const char*, mode_t);
@@ -100,6 +100,17 @@ typedef int (*libc_removexattr_t) (const char*, const char*);
 typedef int (*libc_lremovexattr_t) (const char*, const char*);
 typedef int (*libc_fremovexattr_t) (int, const char*);
 
+/**
+ * File modes calls.
+ */
+typedef int (*libc_chmod_t) (const char*, mode_t);
+typedef int (*libc_fchmod_t) (int, mode_t);
+typedef int (*libc_fchmodat_t) (int, const char*, mode_t, int);
+typedef int (*libc_chown_t) (const char*, uid_t, gid_t);
+typedef int (*libc_lchown_t) (const char*, uid_t, gid_t);
+typedef int (*libc_fchown_t) (int, uid_t, gid_t);
+typedef int (*libc_fchownat_t) (int, const char*, uid_t, gid_t, int);
+
 class PosixPassthrough {
 
 private:
@@ -108,6 +119,7 @@ private:
     Statistics m_data_stats { "data", OperationType::data_calls };
     Statistics m_dir_stats { "directory", OperationType::directory_calls };
     Statistics m_ext_attr_stats { "ext-attr", OperationType::ext_attr_calls };
+    Statistics m_file_mode_stats { "file-mode", OperationType::file_mode_calls };
 
 public:
     /**
@@ -665,6 +677,35 @@ public:
      * @return
      */
     size_t passthrough_fread (void* ptr, size_t size, size_t nmemb, FILE* stream);
+
+    /**
+     * passthrough_chmod:
+     *  https://linux.die.net/man/2/chmod
+     * @param path
+     * @param mode
+     * @return
+     */
+    int passthrough_chmod (const char* path, mode_t mode);
+
+    /**
+     * fchmod:
+     *  https://linux.die.net/man/2/fchmod
+     * @param fd
+     * @param mode
+     * @return
+     */
+    int passthrough_fchmod (int fd, mode_t mode);
+
+    /**
+     * passthrough_fchmodat:
+     *  https://linux.die.net/man/2/fchmodat
+     * @param dirfd
+     * @param path
+     * @param mode
+     * @param flags
+     * @return
+     */
+    int passthrough_fchmodat (int dirfd, const char* path, mode_t mode, int flags);
 };
 } // namespace ldpaio
 
