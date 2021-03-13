@@ -72,6 +72,17 @@ void Statistics::initialize (const OperationType& operation_type)
             break;
         }
 
+        case OperationType::file_mode_calls: {
+            // assign size of statistics container
+            this->m_stats_size = FileModes::_size ();
+            // retrieves all FileModes operations' names in order
+            for (FileModes elem : FileModes::_values ()) {
+                this->m_statistic_entries.emplace_back (elem._to_string ());
+            }
+
+            break;
+        }
+
         default:
             break;
     }
