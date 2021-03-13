@@ -251,6 +251,12 @@ FILE* freopen (const char* pathname, const char* mode, FILE* stream)
     return m_posix_passthrough.passthrough_freopen (pathname, mode, stream);
 }
 
+// fclose call. (...)
+int fclose (FILE* stream)
+{
+    return m_posix_passthrough.passthrough_fclose (stream);
+}
+
 // fflush call. (...)
 // int fflush (FILE* stream)
 // {

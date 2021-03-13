@@ -65,6 +65,7 @@ typedef ssize_t (*libc_readlinkat_t) (int, const char*, char*, size_t);
 typedef FILE* (*libc_fopen_t) (const char*, const char*);
 typedef FILE* (*libc_fdopen_t) (int, const char*);
 typedef FILE* (*libc_freopen_t) (const char*, const char*, FILE*);
+typedef int (*libc_fclose_t) (FILE*);
 typedef int (*libc_fflush_t) (FILE*);
 
 /**
@@ -521,6 +522,14 @@ public:
      * @return
      */
     FILE* passthrough_freopen (const char* pathname, const char* mode, FILE* stream);
+
+    /**
+     * passthrough_fclose:
+     *  https://linux.die.net/man/3/fclose
+     * @param stream
+     * @return
+     */
+    int passthrough_fclose (FILE* stream);
 
     /**
      * passthrough_fflush:

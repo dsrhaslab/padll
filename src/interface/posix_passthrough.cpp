@@ -1088,6 +1088,32 @@ FILE* PosixPassthrough::passthrough_freopen (const char* pathname, const char* m
     return result;
 }
 
+// passthrough_fclose call. (...)
+int PosixPassthrough::passthrough_fclose (FILE* stream)
+{
+    // logging message
+    Logging::log_debug ("passthrough-fclose");
+
+    // perform original POSIX fclose operation
+    int result = ((libc_fclose_t)dlsym (RTLD_NEXT, "fclose")) (stream);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result == 0) {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fclose),
+                1,
+                0);
+        } else {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fclose),
+                1,
+                0,
+                1);
+        }
+    }
+
+    return result;
+}
+
 // passthrough_fflush call. (...)
 int PosixPassthrough::passthrough_fflush (FILE* stream)
 {
