@@ -6,8 +6,7 @@
 #ifndef LDPAIO_POSIX_PASSTHROUGH_HPP
 #define LDPAIO_POSIX_PASSTHROUGH_HPP
 
-#define __USE_GNU
-#define _GNU_SOURCE
+#define _GNU_SOURCE 1
 
 #include <dirent.h>
 #include <dlfcn.h>
