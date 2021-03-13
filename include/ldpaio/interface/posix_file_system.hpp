@@ -351,7 +351,7 @@ extern "C" FILE* freopen (const char* pathname, const char* mode, FILE* stream);
  * @param stream
  * @return
  */
-extern "C" int fflush (FILE* stream);
+// extern "C" int fflush (FILE* stream);
 
 /**
  * mkdir:
