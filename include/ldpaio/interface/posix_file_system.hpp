@@ -93,7 +93,7 @@ extern "C" size_t fread (void* ptr, size_t size, size_t nmemb, FILE* stream);
  * @param stream
  * @return
  */
-extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stream);
+//extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stream);
 
 /**
  * open:
