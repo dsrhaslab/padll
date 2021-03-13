@@ -239,6 +239,12 @@ FILE* fopen (const char* pathname, const char* mode)
     return m_posix_passthrough.passthrough_fopen (pathname, mode);
 }
 
+// fdopen call. (...)
+FILE* fdopen(int fd, const char* mode)
+{
+    return m_posix_passthrough.passthrough_fdopen (fd, mode);
+}
+
 // mkdir call. (...)
 int mkdir (const char* path, mode_t mode)
 {

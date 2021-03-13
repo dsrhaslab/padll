@@ -330,6 +330,14 @@ extern "C" ssize_t readlinkat (int dirfd, const char* path, char* buf, size_t bu
 extern "C" FILE* fopen (const char* pathname, const char* mode);
 
 /**
+ * fdopen:
+ * @param fd
+ * @param mode
+ * @return
+ */
+extern "C" FILE *fdopen(int fd, const char *mode);
+
+/**
  * mkdir:
  * @param path
  * @param mode

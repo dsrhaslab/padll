@@ -63,6 +63,8 @@ typedef int (*libc_symlinkat_t) (const char*, int, const char*);
 typedef ssize_t (*libc_readlink_t) (const char*, char*, size_t);
 typedef ssize_t (*libc_readlinkat_t) (int, const char*, char*, size_t);
 typedef FILE* (*libc_fopen_t) (const char*, const char*);
+typedef FILE* (*libc_fdopen_t) (int, const char*);
+typedef FILE* (*libc_freopen_t) (const char*, const char*, FILE*);
 
 /**
  * Data calls.
@@ -499,6 +501,25 @@ public:
      * @return
      */
     FILE* passthrough_fopen (const char* pathname, const char* mode);
+
+    /**
+     * passthrough_fdopen:
+     *  https://linux.die.net/man/3/fdopen
+     * @param fd
+     * @param mode
+     * @return
+     */
+    FILE* passthrough_fdopen (int fd, const char* mode);
+
+    /**
+     * passthrough_freopen:
+     *  https://linux.die.net/man/3/freopen
+     * @param pathname
+     * @param mode
+     * @param stream
+     * @return
+     */
+    FILE* passthrough_freopen (const char* pathname, const char* mode, FILE* stream);
 
     /**
      * passthrough_mkdir:

@@ -1035,6 +1035,58 @@ FILE* PosixPassthrough::passthrough_fopen (const char* pathname, const char* mod
     return result;
 }
 
+// passthrough_fdopen call. (...)
+FILE* PosixPassthrough::passthrough_fdopen (int fd, const char* mode)
+{
+    // logging message
+    Logging::log_debug ("passthrough-fdopen (" + std::to_string (fd) + ")");
+
+    // perform original POSIX fdopen operation
+    FILE* result = ((libc_fdopen_t)dlsym (RTLD_NEXT, "fdopen")) (fd, mode);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result != nullptr) {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fdopen),
+                                                           1,
+                                                           0);
+        } else {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fdopen),
+                                                           1,
+                                                           0,
+                                                           1);
+        }
+    }
+
+    return result;
+}
+
+// passthrough_freopen call. (...)
+FILE* PosixPassthrough::passthrough_freopen (const char* pathname, const char* mode, FILE* stream)
+{
+    // logging message
+    Logging::log_debug ("passthrough-freopen (" + std::string (pathname) + ")");
+
+    // perform original POSIX freopen operation
+    FILE* result = ((libc_freopen_t)dlsym (RTLD_NEXT, "freopen")) (pathname, mode, stream);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result != nullptr) {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::freopen),
+                                                           1,
+                                                           0);
+        } else {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::freopen),
+                                                           1,
+                                                           0,
+                                                           1);
+        }
+    }
+
+    return result;
+}
+
 // passthrough_mkdir call. (...)
 int PosixPassthrough::passthrough_mkdir (const char* path, mode_t mode)
 {

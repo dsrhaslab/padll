@@ -57,7 +57,9 @@ BETTER_ENUM (Metadata,
     symlinkat = 28,
     readlink = 29,
     readlinkat = 30,
-    fopen = 31);
+    fopen = 31,
+    fdopen = 32,
+    freopen = 33);
 
 /**
  * Data Definitions.
