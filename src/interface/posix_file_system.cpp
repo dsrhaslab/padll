@@ -233,6 +233,12 @@ ssize_t readlinkat (int dirfd, const char* path, char* buf, size_t bufsize)
     return m_posix_passthrough.passthrough_readlinkat (dirfd, path, buf, bufsize);
 }
 
+// fopen call. (...)
+FILE* fopen (const char* pathname, const char* mode)
+{
+    return m_posix_passthrough.passthrough_fopen (pathname, mode);
+}
+
 // mkdir call. (...)
 int mkdir (const char* path, mode_t mode)
 {

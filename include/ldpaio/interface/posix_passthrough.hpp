@@ -15,6 +15,7 @@
 #include <iostream>
 #include <ldpaio/statistics/statistics.hpp>
 #include <ldpaio/utils/options.hpp>
+#include <stdio.h>
 #include <sstream>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -61,6 +62,7 @@ typedef int (*libc_symlink_t) (const char*, const char*);
 typedef int (*libc_symlinkat_t) (const char*, int, const char*);
 typedef ssize_t (*libc_readlink_t) (const char*, char*, size_t);
 typedef ssize_t (*libc_readlinkat_t) (int, const char*, char*, size_t);
+typedef FILE* (*libc_fopen_t) (const char*, const char*);
 
 /**
  * Data calls.
@@ -488,6 +490,15 @@ public:
      * @return
      */
     ssize_t passthrough_readlinkat (int dirfd, const char* path, char* buf, size_t bufsize);
+
+    /**
+     * passthrough_fopen:
+     *  https://linux.die.net/man/3/fopen
+     * @param pathname
+     * @param mode
+     * @return
+     */
+    FILE* passthrough_fopen (const char* pathname, const char* mode);
 
     /**
      * passthrough_mkdir:

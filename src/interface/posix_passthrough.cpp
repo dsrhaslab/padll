@@ -1009,6 +1009,32 @@ PosixPassthrough::passthrough_readlinkat (int dirfd, const char* path, char* buf
     return result;
 }
 
+// passthrough_fopen call. (...)
+FILE* PosixPassthrough::passthrough_fopen (const char* pathname, const char* mode)
+{
+    // logging message
+    Logging::log_debug ("passthrough-fopen (" + std::string (pathname) + ")");
+
+    // perform original POSIX fopen operation
+    FILE* result = ((libc_fopen_t)dlsym (RTLD_NEXT, "fopen")) (pathname, mode);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result != nullptr) {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fopen),
+                                                           1,
+                                                           0);
+        } else {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fopen),
+                                                           1,
+                                                           0,
+                                                           1);
+        }
+    }
+
+    return result;
+}
+
 // passthrough_mkdir call. (...)
 int PosixPassthrough::passthrough_mkdir (const char* path, mode_t mode)
 {
