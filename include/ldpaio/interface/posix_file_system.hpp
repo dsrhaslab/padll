@@ -347,6 +347,13 @@ extern "C" FILE* fdopen (int fd, const char* mode);
 extern "C" FILE* freopen (const char* pathname, const char* mode, FILE* stream);
 
 /**
+ * fflush:
+ * @param stream
+ * @return
+ */
+extern "C" int fflush (FILE* stream);
+
+/**
  * mkdir:
  * @param path
  * @param mode
