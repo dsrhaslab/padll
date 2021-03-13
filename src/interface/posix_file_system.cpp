@@ -35,6 +35,12 @@ size_t fread (void* ptr, size_t size, size_t nmemb, FILE* stream)
     return m_posix_passthrough.passthrough_fread (ptr, size, nmemb, stream);
 }
 
+// fwrite call. (...)
+size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stream)
+{
+    return m_posix_passthrough.passthrough_fwrite (ptr, size, nmemb, stream);
+}
+
 // open call. (...)
 int open (const char* path, int flags, ...)
 {

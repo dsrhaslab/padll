@@ -199,6 +199,28 @@ public:
     ssize_t passthrough_pwrite (int fd, const void* buf, ssize_t counter, off_t offset);
 
     /**
+     * passthrough_fread:
+     *  https://linux.die.net/man/3/fread
+     * @param ptr
+     * @param size
+     * @param nmemb
+     * @param stream
+     * @return
+     */
+    size_t passthrough_fread (void* ptr, size_t size, size_t nmemb, FILE* stream);
+
+    /**
+     * passthrough_fwrite:
+     *  https://linux.die.net/man/3/fwrite
+     * @param ptr
+     * @param size
+     * @param nmemb
+     * @param stream
+     * @return
+     */
+    size_t passthrough_fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stream);
+
+    /**
      * passthrough_open:
      * Notes:
      *  https://github.com/fritzw/ld-preload-open/blob/master/path-mapping.c
@@ -666,17 +688,6 @@ public:
      * @return
      */
     int passthrough_fremovexattr (int fd, const char* name);
-
-    /**
-     * passthrough_fread:
-     *  https://man7.org/linux/man-pages/man3/fread.3.html
-     * @param ptr
-     * @param size
-     * @param nmemb
-     * @param stream
-     * @return
-     */
-    size_t passthrough_fread (void* ptr, size_t size, size_t nmemb, FILE* stream);
 
     /**
      * passthrough_chmod:

@@ -86,6 +86,16 @@ extern "C" ssize_t pwrite (int fd, const void* buf, size_t size, off_t offset);
 extern "C" size_t fread (void* ptr, size_t size, size_t nmemb, FILE* stream);
 
 /**
+ * fwrite:
+ * @param ptr
+ * @param size
+ * @param nmemb
+ * @param stream
+ * @return
+ */
+extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stream);
+
+/**
  * open:
  * @param path
  * @param flags

@@ -201,6 +201,27 @@ size_t PosixPassthrough::passthrough_fread (void* ptr, size_t size, size_t nmemb
     return result;
 }
 
+// passthrough_fwrite call. (...)
+size_t PosixPassthrough::passthrough_fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stream)
+{
+    // logging message
+    Logging::log_debug ("passthrough-fwrite");
+
+    // perform original POSIX fwrite operation
+    ssize_t result =  ((libc_fwrite_t)dlsym (RTLD_NEXT, "fwrite")) (ptr, size, nmemb, stream);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result >= 0) {
+            this->m_data_stats.update_statistic_entry (static_cast<int> (Data::fwrite), 1, result);
+        } else {
+            this->m_data_stats.update_statistic_entry (static_cast<int> (Data::fwrite), 1, 0, 1);
+        }
+    }
+
+    return result;
+}
+
 // passthrough_open call.
 int PosixPassthrough::passthrough_open (const char* path, int flags, mode_t mode)
 {
