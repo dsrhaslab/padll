@@ -240,9 +240,15 @@ FILE* fopen (const char* pathname, const char* mode)
 }
 
 // fdopen call. (...)
-FILE* fdopen(int fd, const char* mode)
+FILE* fdopen (int fd, const char* mode)
 {
     return m_posix_passthrough.passthrough_fdopen (fd, mode);
+}
+
+// freopen call. (...)
+FILE* freopen (const char* pathname, const char* mode, FILE* stream)
+{
+    return m_posix_passthrough.passthrough_freopen (pathname, mode, stream);
 }
 
 // mkdir call. (...)

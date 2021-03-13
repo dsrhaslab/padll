@@ -64,7 +64,15 @@ BETTER_ENUM (Metadata,
 /**
  * Data Definitions.
  */
-BETTER_ENUM (Data, int, no_op = 0, read = 1, write = 2, pread = 3, pwrite = 4, fread = 5, fwrite = 6);
+BETTER_ENUM (Data,
+    int,
+    no_op = 0,
+    read = 1,
+    write = 2,
+    pread = 3,
+    pwrite = 4,
+    fread = 5,
+    fwrite = 6);
 
 /**
  * Directory Definitions.

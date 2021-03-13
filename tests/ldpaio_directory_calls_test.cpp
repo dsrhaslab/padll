@@ -189,6 +189,7 @@ int main (int argc, char** argv)
         DIR* dir = ::opendir ("/tmp");
         test_mkdirat_call (dir, path.data (), 0777);
         test_fdopendir_closedir_call (path.data ());
+        test_rmdir_call (path.data ());
     }
 
     return 0;

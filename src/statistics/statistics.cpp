@@ -252,8 +252,8 @@ void Statistics::tabulate_results ()
     // format statistic entries - underline values greater 0
     for (int i = 1; i < (rows - 1); i++) {
         for (int j = 1; j < columns; j++) {
-            if (std::stol(table_stats[i][j].get_text()) > 0) {
-                table_stats[i][j].format().font_style ({ FontStyle::bold, FontStyle::underline });
+            if (std::stol (table_stats[i][j].get_text ()) > 0) {
+                table_stats[i][j].format ().font_style ({ FontStyle::bold, FontStyle::underline });
             }
         }
     }

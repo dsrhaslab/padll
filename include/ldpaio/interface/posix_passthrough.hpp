@@ -15,8 +15,8 @@
 #include <iostream>
 #include <ldpaio/statistics/statistics.hpp>
 #include <ldpaio/utils/options.hpp>
-#include <stdio.h>
 #include <sstream>
+#include <stdio.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>

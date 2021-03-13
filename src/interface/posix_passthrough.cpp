@@ -187,7 +187,7 @@ size_t PosixPassthrough::passthrough_fread (void* ptr, size_t size, size_t nmemb
     Logging::log_debug ("passthrough-fpread");
 
     // perform original POSIX fread operation
-    ssize_t result =  ((libc_fread_t)dlsym (RTLD_NEXT, "fread")) (ptr, size, nmemb, stream);
+    ssize_t result = ((libc_fread_t)dlsym (RTLD_NEXT, "fread")) (ptr, size, nmemb, stream);
 
     // update statistic entry
     if (this->m_collect) {
@@ -202,13 +202,14 @@ size_t PosixPassthrough::passthrough_fread (void* ptr, size_t size, size_t nmemb
 }
 
 // passthrough_fwrite call. (...)
-size_t PosixPassthrough::passthrough_fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stream)
+size_t
+PosixPassthrough::passthrough_fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stream)
 {
     // logging message
     Logging::log_debug ("passthrough-fwrite");
 
     // perform original POSIX fwrite operation
-    ssize_t result =  ((libc_fwrite_t)dlsym (RTLD_NEXT, "fwrite")) (ptr, size, nmemb, stream);
+    ssize_t result = ((libc_fwrite_t)dlsym (RTLD_NEXT, "fwrite")) (ptr, size, nmemb, stream);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1022,13 +1023,13 @@ FILE* PosixPassthrough::passthrough_fopen (const char* pathname, const char* mod
     if (this->m_collect) {
         if (result != nullptr) {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fopen),
-                                                           1,
-                                                           0);
+                1,
+                0);
         } else {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fopen),
-                                                           1,
-                                                           0,
-                                                           1);
+                1,
+                0,
+                1);
         }
     }
 
@@ -1048,13 +1049,13 @@ FILE* PosixPassthrough::passthrough_fdopen (int fd, const char* mode)
     if (this->m_collect) {
         if (result != nullptr) {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fdopen),
-                                                           1,
-                                                           0);
+                1,
+                0);
         } else {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fdopen),
-                                                           1,
-                                                           0,
-                                                           1);
+                1,
+                0,
+                1);
         }
     }
 
@@ -1074,13 +1075,13 @@ FILE* PosixPassthrough::passthrough_freopen (const char* pathname, const char* m
     if (this->m_collect) {
         if (result != nullptr) {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::freopen),
-                                                           1,
-                                                           0);
+                1,
+                0);
         } else {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::freopen),
-                                                           1,
-                                                           0,
-                                                           1);
+                1,
+                0,
+                1);
         }
     }
 

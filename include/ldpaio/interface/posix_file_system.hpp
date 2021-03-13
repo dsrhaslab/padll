@@ -93,7 +93,7 @@ extern "C" size_t fread (void* ptr, size_t size, size_t nmemb, FILE* stream);
  * @param stream
  * @return
  */
-//extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stream);
+// extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stream);
 
 /**
  * open:
@@ -335,7 +335,16 @@ extern "C" FILE* fopen (const char* pathname, const char* mode);
  * @param mode
  * @return
  */
-extern "C" FILE *fdopen(int fd, const char *mode);
+extern "C" FILE* fdopen (int fd, const char* mode);
+
+/**
+ * freopen:
+ * @param pathname
+ * @param mode
+ * @param stream
+ * @return
+ */
+extern "C" FILE* freopen (const char* pathname, const char* mode, FILE* stream);
 
 /**
  * mkdir:
