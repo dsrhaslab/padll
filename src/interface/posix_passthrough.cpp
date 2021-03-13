@@ -1585,4 +1585,114 @@ int PosixPassthrough::passthrough_fchmodat (int dirfd, const char* path, mode_t 
     return result;
 }
 
+// passthrough_chown call. (...)
+int PosixPassthrough::passthrough_chown (const char* pathname, uid_t owner, gid_t group)
+{
+    // logging message
+    Logging::log_debug ("passthrough-chown (" + std::string (pathname) + ")");
+
+    // perform original POSIX chown operation
+    int result = ((libc_chown_t)dlsym (RTLD_NEXT, "chown")) (pathname, owner, group);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result == 0) {
+            this->m_file_mode_stats.update_statistic_entry (static_cast<int> (FileModes::chown),
+                1,
+                0);
+        } else {
+            this->m_file_mode_stats.update_statistic_entry (static_cast<int> (FileModes::chown),
+                1,
+                0,
+                1);
+        }
+    }
+
+    return result;
+}
+
+// passthrough_lchown call. (...)
+int PosixPassthrough::passthrough_lchown (const char* pathname, uid_t owner, gid_t group)
+{
+    // logging message
+    Logging::log_debug ("passthrough-lchown (" + std::string (pathname) + ")");
+
+    // perform original POSIX lchown operation
+    int result = ((libc_lchown_t)dlsym (RTLD_NEXT, "lchown")) (pathname, owner, group);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result == 0) {
+            this->m_file_mode_stats.update_statistic_entry (static_cast<int> (FileModes::lchown),
+                1,
+                0);
+        } else {
+            this->m_file_mode_stats.update_statistic_entry (static_cast<int> (FileModes::lchown),
+                1,
+                0,
+                1);
+        }
+    }
+
+    return result;
+}
+
+// passthrough_fchown call. (...)
+int PosixPassthrough::passthrough_fchown (int fd, uid_t owner, gid_t group)
+{
+    // logging message
+    Logging::log_debug ("passthrough-fchown (" + std::to_string (fd) + ")");
+
+    // perform original POSIX lchown operation
+    int result = ((libc_fchown_t)dlsym (RTLD_NEXT, "fchown")) (fd, owner, group);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result == 0) {
+            this->m_file_mode_stats.update_statistic_entry (static_cast<int> (FileModes::fchown),
+                1,
+                0);
+        } else {
+            this->m_file_mode_stats.update_statistic_entry (static_cast<int> (FileModes::fchown),
+                1,
+                0,
+                1);
+        }
+    }
+
+    return result;
+}
+
+// passthrough_fchownat call. (...)
+int PosixPassthrough::passthrough_fchownat (int dirfd,
+    const char* pathname,
+    uid_t owner,
+    gid_t group,
+    int flags)
+{
+    // logging message
+    Logging::log_debug (
+        "passthrough-fchownat (" + std::to_string (dirfd) + ", " + std::string (pathname) + ")");
+
+    // perform original POSIX fchownat operation
+    int result
+        = ((libc_fchownat_t)dlsym (RTLD_NEXT, "fchownat")) (dirfd, pathname, owner, group, flags);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result == 0) {
+            this->m_file_mode_stats.update_statistic_entry (static_cast<int> (FileModes::fchownat),
+                1,
+                0);
+        } else {
+            this->m_file_mode_stats.update_statistic_entry (static_cast<int> (FileModes::fchownat),
+                1,
+                0,
+                1);
+        }
+    }
+
+    return result;
+}
+
 } // namespace ldpaio

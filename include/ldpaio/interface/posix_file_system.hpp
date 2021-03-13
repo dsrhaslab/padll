@@ -512,4 +512,42 @@ extern "C" int fchmod (int fd, mode_t mode);
  */
 extern "C" int fchmodat (int dirfd, const char* pathname, mode_t mode, int flags);
 
+/**
+ * chown:
+ * @param pathname
+ * @param owner
+ * @param group
+ * @return
+ */
+extern "C" int chown (const char* pathname, uid_t owner, gid_t group);
+
+/**
+ * lchown:
+ * @param pathname
+ * @param owner
+ * @param group
+ * @return
+ */
+extern "C" int lchown (const char* pathname, uid_t owner, gid_t group);
+
+/**
+ * fchown:
+ * @param fd
+ * @param owner
+ * @param group
+ * @return
+ */
+extern "C" int fchown (int fd, uid_t owner, gid_t group);
+
+/**
+ * fchownat:
+ * @param dirfd
+ * @param pathname
+ * @param owner
+ * @param group
+ * @param flags
+ * @return
+ */
+extern "C" int fchownat (int dirfd, const char* pathname, uid_t owner, gid_t group, int flags);
+
 #endif // LDPAIO_POSIX_FILE_SYSTEM_H

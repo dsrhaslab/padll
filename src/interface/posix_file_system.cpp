@@ -364,3 +364,27 @@ int fchmodat (int dirfd, const char* pathname, mode_t mode, int flags)
 {
     return m_posix_passthrough.passthrough_fchmodat (dirfd, pathname, mode, flags);
 }
+
+// chown call. (...)
+int chown (const char* pathname, uid_t owner, gid_t group)
+{
+    return m_posix_passthrough.passthrough_chown (pathname, owner, group);
+}
+
+// lchown call. (...)
+int lchown (const char* pathname, uid_t owner, gid_t group)
+{
+    return m_posix_passthrough.passthrough_lchown (pathname, owner, group);
+}
+
+// fchown call. (...)
+int fchown (int fd, uid_t owner, gid_t group)
+{
+    return m_posix_passthrough.passthrough_fchown (fd, owner, group);
+}
+
+// fchownat call. (...)
+int fchownat (int dirfd, const char* pathname, uid_t owner, gid_t group, int flags)
+{
+    return m_posix_passthrough.passthrough_fchownat (dirfd, pathname, owner, group, flags);
+}

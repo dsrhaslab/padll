@@ -706,6 +706,47 @@ public:
      * @return
      */
     int passthrough_fchmodat (int dirfd, const char* path, mode_t mode, int flags);
+
+    /**
+     * passthrough_chown:
+     *
+     * @param pathname
+     * @param owner
+     * @param group
+     * @return
+     */
+    int passthrough_chown (const char* pathname, uid_t owner, gid_t group);
+
+    /**
+     * passthrough_lchown:
+     *
+     * @param pathname
+     * @param owner
+     * @param group
+     * @return
+     */
+    int passthrough_lchown (const char* pathname, uid_t owner, gid_t group);
+
+    /**
+     * passthrough_fchown:
+     *
+     * @param fd
+     * @param owner
+     * @param group
+     * @return
+     */
+    int passthrough_fchown (int fd, uid_t owner, gid_t group);
+
+    /**
+     * passthrough_fchownat:
+     * @param dirfd
+     * @param pathname
+     * @param owner
+     * @param group
+     * @param flags
+     * @return
+     */
+    int passthrough_fchownat (int dirfd, const char* pathname, uid_t owner, gid_t group, int flags);
 };
 } // namespace ldpaio
 
