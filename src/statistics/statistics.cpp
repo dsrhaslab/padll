@@ -148,8 +148,6 @@ std::string Statistics::to_string ()
     }
     stream << " }";
 
-    this->tabulate_results ();
-
     return stream.str ();
 }
 
@@ -186,8 +184,8 @@ long Statistics::aggregate_counters (int counter_type)
     return sum_value;
 }
 
-// tabulate_results call.
-void Statistics::tabulate_results ()
+// tabulate call.
+void Statistics::tabulate ()
 {
     int rows = 0;
     int columns = 4;

@@ -26,23 +26,23 @@ PosixPassthrough::~PosixPassthrough ()
 
     if (option_default_table_format) {
         // print to stdout metadata-based statistics in tabular format
-        this->m_metadata_stats.tabulate_results ();
+        this->m_metadata_stats.tabulate ();
         std::cout << "\n";
 
         // print to stdout data-based statistics in tabular format
-        this->m_data_stats.tabulate_results ();
+        this->m_data_stats.tabulate ();
         std::cout << "\n";
 
         // print to stdout directory-based statistics in tabular format
-        this->m_dir_stats.tabulate_results ();
+        this->m_dir_stats.tabulate ();
         std::cout << "\n";
 
         // print to stdout extended attributes based statistics in tabular format
-        this->m_ext_attr_stats.tabulate_results ();
+        this->m_ext_attr_stats.tabulate ();
         std::cout << "\n";
 
         // print to stdout file modes based statistics in tabular format
-        this->m_file_mode_stats.tabulate_results ();
+        this->m_file_mode_stats.tabulate ();
         std::cout << "\n";
     } else {
         Logging::log_debug (this->to_string ());

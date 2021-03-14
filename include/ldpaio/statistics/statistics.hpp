@@ -111,7 +111,10 @@ public:
      */
     std::string to_string ();
 
-    void tabulate_results ();
+    /**
+     * tabulate:
+     */
+    void tabulate ();
 };
 } // namespace ldpaio
 

@@ -20,7 +20,7 @@ int test_getxattr_call (const char* path, const char* xattr)
 {
     std::cout << "Test getxattr call (" << path << ", " << xattr << ")\n";
 
-    ssize_t info_size;
+    ssize_t info_size = 0;
     // get size of extended attribute
     // verify if the test is running on an Apple device and use the respective xattr calls
 #if defined(__APPLE__)
@@ -29,6 +29,7 @@ int test_getxattr_call (const char* path, const char* xattr)
     info_size = ::getxattr (path, xattr, nullptr, 0);
 #endif
 
+    std::cout << "first\n";
     // validate info_size result after getxattr
     if (info_size == 0) {
         std::cerr << "Error while getting attribute\n";
@@ -36,9 +37,9 @@ int test_getxattr_call (const char* path, const char* xattr)
     }
 
     // allocate size for
-    char* info = new char[info_size];
+    char* info = static_cast<char*> (malloc(sizeof(char) * info_size));
+    ssize_t return_value = 0;
 
-    ssize_t return_value;
     // get extended attribute
     // verify if the test is running on an Apple device and use the respective xattr calls
 #if defined(__APPLE__)
@@ -49,7 +50,7 @@ int test_getxattr_call (const char* path, const char* xattr)
 
     std::cout << "\tresult {" << info << ", " << info_size << ", " << return_value << "}\n";
 
-    delete[] info;
+    free (info);
     return return_value;
 }
 
@@ -76,9 +77,9 @@ int test_lgetxattr_call (const char* path, const char* xattr)
     }
 
     // allocate size for
-    char* info = new char[info_size];
-
+    char* info = static_cast<char*> (malloc(sizeof(char) * info_size));
     ssize_t return_value = 0;
+
     // get extended attribute
 #if defined(__unix__) || defined(__linux__)
     return_value = ::lgetxattr (path, xattr, info, info_size);
@@ -86,7 +87,7 @@ int test_lgetxattr_call (const char* path, const char* xattr)
 
     std::cout << "\tresult {" << info << ", " << info_size << ", " << return_value << "}\n";
 
-    delete[] info;
+    free (info);
     return return_value;
 }
 
@@ -116,9 +117,9 @@ int test_fgetxattr_call (int fd, const char* xattr)
     }
 
     // allocate size for
-    char* info = new char[info_size];
-
+    char* info = static_cast<char*> (malloc(sizeof(char) * info_size));
     ssize_t return_value;
+
     // get extended attribute
     // verify if the test is running on an Apple device and use the respective xattr calls
 #if defined(__APPLE__)
@@ -129,7 +130,7 @@ int test_fgetxattr_call (int fd, const char* xattr)
 
     std::cout << "\tresult {" << info << ", " << info_size << ", " << return_value << "}\n";
 
-    delete[] info;
+    free (info);
     return return_value;
 }
 
@@ -248,7 +249,7 @@ int test_listxattr (const char* path)
     }
 
     // allocate size for buffer
-    buf = new char[buflen];
+    buf = static_cast<char*> (malloc(sizeof(char) * buflen));
 
     // list extended attribute elements of a given file
     // verify if the test is running on an Apple device and use the respective xattr calls
@@ -273,7 +274,7 @@ int test_listxattr (const char* path)
         key += keylen;
     }
 
-    delete[] buf;
+    free (buf);
     return EXIT_SUCCESS;
 }
 
@@ -308,7 +309,7 @@ int test_llistxattr (const char* path)
     }
 
     // allocate size for buffer
-    buf = new char[buflen];
+    buf = static_cast<char*> (malloc(sizeof(char) * buflen));
 
     // list extended attribute elements of a given file
 #if defined(__unix__) || defined(__linux__)
@@ -330,7 +331,7 @@ int test_llistxattr (const char* path)
         key += keylen;
     }
 
-    delete[] buf;
+    free (buf);
     return EXIT_SUCCESS;
 }
 
@@ -368,7 +369,7 @@ int test_flistxattr (int fd)
     }
 
     // allocate size for buffer
-    buf = new char[buflen];
+    buf = static_cast<char*> (malloc(sizeof(char) * buflen));
 
     // list extended attribute elements of a given file
     // verify if the test is running on an Apple device and use the respective xattr calls
@@ -393,7 +394,7 @@ int test_flistxattr (int fd)
         key += keylen;
     }
 
-    delete[] buf;
+    free (buf);
     return EXIT_SUCCESS;
 }
 

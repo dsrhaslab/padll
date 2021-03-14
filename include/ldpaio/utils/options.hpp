@@ -13,7 +13,7 @@ namespace ldpaio {
  */
 const bool option_default_statistic_collection { true };
 
-const bool option_default_table_format { true };
+const bool option_default_table_format { false };
 
 } // namespace ldpaio
 
