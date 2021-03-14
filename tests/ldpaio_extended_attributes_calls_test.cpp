@@ -29,7 +29,6 @@ int test_getxattr_call (const char* path, const char* xattr)
     info_size = ::getxattr (path, xattr, nullptr, 0);
 #endif
 
-    std::cout << "first\n";
     // validate info_size result after getxattr
     if (info_size == 0) {
         std::cerr << "Error while getting attribute\n";
@@ -48,7 +47,9 @@ int test_getxattr_call (const char* path, const char* xattr)
     return_value = ::getxattr (path, xattr, info, info_size);
 #endif
 
-    std::cout << "\tresult {" << info << ", " << info_size << ", " << return_value << "}\n";
+    std::cout << "getxattr::result {" << info_size << ", " << return_value;
+
+    (info_size > -1) ? std::cout << ", " << info << "}\n" : std::cout << "}\n";
 
     free (info);
     return return_value;
@@ -85,7 +86,9 @@ int test_lgetxattr_call (const char* path, const char* xattr)
     return_value = ::lgetxattr (path, xattr, info, info_size);
 #endif
 
-    std::cout << "\tresult {" << info << ", " << info_size << ", " << return_value << "}\n";
+    std::cout << "getxattr::result {" << info_size << ", " << return_value;
+
+    (info_size > -1) ? std::cout << ", " << info << "}\n" : std::cout << "}\n";
 
     free (info);
     return return_value;
@@ -128,7 +131,9 @@ int test_fgetxattr_call (int fd, const char* xattr)
     return_value = ::fgetxattr (fd, xattr, info, info_size);
 #endif
 
-    std::cout << "\tresult {" << info << ", " << info_size << ", " << return_value << "}\n";
+    std::cout << "getxattr::result {" << info_size << ", " << return_value;
+
+    (info_size > -1) ? std::cout << ", " << info << "}\n" : std::cout << "}\n";
 
     free (info);
     return return_value;
