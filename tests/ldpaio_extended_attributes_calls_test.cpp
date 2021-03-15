@@ -37,7 +37,6 @@ int test_getxattr_call (const char* path, const char* xattr)
 
     // allocate size for
     char* info = new char[info_size];
-//    char* info = static_cast<char*> (malloc(sizeof(char) * info_size));
     ssize_t return_value = 0;
 
     // get extended attribute
@@ -53,7 +52,6 @@ int test_getxattr_call (const char* path, const char* xattr)
     (info_size > -1) ? std::cout << ", " << info << "}\n" : std::cout << "}\n";
 
     delete[] info;
-//    free (info);
     return return_value;
 }
 
@@ -81,7 +79,6 @@ int test_lgetxattr_call (const char* path, const char* xattr)
 
     // allocate size for
     char* info = new char[info_size];
-//    char* info = static_cast<char*> (malloc(sizeof(char) * info_size));
     ssize_t return_value = 0;
 
     // get extended attribute
@@ -94,7 +91,6 @@ int test_lgetxattr_call (const char* path, const char* xattr)
     (info_size > -1) ? std::cout << ", " << info << "}\n" : std::cout << "}\n";
 
     delete[] info;
-//    free (info);
     return return_value;
 }
 
@@ -125,7 +121,6 @@ int test_fgetxattr_call (int fd, const char* xattr)
 
     // allocate size for
     char* info = new char[info_size];
-//    char* info = static_cast<char*> (malloc(sizeof(char) * info_size));
     ssize_t return_value;
 
     // get extended attribute
@@ -141,7 +136,6 @@ int test_fgetxattr_call (int fd, const char* xattr)
     (info_size > -1) ? std::cout << ", " << info << "}\n" : std::cout << "}\n";
 
     delete[] info;
-//    free (info);
     return return_value;
 }
 
@@ -261,7 +255,6 @@ int test_listxattr (const char* path)
 
     // allocate size for buffer
     buf = new char[buflen];
-//    buf = static_cast<char*> (malloc(sizeof(char) * buflen));
 
     // list extended attribute elements of a given file
     // verify if the test is running on an Apple device and use the respective xattr calls
@@ -287,7 +280,6 @@ int test_listxattr (const char* path)
     }
 
     delete[] buf;
-//    free (buf);
     return EXIT_SUCCESS;
 }
 
@@ -323,7 +315,6 @@ int test_llistxattr (const char* path)
 
     // allocate size for buffer
     buf = new char[buflen];
-//    buf = static_cast<char*> (malloc(sizeof(char) * buflen));
 
     // list extended attribute elements of a given file
 #if defined(__unix__) || defined(__linux__)
@@ -346,7 +337,6 @@ int test_llistxattr (const char* path)
     }
 
     delete[] buf;
-//    free (buf);
     return EXIT_SUCCESS;
 }
 
@@ -385,7 +375,6 @@ int test_flistxattr (int fd)
 
     // allocate size for buffer
     buf = new char[buflen];
-//    buf = static_cast<char*> (malloc(sizeof(char) * buflen));
 
     // list extended attribute elements of a given file
     // verify if the test is running on an Apple device and use the respective xattr calls

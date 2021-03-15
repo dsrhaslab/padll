@@ -185,7 +185,8 @@ extern "C" int ftruncate (int fd, off_t length);
  * @param statbuf
  * @return
  */
-extern "C" int stat (const char* path, struct stat* statbuf);
+//extern "C" int stat (const char* path, struct stat* statbuf);
+extern "C" int __xstat (int version, const char* path, struct stat* statbuf);
 
 /**
  * lstat:

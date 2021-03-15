@@ -138,9 +138,14 @@ int ftruncate (int fd, off_t length)
 }
 
 // stat call. (...)
-int stat (const char* path, struct stat* statbuf)
+//int stat (const char* path, struct stat* statbuf)
+//{
+//    return m_posix_passthrough.passthrough_stat (path, statbuf);
+//}
+
+int __xstat (int version, const char* path, struct stat* statbuf)
 {
-    return m_posix_passthrough.passthrough_stat (path, statbuf);
+    return m_posix_passthrough.passthrough_xstat (version, path, statbuf);
 }
 
 // lstat call. (...)

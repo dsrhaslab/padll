@@ -45,7 +45,8 @@ typedef void (*libc_sync_t) ();
 typedef int (*libc_syncfs_t) (int);
 typedef int (*libc_truncate_t) (const char*, off_t);
 typedef int (*libc_ftruncate_t) (int, off_t);
-typedef int (*libc_stat_t) (const char*, struct stat*);
+//typedef int (*libc_stat_t) (const char*, struct stat*);
+typedef int (*libc_xstat_t) (int, const char*, struct stat*);
 typedef int (*libc_lstat_t) (const char*, struct stat*);
 typedef int (*libc_fstat_t) (int, struct stat*);
 typedef int (*libc_fstatat_t) (int, const char*, struct stat*, int);
@@ -349,7 +350,9 @@ public:
      * @param statbuf
      * @return
      */
-    int passthrough_stat (const char* path, struct stat* statbuf);
+//    int passthrough_stat (const char* path, struct stat* statbuf);
+
+    int passthrough_xstat (int version, const char* path, struct stat* statbuf);
 
     /**
      * passthrough_lstat:
