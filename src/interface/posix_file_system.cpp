@@ -137,33 +137,28 @@ int ftruncate (int fd, off_t length)
     return m_posix_passthrough.passthrough_ftruncate (fd, length);
 }
 
-// stat call. (...)
-//int stat (const char* path, struct stat* statbuf)
-//{
-//    return m_posix_passthrough.passthrough_stat (path, statbuf);
-//}
-
+// __xstat call. (...)
 int __xstat (int version, const char* path, struct stat* statbuf)
 {
     return m_posix_passthrough.passthrough_xstat (version, path, statbuf);
 }
 
-// lstat call. (...)
-int lstat (const char* path, struct stat* statbuf)
+// __lxstat call. (...)
+int __lxstat (int version, const char* path, struct stat* statbuf)
 {
-    return m_posix_passthrough.passthrough_lstat (path, statbuf);
+    return m_posix_passthrough.passthrough_lxstat (version, path, statbuf);
 }
 
-// fstat call. (...)
-int fstat (int fd, struct stat* statbuf)
+// __fxstat call. (...)
+int __fxstat (int version, int fd, struct stat* statbuf)
 {
-    return m_posix_passthrough.passthrough_fstat (fd, statbuf);
+    return m_posix_passthrough.passthrough_fxstat (version, fd, statbuf);
 }
 
-// fstatat call. (...)
-int fstatat (int dirfd, const char* path, struct stat* statbuf, int flags)
+// __fxstatat call. (...)
+int __fxstatat (int version, int dirfd, const char* path, struct stat* statbuf, int flags)
 {
-    return m_posix_passthrough.passthrough_fstatat (dirfd, path, statbuf, flags);
+    return m_posix_passthrough.passthrough_fxstatat (version, dirfd, path, statbuf, flags);
 }
 
 // statfs call. (...)

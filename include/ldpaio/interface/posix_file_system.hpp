@@ -180,39 +180,46 @@ extern "C" int truncate (const char* path, off_t length);
 extern "C" int ftruncate (int fd, off_t length);
 
 /**
- * stat:
+ * __xstat:
+ *  This method respects to the stat call.
+ * @param version
  * @param path
  * @param statbuf
  * @return
  */
-//extern "C" int stat (const char* path, struct stat* statbuf);
 extern "C" int __xstat (int version, const char* path, struct stat* statbuf);
 
 /**
- * lstat:
+ * __lxstat:
+ *  This method respects to the lstat call.
+ * @param version
  * @param path
  * @param statbuf
  * @return
  */
-extern "C" int lstat (const char* path, struct stat* statbuf);
+extern "C" int __lxstat (int version, const char* path, struct stat* statbuf);
 
 /**
- * fstat:
+ * __fxstat:
+ *  This method respects to the fstat call.
+ * @param version
  * @param fd
  * @param statbuf
  * @return
  */
-extern "C" int fstat (int fd, struct stat* statbuf);
+extern "C" int __fxstat (int version, int fd, struct stat* statbuf);
 
 /**
- * fstatat:
+ * fxstatat:
+ *  This method respects to the fstatat call.
+ * @param version
  * @param dirfd
  * @param path
  * @param statbuf
  * @param flags
  * @return
  */
-extern "C" int fstatat (int dirfd, const char* path, struct stat* statbuf, int flags);
+extern "C" int __fxstatat (int version, int dirfd, const char* path, struct stat* statbuf, int flags);
 
 /**
  * statfs:

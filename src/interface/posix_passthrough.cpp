@@ -573,30 +573,7 @@ int PosixPassthrough::passthrough_ftruncate (int fd, off_t length)
     return result;
 }
 
-// passthrough_stat call. (...)
-//int PosixPassthrough::passthrough_stat (const char* path, struct stat* statbuf)
-//{
-//    // logging message
-//    Logging::log_debug ("passthrough-stat (" + std::string (path) + ")");
-//
-//    // perform original POSIX stat operation
-//    int result = ((libc_stat_t)dlsym (RTLD_NEXT, "stat")) (path, statbuf);
-//
-//    // update statistic entry
-//    if (this->m_collect) {
-//        if (result == 0) {
-//            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::stat), 1, 0);
-//        } else {
-//            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::stat),
-//                1,
-//                0,
-//                1);
-//        }
-//    }
-//
-//    return result;
-//}
-
+// passthrough_xstat call. (...)
 int PosixPassthrough::passthrough_xstat (int version, const char* path, struct stat* statbuf)
 {
     // logging message
@@ -620,14 +597,14 @@ int PosixPassthrough::passthrough_xstat (int version, const char* path, struct s
     return result;
 }
 
-// passthrough_lstat call. (...)
-int PosixPassthrough::passthrough_lstat (const char* path, struct stat* statbuf)
+// passthrough_lxstat call. (...)
+int PosixPassthrough::passthrough_lxstat (int version, const char* path, struct stat* statbuf)
 {
     // logging message
-    Logging::log_debug ("passthrough-lstat (" + std::string (path) + ")");
+    Logging::log_debug ("passthrough-lxstat (" + std::string (path) + ")");
 
-    // perform original POSIX lstat operation
-    int result = ((libc_lstat_t)dlsym (RTLD_NEXT, "lstat")) (path, statbuf);
+    // perform original POSIX __lxstat (lstat) operation
+    int result = ((libc_lxstat_t)dlsym (RTLD_NEXT, "__lxstat")) (version, path, statbuf);
 
     // update statistic entry
     if (this->m_collect) {
@@ -646,14 +623,14 @@ int PosixPassthrough::passthrough_lstat (const char* path, struct stat* statbuf)
     return result;
 }
 
-// passthrough_fstat call. (...)
-int PosixPassthrough::passthrough_fstat (int fd, struct stat* statbuf)
+// passthrough_fxstat call. (...)
+int PosixPassthrough::passthrough_fxstat (int version, int fd, struct stat* statbuf)
 {
     // logging message
-    Logging::log_debug ("passthrough-fstat (" + std::to_string (fd) + ")");
+    Logging::log_debug ("passthrough-fxstat (" + std::to_string (fd) + ")");
 
-    // perform original POSIX fstat operation
-    int result = ((libc_fstat_t)dlsym (RTLD_NEXT, "fstat")) (fd, statbuf);
+    // perform original POSIX __fxstat (fstat) operation
+    int result = ((libc_fxstat_t)dlsym (RTLD_NEXT, "__fxstat")) (version, fd, statbuf);
 
     // update statistic entry
     if (this->m_collect) {
@@ -672,18 +649,19 @@ int PosixPassthrough::passthrough_fstat (int fd, struct stat* statbuf)
     return result;
 }
 
-// passthrough_fstatat call. (...)
-int PosixPassthrough::passthrough_fstatat (int dirfd,
+// passthrough_fxstatat call. (...)
+int PosixPassthrough::passthrough_fxstatat (int version,
+    int dirfd,
     const char* path,
     struct stat* statbuf,
     int flags)
 {
     // logging message
     Logging::log_debug (
-        "passthrough-fstatat (" + std::to_string (dirfd) + ", " + std::string (path) + ")");
+        "passthrough-fxstatat (" + std::to_string (dirfd) + ", " + std::string (path) + ")");
 
-    // perform original POSIX fstatat operation
-    int result = ((libc_fstatat_t)dlsym (RTLD_NEXT, "fstatat")) (dirfd, path, statbuf, flags);
+    // perform original POSIX __fxstatat (fstatat) operation
+    int result = ((libc_fxstatat_t)dlsym (RTLD_NEXT, "__fxstatat")) (version, dirfd, path, statbuf, flags);
 
     // update statistic entry
     if (this->m_collect) {

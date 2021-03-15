@@ -45,11 +45,10 @@ typedef void (*libc_sync_t) ();
 typedef int (*libc_syncfs_t) (int);
 typedef int (*libc_truncate_t) (const char*, off_t);
 typedef int (*libc_ftruncate_t) (int, off_t);
-//typedef int (*libc_stat_t) (const char*, struct stat*);
 typedef int (*libc_xstat_t) (int, const char*, struct stat*);
-typedef int (*libc_lstat_t) (const char*, struct stat*);
-typedef int (*libc_fstat_t) (int, struct stat*);
-typedef int (*libc_fstatat_t) (int, const char*, struct stat*, int);
+typedef int (*libc_lxstat_t) (int, const char*, struct stat*);
+typedef int (*libc_fxstat_t) (int, int, struct stat*);
+typedef int (*libc_fxstatat_t) (int, int, const char*, struct stat*, int);
 typedef int (*libc_statfs_t) (const char*, struct statfs*);
 typedef int (*libc_fstatfs_t) (int, struct statfs*);
 typedef int (*libc_link_t) (const char*, const char*);
@@ -345,43 +344,48 @@ public:
 
     /**
      * passthrough_stat:
+     *  This method respects to the stat call.
+     *  https://refspecs.linuxbase.org/LSB_3.0.0/LSB-PDA/LSB-PDA/baselib-xstat-1.html
      *  https://man7.org/linux/man-pages/man2/stat.2.html
+     * @param version
      * @param path
      * @param statbuf
      * @return
      */
-//    int passthrough_stat (const char* path, struct stat* statbuf);
-
     int passthrough_xstat (int version, const char* path, struct stat* statbuf);
 
     /**
-     * passthrough_lstat:
+     * passthrough_lxstat:
      *  https://man7.org/linux/man-pages/man2/stat.2.html
+     * @param version
      * @param path
      * @param statbuf
      * @return
      */
-    int passthrough_lstat (const char* path, struct stat* statbuf);
+    int passthrough_lxstat (int version, const char* path, struct stat* statbuf);
 
     /**
-     * passthrough_fstat:
+     * passthrough_fxstat:
      *  https://man7.org/linux/man-pages/man2/fstat.2.html
+     * @param version
      * @param fd
      * @param statbuf
      * @return
      */
-    int passthrough_fstat (int fd, struct stat* statbuf);
+    int passthrough_fxstat (int version, int fd, struct stat* statbuf);
 
     /**
-     * passthrough_fstatat:
+     * passthrough_fxstatat:
+     *  https://refspecs.linuxbase.org/LSB_5.0.0/LSB-Core-generic/LSB-Core-generic/baselib---fxstatat-1.html
      *  https://man7.org/linux/man-pages/man2/fstatat.2.html
+     * @param version
      * @param dirfd
      * @param path
      * @param statbuf
      * @param flags
      * @return
      */
-    int passthrough_fstatat (int dirfd, const char* path, struct stat* statbuf, int flags);
+    int passthrough_fxstatat (int version, int dirfd, const char* path, struct stat* statbuf, int flags);
 
     /**
      * passthrough_statfs:
