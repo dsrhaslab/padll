@@ -63,7 +63,7 @@ PosixPassthrough::~PosixPassthrough ()
         int dlclose_result = ::dlclose (this->m_lib_handle);
 
         // validate result from dlclose
-        if (!dlclose_result) {
+        if (dlclose_result != 0) {
             Logging::log_error (
                 "Error while closing dynamic link (" + std::to_string (dlclose_result) + ").");
         }

@@ -118,6 +118,7 @@ typedef int (*libc_fchownat_t) (int, const char*, uid_t, gid_t, int);
 
 /**
  * PosixPassthrough class.
+ *  https://www.gnu.org/software/libc/manual/html_node/Function-Index.html
  * missing: Complete me ...
  */
 class PosixPassthrough {

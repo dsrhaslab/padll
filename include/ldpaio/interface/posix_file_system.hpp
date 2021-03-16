@@ -87,6 +87,7 @@ extern "C" size_t fread (void* ptr, size_t size, size_t nmemb, FILE* stream);
 
 /**
  * fwrite:
+ * FIXME: this method is not working due to "something" in the Logging library.
  * @param ptr
  * @param size
  * @param nmemb
@@ -364,6 +365,7 @@ extern "C" int fclose (FILE* stream);
 
 /**
  * fflush:
+ * FIXME: this method is not working due to "something" in the Logging library.
  * @param stream
  * @return
  */
