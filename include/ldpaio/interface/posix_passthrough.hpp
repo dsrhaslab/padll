@@ -140,6 +140,13 @@ public:
     explicit PosixPassthrough (bool stat_collection);
 
     /**
+     * PosixPassthrough parameterized constructor.
+     * @param lib String that respects to the library that will be intercepted.
+     * @param stat_collection Boolean that defines if statistic collection is enabled or disabled.
+     */
+    PosixPassthrough (const std::string& lib, bool stat_collection);
+
+    /**
      * PosixPassthrough default destructor.
      */
     ~PosixPassthrough ();

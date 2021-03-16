@@ -11,10 +11,16 @@ namespace ldpaio {
 PosixPassthrough::PosixPassthrough ()
 {
     Logging::log_info ("PosixPassthrough default constructor.");
-    this->m_lib_handle = ::dlopen ("libc.so.6", RTLD_LAZY);
 
+    // Dynamic loading of the library referred by 'option_default_intercepted_lib'.
+    // loads the dynamic shared object (shared library) file named by the null-terminated string
+    // filename and returns an opaque "handle" for the loaded object.
+    this->m_lib_handle = ::dlopen (option_default_intercepted_lib.data(), RTLD_LAZY);
+
+    // validate library pointer
     if (this->m_lib_handle == nullptr) {
-        Logging::log_error ("Error while dlopen'ing libc.");
+        Logging::log_error ("Error while dlopen'ing " + option_default_intercepted_lib + ".");
+        return;
     }
 }
 
@@ -22,11 +28,40 @@ PosixPassthrough::PosixPassthrough ()
 PosixPassthrough::PosixPassthrough (bool stat_collection) : m_collect { stat_collection }
 {
     Logging::log_info ("PosixPassthrough parameterized constructor.");
-    Logging::log_info ("PosixPassthrough default constructor.");
-    this->m_lib_handle = ::dlopen ("libc.so.6", RTLD_LAZY);
 
+    // Dynamic loading of the library referred by 'option_default_intercepted_lib'.
+    // loads the dynamic shared object (shared library) file named by the null-terminated string
+    // filename and returns an opaque "handle" for the loaded object.
+    this->m_lib_handle = ::dlopen (option_default_intercepted_lib.data(), RTLD_LAZY);
+
+    // validate library pointer
     if (this->m_lib_handle == nullptr) {
-        Logging::log_error ("Error while dlopen'ing libc.");
+        Logging::log_error ("Error while dlopen'ing " + option_default_intercepted_lib + ".");
+        return;
+    }
+}
+
+// PosixPassthrough parameterized constructor.
+PosixPassthrough::PosixPassthrough (const std::string& lib, bool stat_collection)  :
+    m_collect { stat_collection }
+{
+    Logging::log_info ("PosixPassthrough parameterized constructor.");
+
+    // validate if 'lib' is valid
+    if (lib.empty()) {
+        Logging::log_error ("Library not valid.");
+        return;
+    }
+
+    // Dynamic loading of the library referred by 'lib'.
+    // loads the dynamic shared object (shared library) file named by the null-terminated string
+    // filename and returns an opaque "handle" for the loaded object.
+    this->m_lib_handle = ::dlopen (lib.data(), RTLD_LAZY);
+
+    // validate library pointer
+    if (this->m_lib_handle == nullptr) {
+        Logging::log_error ("Error while dlopen'ing " + lib + ".");
+        return;
     }
 }
 
@@ -34,6 +69,21 @@ PosixPassthrough::PosixPassthrough (bool stat_collection) : m_collect { stat_col
 PosixPassthrough::~PosixPassthrough ()
 {
     Logging::log_info ("PosixPassthrough default destructor.");
+
+    // validate if library handle is valid and close dynamic linking
+    if (this->m_lib_handle != nullptr) {
+        // close dynamic linking to intercepted library.
+        // It decrements the reference count on the dynamically loaded shared object, referred to
+        // by handle m_lib_handle. If the reference count drops to zero, then the object is
+        // unloaded. All shared objects that were automatically loaded when dlopen () was invoked
+        // on the object referred to by handle are recursively closed in the same manner.
+        int dlclose_result = ::dlclose (this->m_lib_handle);
+
+        // validate result from dlclose
+        if (!dlclose_result) {
+            Logging::log_error ("Error while closing dynamic link.");
+        }
+    }
 
     if (option_default_table_format) {
         // print to stdout metadata-based statistics in tabular format
