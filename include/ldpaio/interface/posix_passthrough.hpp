@@ -118,6 +118,7 @@ typedef int (*libc_fchownat_t) (int, const char*, uid_t, gid_t, int);
 
 /**
  * PosixPassthrough class.
+ * missing: Complete me ...
  */
 class PosixPassthrough {
 
@@ -172,6 +173,7 @@ public:
 
     /**
      * passthrough_read:
+     *  https://linux.die.net/man/2/read
      * @param fd
      * @param buf
      * @param counter
@@ -181,6 +183,7 @@ public:
 
     /**
      * passthrough_write:
+     *  https://linux.die.net/man/2/write
      * @param fd
      * @param buf
      * @param counter
@@ -190,6 +193,7 @@ public:
 
     /**
      * passthrough_pread:
+     *  https://linux.die.net/man/2/pread
      * @param fd
      * @param buf
      * @param counter
@@ -200,6 +204,7 @@ public:
 
     /**
      * passthrough_pwrite:
+     *  https://linux.die.net/man/2/pwrite
      * @param fd
      * @param buf
      * @param counter
@@ -232,6 +237,7 @@ public:
 
     /**
      * passthrough_open:
+     *  https://linux.die.net/man/2/open
      * Notes:
      *  https://github.com/fritzw/ld-preload-open/blob/master/path-mapping.c
      *  https://github.com/poliva/ldpreloadhook/blob/master/hook.c
@@ -244,6 +250,7 @@ public:
 
     /**
      * passthrough_open:
+     *  https://linux.die.net/man/2/open
      * @param path
      * @param flags
      * @return
@@ -252,6 +259,7 @@ public:
 
     /**
      * passthrough_creat:
+     *  https://linux.die.net/man/2/creat
      * @param path
      * @param mode
      * @return
@@ -260,6 +268,7 @@ public:
 
     /**
      * passthrough_openat:
+     *  https://linux.die.net/man/2/openat
      * @param dirfd
      * @param path
      * @param flags
@@ -270,6 +279,7 @@ public:
 
     /**
      * passthrough_openat:
+     *  https://linux.die.net/man/2/openat
      * @param dirfd
      * @param path
      * @param flags
@@ -298,6 +308,7 @@ public:
 
     /**
      * passthrough_close:
+     *  https://linux.die.net/man/2/close
      * @param fd
      * @return
      */
@@ -305,6 +316,7 @@ public:
 
     /**
      * passthrough_fsync:
+     *  https://linux.die.net/man/2/fsync
      * @param fd
      * @return
      */
@@ -312,6 +324,7 @@ public:
 
     /**
      * passthrough_fdatasync:
+     *  https://linux.die.net/man/2/fdatasync
      * @param fd
      * @return
      */
@@ -333,6 +346,7 @@ public:
 
     /**
      * passthrough_truncate:
+     *  https://linux.die.net/man/2/truncate
      * @param path
      * @param length
      * @return
@@ -341,6 +355,7 @@ public:
 
     /**
      * passthrough_ftruncate:
+     *  https://linux.die.net/man/2/ftruncate
      * @param fd
      * @param length
      * @return
@@ -351,7 +366,7 @@ public:
      * passthrough_stat:
      *  This method respects to the stat call.
      *  https://refspecs.linuxbase.org/LSB_3.0.0/LSB-PDA/LSB-PDA/baselib-xstat-1.html
-     *  https://man7.org/linux/man-pages/man2/stat.2.html
+     *  https://linux.die.net/man/2/stat
      * @param version
      * @param path
      * @param statbuf
@@ -361,7 +376,7 @@ public:
 
     /**
      * passthrough_lxstat:
-     *  https://man7.org/linux/man-pages/man2/stat.2.html
+     *  https://linux.die.net/man/2/lstat
      * @param version
      * @param path
      * @param statbuf
@@ -371,7 +386,7 @@ public:
 
     /**
      * passthrough_fxstat:
-     *  https://man7.org/linux/man-pages/man2/fstat.2.html
+     *  https://linux.die.net/man/2/fstat
      * @param version
      * @param fd
      * @param statbuf
@@ -382,7 +397,7 @@ public:
     /**
      * passthrough_fxstatat:
      *  https://refspecs.linuxbase.org/LSB_5.0.0/LSB-Core-generic/LSB-Core-generic/baselib---fxstatat-1.html
-     *  https://man7.org/linux/man-pages/man2/fstatat.2.html
+     *  https://linux.die.net/man/2/fstatat
      * @param version
      * @param dirfd
      * @param path
@@ -398,7 +413,7 @@ public:
 
     /**
      * passthrough_statfs:
-     *  https://man7.org/linux/man-pages/man2/statfs.2.html
+     *  https://linux.die.net/man/2/statfs
      * @param path
      * @param buf
      * @return
@@ -407,7 +422,7 @@ public:
 
     /**
      * passthrough_fstatfs
-     *  https://man7.org/linux/man-pages/man2/fstatfs.2.html
+     *  https://linux.die.net/man/2/fstatfs
      * @param fd
      * @param buf
      * @return
@@ -416,6 +431,7 @@ public:
 
     /**
      * passthrough_link:
+     *  https://linux.die.net/man/2/link
      * @param old_path
      * @param new_path
      * @return
@@ -424,6 +440,7 @@ public:
 
     /**
      * passthrough_unlink:
+     *  https://linux.die.net/man/2/unlink
      * @param old_path
      * @return
      */
@@ -431,6 +448,7 @@ public:
 
     /**
      * passthrough_linkat:
+     *  https://linux.die.net/man/2/linkat
      * @param olddirfd
      * @param old_path
      * @param newdirfd
@@ -446,6 +464,7 @@ public:
 
     /**
      * passthrough_unlinkat:
+     *  https://linux.die.net/man/2/unlinkat
      * @param dirfd
      * @param pathname
      * @param flags
@@ -455,6 +474,7 @@ public:
 
     /**
      * passthrough_rename:
+     *  https://linux.die.net/man/2/rename
      * @param old_path
      * @param new_path
      * @return
@@ -463,6 +483,7 @@ public:
 
     /**
      * passthrough_renameat:
+     *  https://linux.die.net/man/2/renameat
      * @param olddirfd
      * @param old_path
      * @param newdirfd
@@ -474,7 +495,7 @@ public:
 
     /**
      * passthrough_symlink:
-     *  https://man7.org/linux/man-pages/man2/symlink.2.html
+     *  https://linux.die.net/man/2/symlink
      * @param target
      * @param linkpath
      * @return
@@ -483,6 +504,7 @@ public:
 
     /**
      * passthrough_symlinkat:
+     *  https://linux.die.net/man/2/symlinkat
      * @param target
      * @param newdirfd
      * @param linkpath
@@ -492,7 +514,7 @@ public:
 
     /**
      * passthrough_readlink:
-     *  https://www.man7.org/linux/man-pages/man2/readlink.2.html
+     *  https://linux.die.net/man/2/readlink
      * @param path
      * @param buf
      * @param bufsize
@@ -502,6 +524,7 @@ public:
 
     /**
      * passthrough_readlinkat:
+     *  https://linux.die.net/man/2/readlinkat
      * @param dirfd
      * @param path
      * @param buf
@@ -556,6 +579,7 @@ public:
 
     /**
      * passthrough_mkdir:
+     *  https://linux.die.net/man/2/mkdir
      * @param path
      * @param mode
      * @return
@@ -564,7 +588,7 @@ public:
 
     /**
      * passthrough_mkdirat:
-     *  https://man7.org/linux/man-pages/man2/mkdirat.2.html
+     *  https://linux.die.net/man/2/mkdirat
      * @param dirfd
      * @param path
      * @param mode
@@ -574,7 +598,7 @@ public:
 
     /**
      * passthrough_readdir:
-     *  https://man7.org/linux/man-pages/man3/readdir.3.html
+     *  https://linux.die.net/man/3/readdir
      * @param dirp
      * @return
      */
@@ -582,7 +606,7 @@ public:
 
     /**
      * passthrough_opendir:
-     *  https://man7.org/linux/man-pages/man3/opendir.3.html
+     *  https://linux.die.net/man/3/opendir
      * @param path
      * @return
      */
@@ -598,7 +622,7 @@ public:
 
     /**
      * passthrough_closedir:
-     *  https://man7.org/linux/man-pages/man3/closedir.3.html
+     *  https://linux.die.net/man/3/closedir
      * @param dirp
      * @return
      */
@@ -606,7 +630,7 @@ public:
 
     /**
      * passthrough_rmdir:
-     *  https://man7.org/linux/man-pages/man2/rmdir.2.html
+     *  https://linux.die.net/man/3/rmdir
      * @param path
      * @return
      */
@@ -614,7 +638,7 @@ public:
 
     /**
      * passthrough_dirfd:
-     *  https://man7.org/linux/man-pages/man3/dirfd.3.html
+     *  https://linux.die.net/man/3/dirfd
      * @param dirp
      * @return
      */
@@ -622,7 +646,7 @@ public:
 
     /**
      * passthrough_getxattr:
-     *  https://man7.org/linux/man-pages/man2/getxattr.2.html
+     *  https://linux.die.net/man/2/getxattr
      * @param path
      * @param name
      * @param value
@@ -644,7 +668,7 @@ public:
 
     /**
      * passthrough_fgetxattr:
-     *  https://man7.org/linux/man-pages/man2/fgetxattr.2.html
+     *  https://linux.die.net/man/2/fgetxattr
      * @param fd
      * @param name
      * @param value
@@ -655,7 +679,7 @@ public:
 
     /**
      * passthrough_setxattr:
-     *  https://man7.org/linux/man-pages/man2/setxattr.2.html
+     *  https://linux.die.net/man/2/setxattr
      * @param path
      * @param name
      * @param value
@@ -687,7 +711,7 @@ public:
 
     /**
      * passthrough_fsetxattr:
-     *  https://man7.org/linux/man-pages/man2/fsetxattr.2.html
+     *  https://linux.die.net/man/2/fsetxattr
      * @param fd
      * @param name
      * @param value
