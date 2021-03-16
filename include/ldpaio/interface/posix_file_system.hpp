@@ -12,7 +12,7 @@
 #include <ldpaio/utils/logging.hpp>
 #include <thread>
 
-ldpaio::Logging m_logger { true };
+ldpaio::Logging m_logger { false };
 ldpaio::PosixPassthrough m_posix_passthrough {};
 
 /**
@@ -87,14 +87,15 @@ extern "C" size_t fread (void* ptr, size_t size, size_t nmemb, FILE* stream);
 
 /**
  * fwrite:
- * FIXME: this method is not working due to "something" in the Logging library.
+ * Note: Attention: this method will (as well as fflush) will through a segmentation fault when
+ *  using the Logging library (even in the initialization, constructors, ...).
  * @param ptr
  * @param size
  * @param nmemb
  * @param stream
  * @return
  */
-// extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stream);
+extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stream);
 
 /**
  * open:
@@ -365,11 +366,12 @@ extern "C" int fclose (FILE* stream);
 
 /**
  * fflush:
- * FIXME: this method is not working due to "something" in the Logging library.
+ * Note: Attention: this method will (as well as fwrite) will through a segmentation fault when
+ *  using the Logging library (even in the initialization, constructors, ...).
  * @param stream
  * @return
  */
-// extern "C" int fflush (FILE* stream);
+extern "C" int fflush (FILE* stream);
 
 /**
  * mkdir:

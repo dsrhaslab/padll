@@ -4,7 +4,6 @@
  **/
 
 #include <ldpaio/statistics/statistics.hpp>
-#include <numeric>
 
 namespace ldpaio {
 
@@ -15,7 +14,6 @@ Statistics::Statistics () = default;
 Statistics::Statistics (std::string identifier, const OperationType& operation_type) :
     m_stats_identifier { std::move (identifier) }
 {
-    Logging::log_debug ("Statistics parameterized constructor.");
     this->initialize (operation_type);
 }
 

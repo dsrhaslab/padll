@@ -10,8 +10,6 @@ namespace ldpaio {
 // PosixPassthrough default constructor.
 PosixPassthrough::PosixPassthrough ()
 {
-    Logging::log_info ("PosixPassthrough default constructor.");
-
     // Dynamic loading of the libc library (referred to as 'libc.so.6').
     // loads the dynamic shared object (shared library) file named by the null-terminated string
     // filename and returns an opaque "handle" for the loaded object.
@@ -28,8 +26,6 @@ PosixPassthrough::PosixPassthrough ()
 PosixPassthrough::PosixPassthrough (const std::string& lib, bool stat_collection) :
     m_collect { stat_collection }
 {
-    Logging::log_info ("PosixPassthrough parameterized constructor.");
-
     // validate if 'lib' is valid
     if (lib.empty ()) {
         Logging::log_error ("Library not valid.");

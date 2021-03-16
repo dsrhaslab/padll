@@ -21,7 +21,7 @@ const bool option_default_detailed_logging { false };
 /**
  * option_default_table_format:
  */
-const bool option_default_table_format { false };
+const bool option_default_table_format { true };
 
 } // namespace ldpaio
 
