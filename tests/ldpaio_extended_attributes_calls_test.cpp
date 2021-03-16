@@ -400,7 +400,7 @@ int test_flistxattr (int fd)
     }
 
     delete[] buf;
-//    free (buf);
+    //    free (buf);
     return EXIT_SUCCESS;
 }
 

@@ -219,7 +219,8 @@ extern "C" int __fxstat (int version, int fd, struct stat* statbuf);
  * @param flags
  * @return
  */
-extern "C" int __fxstatat (int version, int dirfd, const char* path, struct stat* statbuf, int flags);
+extern "C" int
+__fxstatat (int version, int dirfd, const char* path, struct stat* statbuf, int flags);
 
 /**
  * statfs:

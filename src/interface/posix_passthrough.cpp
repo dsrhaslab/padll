@@ -12,43 +12,26 @@ PosixPassthrough::PosixPassthrough ()
 {
     Logging::log_info ("PosixPassthrough default constructor.");
 
-    // Dynamic loading of the library referred by 'option_default_intercepted_lib'.
+    // Dynamic loading of the libc library (referred to as 'libc.so.6').
     // loads the dynamic shared object (shared library) file named by the null-terminated string
     // filename and returns an opaque "handle" for the loaded object.
-    this->m_lib_handle = ::dlopen (option_default_intercepted_lib.data(), RTLD_LAZY);
+    this->m_lib_handle = ::dlopen ("libc.so.6", RTLD_LAZY);
 
     // validate library pointer
     if (this->m_lib_handle == nullptr) {
-        Logging::log_error ("Error while dlopen'ing " + option_default_intercepted_lib + ".");
+        Logging::log_error ("Error while dlopen'ing libc.so.6.");
         return;
     }
 }
 
 // PosixPassthrough parameterized constructor.
-PosixPassthrough::PosixPassthrough (bool stat_collection) : m_collect { stat_collection }
-{
-    Logging::log_info ("PosixPassthrough parameterized constructor.");
-
-    // Dynamic loading of the library referred by 'option_default_intercepted_lib'.
-    // loads the dynamic shared object (shared library) file named by the null-terminated string
-    // filename and returns an opaque "handle" for the loaded object.
-    this->m_lib_handle = ::dlopen (option_default_intercepted_lib.data(), RTLD_LAZY);
-
-    // validate library pointer
-    if (this->m_lib_handle == nullptr) {
-        Logging::log_error ("Error while dlopen'ing " + option_default_intercepted_lib + ".");
-        return;
-    }
-}
-
-// PosixPassthrough parameterized constructor.
-PosixPassthrough::PosixPassthrough (const std::string& lib, bool stat_collection)  :
+PosixPassthrough::PosixPassthrough (const std::string& lib, bool stat_collection) :
     m_collect { stat_collection }
 {
     Logging::log_info ("PosixPassthrough parameterized constructor.");
 
     // validate if 'lib' is valid
-    if (lib.empty()) {
+    if (lib.empty ()) {
         Logging::log_error ("Library not valid.");
         return;
     }
@@ -56,7 +39,7 @@ PosixPassthrough::PosixPassthrough (const std::string& lib, bool stat_collection
     // Dynamic loading of the library referred by 'lib'.
     // loads the dynamic shared object (shared library) file named by the null-terminated string
     // filename and returns an opaque "handle" for the loaded object.
-    this->m_lib_handle = ::dlopen (lib.data(), RTLD_LAZY);
+    this->m_lib_handle = ::dlopen (lib.data (), RTLD_LAZY);
 
     // validate library pointer
     if (this->m_lib_handle == nullptr) {
@@ -81,7 +64,8 @@ PosixPassthrough::~PosixPassthrough ()
 
         // validate result from dlclose
         if (!dlclose_result) {
-            Logging::log_error ("Error while closing dynamic link.");
+            Logging::log_error (
+                "Error while closing dynamic link (" + std::to_string (dlclose_result) + ").");
         }
     }
 
@@ -161,11 +145,10 @@ ssize_t PosixPassthrough::passthrough_read (int fd, void* buf, ssize_t counter)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-read (" + std::to_string(fd) + ")");
+        Logging::log_debug ("passthrough-read (" + std::to_string (fd) + ")");
     }
 
     // perform original POSIX read operation
-//    ssize_t result = ((libc_read_t)dlsym (RTLD_NEXT, "read")) (fd, buf, counter);
     ssize_t result = ((libc_read_t)dlsym (this->m_lib_handle, "read")) (fd, buf, counter);
 
     // update statistic entry
@@ -185,12 +168,11 @@ ssize_t PosixPassthrough::passthrough_write (int fd, const void* buf, ssize_t co
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-write (" + std::to_string(fd) + ")");
+        Logging::log_debug ("passthrough-write (" + std::to_string (fd) + ")");
     }
 
     // perform original POSIX write operation
-//    ssize_t result = ((libc_write_t)dlsym (RTLD_NEXT, "write")) (fd, buf, counter);
-        ssize_t result = ((libc_write_t)dlsym (this->m_lib_handle, "write")) (fd, buf, counter);
+    ssize_t result = ((libc_write_t)dlsym (this->m_lib_handle, "write")) (fd, buf, counter);
 
     // update statistic entry
     if (this->m_collect) {
@@ -209,11 +191,11 @@ ssize_t PosixPassthrough::passthrough_pread (int fd, void* buf, ssize_t counter,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-pread (" + std::to_string(fd) + ")");
+        Logging::log_debug ("passthrough-pread (" + std::to_string (fd) + ")");
     }
 
     // perform original POSIX pread operation
-    ssize_t result = ((libc_pread_t)dlsym (RTLD_NEXT, "pread")) (fd, buf, counter, offset);
+    ssize_t result = ((libc_pread_t)dlsym (this->m_lib_handle, "pread")) (fd, buf, counter, offset);
 
     // update statistic entry
     if (this->m_collect) {
@@ -233,11 +215,12 @@ PosixPassthrough::passthrough_pwrite (int fd, const void* buf, ssize_t counter, 
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-pwrite (" + std::to_string(fd) + ")");
+        Logging::log_debug ("passthrough-pwrite (" + std::to_string (fd) + ")");
     }
 
     // perform original POSIX pwrite operation
-    ssize_t result = ((libc_pwrite_t)dlsym (RTLD_NEXT, "pwrite")) (fd, buf, counter, offset);
+    ssize_t result
+        = ((libc_pwrite_t)dlsym (this->m_lib_handle, "pwrite")) (fd, buf, counter, offset);
 
     // update statistic entry
     if (this->m_collect) {
@@ -256,11 +239,11 @@ size_t PosixPassthrough::passthrough_fread (void* ptr, size_t size, size_t nmemb
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-fpread");
+        Logging::log_debug ("passthrough-fpread");
     }
 
     // perform original POSIX fread operation
-    ssize_t result = ((libc_fread_t)dlsym (RTLD_NEXT, "fread")) (ptr, size, nmemb, stream);
+    ssize_t result = ((libc_fread_t)dlsym (this->m_lib_handle, "fread")) (ptr, size, nmemb, stream);
 
     // update statistic entry
     if (this->m_collect) {
@@ -280,11 +263,12 @@ PosixPassthrough::passthrough_fwrite (const void* ptr, size_t size, size_t nmemb
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-fwrite");
+        Logging::log_debug ("passthrough-fwrite");
     }
 
     // perform original POSIX fwrite operation
-    ssize_t result = ((libc_fwrite_t)dlsym (RTLD_NEXT, "fwrite")) (ptr, size, nmemb, stream);
+    ssize_t result
+        = ((libc_fwrite_t)dlsym (this->m_lib_handle, "fwrite")) (ptr, size, nmemb, stream);
 
     // update statistic entry
     if (this->m_collect) {
@@ -303,11 +287,11 @@ int PosixPassthrough::passthrough_open (const char* path, int flags, mode_t mode
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-open-variadic (" + std::string(path) + ")");
+        Logging::log_debug ("passthrough-open-variadic (" + std::string (path) + ")");
     }
 
     // perform original POSIX open operation
-    int result = ((libc_open_variadic_t)dlsym (RTLD_NEXT, "open")) (path, flags, mode);
+    int result = ((libc_open_variadic_t)dlsym (this->m_lib_handle, "open")) (path, flags, mode);
 
     // update statistic entry
     if (this->m_collect) {
@@ -330,11 +314,11 @@ int PosixPassthrough::passthrough_open (const char* path, int flags)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-open (" + std::string(path) + ")");
+        Logging::log_debug ("passthrough-open (" + std::string (path) + ")");
     }
 
     // perform original POSIX open operation
-    int result = ((libc_open_t)dlsym (RTLD_NEXT, "open")) (path, flags);
+    int result = ((libc_open_t)dlsym (this->m_lib_handle, "open")) (path, flags);
 
     // update statistic entry
     if (this->m_collect) {
@@ -356,11 +340,11 @@ int PosixPassthrough::passthrough_creat (const char* path, mode_t mode)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-creat (" + std::string(path) + ")");
+        Logging::log_debug ("passthrough-creat (" + std::string (path) + ")");
     }
 
     // perform original POSIX open operation
-    int result = ((libc_creat_t)dlsym (RTLD_NEXT, "creat")) (path, mode);
+    int result = ((libc_creat_t)dlsym (this->m_lib_handle, "creat")) (path, mode);
 
     // update statistic entry
     if (this->m_collect) {
@@ -384,12 +368,13 @@ int PosixPassthrough::passthrough_openat (int dirfd, const char* path, int flags
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-openat-variadic (" + std::to_string(dirfd) + ", " +
-            std::string(path) + ")");
+        Logging::log_debug ("passthrough-openat-variadic (" + std::to_string (dirfd) + ", "
+            + std::string (path) + ")");
     }
 
     // perform original POSIX openat operation
-    int result = ((libc_openat_variadic_t)dlsym (RTLD_NEXT, "openat")) (dirfd, path, flags, mode);
+    int result
+        = ((libc_openat_variadic_t)dlsym (this->m_lib_handle, "openat")) (dirfd, path, flags, mode);
 
     // update statistic entry
     if (this->m_collect) {
@@ -412,12 +397,12 @@ int PosixPassthrough::passthrough_openat (int dirfd, const char* path, int flags
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug(
-                "passthrough-openat (" + std::to_string(dirfd) + ", " + std::string(path) + ")");
+        Logging::log_debug (
+            "passthrough-openat (" + std::to_string (dirfd) + ", " + std::string (path) + ")");
     }
 
     // perform original POSIX openat operation
-    int result = ((libc_openat_t)dlsym (RTLD_NEXT, "openat")) (dirfd, path, flags);
+    int result = ((libc_openat_t)dlsym (this->m_lib_handle, "openat")) (dirfd, path, flags);
 
     // update statistic entry
     if (this->m_collect) {
@@ -441,11 +426,11 @@ int PosixPassthrough::passthrough_open64 (const char* path, int flags, mode_t mo
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-open64-variadic (" + std::string(path) + ")");
+        Logging::log_debug ("passthrough-open64-variadic (" + std::string (path) + ")");
     }
 
     // perform original POSIX open64 operation
-    int result = ((libc_open64_variadic_t)dlsym (RTLD_NEXT, "open64")) (path, flags, mode);
+    int result = ((libc_open64_variadic_t)dlsym (this->m_lib_handle, "open64")) (path, flags, mode);
 
     // update statistic entry
     if (this->m_collect) {
@@ -468,11 +453,11 @@ int PosixPassthrough::passthrough_open64 (const char* path, int flags)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-open64 (" + std::string(path) + ")");
+        Logging::log_debug ("passthrough-open64 (" + std::string (path) + ")");
     }
 
     // perform original POSIX open64 operation
-    int result = ((libc_open64_t)dlsym (RTLD_NEXT, "open64")) (path, flags);
+    int result = ((libc_open64_t)dlsym (this->m_lib_handle, "open64")) (path, flags);
 
     // update statistic entry
     if (this->m_collect) {
@@ -496,11 +481,11 @@ int PosixPassthrough::passthrough_close (int fd)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-close (" + std::to_string(fd) + ")");
+        Logging::log_debug ("passthrough-close (" + std::to_string (fd) + ")");
     }
 
     // perform original POSIX close operation
-    int result = ((libc_close_t)dlsym (RTLD_NEXT, "close")) (fd);
+    int result = ((libc_close_t)dlsym (this->m_lib_handle, "close")) (fd);
 
     // update statistic entry
     if (this->m_collect) {
@@ -524,11 +509,11 @@ int PosixPassthrough::passthrough_fsync (int fd)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-fsync (" + std::to_string(fd) + ")");
+        Logging::log_debug ("passthrough-fsync (" + std::to_string (fd) + ")");
     }
 
     // perform original POSIX fsync operation
-    int result = ((libc_fsync_t)dlsym (RTLD_NEXT, "fsync")) (fd);
+    int result = ((libc_fsync_t)dlsym (this->m_lib_handle, "fsync")) (fd);
 
     // update statistic entry
     if (this->m_collect) {
@@ -552,11 +537,11 @@ int PosixPassthrough::passthrough_fdatasync (int fd)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-fdatasync (" + std::to_string(fd) + ")");
+        Logging::log_debug ("passthrough-fdatasync (" + std::to_string (fd) + ")");
     }
 
     // perform original POSIX fdatasync operation
-    int result = ((libc_fdatasync_t)dlsym (RTLD_NEXT, "fdatasync")) (fd);
+    int result = ((libc_fdatasync_t)dlsym (this->m_lib_handle, "fdatasync")) (fd);
 
     // update statistic entry
     if (this->m_collect) {
@@ -580,11 +565,11 @@ void PosixPassthrough::passthrough_sync ()
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-sync");
+        Logging::log_debug ("passthrough-sync");
     }
 
     // perform original POSIX sync operation
-    ((libc_sync_t)dlsym (RTLD_NEXT, "sync")) ();
+    ((libc_sync_t)dlsym (this->m_lib_handle, "sync")) ();
 
     // update statistic entry
     if (this->m_collect) {
@@ -597,11 +582,11 @@ int PosixPassthrough::passthrough_syncfs (int fd)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-syncfs (" + std::to_string(fd) + ")");
+        Logging::log_debug ("passthrough-syncfs (" + std::to_string (fd) + ")");
     }
 
     // perform original POSIX syncfs operation
-    int result = ((libc_syncfs_t)dlsym (RTLD_NEXT, "syncfs")) (fd);
+    int result = ((libc_syncfs_t)dlsym (this->m_lib_handle, "syncfs")) (fd);
 
     // update statistic entry
     if (this->m_collect) {
@@ -625,11 +610,11 @@ int PosixPassthrough::passthrough_truncate (const char* path, off_t length)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-truncate (" + std::string(path) + ")");
+        Logging::log_debug ("passthrough-truncate (" + std::string (path) + ")");
     }
 
     // perform original POSIX truncate operation
-    int result = ((libc_truncate_t)dlsym (RTLD_NEXT, "truncate")) (path, length);
+    int result = ((libc_truncate_t)dlsym (this->m_lib_handle, "truncate")) (path, length);
 
     // update statistic entry
     if (this->m_collect) {
@@ -653,11 +638,11 @@ int PosixPassthrough::passthrough_ftruncate (int fd, off_t length)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-truncate (" + std::to_string(fd) + ")");
+        Logging::log_debug ("passthrough-truncate (" + std::to_string (fd) + ")");
     }
 
     // perform original POSIX ftruncate operation
-    int result = ((libc_ftruncate_t)dlsym (RTLD_NEXT, "ftruncate")) (fd, length);
+    int result = ((libc_ftruncate_t)dlsym (this->m_lib_handle, "ftruncate")) (fd, length);
 
     // update statistic entry
     if (this->m_collect) {
@@ -681,11 +666,11 @@ int PosixPassthrough::passthrough_xstat (int version, const char* path, struct s
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-xstat (" + std::string(path) + ")");
+        Logging::log_debug ("passthrough-xstat (" + std::string (path) + ")");
     }
 
     // perform original POSIX __xstat (stat) operation
-    int result = ((libc_xstat_t)dlsym (RTLD_NEXT, "__xstat")) (version, path, statbuf);
+    int result = ((libc_xstat_t)dlsym (this->m_lib_handle, "__xstat")) (version, path, statbuf);
 
     // update statistic entry
     if (this->m_collect) {
@@ -707,11 +692,11 @@ int PosixPassthrough::passthrough_lxstat (int version, const char* path, struct 
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-lxstat (" + std::string(path) + ")");
+        Logging::log_debug ("passthrough-lxstat (" + std::string (path) + ")");
     }
 
     // perform original POSIX __lxstat (lstat) operation
-    int result = ((libc_lxstat_t)dlsym (RTLD_NEXT, "__lxstat")) (version, path, statbuf);
+    int result = ((libc_lxstat_t)dlsym (this->m_lib_handle, "__lxstat")) (version, path, statbuf);
 
     // update statistic entry
     if (this->m_collect) {
@@ -735,11 +720,11 @@ int PosixPassthrough::passthrough_fxstat (int version, int fd, struct stat* stat
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-fxstat (" + std::to_string(fd) + ")");
+        Logging::log_debug ("passthrough-fxstat (" + std::to_string (fd) + ")");
     }
 
     // perform original POSIX __fxstat (fstat) operation
-    int result = ((libc_fxstat_t)dlsym (RTLD_NEXT, "__fxstat")) (version, fd, statbuf);
+    int result = ((libc_fxstat_t)dlsym (this->m_lib_handle, "__fxstat")) (version, fd, statbuf);
 
     // update statistic entry
     if (this->m_collect) {
@@ -767,12 +752,13 @@ int PosixPassthrough::passthrough_fxstatat (int version,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug(
-                "passthrough-fxstatat (" + std::to_string(dirfd) + ", " + std::string(path) + ")");
+        Logging::log_debug (
+            "passthrough-fxstatat (" + std::to_string (dirfd) + ", " + std::string (path) + ")");
     }
 
     // perform original POSIX __fxstatat (fstatat) operation
-    int result = ((libc_fxstatat_t)dlsym (RTLD_NEXT, "__fxstatat")) (version, dirfd, path, statbuf, flags);
+    int result = ((libc_fxstatat_t)dlsym (this->m_lib_handle,
+        "__fxstatat")) (version, dirfd, path, statbuf, flags);
 
     // update statistic entry
     if (this->m_collect) {
@@ -796,11 +782,11 @@ int PosixPassthrough::passthrough_statfs (const char* path, struct statfs* buf)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-statfs (" + std::string(path) + ")");
+        Logging::log_debug ("passthrough-statfs (" + std::string (path) + ")");
     }
 
     // perform original POSIX statfs operation
-    int result = ((libc_statfs_t)dlsym (RTLD_NEXT, "statfs")) (path, buf);
+    int result = ((libc_statfs_t)dlsym (this->m_lib_handle, "statfs")) (path, buf);
 
     // update statistic entry
     if (this->m_collect) {
@@ -824,11 +810,11 @@ int PosixPassthrough::passthrough_fstatfs (int fd, struct statfs* buf)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-fstatfs (" + std::to_string(fd) + ")");
+        Logging::log_debug ("passthrough-fstatfs (" + std::to_string (fd) + ")");
     }
 
     // perform original POSIX fstatfs operation
-    int result = ((libc_fstatfs_t)dlsym (RTLD_NEXT, "fstatfs")) (fd, buf);
+    int result = ((libc_fstatfs_t)dlsym (this->m_lib_handle, "fstatfs")) (fd, buf);
 
     // update statistic entry
     if (this->m_collect) {
@@ -852,12 +838,12 @@ int PosixPassthrough::passthrough_link (const char* old_path, const char* new_pa
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug(
-                "passthrough-link (" + std::string(old_path) + ", " + std::string(new_path) + ")");
+        Logging::log_debug (
+            "passthrough-link (" + std::string (old_path) + ", " + std::string (new_path) + ")");
     }
 
     // perform original POSIX link operation
-    int result = ((libc_link_t)dlsym (RTLD_NEXT, "link")) (old_path, new_path);
+    int result = ((libc_link_t)dlsym (this->m_lib_handle, "link")) (old_path, new_path);
 
     // update statistic entry
     if (this->m_collect) {
@@ -879,11 +865,11 @@ int PosixPassthrough::passthrough_unlink (const char* path)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-unlink (" + std::string(path) + ")");
+        Logging::log_debug ("passthrough-unlink (" + std::string (path) + ")");
     }
 
     // perform original POSIX unlink operation
-    int result = ((libc_unlink_t)dlsym (RTLD_NEXT, "unlink")) (path);
+    int result = ((libc_unlink_t)dlsym (this->m_lib_handle, "unlink")) (path);
 
     // update statistic entry
     if (this->m_collect) {
@@ -911,14 +897,14 @@ int PosixPassthrough::passthrough_linkat (int olddirfd,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-linkat (" + std::to_string(olddirfd) + ", "
-                           + std::string(old_path) + ", " + std::to_string(newdirfd) + ", "
-                           + std::string(new_path) + ")");
+        Logging::log_debug ("passthrough-linkat (" + std::to_string (olddirfd) + ", "
+            + std::string (old_path) + ", " + std::to_string (newdirfd) + ", "
+            + std::string (new_path) + ")");
     }
 
     // perform original POSIX linkat operation
-    int result = ((
-        libc_linkat_t)dlsym (RTLD_NEXT, "linkat")) (olddirfd, old_path, newdirfd, new_path, flags);
+    int result = ((libc_linkat_t)dlsym (this->m_lib_handle,
+        "linkat")) (olddirfd, old_path, newdirfd, new_path, flags);
 
     // update statistic entry
     if (this->m_collect) {
@@ -942,12 +928,12 @@ int PosixPassthrough::passthrough_unlinkat (int dirfd, const char* pathname, int
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-unlinkat (" + std::to_string(dirfd) + ", "
-                           + std::string(pathname) + ", " + std::to_string(flags) + ")");
+        Logging::log_debug ("passthrough-unlinkat (" + std::to_string (dirfd) + ", "
+            + std::string (pathname) + ", " + std::to_string (flags) + ")");
     }
 
     // perform original POSIX unlinkat operation
-    int result = ((libc_unlinkat_t)dlsym (RTLD_NEXT, "unlinkat")) (dirfd, pathname, flags);
+    int result = ((libc_unlinkat_t)dlsym (this->m_lib_handle, "unlinkat")) (dirfd, pathname, flags);
 
     // update statistic entry
     if (this->m_collect) {
@@ -971,13 +957,12 @@ int PosixPassthrough::passthrough_rename (const char* old_path, const char* new_
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug(
-                "passthrough-rename (" + std::string(old_path) + ", " + std::string(new_path) +
-                ")");
+        Logging::log_debug (
+            "passthrough-rename (" + std::string (old_path) + ", " + std::string (new_path) + ")");
     }
 
     // perform original POSIX rename operation
-    int result = ((libc_rename_t)dlsym (RTLD_NEXT, "rename")) (old_path, new_path);
+    int result = ((libc_rename_t)dlsym (this->m_lib_handle, "rename")) (old_path, new_path);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1004,15 +989,14 @@ int PosixPassthrough::passthrough_renameat (int olddirfd,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-renameat (" + std::to_string(olddirfd) + ", "
-                           + std::string(old_path) + ", " + std::to_string(newdirfd) + ", " +
-                           std::string(new_path)
-                           + ")");
+        Logging::log_debug ("passthrough-renameat (" + std::to_string (olddirfd) + ", "
+            + std::string (old_path) + ", " + std::to_string (newdirfd) + ", "
+            + std::string (new_path) + ")");
     }
 
     // perform original POSIX renameat operation
-    int result
-        = ((libc_renameat_t)dlsym (RTLD_NEXT, "renameat")) (olddirfd, old_path, newdirfd, new_path);
+    int result = ((libc_renameat_t)dlsym (this->m_lib_handle,
+        "renameat")) (olddirfd, old_path, newdirfd, new_path);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1036,12 +1020,12 @@ int PosixPassthrough::passthrough_symlink (const char* target, const char* linkp
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug(
-                "passthrough-symlink (" + std::string(target) + ", " + std::string(linkpath) + ")");
+        Logging::log_debug (
+            "passthrough-symlink (" + std::string (target) + ", " + std::string (linkpath) + ")");
     }
 
     // perform original POSIX symlink operation
-    int result = ((libc_symlink_t)dlsym (RTLD_NEXT, "symlink")) (target, linkpath);
+    int result = ((libc_symlink_t)dlsym (this->m_lib_handle, "symlink")) (target, linkpath);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1065,12 +1049,13 @@ int PosixPassthrough::passthrough_symlinkat (const char* target, int newdirfd, c
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-symlinkat (" + std::string(target) + ", "
-                           + std::to_string(newdirfd) + ", " + std::string(linkpath) + ")");
+        Logging::log_debug ("passthrough-symlinkat (" + std::string (target) + ", "
+            + std::to_string (newdirfd) + ", " + std::string (linkpath) + ")");
     }
 
     // perform original POSIX symlinkat operation
-    int result = ((libc_symlinkat_t)dlsym (RTLD_NEXT, "symlinkat")) (target, newdirfd, linkpath);
+    int result
+        = ((libc_symlinkat_t)dlsym (this->m_lib_handle, "symlinkat")) (target, newdirfd, linkpath);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1094,11 +1079,11 @@ ssize_t PosixPassthrough::passthrough_readlink (const char* path, char* buf, siz
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-readlink (" + std::string(path) + ")");
+        Logging::log_debug ("passthrough-readlink (" + std::string (path) + ")");
     }
 
     // perform original POSIX readlink operation
-    ssize_t result = ((libc_readlink_t)dlsym (RTLD_NEXT, "readlink")) (path, buf, bufsize);
+    ssize_t result = ((libc_readlink_t)dlsym (this->m_lib_handle, "readlink")) (path, buf, bufsize);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1123,14 +1108,13 @@ PosixPassthrough::passthrough_readlinkat (int dirfd, const char* path, char* buf
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug(
-                "passthrough-readlinkat (" + std::to_string(dirfd) + ", " + std::string(path) +
-                ")");
+        Logging::log_debug (
+            "passthrough-readlinkat (" + std::to_string (dirfd) + ", " + std::string (path) + ")");
     }
 
     // perform original POSIX readlinkat operation
     ssize_t result
-        = ((libc_readlinkat_t)dlsym (RTLD_NEXT, "readlinkat")) (dirfd, path, buf, bufsize);
+        = ((libc_readlinkat_t)dlsym (this->m_lib_handle, "readlinkat")) (dirfd, path, buf, bufsize);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1154,11 +1138,11 @@ FILE* PosixPassthrough::passthrough_fopen (const char* pathname, const char* mod
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-fopen (" + std::string(pathname) + ")");
+        Logging::log_debug ("passthrough-fopen (" + std::string (pathname) + ")");
     }
 
     // perform original POSIX fopen operation
-    FILE* result = ((libc_fopen_t)dlsym (RTLD_NEXT, "fopen")) (pathname, mode);
+    FILE* result = ((libc_fopen_t)dlsym (this->m_lib_handle, "fopen")) (pathname, mode);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1182,11 +1166,11 @@ FILE* PosixPassthrough::passthrough_fdopen (int fd, const char* mode)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-fdopen (" + std::to_string(fd) + ")");
+        Logging::log_debug ("passthrough-fdopen (" + std::to_string (fd) + ")");
     }
 
     // perform original POSIX fdopen operation
-    FILE* result = ((libc_fdopen_t)dlsym (RTLD_NEXT, "fdopen")) (fd, mode);
+    FILE* result = ((libc_fdopen_t)dlsym (this->m_lib_handle, "fdopen")) (fd, mode);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1210,11 +1194,11 @@ FILE* PosixPassthrough::passthrough_freopen (const char* pathname, const char* m
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-freopen (" + std::string(pathname) + ")");
+        Logging::log_debug ("passthrough-freopen (" + std::string (pathname) + ")");
     }
 
     // perform original POSIX freopen operation
-    FILE* result = ((libc_freopen_t)dlsym (RTLD_NEXT, "freopen")) (pathname, mode, stream);
+    FILE* result = ((libc_freopen_t)dlsym (this->m_lib_handle, "freopen")) (pathname, mode, stream);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1238,11 +1222,11 @@ int PosixPassthrough::passthrough_fclose (FILE* stream)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-fclose");
+        Logging::log_debug ("passthrough-fclose");
     }
 
     // perform original POSIX fclose operation
-    int result = ((libc_fclose_t)dlsym (RTLD_NEXT, "fclose")) (stream);
+    int result = ((libc_fclose_t)dlsym (this->m_lib_handle, "fclose")) (stream);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1266,11 +1250,11 @@ int PosixPassthrough::passthrough_fflush (FILE* stream)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-fflush");
+        Logging::log_debug ("passthrough-fflush");
     }
 
     // perform original POSIX fflush operation
-    int result = ((libc_fflush_t)dlsym (RTLD_NEXT, "fflush")) (stream);
+    int result = ((libc_fflush_t)dlsym (this->m_lib_handle, "fflush")) (stream);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1294,11 +1278,11 @@ int PosixPassthrough::passthrough_mkdir (const char* path, mode_t mode)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-mkdir (" + std::string(path) + ")");
+        Logging::log_debug ("passthrough-mkdir (" + std::string (path) + ")");
     }
 
     // perform original POSIX mkdir operation
-    int result = ((libc_mkdir_t)dlsym (RTLD_NEXT, "mkdir")) (path, mode);
+    int result = ((libc_mkdir_t)dlsym (this->m_lib_handle, "mkdir")) (path, mode);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1317,12 +1301,12 @@ int PosixPassthrough::passthrough_mkdirat (int dirfd, const char* path, mode_t m
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug(
-                "passthrough-mkdirat (" + std::to_string(dirfd) + ", " + std::string(path) + ")");
+        Logging::log_debug (
+            "passthrough-mkdirat (" + std::to_string (dirfd) + ", " + std::string (path) + ")");
     }
 
     // perform original POSIX mkdirat operation
-    int result = ((libc_mkdirat_t)dlsym (RTLD_NEXT, "mkdirat")) (dirfd, path, mode);
+    int result = ((libc_mkdirat_t)dlsym (this->m_lib_handle, "mkdirat")) (dirfd, path, mode);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1344,13 +1328,13 @@ struct dirent* PosixPassthrough::passthrough_readdir (DIR* dirp)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-readdir");
+        Logging::log_debug ("passthrough-readdir");
     }
 
     struct dirent* entry;
 
     // perform original POSIX readdir operation
-    entry = ((libc_readdir_t)dlsym (RTLD_NEXT, "readdir")) (dirp);
+    entry = ((libc_readdir_t)dlsym (this->m_lib_handle, "readdir")) (dirp);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1372,13 +1356,13 @@ DIR* PosixPassthrough::passthrough_opendir (const char* path)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-opendir (" + std::string(path) + ")");
+        Logging::log_debug ("passthrough-opendir (" + std::string (path) + ")");
     }
 
     DIR* folder;
 
     // perform original POSIX opendir operation
-    folder = ((libc_opendir_t)dlsym (RTLD_NEXT, "opendir")) (path);
+    folder = ((libc_opendir_t)dlsym (this->m_lib_handle, "opendir")) (path);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1400,13 +1384,13 @@ DIR* PosixPassthrough::passthrough_fdopendir (int fd)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-fdopendir (" + std::to_string(fd) + ")");
+        Logging::log_debug ("passthrough-fdopendir (" + std::to_string (fd) + ")");
     }
 
     DIR* folder;
 
     // perform original POSIX fopendir operation
-    folder = ((libc_fdopendir_t)dlsym (RTLD_NEXT, "fdopendir")) (fd);
+    folder = ((libc_fdopendir_t)dlsym (this->m_lib_handle, "fdopendir")) (fd);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1430,11 +1414,11 @@ int PosixPassthrough::passthrough_closedir (DIR* dirp)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-closedir");
+        Logging::log_debug ("passthrough-closedir");
     }
 
     // perform original POSIX closedir operation
-    int result = ((libc_closedir_t)dlsym (RTLD_NEXT, "closedir")) (dirp);
+    int result = ((libc_closedir_t)dlsym (this->m_lib_handle, "closedir")) (dirp);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1456,11 +1440,11 @@ int PosixPassthrough::passthrough_rmdir (const char* path)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-rmdir");
+        Logging::log_debug ("passthrough-rmdir");
     }
 
     // perform original POSIX rmdir operation
-    int result = ((libc_rmdir_t)dlsym (RTLD_NEXT, "rmdir")) (path);
+    int result = ((libc_rmdir_t)dlsym (this->m_lib_handle, "rmdir")) (path);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1479,11 +1463,11 @@ int PosixPassthrough::passthrough_dirfd (DIR* dirp)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-dirfd");
+        Logging::log_debug ("passthrough-dirfd");
     }
 
     // perform original POSIX dirfd operation
-    int result = ((libc_dirfd_t)dlsym (RTLD_NEXT, "dirfd")) (dirp);
+    int result = ((libc_dirfd_t)dlsym (this->m_lib_handle, "dirfd")) (dirp);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1505,12 +1489,13 @@ ssize_t PosixPassthrough::passthrough_getxattr (const char* path,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug(
-                "passthrough-getxattr (" + std::string(path) + ", " + std::string(name) + ")");
+        Logging::log_debug (
+            "passthrough-getxattr (" + std::string (path) + ", " + std::string (name) + ")");
     }
 
     // perform original POSIX getxattr operation
-    ssize_t result = ((libc_getxattr_t)dlsym (RTLD_NEXT, "getxattr")) (path, name, value, size);
+    ssize_t result
+        = ((libc_getxattr_t)dlsym (this->m_lib_handle, "getxattr")) (path, name, value, size);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1536,12 +1521,13 @@ ssize_t PosixPassthrough::passthrough_lgetxattr (const char* path,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug(
-                "passthrough-lgetxattr (" + std::string(path) + ", " + std::string(name) + ")");
+        Logging::log_debug (
+            "passthrough-lgetxattr (" + std::string (path) + ", " + std::string (name) + ")");
     }
 
     // perform original POSIX lgetxattr operation
-    ssize_t result = ((libc_lgetxattr_t)dlsym (RTLD_NEXT, "lgetxattr")) (path, name, value, size);
+    ssize_t result
+        = ((libc_lgetxattr_t)dlsym (this->m_lib_handle, "lgetxattr")) (path, name, value, size);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1564,12 +1550,13 @@ ssize_t PosixPassthrough::passthrough_fgetxattr (int fd, const char* name, void*
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug(
-                "passthrough-fgetxattr (" + std::to_string(fd) + ", " + std::string(name) + ")");
+        Logging::log_debug (
+            "passthrough-fgetxattr (" + std::to_string (fd) + ", " + std::string (name) + ")");
     }
 
     // perform original POSIX getxattr operation
-    ssize_t result = ((libc_fgetxattr_t)dlsym (RTLD_NEXT, "fgetxattr")) (fd, name, value, size);
+    ssize_t result
+        = ((libc_fgetxattr_t)dlsym (this->m_lib_handle, "fgetxattr")) (fd, name, value, size);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1596,12 +1583,13 @@ int PosixPassthrough::passthrough_setxattr (const char* path,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug(
-                "passthrough-setxattr (" + std::string(path) + ", " + std::string(name) + ")");
+        Logging::log_debug (
+            "passthrough-setxattr (" + std::string (path) + ", " + std::string (name) + ")");
     }
 
     // perform original POSIX getxattr operation
-    int result = ((libc_setxattr_t)dlsym (RTLD_NEXT, "setxattr")) (path, name, value, size, flags);
+    int result = ((
+        libc_setxattr_t)dlsym (this->m_lib_handle, "setxattr")) (path, name, value, size, flags);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1628,13 +1616,13 @@ int PosixPassthrough::passthrough_lsetxattr (const char* path,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug(
-                "passthrough-lsetxattr (" + std::string(path) + ", " + std::string(name) + ")");
+        Logging::log_debug (
+            "passthrough-lsetxattr (" + std::string (path) + ", " + std::string (name) + ")");
     }
 
     // perform original POSIX lgetxattr operation
-    int result
-        = ((libc_lsetxattr_t)dlsym (RTLD_NEXT, "lsetxattr")) (path, name, value, size, flags);
+    int result = ((
+        libc_lsetxattr_t)dlsym (this->m_lib_handle, "lsetxattr")) (path, name, value, size, flags);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1661,12 +1649,13 @@ int PosixPassthrough::passthrough_fsetxattr (int fd,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug(
-                "passthrough-fsetxattr (" + std::to_string(fd) + ", " + std::string(name) + ")");
+        Logging::log_debug (
+            "passthrough-fsetxattr (" + std::to_string (fd) + ", " + std::string (name) + ")");
     }
 
     // perform original POSIX getxattr operation
-    int result = ((libc_fsetxattr_t)dlsym (RTLD_NEXT, "fsetxattr")) (fd, name, value, size, flags);
+    int result = ((
+        libc_fsetxattr_t)dlsym (this->m_lib_handle, "fsetxattr")) (fd, name, value, size, flags);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1689,11 +1678,11 @@ ssize_t PosixPassthrough::passthrough_listxattr (const char* path, char* list, s
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-listxattr (" + std::string(path) + ")");
+        Logging::log_debug ("passthrough-listxattr (" + std::string (path) + ")");
     }
 
     // perform original POSIX listxattr operation
-    ssize_t result = ((libc_listxattr_t)dlsym (RTLD_NEXT, "listxattr")) (path, list, size);
+    ssize_t result = ((libc_listxattr_t)dlsym (this->m_lib_handle, "listxattr")) (path, list, size);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1716,11 +1705,12 @@ ssize_t PosixPassthrough::passthrough_llistxattr (const char* path, char* list, 
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-llistxattr (" + std::string(path) + ")");
+        Logging::log_debug ("passthrough-llistxattr (" + std::string (path) + ")");
     }
 
     // perform original POSIX llistxattr operation
-    ssize_t result = ((libc_llistxattr_t)dlsym (RTLD_NEXT, "llistxattr")) (path, list, size);
+    ssize_t result
+        = ((libc_llistxattr_t)dlsym (this->m_lib_handle, "llistxattr")) (path, list, size);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1746,11 +1736,11 @@ ssize_t PosixPassthrough::passthrough_flistxattr (int fd, char* list, size_t siz
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-flistxattr (" + std::to_string(fd) + ")");
+        Logging::log_debug ("passthrough-flistxattr (" + std::to_string (fd) + ")");
     }
 
     // perform original POSIX flistxattr operation
-    ssize_t result = ((libc_flistxattr_t)dlsym (RTLD_NEXT, "flistxattr")) (fd, list, size);
+    ssize_t result = ((libc_flistxattr_t)dlsym (this->m_lib_handle, "flistxattr")) (fd, list, size);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1776,12 +1766,12 @@ int PosixPassthrough::passthrough_removexattr (const char* path, const char* nam
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug(
-                "passthrough-removexattr (" + std::string(path) + ", " + std::string(name) + ")");
+        Logging::log_debug (
+            "passthrough-removexattr (" + std::string (path) + ", " + std::string (name) + ")");
     }
 
     // perform original POSIX removexattr operation
-    int result = ((libc_removexattr_t)dlsym (RTLD_NEXT, "removexattr")) (path, name);
+    int result = ((libc_removexattr_t)dlsym (this->m_lib_handle, "removexattr")) (path, name);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1807,12 +1797,12 @@ int PosixPassthrough::passthrough_lremovexattr (const char* path, const char* na
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug(
-                "passthrough-lremovexattr (" + std::string(path) + ", " + std::string(name) + ")");
+        Logging::log_debug (
+            "passthrough-lremovexattr (" + std::string (path) + ", " + std::string (name) + ")");
     }
 
     // perform original POSIX lremovexattr operation
-    int result = ((libc_lremovexattr_t)dlsym (RTLD_NEXT, "lremovexattr")) (path, name);
+    int result = ((libc_lremovexattr_t)dlsym (this->m_lib_handle, "lremovexattr")) (path, name);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1838,12 +1828,12 @@ int PosixPassthrough::passthrough_fremovexattr (int fd, const char* name)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug(
-                "passthrough-fremovexattr (" + std::to_string(fd) + ", " + std::string(name) + ")");
+        Logging::log_debug (
+            "passthrough-fremovexattr (" + std::to_string (fd) + ", " + std::string (name) + ")");
     }
 
     // perform original POSIX fremovexattr operation
-    int result = ((libc_fremovexattr_t)dlsym (RTLD_NEXT, "fremovexattr")) (fd, name);
+    int result = ((libc_fremovexattr_t)dlsym (this->m_lib_handle, "fremovexattr")) (fd, name);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1869,11 +1859,11 @@ int PosixPassthrough::passthrough_chmod (const char* path, mode_t mode)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-chmod (" + std::string(path) + ")");
+        Logging::log_debug ("passthrough-chmod (" + std::string (path) + ")");
     }
 
     // perform original POSIX chmod operation
-    int result = ((libc_chmod_t)dlsym (RTLD_NEXT, "chmod")) (path, mode);
+    int result = ((libc_chmod_t)dlsym (this->m_lib_handle, "chmod")) (path, mode);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1897,11 +1887,11 @@ int PosixPassthrough::passthrough_fchmod (int fd, mode_t mode)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-fchmod (" + std::to_string(fd) + ")");
+        Logging::log_debug ("passthrough-fchmod (" + std::to_string (fd) + ")");
     }
 
     // perform original POSIX fchmod operation
-    int result = ((libc_fchmod_t)dlsym (RTLD_NEXT, "fchmod")) (fd, mode);
+    int result = ((libc_fchmod_t)dlsym (this->m_lib_handle, "fchmod")) (fd, mode);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1925,12 +1915,13 @@ int PosixPassthrough::passthrough_fchmodat (int dirfd, const char* path, mode_t 
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug(
-                "passthrough-fchmodat (" + std::to_string(dirfd) + ", " + std::string(path) + ")");
+        Logging::log_debug (
+            "passthrough-fchmodat (" + std::to_string (dirfd) + ", " + std::string (path) + ")");
     }
 
     // perform original POSIX fchmodat operation
-    int result = ((libc_fchmodat_t)dlsym (RTLD_NEXT, "fchmodat")) (dirfd, path, mode, flags);
+    int result
+        = ((libc_fchmodat_t)dlsym (this->m_lib_handle, "fchmodat")) (dirfd, path, mode, flags);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1954,11 +1945,11 @@ int PosixPassthrough::passthrough_chown (const char* pathname, uid_t owner, gid_
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-chown (" + std::string(pathname) + ")");
+        Logging::log_debug ("passthrough-chown (" + std::string (pathname) + ")");
     }
 
     // perform original POSIX chown operation
-    int result = ((libc_chown_t)dlsym (RTLD_NEXT, "chown")) (pathname, owner, group);
+    int result = ((libc_chown_t)dlsym (this->m_lib_handle, "chown")) (pathname, owner, group);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1982,11 +1973,11 @@ int PosixPassthrough::passthrough_lchown (const char* pathname, uid_t owner, gid
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-lchown (" + std::string(pathname) + ")");
+        Logging::log_debug ("passthrough-lchown (" + std::string (pathname) + ")");
     }
 
     // perform original POSIX lchown operation
-    int result = ((libc_lchown_t)dlsym (RTLD_NEXT, "lchown")) (pathname, owner, group);
+    int result = ((libc_lchown_t)dlsym (this->m_lib_handle, "lchown")) (pathname, owner, group);
 
     // update statistic entry
     if (this->m_collect) {
@@ -2010,11 +2001,11 @@ int PosixPassthrough::passthrough_fchown (int fd, uid_t owner, gid_t group)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug("passthrough-fchown (" + std::to_string(fd) + ")");
+        Logging::log_debug ("passthrough-fchown (" + std::to_string (fd) + ")");
     }
 
     // perform original POSIX lchown operation
-    int result = ((libc_fchown_t)dlsym (RTLD_NEXT, "fchown")) (fd, owner, group);
+    int result = ((libc_fchown_t)dlsym (this->m_lib_handle, "fchown")) (fd, owner, group);
 
     // update statistic entry
     if (this->m_collect) {
@@ -2042,14 +2033,13 @@ int PosixPassthrough::passthrough_fchownat (int dirfd,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug(
-                "passthrough-fchownat (" + std::to_string(dirfd) + ", " + std::string(pathname) +
-                ")");
+        Logging::log_debug ("passthrough-fchownat (" + std::to_string (dirfd) + ", "
+            + std::string (pathname) + ")");
     }
 
     // perform original POSIX fchownat operation
-    int result
-        = ((libc_fchownat_t)dlsym (RTLD_NEXT, "fchownat")) (dirfd, pathname, owner, group, flags);
+    int result = ((libc_fchownat_t)dlsym (this->m_lib_handle,
+        "fchownat")) (dirfd, pathname, owner, group, flags);
 
     // update statistic entry
     if (this->m_collect) {

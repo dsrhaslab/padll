@@ -116,6 +116,9 @@ typedef int (*libc_lchown_t) (const char*, uid_t, gid_t);
 typedef int (*libc_fchown_t) (int, uid_t, gid_t);
 typedef int (*libc_fchownat_t) (int, const char*, uid_t, gid_t, int);
 
+/**
+ * PosixPassthrough class.
+ */
 class PosixPassthrough {
 
 private:
@@ -132,12 +135,6 @@ public:
      * PosixPassthrough default constructor.
      */
     PosixPassthrough ();
-
-    /**
-     * PosixPassthrough parameterized constructor.
-     * @param stat_collection Boolean that defines if statistic collection is enabled or disabled.
-     */
-    explicit PosixPassthrough (bool stat_collection);
 
     /**
      * PosixPassthrough parameterized constructor.
@@ -393,7 +390,11 @@ public:
      * @param flags
      * @return
      */
-    int passthrough_fxstatat (int version, int dirfd, const char* path, struct stat* statbuf, int flags);
+    int passthrough_fxstatat (int version,
+        int dirfd,
+        const char* path,
+        struct stat* statbuf,
+        int flags);
 
     /**
      * passthrough_statfs:

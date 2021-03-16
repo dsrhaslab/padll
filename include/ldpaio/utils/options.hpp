@@ -23,12 +23,6 @@ const bool option_default_detailed_logging { false };
  */
 const bool option_default_table_format { false };
 
-/**
- * option_default_intercepted_lib:
- */
-const std::string option_default_intercepted_lib { "libc.so.6" };
-
-
 } // namespace ldpaio
 
 #endif // LDPAIO_OPTIONS_HPP
