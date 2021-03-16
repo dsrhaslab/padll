@@ -11,12 +11,23 @@ namespace ldpaio {
 PosixPassthrough::PosixPassthrough ()
 {
     Logging::log_info ("PosixPassthrough default constructor.");
+    this->m_lib_handle = ::dlopen ("libc.so.6", RTLD_LAZY);
+
+    if (this->m_lib_handle == nullptr) {
+        Logging::log_error ("Error while dlopen'ing libc.");
+    }
 }
 
 // PosixPassthrough parameterized constructor.
 PosixPassthrough::PosixPassthrough (bool stat_collection) : m_collect { stat_collection }
 {
     Logging::log_info ("PosixPassthrough parameterized constructor.");
+    Logging::log_info ("PosixPassthrough default constructor.");
+    this->m_lib_handle = ::dlopen ("libc.so.6", RTLD_LAZY);
+
+    if (this->m_lib_handle == nullptr) {
+        Logging::log_error ("Error while dlopen'ing libc.");
+    }
 }
 
 // PosixPassthrough default destructor.
@@ -104,7 +115,8 @@ ssize_t PosixPassthrough::passthrough_read (int fd, void* buf, ssize_t counter)
     }
 
     // perform original POSIX read operation
-    ssize_t result = ((libc_read_t)dlsym (RTLD_NEXT, "read")) (fd, buf, counter);
+//    ssize_t result = ((libc_read_t)dlsym (RTLD_NEXT, "read")) (fd, buf, counter);
+    ssize_t result = ((libc_read_t)dlsym (this->m_lib_handle, "read")) (fd, buf, counter);
 
     // update statistic entry
     if (this->m_collect) {
@@ -127,7 +139,8 @@ ssize_t PosixPassthrough::passthrough_write (int fd, const void* buf, ssize_t co
     }
 
     // perform original POSIX write operation
-    ssize_t result = ((libc_write_t)dlsym (RTLD_NEXT, "write")) (fd, buf, counter);
+//    ssize_t result = ((libc_write_t)dlsym (RTLD_NEXT, "write")) (fd, buf, counter);
+        ssize_t result = ((libc_write_t)dlsym (this->m_lib_handle, "write")) (fd, buf, counter);
 
     // update statistic entry
     if (this->m_collect) {
