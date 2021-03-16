@@ -66,6 +66,8 @@ typedef FILE* (*libc_fdopen_t) (int, const char*);
 typedef FILE* (*libc_freopen_t) (const char*, const char*, FILE*);
 typedef int (*libc_fclose_t) (FILE*);
 typedef int (*libc_fflush_t) (FILE*);
+typedef int (*libc_access_t) (const char*, int);
+typedef int (*libc_faccessat_t) (int, const char*, int, int);
 
 /**
  * Data calls.
@@ -577,6 +579,26 @@ public:
      * @return
      */
     int passthrough_fflush (FILE* stream);
+
+    /**
+     * passthrough_access:
+     *  https://linux.die.net/man/2/access
+     * @param path
+     * @param mode
+     * @return
+     */
+    int passthrough_access (const char* path, int mode);
+
+    /**
+     * passthrough_faccessat:
+     *  https://linux.die.net/man/2/faccessat
+     * @param dirfd
+     * @param path
+     * @param mode
+     * @param flags
+     * @return
+     */
+    int passthrough_faccessat (int dirfd, const char* path, int mode, int flags);
 
     /**
      * passthrough_mkdir:

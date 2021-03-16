@@ -374,6 +374,24 @@ extern "C" int fclose (FILE* stream);
 extern "C" int fflush (FILE* stream);
 
 /**
+ * access:
+ * @param path
+ * @param mode
+ * @return
+ */
+extern "C" int access (const char* path, int mode);
+
+/**
+ * faccessat:
+ * @param dirfd
+ * @param path
+ * @param mode
+ * @param flags
+ * @return
+ */
+extern "C" int faccessat (int dirfd, const char* path, int mode, int flags);
+
+/**
  * mkdir:
  * @param path
  * @param mode

@@ -1269,6 +1269,63 @@ int PosixPassthrough::passthrough_fflush (FILE* stream)
     return result;
 }
 
+// passthrough_access call. (...)
+int PosixPassthrough::passthrough_access (const char* path, int mode)
+{
+    // logging message
+    if (option_default_detailed_logging) {
+        Logging::log_debug ("passthrough-access");
+    }
+
+    // perform original POSIX access operation
+    int result = ((libc_access_t)dlsym (this->m_lib_handle, "access")) (path, mode);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result == 0) {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::access),
+                1,
+                0);
+        } else {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::access),
+                1,
+                0,
+                1);
+        }
+    }
+
+    return result;
+}
+
+// passthrough_faccessat call. (...)
+int PosixPassthrough::passthrough_faccessat (int dirfd, const char* path, int mode, int flags)
+{
+    // logging message
+    if (option_default_detailed_logging) {
+        Logging::log_debug ("passthrough-faccessat");
+    }
+
+    // perform original POSIX faccessat operation
+    int result
+        = ((libc_faccessat_t)dlsym (this->m_lib_handle, "faccessat")) (dirfd, path, mode, flags);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result == 0) {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::faccessat),
+                1,
+                0);
+        } else {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::faccessat),
+                1,
+                0,
+                1);
+        }
+    }
+
+    return result;
+}
+
 // passthrough_mkdir call. (...)
 int PosixPassthrough::passthrough_mkdir (const char* path, mode_t mode)
 {

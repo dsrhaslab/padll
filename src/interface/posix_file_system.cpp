@@ -263,6 +263,18 @@ int fflush (FILE* stream)
     return m_posix_passthrough.passthrough_fflush (stream);
 }
 
+// access call. (...)
+int access (const char* path, int mode)
+{
+    return m_posix_passthrough.passthrough_access (path, mode);
+}
+
+// faccessat call. (...)
+int faccessat (int dirfd, const char* path, int mode, int flags)
+{
+    return m_posix_passthrough.passthrough_faccessat (dirfd, path, mode, flags);
+}
+
 // mkdir call. (...)
 int mkdir (const char* path, mode_t mode)
 {

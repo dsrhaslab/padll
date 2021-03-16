@@ -61,7 +61,12 @@ BETTER_ENUM (Metadata,
     fdopen = 32,
     freopen = 33,
     fclose = 34,
-    fflush = 35);
+    fflush = 35,
+    access = 36,
+    faccessat = 37,
+    lseek = 38, // missing
+    fseek = 39, // missing
+    ftell = 40); // missing
 
 /**
  * Data Definitions.
