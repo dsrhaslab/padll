@@ -168,7 +168,12 @@ ssize_t PosixPassthrough::passthrough_write (int fd, const void* buf, ssize_t co
     }
 
     // perform original POSIX write operation
-    ssize_t result = ((libc_write_t)dlsym (this->m_lib_handle, "write")) (fd, buf, counter);
+//    ssize_t result = ((libc_write_t)dlsym (this->m_lib_handle, "write")) (fd, buf, counter);
+    if (!m_libc_write) {
+        m_libc_write = (libc_write_t)dlsym (this->m_lib_handle, "write");
+    }
+
+    ssize_t result = m_libc_write (fd, buf, counter);
 
     // update statistic entry
     if (this->m_collect) {
@@ -287,7 +292,12 @@ int PosixPassthrough::passthrough_open (const char* path, int flags, mode_t mode
     }
 
     // perform original POSIX open operation
-    int result = ((libc_open_variadic_t)dlsym (this->m_lib_handle, "open")) (path, flags, mode);
+//    int result = ((libc_open_variadic_t)dlsym (this->m_lib_handle, "open")) (path, flags, mode);
+    if (!m_libc_open_variadic) {
+        m_libc_open_variadic = (libc_open_variadic_t)dlsym (this->m_lib_handle, "open");
+    }
+
+    int result = m_libc_open_variadic (path, flags, mode);
 
     // update statistic entry
     if (this->m_collect) {
@@ -314,7 +324,12 @@ int PosixPassthrough::passthrough_open (const char* path, int flags)
     }
 
     // perform original POSIX open operation
-    int result = ((libc_open_t)dlsym (this->m_lib_handle, "open")) (path, flags);
+//    int result = ((libc_open_t)dlsym (this->m_lib_handle, "open")) (path, flags);
+    if (!m_libc_open) {
+        m_libc_open = (libc_open_t)dlsym (this->m_lib_handle, "open");
+    }
+
+    int result = m_libc_open (path, flags);
 
     // update statistic entry
     if (this->m_collect) {
@@ -481,7 +496,12 @@ int PosixPassthrough::passthrough_close (int fd)
     }
 
     // perform original POSIX close operation
-    int result = ((libc_close_t)dlsym (this->m_lib_handle, "close")) (fd);
+//    int result = ((libc_close_t)dlsym (this->m_lib_handle, "close")) (fd);
+        if (!m_libc_close) {
+            m_libc_close = (libc_close_t)dlsym (this->m_lib_handle, "close");
+        }
+
+        int result = m_libc_close (fd);
 
     // update statistic entry
     if (this->m_collect) {

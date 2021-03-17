@@ -126,6 +126,11 @@ typedef int (*libc_fchownat_t) (int, const char*, uid_t, gid_t, int);
 class PosixPassthrough {
 
 private:
+    libc_open_variadic_t m_libc_open_variadic;
+    libc_open_t m_libc_open;
+    libc_write_t m_libc_write;
+    libc_close_t m_libc_close;
+
     void* m_lib_handle { nullptr };
     std::atomic<bool> m_collect { option_default_statistic_collection };
     Statistics m_metadata_stats { "metadata", OperationType::metadata_calls };

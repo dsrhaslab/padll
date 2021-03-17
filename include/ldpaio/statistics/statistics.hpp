@@ -13,6 +13,11 @@
 #include <ldpaio/utils/operation_utils.hpp>
 #include <vector>
 
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 using namespace tabulate;
 
 namespace ldpaio {
