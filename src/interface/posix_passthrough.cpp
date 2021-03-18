@@ -856,8 +856,21 @@ int PosixPassthrough::passthrough_truncate (const char* path, off_t length)
         Logging::log_debug ("passthrough-truncate (" + std::string (path) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_truncate && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_metadata_operations.m_truncate = (libc_truncate_t)dlsym (this->m_lib_handle, "truncate")
+        : m_metadata_operations.m_truncate = (libc_truncate_t)dlsym (RTLD_NEXT, "truncate");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_truncate) {
+        m_metadata_operations.m_truncate = (libc_truncate_t)dlsym (this->m_lib_handle, "truncate");
+    }
+
     // perform original POSIX truncate operation
-    int result = ((libc_truncate_t)dlsym (this->m_lib_handle, "truncate")) (path, length);
+    int result = m_metadata_operations.m_truncate (path, length);
 
     // update statistic entry
     if (this->m_collect) {
@@ -884,8 +897,21 @@ int PosixPassthrough::passthrough_ftruncate (int fd, off_t length)
         Logging::log_debug ("passthrough-truncate (" + std::to_string (fd) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_ftruncate && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_metadata_operations.m_ftruncate = (libc_ftruncate_t)dlsym (this->m_lib_handle, "ftruncate")
+        : m_metadata_operations.m_ftruncate = (libc_ftruncate_t)dlsym (RTLD_NEXT, "ftruncate");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_ftruncate) {
+        m_metadata_operations.m_ftruncate = (libc_ftruncate_t)dlsym (this->m_lib_handle, "ftruncate");
+    }
+
     // perform original POSIX ftruncate operation
-    int result = ((libc_ftruncate_t)dlsym (this->m_lib_handle, "ftruncate")) (fd, length);
+    int result = m_metadata_operations.m_ftruncate (fd, length);
 
     // update statistic entry
     if (this->m_collect) {
