@@ -78,11 +78,11 @@ PosixPassthrough::~PosixPassthrough ()
 // dlopen_library_handle call. (...)
 bool PosixPassthrough::dlopen_library_handle ()
 {
-    std::unique_lock <std::mutex> unique_lock (this->m_lock);
+    std::unique_lock<std::mutex> unique_lock (this->m_lock);
     // Dynamic loading of the libc library (referred to as 'libc.so.6').
     // loads the dynamic shared object (shared library) file named by the null-terminated string
     // filename and returns an opaque "handle" for the loaded object.
-    this->m_lib_handle = ::dlopen (this->m_lib_name.data(), RTLD_LAZY);
+    this->m_lib_handle = ::dlopen (this->m_lib_name.data (), RTLD_LAZY);
 
     // return true if the m_lib_handle is valid, and false otherwise.
     return (this->m_lib_handle != nullptr);
@@ -159,11 +159,11 @@ ssize_t PosixPassthrough::passthrough_read (int fd, void* buf, ssize_t counter)
     if (!m_data_operations.m_read && !this->m_lib_handle) {
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
-        (this->dlopen_library_handle()) ?
-                m_data_operations.m_read = (libc_read_t)dlsym (this->m_lib_handle, "read") :
-                m_data_operations.m_read = (libc_read_t)dlsym (RTLD_NEXT, "read");
+        (this->dlopen_library_handle ())
+            ? m_data_operations.m_read = (libc_read_t)dlsym (this->m_lib_handle, "read")
+            : m_data_operations.m_read = (libc_read_t)dlsym (RTLD_NEXT, "read");
 
-    // in case the library handle pointer is valid, assign the operation pointer
+        // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_data_operations.m_read) {
         m_data_operations.m_read = (libc_read_t)dlsym (this->m_lib_handle, "read");
     }
@@ -195,9 +195,9 @@ ssize_t PosixPassthrough::passthrough_write (int fd, const void* buf, ssize_t co
     if (!m_data_operations.m_write && !this->m_lib_handle) {
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
-        (this->dlopen_library_handle()) ?
-            m_data_operations.m_write = (libc_write_t)dlsym (this->m_lib_handle, "write") :
-            m_data_operations.m_write = (libc_write_t)dlsym (RTLD_NEXT, "write");
+        (this->dlopen_library_handle ())
+            ? m_data_operations.m_write = (libc_write_t)dlsym (this->m_lib_handle, "write")
+            : m_data_operations.m_write = (libc_write_t)dlsym (RTLD_NEXT, "write");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_data_operations.m_write) {
@@ -231,9 +231,9 @@ ssize_t PosixPassthrough::passthrough_pread (int fd, void* buf, ssize_t counter,
     if (!m_data_operations.m_pread && !this->m_lib_handle) {
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
-        (this->dlopen_library_handle()) ?
-                m_data_operations.m_pread = (libc_pread_t)dlsym (this->m_lib_handle, "pread") :
-                m_data_operations.m_pread = (libc_pread_t)dlsym (RTLD_NEXT, "pread");
+        (this->dlopen_library_handle ())
+            ? m_data_operations.m_pread = (libc_pread_t)dlsym (this->m_lib_handle, "pread")
+            : m_data_operations.m_pread = (libc_pread_t)dlsym (RTLD_NEXT, "pread");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_data_operations.m_pread) {
@@ -268,9 +268,9 @@ PosixPassthrough::passthrough_pwrite (int fd, const void* buf, ssize_t counter, 
     if (!m_data_operations.m_pwrite && !this->m_lib_handle) {
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
-        (this->dlopen_library_handle()) ?
-                m_data_operations.m_pwrite = (libc_pwrite_t)dlsym (this->m_lib_handle, "pwrite") :
-                m_data_operations.m_pwrite = (libc_pwrite_t)dlsym (RTLD_NEXT, "pwrite");
+        (this->dlopen_library_handle ())
+            ? m_data_operations.m_pwrite = (libc_pwrite_t)dlsym (this->m_lib_handle, "pwrite")
+            : m_data_operations.m_pwrite = (libc_pwrite_t)dlsym (RTLD_NEXT, "pwrite");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_data_operations.m_pwrite) {
@@ -304,9 +304,9 @@ size_t PosixPassthrough::passthrough_fread (void* ptr, size_t size, size_t nmemb
     if (!m_data_operations.m_fread && !this->m_lib_handle) {
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
-        (this->dlopen_library_handle()) ?
-                m_data_operations.m_fread = (libc_fread_t)dlsym (this->m_lib_handle, "fread") :
-                m_data_operations.m_fread = (libc_fread_t)dlsym (RTLD_NEXT, "fread");
+        (this->dlopen_library_handle ())
+            ? m_data_operations.m_fread = (libc_fread_t)dlsym (this->m_lib_handle, "fread")
+            : m_data_operations.m_fread = (libc_fread_t)dlsym (RTLD_NEXT, "fread");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_data_operations.m_fread) {
@@ -341,9 +341,9 @@ PosixPassthrough::passthrough_fwrite (const void* ptr, size_t size, size_t nmemb
     if (!m_data_operations.m_fwrite && !this->m_lib_handle) {
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
-        (this->dlopen_library_handle()) ?
-                m_data_operations.m_fwrite = (libc_fwrite_t)dlsym (this->m_lib_handle, "fwrite") :
-                m_data_operations.m_fwrite = (libc_fwrite_t)dlsym (RTLD_NEXT, "fwrite");
+        (this->dlopen_library_handle ())
+            ? m_data_operations.m_fwrite = (libc_fwrite_t)dlsym (this->m_lib_handle, "fwrite")
+            : m_data_operations.m_fwrite = (libc_fwrite_t)dlsym (RTLD_NEXT, "fwrite");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_data_operations.m_fwrite) {
@@ -377,11 +377,12 @@ int PosixPassthrough::passthrough_open (const char* path, int flags, mode_t mode
     if (!m_metadata_operations.m_open_var && !this->m_lib_handle) {
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
-        (this->dlopen_library_handle()) ?
-                m_metadata_operations.m_open_var = (libc_open_variadic_t)dlsym (this->m_lib_handle, "open") :
-                m_metadata_operations.m_open_var = (libc_open_variadic_t)dlsym (RTLD_NEXT, "open");
+        (this->dlopen_library_handle ())
+            ? m_metadata_operations.m_open_var
+            = (libc_open_variadic_t)dlsym (this->m_lib_handle, "open")
+            : m_metadata_operations.m_open_var = (libc_open_variadic_t)dlsym (RTLD_NEXT, "open");
 
-    // in case the library handle pointer is valid, assign the operation pointer
+        // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_metadata_operations.m_open_var) {
         m_metadata_operations.m_open_var = (libc_open_variadic_t)dlsym (this->m_lib_handle, "open");
     }
@@ -417,11 +418,11 @@ int PosixPassthrough::passthrough_open (const char* path, int flags)
     if (!m_metadata_operations.m_open && !this->m_lib_handle) {
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
-        (this->dlopen_library_handle()) ?
-                m_metadata_operations.m_open = (libc_open_t)dlsym (this->m_lib_handle, "open") :
-                m_metadata_operations.m_open = (libc_open_t)dlsym (RTLD_NEXT, "open");
+        (this->dlopen_library_handle ())
+            ? m_metadata_operations.m_open = (libc_open_t)dlsym (this->m_lib_handle, "open")
+            : m_metadata_operations.m_open = (libc_open_t)dlsym (RTLD_NEXT, "open");
 
-    // in case the library handle pointer is valid, assign the operation pointer
+        // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_metadata_operations.m_open) {
         m_metadata_operations.m_open = (libc_open_t)dlsym (this->m_lib_handle, "open");
     }
@@ -456,11 +457,11 @@ int PosixPassthrough::passthrough_creat (const char* path, mode_t mode)
     if (!m_metadata_operations.m_creat && !this->m_lib_handle) {
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
-        (this->dlopen_library_handle()) ?
-                m_metadata_operations.m_creat = (libc_creat_t)dlsym (this->m_lib_handle, "creat") :
-                m_metadata_operations.m_creat = (libc_creat_t)dlsym (RTLD_NEXT, "creat");
+        (this->dlopen_library_handle ())
+            ? m_metadata_operations.m_creat = (libc_creat_t)dlsym (this->m_lib_handle, "creat")
+            : m_metadata_operations.m_creat = (libc_creat_t)dlsym (RTLD_NEXT, "creat");
 
-    // in case the library handle pointer is valid, assign the operation pointer
+        // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_metadata_operations.m_creat) {
         m_metadata_operations.m_creat = (libc_creat_t)dlsym (this->m_lib_handle, "creat");
     }
@@ -498,13 +499,15 @@ int PosixPassthrough::passthrough_openat (int dirfd, const char* path, int flags
     if (!m_metadata_operations.m_openat_var && !this->m_lib_handle) {
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
-        (this->dlopen_library_handle()) ?
-                m_metadata_operations.m_openat_var = (libc_openat_variadic_t)dlsym (this->m_lib_handle, "openat") :
-                m_metadata_operations.m_openat_var = (libc_openat_variadic_t)dlsym (RTLD_NEXT, "openat");
+        (this->dlopen_library_handle ()) ? m_metadata_operations.m_openat_var
+            = (libc_openat_variadic_t)dlsym (this->m_lib_handle, "openat")
+                                         : m_metadata_operations.m_openat_var
+            = (libc_openat_variadic_t)dlsym (RTLD_NEXT, "openat");
 
-    // in case the library handle pointer is valid, assign the operation pointer
+        // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_metadata_operations.m_openat_var) {
-        m_metadata_operations.m_openat_var = (libc_openat_variadic_t)dlsym (this->m_lib_handle, "openat");
+        m_metadata_operations.m_openat_var
+            = (libc_openat_variadic_t)dlsym (this->m_lib_handle, "openat");
     }
 
     // perform original POSIX openat operation
@@ -539,11 +542,11 @@ int PosixPassthrough::passthrough_openat (int dirfd, const char* path, int flags
     if (!m_metadata_operations.m_openat && !this->m_lib_handle) {
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
-        (this->dlopen_library_handle()) ?
-                m_metadata_operations.m_openat = (libc_openat_t)dlsym (this->m_lib_handle, "openat") :
-                m_metadata_operations.m_openat = (libc_openat_t)dlsym (RTLD_NEXT, "openat");
+        (this->dlopen_library_handle ())
+            ? m_metadata_operations.m_openat = (libc_openat_t)dlsym (this->m_lib_handle, "openat")
+            : m_metadata_operations.m_openat = (libc_openat_t)dlsym (RTLD_NEXT, "openat");
 
-    // in case the library handle pointer is valid, assign the operation pointer
+        // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_metadata_operations.m_openat) {
         m_metadata_operations.m_openat = (libc_openat_t)dlsym (this->m_lib_handle, "openat");
     }
@@ -1407,7 +1410,7 @@ int PosixPassthrough::passthrough_fflush (FILE* stream)
 
     if (this->m_lib_handle == nullptr) {
         std::cout << "will open m_lib_handle from libc.so.6 \n";
-        this->m_lib_handle = ::dlopen (this->m_lib_name.data(), RTLD_LAZY);
+        this->m_lib_handle = ::dlopen (this->m_lib_name.data (), RTLD_LAZY);
         printf ("--> %ld\n", this->m_lib_handle);
         //        m_libc_write = (libc_write_t)dlsym (this->m_lib_handle, "write");
         std::cout << "Passei no lib_c_fflush\n";
