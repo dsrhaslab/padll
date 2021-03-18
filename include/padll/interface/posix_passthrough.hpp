@@ -12,6 +12,8 @@
 #include <dlfcn.h>
 #include <fcntl.h>
 #include <iostream>
+#include <padll/libraries/libc_operation_headers.hpp>
+#include <padll/libraries/libc_operation_enums.hpp>
 #include <padll/statistics/statistics.hpp>
 #include <padll/utils/options.hpp>
 #include <sstream>
@@ -20,103 +22,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#ifdef __linux__
-#include <sys/vfs.h>
-#elif __APPLE__
-#include <sys/mount.h>
-#endif
 
 namespace padll {
-
-/**
- * Metadata calls.
- */
-typedef int (*libc_open_variadic_t) (const char*, int, ...);
-typedef int (*libc_open_t) (const char*, int);
-typedef int (*libc_creat_t) (const char*, mode_t);
-typedef int (*libc_openat_variadic_t) (int, const char*, int, ...);
-typedef int (*libc_openat_t) (int, const char*, int);
-typedef int (*libc_open64_variadic_t) (const char*, int, ...);
-typedef int (*libc_open64_t) (const char*, int);
-typedef int (*libc_close_t) (int);
-typedef int (*libc_fsync_t) (int);
-typedef int (*libc_fdatasync_t) (int);
-typedef void (*libc_sync_t) ();
-typedef int (*libc_syncfs_t) (int);
-typedef int (*libc_truncate_t) (const char*, off_t);
-typedef int (*libc_ftruncate_t) (int, off_t);
-typedef int (*libc_xstat_t) (int, const char*, struct stat*);
-typedef int (*libc_lxstat_t) (int, const char*, struct stat*);
-typedef int (*libc_fxstat_t) (int, int, struct stat*);
-typedef int (*libc_fxstatat_t) (int, int, const char*, struct stat*, int);
-typedef int (*libc_statfs_t) (const char*, struct statfs*);
-typedef int (*libc_fstatfs_t) (int, struct statfs*);
-typedef int (*libc_link_t) (const char*, const char*);
-typedef int (*libc_unlink_t) (const char*);
-typedef int (*libc_linkat_t) (int, const char*, int, const char*, int);
-typedef int (*libc_unlinkat_t) (int, const char*, int);
-typedef int (*libc_rename_t) (const char*, const char*);
-typedef int (*libc_renameat_t) (int, const char*, int, const char*);
-typedef int (*libc_symlink_t) (const char*, const char*);
-typedef int (*libc_symlinkat_t) (const char*, int, const char*);
-typedef ssize_t (*libc_readlink_t) (const char*, char*, size_t);
-typedef ssize_t (*libc_readlinkat_t) (int, const char*, char*, size_t);
-typedef FILE* (*libc_fopen_t) (const char*, const char*);
-typedef FILE* (*libc_fdopen_t) (int, const char*);
-typedef FILE* (*libc_freopen_t) (const char*, const char*, FILE*);
-typedef int (*libc_fclose_t) (FILE*);
-typedef int (*libc_fflush_t) (FILE*);
-typedef int (*libc_access_t) (const char*, int);
-typedef int (*libc_faccessat_t) (int, const char*, int, int);
-
-/**
- * Data calls.
- */
-typedef ssize_t (*libc_read_t) (int, void*, size_t);
-typedef ssize_t (*libc_write_t) (int, const void*, size_t);
-typedef ssize_t (*libc_pread_t) (int, void*, size_t, off_t);
-typedef ssize_t (*libc_pwrite_t) (int, const void*, size_t, off_t);
-typedef size_t (*libc_fread_t) (void*, size_t, size_t, FILE*);
-typedef size_t (*libc_fwrite_t) (const void*, size_t, size_t, FILE*);
-
-/**
- * Directory calls.
- */
-typedef int (*libc_mkdir_t) (const char*, mode_t);
-typedef int (*libc_mkdirat_t) (int, const char*, mode_t);
-typedef struct dirent* (*libc_readdir_t) (DIR*);
-typedef DIR* (*libc_opendir_t) (const char*);
-typedef DIR* (*libc_fdopendir_t) (int);
-typedef int (*libc_closedir_t) (DIR*);
-typedef int (*libc_rmdir_t) (const char*);
-typedef int (*libc_dirfd_t) (DIR*);
-
-/**
- * Extended attributes calls.
- */
-typedef ssize_t (*libc_getxattr_t) (const char*, const char*, void*, size_t);
-typedef ssize_t (*libc_lgetxattr_t) (const char*, const char*, void*, size_t);
-typedef ssize_t (*libc_fgetxattr_t) (int, const char*, void*, size_t);
-typedef int (*libc_setxattr_t) (const char*, const char*, const void*, size_t, int);
-typedef int (*libc_lsetxattr_t) (const char*, const char*, const void*, size_t, int);
-typedef int (*libc_fsetxattr_t) (int, const char*, const void*, size_t, int);
-typedef ssize_t (*libc_listxattr_t) (const char*, char*, size_t);
-typedef ssize_t (*libc_llistxattr_t) (const char*, char*, size_t);
-typedef ssize_t (*libc_flistxattr_t) (int, char*, size_t);
-typedef int (*libc_removexattr_t) (const char*, const char*);
-typedef int (*libc_lremovexattr_t) (const char*, const char*);
-typedef int (*libc_fremovexattr_t) (int, const char*);
-
-/**
- * File modes calls.
- */
-typedef int (*libc_chmod_t) (const char*, mode_t);
-typedef int (*libc_fchmod_t) (int, mode_t);
-typedef int (*libc_fchmodat_t) (int, const char*, mode_t, int);
-typedef int (*libc_chown_t) (const char*, uid_t, gid_t);
-typedef int (*libc_lchown_t) (const char*, uid_t, gid_t);
-typedef int (*libc_fchown_t) (int, uid_t, gid_t);
-typedef int (*libc_fchownat_t) (int, const char*, uid_t, gid_t, int);
 
 /**
  * PosixPassthrough class.
@@ -126,10 +33,8 @@ typedef int (*libc_fchownat_t) (int, const char*, uid_t, gid_t, int);
 class PosixPassthrough {
 
 private:
-    libc_open_variadic_t m_libc_open_variadic;
-    libc_open_t m_libc_open;
-    libc_write_t m_libc_write;
-    libc_close_t m_libc_close;
+    libc_metadata m_metadata_operations {};
+    libc_data m_data_operations {};
 
     void* m_lib_handle { nullptr };
     std::atomic<bool> m_collect { option_default_statistic_collection };

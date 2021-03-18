@@ -10,7 +10,6 @@ namespace padll {
 // PosixPassthrough default constructor.
 PosixPassthrough::PosixPassthrough ()
 {
-    Logging::log_info ("PosixPassthrough default constructor.");
     // Dynamic loading of the libc library (referred to as 'libc.so.6').
     // loads the dynamic shared object (shared library) file named by the null-terminated string
     // filename and returns an opaque "handle" for the loaded object.
@@ -27,7 +26,6 @@ PosixPassthrough::PosixPassthrough ()
 PosixPassthrough::PosixPassthrough (const std::string& lib, bool stat_collection) :
     m_collect { stat_collection }
 {
-    Logging::log_info ("PosixPassthrough parameterized constructor.");
     // validate if 'lib' is valid
     if (lib.empty ()) {
         Logging::log_error ("Library not valid.");
@@ -169,19 +167,18 @@ ssize_t PosixPassthrough::passthrough_write (int fd, const void* buf, ssize_t co
         Logging::log_debug ("passthrough-write (" + std::to_string (fd) + ")");
     }
 
-    // perform original POSIX write operation
-    //    ssize_t result = ((libc_write_t)dlsym (this->m_lib_handle, "write")) (fd, buf, counter);
-    if (!m_libc_write) {
+    // validate and assign pointer to write function
+    if (!m_data_operations.m_write) {
         if (this->m_lib_handle == nullptr) {
-            std::cout << "m_lib_handle opened \n";
             this->m_lib_handle = ::dlopen("libc.so.6", RTLD_LAZY);
-            printf ("--> %ld\n", this->m_lib_handle);
+            m_data_operations.m_write = (libc_write_t)dlsym (this->m_lib_handle, "write");
+        } else {
+            m_data_operations.m_write = (libc_write_t)dlsym (RTLD_NEXT, "write");
         }
-        m_libc_write = (libc_write_t)dlsym (this->m_lib_handle, "write");
-        std::cout << "Passei no lib_c_write\n";
     }
 
-    ssize_t result = m_libc_write (fd, buf, counter);
+    // perform original POSIX write operation
+    ssize_t result = m_data_operations.m_write (fd, buf, counter);
 
     // update statistic entry
     if (this->m_collect) {
@@ -310,11 +307,11 @@ int PosixPassthrough::passthrough_open (const char* path, int flags, mode_t mode
     // perform original POSIX open operation
     //    int result = ((libc_open_variadic_t)dlsym (this->m_lib_handle, "open")) (path, flags,
     //    mode);
-    if (!m_libc_open_variadic) {
-        m_libc_open_variadic = (libc_open_variadic_t)dlsym (RTLD_NEXT, "open");
+    if (!m_metadata_operations.m_open_var) {
+        m_metadata_operations.m_open_var = (libc_open_variadic_t)dlsym (RTLD_NEXT, "open");
     }
 
-    int result = m_libc_open_variadic (path, flags, mode);
+    int result = m_metadata_operations.m_open_var (path, flags, mode);
 
     // update statistic entry
     if (this->m_collect) {
@@ -342,11 +339,11 @@ int PosixPassthrough::passthrough_open (const char* path, int flags)
 
     // perform original POSIX open operation
     //    int result = ((libc_open_t)dlsym (this->m_lib_handle, "open")) (path, flags);
-    if (!m_libc_open) {
-        m_libc_open = (libc_open_t)dlsym (RTLD_NEXT, "open");
+    if (!m_metadata_operations.m_open) {
+        m_metadata_operations.m_open = (libc_open_t)dlsym (RTLD_NEXT, "open");
     }
 
-    int result = m_libc_open (path, flags);
+    int result = m_metadata_operations.m_open (path, flags);
 
     // update statistic entry
     if (this->m_collect) {
@@ -514,11 +511,11 @@ int PosixPassthrough::passthrough_close (int fd)
 
     // perform original POSIX close operation
     //    int result = ((libc_close_t)dlsym (this->m_lib_handle, "close")) (fd);
-    if (!m_libc_close) {
-        m_libc_close = (libc_close_t)dlsym (RTLD_NEXT, "close");
+    if (!m_metadata_operations.m_close) {
+        m_metadata_operations.m_close = (libc_close_t)dlsym (RTLD_NEXT, "close");
     }
 
-    int result = m_libc_close (fd);
+    int result = m_metadata_operations.m_close (fd);
 
     // update statistic entry
     if (this->m_collect) {

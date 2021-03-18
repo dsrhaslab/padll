@@ -62,7 +62,8 @@ target_sources(
     ${PROJECT_SOURCE_DIR}/include/padll/statistics/statistic_entry.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/statistics/statistics.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/utils/logging.hpp
-    ${PROJECT_SOURCE_DIR}/include/padll/utils/operation_utils.hpp
+    ${PROJECT_SOURCE_DIR}/include/padll/libraries/libc_operation_enums.hpp
+    ${PROJECT_SOURCE_DIR}/include/padll/libraries/libc_operation_headers.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/utils/options.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/thrid_party/enum.h
     ${PROJECT_SOURCE_DIR}/include/padll/thrid_party/tabulate.hpp
