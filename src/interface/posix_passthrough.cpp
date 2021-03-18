@@ -155,8 +155,21 @@ ssize_t PosixPassthrough::passthrough_read (int fd, void* buf, ssize_t counter)
         Logging::log_debug ("passthrough-read (" + std::to_string (fd) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_data_operations.m_read && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle()) ?
+                m_data_operations.m_read = (libc_read_t)dlsym (this->m_lib_handle, "read") :
+                m_data_operations.m_read = (libc_read_t)dlsym (RTLD_NEXT, "read");
+
+    // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_data_operations.m_read) {
+        m_data_operations.m_read = (libc_read_t)dlsym (this->m_lib_handle, "read");
+    }
+
     // perform original POSIX read operation
-    ssize_t result = ((libc_read_t)dlsym (this->m_lib_handle, "read")) (fd, buf, counter);
+    ssize_t result = m_data_operations.m_read (fd, buf, counter);
 
     // update statistic entry
     if (this->m_collect) {
@@ -188,7 +201,7 @@ ssize_t PosixPassthrough::passthrough_write (int fd, const void* buf, ssize_t co
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_data_operations.m_write) {
-        m_data_operations.m_write = m_data_operations.m_write = (libc_write_t)dlsym (this->m_lib_handle, "write");
+        m_data_operations.m_write = (libc_write_t)dlsym (this->m_lib_handle, "write");
     }
 
     // perform original POSIX write operation
@@ -214,8 +227,21 @@ ssize_t PosixPassthrough::passthrough_pread (int fd, void* buf, ssize_t counter,
         Logging::log_debug ("passthrough-pread (" + std::to_string (fd) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_data_operations.m_pread && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle()) ?
+                m_data_operations.m_pread = (libc_pread_t)dlsym (this->m_lib_handle, "pread") :
+                m_data_operations.m_pread = (libc_pread_t)dlsym (RTLD_NEXT, "pread");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_data_operations.m_pread) {
+        m_data_operations.m_pread = (libc_pread_t)dlsym (this->m_lib_handle, "pread");
+    }
+
     // perform original POSIX pread operation
-    ssize_t result = ((libc_pread_t)dlsym (this->m_lib_handle, "pread")) (fd, buf, counter, offset);
+    ssize_t result = m_data_operations.m_pread (fd, buf, counter, offset);
 
     // update statistic entry
     if (this->m_collect) {
@@ -238,9 +264,21 @@ PosixPassthrough::passthrough_pwrite (int fd, const void* buf, ssize_t counter, 
         Logging::log_debug ("passthrough-pwrite (" + std::to_string (fd) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_data_operations.m_pwrite && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle()) ?
+                m_data_operations.m_pwrite = (libc_pwrite_t)dlsym (this->m_lib_handle, "pwrite") :
+                m_data_operations.m_pwrite = (libc_pwrite_t)dlsym (RTLD_NEXT, "pwrite");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_data_operations.m_pwrite) {
+        m_data_operations.m_pwrite = (libc_pwrite_t)dlsym (this->m_lib_handle, "pwrite");
+    }
+
     // perform original POSIX pwrite operation
-    ssize_t result
-        = ((libc_pwrite_t)dlsym (this->m_lib_handle, "pwrite")) (fd, buf, counter, offset);
+    ssize_t result = m_data_operations.m_pwrite (fd, buf, counter, offset);
 
     // update statistic entry
     if (this->m_collect) {
@@ -262,8 +300,21 @@ size_t PosixPassthrough::passthrough_fread (void* ptr, size_t size, size_t nmemb
         Logging::log_debug ("passthrough-fpread");
     }
 
+    // validate function and library handle pointers
+    if (!m_data_operations.m_fread && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle()) ?
+                m_data_operations.m_fread = (libc_fread_t)dlsym (this->m_lib_handle, "fread") :
+                m_data_operations.m_fread = (libc_fread_t)dlsym (RTLD_NEXT, "fread");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_data_operations.m_fread) {
+        m_data_operations.m_fread = (libc_fread_t)dlsym (this->m_lib_handle, "fread");
+    }
+
     // perform original POSIX fread operation
-    ssize_t result = ((libc_fread_t)dlsym (this->m_lib_handle, "fread")) (ptr, size, nmemb, stream);
+    ssize_t result = m_data_operations.m_fread (ptr, size, nmemb, stream);
 
     // update statistic entry
     if (this->m_collect) {
@@ -286,17 +337,21 @@ PosixPassthrough::passthrough_fwrite (const void* ptr, size_t size, size_t nmemb
         Logging::log_debug ("passthrough-fwrite");
     }
 
-    if (this->m_lib_handle == nullptr) {
-        std::cout << "will open m_lib_handle from libc.so.6 \n";
-        this->m_lib_handle = ::dlopen (this->m_lib_name.data(), RTLD_LAZY);
-        printf ("--> %ld\n", this->m_lib_handle);
-        // m_libc_write = (libc_write_t)dlsym (this->m_lib_handle, "write");
-        std::cout << "Passei no lib_c_fwrite\n";
+    // validate function and library handle pointers
+    if (!m_data_operations.m_fwrite && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle()) ?
+                m_data_operations.m_fwrite = (libc_fwrite_t)dlsym (this->m_lib_handle, "fwrite") :
+                m_data_operations.m_fwrite = (libc_fwrite_t)dlsym (RTLD_NEXT, "fwrite");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_data_operations.m_fwrite) {
+        m_data_operations.m_fwrite = (libc_fwrite_t)dlsym (this->m_lib_handle, "fwrite");
     }
 
     // perform original POSIX fwrite operation
-    ssize_t result
-        = ((libc_fwrite_t)dlsym (this->m_lib_handle, "fwrite")) (ptr, size, nmemb, stream);
+    ssize_t result = m_data_operations.m_fwrite (ptr, size, nmemb, stream);
 
     // update statistic entry
     if (this->m_collect) {
