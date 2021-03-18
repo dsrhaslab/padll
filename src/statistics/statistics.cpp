@@ -3,9 +3,9 @@
  *   Copyright (c) 2021 INESC TEC.
  **/
 
-#include <ldpaio/statistics/statistics.hpp>
+#include <padll/statistics/statistics.hpp>
 
-namespace ldpaio {
+namespace padll {
 
 // Statistics default constructor.
 Statistics::Statistics () = default;
@@ -16,7 +16,7 @@ Statistics::Statistics (std::string identifier, const OperationType& operation_t
 {
     this->initialize (operation_type);
 
-    //int fd = ::open ("/tmp/foo", O_CREAT | O_APPEND | O_WRONLY, 0700);
+    // int fd = ::open ("/tmp/foo", O_CREAT | O_APPEND | O_WRONLY, 0700);
     //::write (fd, "hello world\n", 12);
     //::close (fd);
 }
@@ -262,4 +262,4 @@ void Statistics::tabulate ()
     std::cout << table_stats << std::endl;
 }
 
-} // namespace ldpaio
+} // namespace padll

@@ -3,9 +3,9 @@
  *   Copyright (c) 2021 INESC TEC.
  **/
 
-#include <ldpaio/utils/logging.hpp>
+#include <padll/utils/logging.hpp>
 
-namespace ldpaio {
+namespace padll {
 
 // static variable debug_enabled
 bool Logging::m_debug_enabled = false;
@@ -55,4 +55,4 @@ bool Logging::is_debug_enabled ()
     return m_debug_enabled;
 }
 
-} // namespace ldpaio
+} // namespace padll

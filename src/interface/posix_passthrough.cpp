@@ -3,9 +3,9 @@
  *   Copyright (c) 2021 INESC TEC.
  **/
 
-#include <ldpaio/interface/posix_passthrough.hpp>
+#include <padll/interface/posix_passthrough.hpp>
 
-namespace ldpaio {
+namespace padll {
 
 // PosixPassthrough default constructor.
 PosixPassthrough::PosixPassthrough ()
@@ -168,10 +168,10 @@ ssize_t PosixPassthrough::passthrough_write (int fd, const void* buf, ssize_t co
     }
 
     // perform original POSIX write operation
-//    ssize_t result = ((libc_write_t)dlsym (this->m_lib_handle, "write")) (fd, buf, counter);
+    //    ssize_t result = ((libc_write_t)dlsym (this->m_lib_handle, "write")) (fd, buf, counter);
     if (!m_libc_write) {
         m_libc_write = (libc_write_t)dlsym (RTLD_NEXT, "write");
-	std::cout << "Passei no lib_c_write\n";
+        std::cout << "Passei no lib_c_write\n";
     }
 
     ssize_t result = m_libc_write (fd, buf, counter);
@@ -293,7 +293,8 @@ int PosixPassthrough::passthrough_open (const char* path, int flags, mode_t mode
     }
 
     // perform original POSIX open operation
-//    int result = ((libc_open_variadic_t)dlsym (this->m_lib_handle, "open")) (path, flags, mode);
+    //    int result = ((libc_open_variadic_t)dlsym (this->m_lib_handle, "open")) (path, flags,
+    //    mode);
     if (!m_libc_open_variadic) {
         m_libc_open_variadic = (libc_open_variadic_t)dlsym (RTLD_NEXT, "open");
     }
@@ -325,7 +326,7 @@ int PosixPassthrough::passthrough_open (const char* path, int flags)
     }
 
     // perform original POSIX open operation
-//    int result = ((libc_open_t)dlsym (this->m_lib_handle, "open")) (path, flags);
+    //    int result = ((libc_open_t)dlsym (this->m_lib_handle, "open")) (path, flags);
     if (!m_libc_open) {
         m_libc_open = (libc_open_t)dlsym (RTLD_NEXT, "open");
     }
@@ -497,12 +498,12 @@ int PosixPassthrough::passthrough_close (int fd)
     }
 
     // perform original POSIX close operation
-//    int result = ((libc_close_t)dlsym (this->m_lib_handle, "close")) (fd);
-        if (!m_libc_close) {
-            m_libc_close = (libc_close_t)dlsym (RTLD_NEXT, "close");
-        }
+    //    int result = ((libc_close_t)dlsym (this->m_lib_handle, "close")) (fd);
+    if (!m_libc_close) {
+        m_libc_close = (libc_close_t)dlsym (RTLD_NEXT, "close");
+    }
 
-        int result = m_libc_close (fd);
+    int result = m_libc_close (fd);
 
     // update statistic entry
     if (this->m_collect) {
@@ -2132,4 +2133,4 @@ int PosixPassthrough::passthrough_fchownat (int dirfd,
     return result;
 }
 
-} // namespace ldpaio
+} // namespace padll

@@ -3,15 +3,15 @@
  *   Copyright (c) 2021 INESC TEC.
  **/
 
-#ifndef LDPAIO_LOGGING_HPP
-#define LDPAIO_LOGGING_HPP
+#ifndef PADDL_LOGGING_HPP
+#define PADDL_LOGGING_HPP
 
 #include <iostream>
 #include <spdlog/logger.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/spdlog.h>
 
-namespace ldpaio {
+namespace padll {
 
 /**
  * Logging class.
@@ -24,7 +24,7 @@ class Logging {
 
 private:
     std::string m_logger_name { "basic_logger" };
-    std::string m_log_file_path { "/tmp/ldpaio_info.txt" };
+    std::string m_log_file_path { "/tmp/padll_info.txt" };
     std::shared_ptr<spdlog::logger> m_logger {};
 
     /**
@@ -78,6 +78,6 @@ public:
      */
     static bool is_debug_enabled ();
 };
-} // namespace ldpaio
+} // namespace padll
 
-#endif // LDPAIO_LOGGING_HPP
+#endif // PADDL_LOGGING_HPP

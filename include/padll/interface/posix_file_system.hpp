@@ -3,17 +3,17 @@
  *   Copyright (c) 2021 INESC TEC.
  **/
 
-#ifndef LDPAIO_POSIX_FILE_SYSTEM_H
-#define LDPAIO_POSIX_FILE_SYSTEM_H
+#ifndef PADLL_POSIX_FILE_SYSTEM_H
+#define PADLL_POSIX_FILE_SYSTEM_H
 
 #include <cstdarg>
 #include <cstring>
-#include <ldpaio/interface/posix_passthrough.hpp>
-#include <ldpaio/utils/logging.hpp>
+#include <padll/interface/posix_passthrough.hpp>
+#include <padll/utils/logging.hpp>
 #include <thread>
 
-ldpaio::Logging m_logger { false };
-ldpaio::PosixPassthrough m_posix_passthrough {};
+padll::Logging m_logger { false };
+padll::PosixPassthrough m_posix_passthrough {};
 
 /**
  * init_method: constructor of the PosixFileSystem.
@@ -630,4 +630,4 @@ extern "C" int fchown (int fd, uid_t owner, gid_t group);
  */
 extern "C" int fchownat (int dirfd, const char* pathname, uid_t owner, gid_t group, int flags);
 
-#endif // LDPAIO_POSIX_FILE_SYSTEM_H
+#endif // PADLL_POSIX_FILE_SYSTEM_H

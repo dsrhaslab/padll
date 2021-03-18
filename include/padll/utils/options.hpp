@@ -3,10 +3,10 @@
  *   Copyright (c) 2021 INESC TEC.
  **/
 
-#ifndef LDPAIO_OPTIONS_HPP
-#define LDPAIO_OPTIONS_HPP
+#ifndef PADDL_OPTIONS_HPP
+#define PADDL_OPTIONS_HPP
 
-namespace ldpaio {
+namespace padll {
 
 /**
  * option_default_statistic_collection:
@@ -23,6 +23,6 @@ const bool option_default_detailed_logging { false };
  */
 const bool option_default_table_format { true };
 
-} // namespace ldpaio
+} // namespace padll
 
-#endif // LDPAIO_OPTIONS_HPP
+#endif // PADDL_OPTIONS_HPP

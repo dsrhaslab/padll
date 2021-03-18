@@ -3,15 +3,15 @@
  *   Copyright (c) 2021 INESC TEC.
  **/
 
-#ifndef LDPAIO_STATISTIC_ENTRY_H
-#define LDPAIO_STATISTIC_ENTRY_H
+#ifndef PADLL_STATISTIC_ENTRY_H
+#define PADLL_STATISTIC_ENTRY_H
 
 #include <cstdint>
 #include <mutex>
 #include <sstream>
 #include <string>
 
-namespace ldpaio {
+namespace padll {
 
 /**
  * StatisticEntry class.
@@ -108,6 +108,6 @@ public:
      */
     std::string to_string ();
 };
-} // namespace ldpaio
+} // namespace padll
 
-#endif // LDPAIO_STATISTIC_ENTRY_H
+#endif // PADLL_STATISTIC_ENTRY_H

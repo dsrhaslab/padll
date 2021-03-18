@@ -1,31 +1,31 @@
-## ldpaio
+## padll
 
-ldpaio is an open-source library that integrates PAIO with the the LD_PRELOAD library.
+padll is an open-source library that integrates PAIO with the the LD_PRELOAD library.
 
 
-## Getting started with ldpaio
+## Getting started with padll
 
-Tutorial to install and test ldpaio.
+Tutorial to install and test padll.
 
-1. <b>Set up ldpaio</b>
+1. <b>Set up padll</b>
 ```shell
-$ cd ldpaio; mkdir build; cd build;
+$ cd padll; mkdir build; cd build;
 $ cmake -DCMAKE_INSTALL_PREFIX:PATH=. ..
 $ make install -j
-$ export PATH_LDPAIO=$PWD
+$ export PATH_PADLL=$PWD
 ```
 
 2. <b>Setup microbenchmark</b>
 ```shell
-$ cd ldpaio/tests
+$ cd padll/tests
 $ g++ libc_calls_experiment.cpp -o libc_calls_test
 $ cd ..
 ```
 
 3. <b>Run microbenchmark</b>
 ```shell
-$ cd ldpaio
-$ LD_PRELOAD=$PATH_LDPAIO/libldpaio.so ./tests/libc_calls_test
+$ cd padll
+$ LD_PRELOAD=$PATH_PADLL/libpadll.so ./tests/libc_calls_test
 ```
 
 ## Features

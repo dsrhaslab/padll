@@ -3,16 +3,16 @@
 cmake_minimum_required(VERSION 3.11)
 include(FetchContent)
 
-project(ldpaio VERSION 1.0.0 DESCRIPTION "ldpaio: ...")
+project(padll VERSION 1.0.0 DESCRIPTION "padll: ...")
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Setup the options that CMake can take in
-option(LDPAIO_INSTALL "Install ldpaio's header and library" ON)
-option(LDPAIO_BUILD_LDPAIO_TESTS "Build ldpaio's unit tests" ON)
-option(LDPAIO_BUILD_LIBC_TESTS "Build libc tests" ON)
+option(PADLL_INSTALL "Install PADLL's header and library" ON)
+option(PADLL_BUILD_TESTS "Build PADLL's unit tests" ON)
+option(PADLL_BUILD_LIBC_TESTS "Build libc tests" ON)
 
 # Setup the basic C++ Compiler flags
 if (APPLE)
@@ -32,44 +32,44 @@ include(CheckCXXCompilerFlag)
 check_cxx_compiler_flag(-Wthread-safety HAVE_CLANG_THREAD_SAFETY)
 
 # ---------------------------------------------------------------------------- #
-# ldpaio
+# padll
 
-add_library(ldpaio SHARED "")
+add_library(padll SHARED "")
 
 set_target_properties(
-        ldpaio
+        padll
         PROPERTIES
         # CXX_VISIBILITY_PRESET hidden
         VERSION ${PROJECT_VERSION}
         SOVERSION ${PROJECT_VERSION_MAJOR}
 )
 
-target_include_directories(ldpaio PUBLIC include)
+target_include_directories(padll PUBLIC include)
 
 if (HAVE_CLANG_THREAD_SAFETY)
-    target_compile_options(ldpaio PUBLIC -Wthread-safety)
+    target_compile_options(padll PUBLIC -Wthread-safety)
 endif (HAVE_CLANG_THREAD_SAFETY)
 
 # needed by (LevelDB's?) port_stdcxx.h
 find_package(Threads REQUIRED)
-target_link_libraries(ldpaio Threads::Threads)
+target_link_libraries(padll Threads::Threads)
 
 target_sources(
-    ldpaio
+    padll
     PUBLIC
-    ${PROJECT_SOURCE_DIR}/include/ldpaio/interface/posix_file_system.hpp
-    ${PROJECT_SOURCE_DIR}/include/ldpaio/interface/posix_passthrough.hpp
-    ${PROJECT_SOURCE_DIR}/include/ldpaio/statistics/statistic_entry.hpp
-    ${PROJECT_SOURCE_DIR}/include/ldpaio/statistics/statistics.hpp
-    ${PROJECT_SOURCE_DIR}/include/ldpaio/utils/logging.hpp
-    ${PROJECT_SOURCE_DIR}/include/ldpaio/utils/operation_utils.hpp
-    ${PROJECT_SOURCE_DIR}/include/ldpaio/utils/options.hpp
-    ${PROJECT_SOURCE_DIR}/include/ldpaio/thrid_party/enum.h
-    ${PROJECT_SOURCE_DIR}/include/ldpaio/thrid_party/tabulate.hpp
+    ${PROJECT_SOURCE_DIR}/include/padll/interface/posix_file_system.hpp
+    ${PROJECT_SOURCE_DIR}/include/padll/interface/posix_passthrough.hpp
+    ${PROJECT_SOURCE_DIR}/include/padll/statistics/statistic_entry.hpp
+    ${PROJECT_SOURCE_DIR}/include/padll/statistics/statistics.hpp
+    ${PROJECT_SOURCE_DIR}/include/padll/utils/logging.hpp
+    ${PROJECT_SOURCE_DIR}/include/padll/utils/operation_utils.hpp
+    ${PROJECT_SOURCE_DIR}/include/padll/utils/options.hpp
+    ${PROJECT_SOURCE_DIR}/include/padll/thrid_party/enum.h
+    ${PROJECT_SOURCE_DIR}/include/padll/thrid_party/tabulate.hpp
 )
 
 target_sources(
-        ldpaio
+        padll
         PRIVATE
         src/interface/posix_file_system.cpp
         src/interface/posix_passthrough.cpp
@@ -90,14 +90,14 @@ FetchContent_Declare(spdlog
 FetchContent_MakeAvailable(spdlog)
 
 set_target_properties(spdlog PROPERTIES POSITION_INDEPENDENT_CODE ON)
-target_link_libraries(ldpaio spdlog)
+target_link_libraries(padll spdlog)
 
 # ---------------------------------------------------------------------------- #
 # tests
-if (LDPAIO_BUILD_LIBC_TESTS)
+if (PADLL_BUILD_LIBC_TESTS)
     enable_testing()
 
-    function(ldpaio_test test_file executable_name)
+    function(padll_libc_test test_file executable_name)
         get_filename_component(test_target_name "${executable_name}" NAME_WE)
 
         add_executable("${test_target_name}" "")
@@ -109,19 +109,19 @@ if (LDPAIO_BUILD_LIBC_TESTS)
         target_link_libraries("${test_target_name}")
 
         add_test(NAME "${test_target_name}" COMMAND "${test_target_name}")
-    endfunction(ldpaio_test)
+    endfunction(padll_libc_test)
 
-    ldpaio_test("tests/ldpaio_test.cpp" "ldpaio_test")
-    ldpaio_test("tests/ldpaio_hybrid_calls_test.cpp" "hybrid_test")
-    ldpaio_test("tests/ldpaio_directory_calls_test.cpp" "dir_test")
-    ldpaio_test("tests/ldpaio_extended_attributes_calls_test.cpp" "xattr_test")
+    padll_libc_test("tests/padll_test.cpp" "padll_test")
+    padll_libc_test("tests/padll_hybrid_calls_test.cpp" "hybrid_test")
+    padll_libc_test("tests/padll_directory_calls_test.cpp" "dir_test")
+    padll_libc_test("tests/padll_extended_attributes_calls_test.cpp" "xattr_test")
 
-endif (LDPAIO_BUILD_LIBC_TESTS)
+endif (PADLL_BUILD_LIBC_TESTS)
 
-if (LDPAIO_BUILD_LDPAIO_TESTS)
+if (PADLL_BUILD_TESTS)
     enable_testing()
 
-    function(ldpaio_test test_file)
+    function(padll_test test_file)
         get_filename_component(test_target_name "${test_file}" NAME_WE)
 
         add_executable("${test_target_name}" "")
@@ -130,28 +130,28 @@ if (LDPAIO_BUILD_LDPAIO_TESTS)
                 "${test_file}"
                 )
 
-        target_link_libraries("${test_target_name}" ldpaio)
+        target_link_libraries("${test_target_name}" padll)
 
         add_test(NAME "${test_target_name}" COMMAND "${test_target_name}")
-    endfunction(ldpaio_test)
+    endfunction(padll_test)
 
-    ldpaio_test("tests/ldpaio_statistics_test.cpp")
+    padll_test("tests/padll_statistics_test.cpp")
 
-endif (LDPAIO_BUILD_LDPAIO_TESTS)
+endif (PADLL_BUILD_TESTS)
 
 # ---------------------------------------------------------------------------- #
 # install
 
-if (LDPAIO_INSTALL)
+if (PADLL_INSTALL)
     include(GNUInstallDirs)
     install(
-            TARGETS ldpaio
-            EXPORT ldpaioTargets
+            TARGETS padll
+            EXPORT padllTargets
             RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
             LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
             ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     )
-    install(DIRECTORY include/ldpaio TYPE INCLUDE)
-endif (LDPAIO_INSTALL)
+    install(DIRECTORY include/padll TYPE INCLUDE)
+endif (PADLL_INSTALL)
 
 # ---------------------------------------------------------------------------- #

@@ -7,7 +7,6 @@
 #include <cstdlib>
 #include <fcntl.h>
 #include <unistd.h>
-#include <dlfcn.h>
 
 #define BUFFER_SIZE 1024
 
@@ -21,7 +20,7 @@ int main (int argc, char* argv[])
 
     while ((read_bytes = ::read (STDIN_FILENO, buffer, BUFFER_SIZE)) > 0) {
         written_bytes += ::write (fd_write, buffer, read_bytes);
-   }
+    }
 
     close (fd_write);
     delete (buffer);

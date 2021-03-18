@@ -3,9 +3,9 @@
  *   Copyright (c) 2021 INESC TEC.
  **/
 
-#include <ldpaio/statistics/statistic_entry.hpp>
+#include <padll/statistics/statistic_entry.hpp>
 
-namespace ldpaio {
+namespace padll {
 
 // StatisticEntry default constructor.
 StatisticEntry::StatisticEntry () = default;
@@ -86,4 +86,4 @@ std::string StatisticEntry::to_string ()
     return stream.str ();
 }
 
-} // namespace ldpaio
+} // namespace padll

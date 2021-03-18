@@ -5,11 +5,11 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include <fcntl.h>
-#include <unistd.h>
 #include <dlfcn.h>
-#include <string>
+#include <fcntl.h>
 #include <iostream>
+#include <string>
+#include <unistd.h>
 
 #define BUFFER_SIZE 1024
 
@@ -25,7 +25,7 @@ int main (int argc, char* argv[])
 
     // enable/disable ld_preloaded functions
     if (argc > 1) {
-        differentiate_calls = std::stol (std::string {argv[1]});
+        differentiate_calls = std::stol (std::string { argv[1] });
         std::cout << "--> " << differentiate_calls << "\n";
     }
 
@@ -60,7 +60,8 @@ int main (int argc, char* argv[])
     std::cout << "Written bytes (stdout): " << written_bytes_stdout << "\n";
 
     // close pointer to lib
-    if (differentiate_calls) ::dlclose (lib);
+    if (differentiate_calls)
+        ::dlclose (lib);
 
     return 0;
 }

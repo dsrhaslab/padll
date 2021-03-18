@@ -3,8 +3,8 @@
  *   Copyright (c) 2021 INESC TEC.
  **/
 
-#ifndef LDPAIO_POSIX_PASSTHROUGH_HPP
-#define LDPAIO_POSIX_PASSTHROUGH_HPP
+#ifndef PADLL_POSIX_PASSTHROUGH_HPP
+#define PADLL_POSIX_PASSTHROUGH_HPP
 
 #define _GNU_SOURCE 1
 
@@ -12,8 +12,8 @@
 #include <dlfcn.h>
 #include <fcntl.h>
 #include <iostream>
-#include <ldpaio/statistics/statistics.hpp>
-#include <ldpaio/utils/options.hpp>
+#include <padll/statistics/statistics.hpp>
+#include <padll/utils/options.hpp>
 #include <sstream>
 #include <stdio.h>
 #include <sys/stat.h>
@@ -26,7 +26,7 @@
 #include <sys/mount.h>
 #endif
 
-namespace ldpaio {
+namespace padll {
 
 /**
  * Metadata calls.
@@ -877,6 +877,6 @@ public:
      */
     int passthrough_fchownat (int dirfd, const char* pathname, uid_t owner, gid_t group, int flags);
 };
-} // namespace ldpaio
+} // namespace padll
 
-#endif // LDPAIO_POSIX_PASSTHROUGH_HPP
+#endif // PADDL_POSIX_PASSTHROUGH_HPP

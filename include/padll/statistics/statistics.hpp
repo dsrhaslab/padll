@@ -3,24 +3,23 @@
  *   Copyright (c) 2021 INESC TEC.
  **/
 
-#ifndef LDPAIO_STATISTICS_H
-#define LDPAIO_STATISTICS_H
+#ifndef PADLL_STATISTICS_H
+#define PADLL_STATISTICS_H
 
-#include <iostream>
-#include <ldpaio/statistics/statistic_entry.hpp>
-#include <ldpaio/thrid_party/tabulate.hpp>
-#include <ldpaio/utils/logging.hpp>
-#include <ldpaio/utils/operation_utils.hpp>
-#include <vector>
-
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
+#include <iostream>
+#include <padll/statistics/statistic_entry.hpp>
+#include <padll/thrid_party/tabulate.hpp>
+#include <padll/utils/logging.hpp>
+#include <padll/utils/operation_utils.hpp>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <vector>
 
 using namespace tabulate;
 
-namespace ldpaio {
+namespace padll {
 
 /**
  * Statistics class.
@@ -121,6 +120,6 @@ public:
      */
     void tabulate ();
 };
-} // namespace ldpaio
+} // namespace padll
 
-#endif // LDPAIO_STATISTICS_H
+#endif // PADLL_STATISTICS_H
