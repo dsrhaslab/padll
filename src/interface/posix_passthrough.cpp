@@ -662,12 +662,20 @@ int PosixPassthrough::passthrough_close (int fd)
         Logging::log_debug ("passthrough-close (" + std::to_string (fd) + ")");
     }
 
-    // perform original POSIX close operation
-    //    int result = ((libc_close_t)dlsym (this->m_lib_handle, "close")) (fd);
-    if (!m_metadata_operations.m_close) {
-        m_metadata_operations.m_close = (libc_close_t)dlsym (RTLD_NEXT, "close");
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_close && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_metadata_operations.m_close = (libc_close_t)dlsym (this->m_lib_handle, "close")
+        : m_metadata_operations.m_close = (libc_close_t)dlsym (RTLD_NEXT, "close");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_close) {
+        m_metadata_operations.m_close = (libc_close_t)dlsym (this->m_lib_handle, "close");
     }
 
+    // perform original POSIX close operation
     int result = m_metadata_operations.m_close (fd);
 
     // update statistic entry
@@ -695,8 +703,21 @@ int PosixPassthrough::passthrough_fsync (int fd)
         Logging::log_debug ("passthrough-fsync (" + std::to_string (fd) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_fsync && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_metadata_operations.m_fsync = (libc_fsync_t)dlsym (this->m_lib_handle, "fsync")
+        : m_metadata_operations.m_fsync = (libc_fsync_t)dlsym (RTLD_NEXT, "fsync");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_fsync) {
+        m_metadata_operations.m_fsync = (libc_fsync_t)dlsym (this->m_lib_handle, "fsync");
+    }
+
     // perform original POSIX fsync operation
-    int result = ((libc_fsync_t)dlsym (this->m_lib_handle, "fsync")) (fd);
+    int result = m_metadata_operations.m_fsync (fd);
 
     // update statistic entry
     if (this->m_collect) {
@@ -723,8 +744,21 @@ int PosixPassthrough::passthrough_fdatasync (int fd)
         Logging::log_debug ("passthrough-fdatasync (" + std::to_string (fd) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_fdatasync && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_metadata_operations.m_fdatasync = (libc_fdatasync_t)dlsym (this->m_lib_handle, "fdatasync")
+        : m_metadata_operations.m_fdatasync = (libc_fdatasync_t)dlsym (RTLD_NEXT, "fdatasync");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_fdatasync) {
+        m_metadata_operations.m_fdatasync = (libc_fdatasync_t)dlsym (this->m_lib_handle, "fdatasync");
+    }
+
     // perform original POSIX fdatasync operation
-    int result = ((libc_fdatasync_t)dlsym (this->m_lib_handle, "fdatasync")) (fd);
+    int result = m_metadata_operations.m_fdatasync (fd);
 
     // update statistic entry
     if (this->m_collect) {
