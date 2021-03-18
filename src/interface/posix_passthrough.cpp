@@ -579,8 +579,23 @@ int PosixPassthrough::passthrough_open64 (const char* path, int flags, mode_t mo
         Logging::log_debug ("passthrough-open64-variadic (" + std::string (path) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_open64_var && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ()) ? m_metadata_operations.m_open64_var
+            = (libc_open64_variadic_t)dlsym (this->m_lib_handle, "open64")
+                                         : m_metadata_operations.m_open64_var
+            = (libc_open64_variadic_t)dlsym (RTLD_NEXT, "open64");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_open64_var) {
+        m_metadata_operations.m_open64_var
+            = (libc_open64_variadic_t)dlsym (this->m_lib_handle, "open64");
+    }
+
     // perform original POSIX open64 operation
-    int result = ((libc_open64_variadic_t)dlsym (this->m_lib_handle, "open64")) (path, flags, mode);
+    int result = m_metadata_operations.m_open64_var (path, flags, mode);
 
     // update statistic entry
     if (this->m_collect) {
@@ -606,8 +621,21 @@ int PosixPassthrough::passthrough_open64 (const char* path, int flags)
         Logging::log_debug ("passthrough-open64 (" + std::string (path) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_open64 && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+            ? m_metadata_operations.m_open64 = (libc_open64_t)dlsym (this->m_lib_handle, "open64")
+            : m_metadata_operations.m_open64 = (libc_open64_t)dlsym (RTLD_NEXT, "open64");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_open64) {
+        m_metadata_operations.m_open64 = (libc_open64_t)dlsym (this->m_lib_handle, "open64");
+    }
+
     // perform original POSIX open64 operation
-    int result = ((libc_open64_t)dlsym (this->m_lib_handle, "open64")) (path, flags);
+    int result = m_metadata_operations.m_open64 (path, flags);
 
     // update statistic entry
     if (this->m_collect) {
