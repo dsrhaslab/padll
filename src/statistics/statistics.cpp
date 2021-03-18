@@ -17,7 +17,7 @@ Statistics::Statistics (std::string identifier, const OperationType& operation_t
     this->initialize (operation_type);
 
     // int fd = ::open ("/tmp/foo", O_CREAT | O_APPEND | O_WRONLY, 0700);
-    //::write (fd, "hello world\n", 12);
+    ::write (1, "hello world\n", 12);
     //::close (fd);
 }
 
