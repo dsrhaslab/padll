@@ -1110,8 +1110,21 @@ int PosixPassthrough::passthrough_statfs (const char* path, struct statfs* buf)
         Logging::log_debug ("passthrough-statfs (" + std::string (path) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_statfs && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_metadata_operations.m_statfs = (libc_statfs_t)dlsym (this->m_lib_handle, "statfs")
+        : m_metadata_operations.m_statfs = (libc_statfs_t)dlsym (RTLD_NEXT, "statfs");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_statfs) {
+        m_metadata_operations.m_statfs = (libc_statfs_t)dlsym (this->m_lib_handle, "statfs");
+    }
+
     // perform original POSIX statfs operation
-    int result = ((libc_statfs_t)dlsym (this->m_lib_handle, "statfs")) (path, buf);
+    int result = m_metadata_operations.m_statfs (path, buf);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1138,8 +1151,21 @@ int PosixPassthrough::passthrough_fstatfs (int fd, struct statfs* buf)
         Logging::log_debug ("passthrough-fstatfs (" + std::to_string (fd) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_fstatfs && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_metadata_operations.m_fstatfs = (libc_fstatfs_t)dlsym (this->m_lib_handle, "fstatfs")
+        : m_metadata_operations.m_fstatfs = (libc_fstatfs_t)dlsym (RTLD_NEXT, "fstatfs");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_fstatfs) {
+        m_metadata_operations.m_fstatfs = (libc_fstatfs_t)dlsym (this->m_lib_handle, "fstatfs");
+    }
+
     // perform original POSIX fstatfs operation
-    int result = ((libc_fstatfs_t)dlsym (this->m_lib_handle, "fstatfs")) (fd, buf);
+    int result = m_metadata_operations.m_fstatfs (fd, buf);
 
     // update statistic entry
     if (this->m_collect) {
