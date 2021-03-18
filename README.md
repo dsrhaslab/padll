@@ -1,6 +1,7 @@
-## padll
+## PADLL 
 
 padll is an open-source library that integrates PAIO with the the LD_PRELOAD library.
+PADLL stands for <b><ins>P</ins></b>rogrammable and <b><ins>A</ins></b>daptable I/O for <b><ins>D</ins></b>ynamically <b><ins>L</ins></b>oaded <b><ins>L</ins></b>ibraries.
 
 
 ## Getting started with padll
@@ -38,6 +39,7 @@ $ LD_PRELOAD=$PATH_PADLL/libpadll.so ./tests/libc_calls_test
 ...
 
 ## Dependencies
+
 ...
 
 ## Limitations
