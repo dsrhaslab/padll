@@ -58,6 +58,12 @@ private:
      */
     void set_lib_name (const std::string& lib_name);
 
+    /**
+     * dlopen_library_handle:
+     * @return
+     */
+    bool dlopen_library_handle ();
+
 public:
     /**
      * PosixPassthrough default constructor.

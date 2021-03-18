@@ -10,6 +10,7 @@ namespace padll {
 // PosixPassthrough default constructor.
 PosixPassthrough::PosixPassthrough ()
 {
+    // initialize library handle pointer
     this->initialize ();
 }
 
@@ -103,6 +104,18 @@ void PosixPassthrough::set_statistic_collection (bool value)
     this->m_collect.store (value);
 }
 
+// dlopen_library_handle call. (...)
+bool PosixPassthrough::dlopen_library_handle ()
+{
+    this->m_lib_handle = ::dlopen (this->m_lib_name.data(), RTLD_LAZY);
+
+    if (this->m_lib_handle != nullptr) {
+        return true;
+    }
+
+    return false;
+}
+
 // get_statistic_entry call.
 StatisticEntry PosixPassthrough::get_statistic_entry (const OperationType& operation_type,
     const int& operation_entry)
@@ -174,14 +187,17 @@ ssize_t PosixPassthrough::passthrough_write (int fd, const void* buf, ssize_t co
         Logging::log_debug ("passthrough-write (" + std::to_string (fd) + ")");
     }
 
-    // validate and assign pointer to write function
-    if (!m_data_operations.m_write) {
-        if (this->m_lib_handle == nullptr) {
-            this->m_lib_handle = ::dlopen (this->m_lib_name.data(), RTLD_LAZY);
-            m_data_operations.m_write = (libc_write_t)dlsym (this->m_lib_handle, "write");
-        } else {
+    // validate function and library handle pointers
+    if (!m_data_operations.m_write && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle()) ?
+            m_data_operations.m_write = (libc_write_t)dlsym (this->m_lib_handle, "write") :
             m_data_operations.m_write = (libc_write_t)dlsym (RTLD_NEXT, "write");
-        }
+
+    // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_data_operations.m_write) {
+        m_data_operations.m_write = m_data_operations.m_write = (libc_write_t)dlsym (this->m_lib_handle, "write");
     }
 
     // perform original POSIX write operation
