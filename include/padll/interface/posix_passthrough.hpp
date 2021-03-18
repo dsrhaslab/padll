@@ -32,12 +32,12 @@ namespace padll {
 class PosixPassthrough {
 
 private:
+    std::mutex m_lock;
     libc_metadata m_metadata_operations {};
     libc_data m_data_operations {};
     libc_directory m_directory_operations {};
     libc_extattr m_extattr_operations {};
     libc_file_modes m_filemodes_operations {};
-
     std::string m_lib_name { "libc.so.6" };
     void* m_lib_handle { nullptr };
     std::atomic<bool> m_collect { option_default_statistic_collection };
@@ -51,12 +51,6 @@ private:
      * initialize:
      */
     void initialize ();
-
-    /**
-     * set_lib_name:
-     * @param lib_name
-     */
-    void set_lib_name (const std::string& lib_name);
 
     /**
      * dlopen_library_handle:

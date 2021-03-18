@@ -16,6 +16,7 @@ PosixPassthrough::PosixPassthrough ()
 
 // PosixPassthrough parameterized constructor.
 PosixPassthrough::PosixPassthrough (const std::string& lib, bool stat_collection) :
+    m_lib_name { lib },
     m_collect { stat_collection }
 {
     // validate if 'lib' is valid
@@ -23,9 +24,6 @@ PosixPassthrough::PosixPassthrough (const std::string& lib, bool stat_collection
         Logging::log_error ("Library not valid.");
         return;
     }
-
-    // set new name for the library to be intercepted
-    this->set_lib_name (lib);
 
     // initialize library handle pointer
     this->initialize ();
@@ -77,43 +75,36 @@ PosixPassthrough::~PosixPassthrough ()
     }
 }
 
-// initialize call.
-void PosixPassthrough::initialize ()
+// dlopen_library_handle call. (...)
+bool PosixPassthrough::dlopen_library_handle ()
 {
+    std::unique_lock <std::mutex> unique_lock (this->m_lock);
     // Dynamic loading of the libc library (referred to as 'libc.so.6').
     // loads the dynamic shared object (shared library) file named by the null-terminated string
     // filename and returns an opaque "handle" for the loaded object.
     this->m_lib_handle = ::dlopen (this->m_lib_name.data(), RTLD_LAZY);
 
+    // return true if the m_lib_handle is valid, and false otherwise.
+    return (this->m_lib_handle != nullptr);
+}
+
+// initialize call. (...)
+void PosixPassthrough::initialize ()
+{
+    // open library and assign pointer to m_lib_handle
+    bool open_lib_handle = this->dlopen_library_handle ();
+
     // validate library pointer
-    if (this->m_lib_handle == nullptr) {
+    if (!open_lib_handle) {
         Logging::log_error ("Error while dlopen'ing " + this->m_lib_name + ".");
         return;
     }
-}
-
-// set_lib_name call. (...)
-void PosixPassthrough::set_lib_name (const std::string& lib_name)
-{
-    this->m_lib_name = lib_name;
 }
 
 // set_statistic_collection call. (...)
 void PosixPassthrough::set_statistic_collection (bool value)
 {
     this->m_collect.store (value);
-}
-
-// dlopen_library_handle call. (...)
-bool PosixPassthrough::dlopen_library_handle ()
-{
-    this->m_lib_handle = ::dlopen (this->m_lib_name.data(), RTLD_LAZY);
-
-    if (this->m_lib_handle != nullptr) {
-        return true;
-    }
-
-    return false;
 }
 
 // get_statistic_entry call.
@@ -189,20 +180,11 @@ ssize_t PosixPassthrough::passthrough_write (int fd, const void* buf, ssize_t co
 
     // validate function and library handle pointers
     if (!m_data_operations.m_write && !this->m_lib_handle) {
-        printf ("both m_write and lib handle are null\n");
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
-//        (this->dlopen_library_handle()) ?
-//            m_data_operations.m_write = (libc_write_t)dlsym (this->m_lib_handle, "write") :
-//            m_data_operations.m_write = (libc_write_t)dlsym (RTLD_NEXT, "write");
-
-        if (this->dlopen_library_handle()) {
-            printf ("library is open ... assigning lib-handle write\n");
-            m_data_operations.m_write = (libc_write_t)dlsym (this->m_lib_handle, "write");
-        } else {
-            printf ("library is null ... assigning libc write\n");
-            m_data_operations.m_write = (libc_write_t) dlsym(RTLD_NEXT, "write");
-        }
+        (this->dlopen_library_handle()) ?
+            m_data_operations.m_write = (libc_write_t)dlsym (this->m_lib_handle, "write") :
+            m_data_operations.m_write = (libc_write_t)dlsym (RTLD_NEXT, "write");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_data_operations.m_write) {
