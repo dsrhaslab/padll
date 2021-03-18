@@ -171,10 +171,10 @@ ssize_t PosixPassthrough::passthrough_write (int fd, const void* buf, ssize_t co
     //    ssize_t result = ((libc_write_t)dlsym (this->m_lib_handle, "write")) (fd, buf, counter);
     if (!m_libc_write) {
         if (this->m_lib_handle == nullptr) {
+            std::cout << "m_lib_handle opened \n";
             this->m_lib_handle = ::dlopen("libc.so.6", RTLD_LAZY);
-            std::cout << "m_lib_handle opened " << this->m_lib_handle << "\n";
         }
-        m_libc_write = (libc_write_t)dlsym (RTLD_NEXT, "write");
+        m_libc_write = (libc_write_t)dlsym (this->m_lib_handle, "write");
         std::cout << "Passei no lib_c_write\n";
     }
 
