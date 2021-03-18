@@ -189,13 +189,22 @@ ssize_t PosixPassthrough::passthrough_write (int fd, const void* buf, ssize_t co
 
     // validate function and library handle pointers
     if (!m_data_operations.m_write && !this->m_lib_handle) {
+        printf ("both m_write and lib handle are null\n");
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
-        (this->dlopen_library_handle()) ?
-            m_data_operations.m_write = (libc_write_t)dlsym (this->m_lib_handle, "write") :
-            m_data_operations.m_write = (libc_write_t)dlsym (RTLD_NEXT, "write");
+//        (this->dlopen_library_handle()) ?
+//            m_data_operations.m_write = (libc_write_t)dlsym (this->m_lib_handle, "write") :
+//            m_data_operations.m_write = (libc_write_t)dlsym (RTLD_NEXT, "write");
 
-    // in case the library handle pointer is valid, assign the operation pointer
+        if (this->dlopen_library_handle()) {
+            printf ("library is open ... assigning lib-handle write\n");
+            m_data_operations.m_write = (libc_write_t)dlsym (this->m_lib_handle, "write");
+        } else {
+            printf ("library is null ... assigning libc write\n");
+            m_data_operations.m_write = (libc_write_t) dlsym(RTLD_NEXT, "write");
+        }
+
+        // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_data_operations.m_write) {
         m_data_operations.m_write = m_data_operations.m_write = (libc_write_t)dlsym (this->m_lib_handle, "write");
     }

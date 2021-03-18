@@ -14,6 +14,7 @@ Statistics::Statistics () = default;
 Statistics::Statistics (std::string identifier, const OperationType& operation_type) :
     m_stats_identifier { std::move (identifier) }
 {
+    ::write (1, "hello world\n", 12);
     this->initialize (operation_type);
 }
 
