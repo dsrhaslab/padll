@@ -785,8 +785,21 @@ void PosixPassthrough::passthrough_sync ()
         Logging::log_debug ("passthrough-sync");
     }
 
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_sync && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_metadata_operations.m_sync = (libc_sync_t)dlsym (this->m_lib_handle, "sync")
+        : m_metadata_operations.m_sync = (libc_sync_t)dlsym (RTLD_NEXT, "sync");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_sync) {
+        m_metadata_operations.m_sync = (libc_sync_t)dlsym (this->m_lib_handle, "sync");
+    }
+
     // perform original POSIX sync operation
-    ((libc_sync_t)dlsym (this->m_lib_handle, "sync")) ();
+    m_metadata_operations.m_sync ();
 
     // update statistic entry
     if (this->m_collect) {
@@ -802,8 +815,21 @@ int PosixPassthrough::passthrough_syncfs (int fd)
         Logging::log_debug ("passthrough-syncfs (" + std::to_string (fd) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_syncfs && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_metadata_operations.m_syncfs = (libc_syncfs_t)dlsym (this->m_lib_handle, "syncfs")
+        : m_metadata_operations.m_syncfs = (libc_syncfs_t)dlsym (RTLD_NEXT, "syncfs");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_syncfs) {
+        m_metadata_operations.m_syncfs = (libc_syncfs_t)dlsym (this->m_lib_handle, "syncfs");
+    }
+
     // perform original POSIX syncfs operation
-    int result = ((libc_syncfs_t)dlsym (this->m_lib_handle, "syncfs")) (fd);
+    int result = m_metadata_operations.m_syncfs (fd);
 
     // update statistic entry
     if (this->m_collect) {
