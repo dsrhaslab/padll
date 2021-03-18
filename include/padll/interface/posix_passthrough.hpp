@@ -12,8 +12,8 @@
 #include <dlfcn.h>
 #include <fcntl.h>
 #include <iostream>
-#include <padll/libraries/libc_operation_headers.hpp>
 #include <padll/libraries/libc_operation_enums.hpp>
+#include <padll/libraries/libc_operation_headers.hpp>
 #include <padll/statistics/statistics.hpp>
 #include <padll/utils/options.hpp>
 #include <sstream>
@@ -21,7 +21,6 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-
 
 namespace padll {
 
@@ -35,7 +34,11 @@ class PosixPassthrough {
 private:
     libc_metadata m_metadata_operations {};
     libc_data m_data_operations {};
+    libc_directory m_directory_operations {};
+    libc_extattr m_extattr_operations {};
+    libc_file_modes m_filemodes_operations {};
 
+    std::string m_lib_name { "libc.so.6" };
     void* m_lib_handle { nullptr };
     std::atomic<bool> m_collect { option_default_statistic_collection };
     Statistics m_metadata_stats { "metadata", OperationType::metadata_calls };
@@ -43,6 +46,17 @@ private:
     Statistics m_dir_stats { "directory", OperationType::directory_calls };
     Statistics m_ext_attr_stats { "ext-attr", OperationType::ext_attr_calls };
     Statistics m_file_mode_stats { "file-mode", OperationType::file_mode_calls };
+
+    /**
+     * initialize:
+     */
+    void initialize ();
+
+    /**
+     * set_lib_name:
+     * @param lib_name
+     */
+    void set_lib_name (const std::string& lib_name);
 
 public:
     /**

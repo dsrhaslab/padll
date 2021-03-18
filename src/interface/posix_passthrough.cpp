@@ -10,16 +10,7 @@ namespace padll {
 // PosixPassthrough default constructor.
 PosixPassthrough::PosixPassthrough ()
 {
-    // Dynamic loading of the libc library (referred to as 'libc.so.6').
-    // loads the dynamic shared object (shared library) file named by the null-terminated string
-    // filename and returns an opaque "handle" for the loaded object.
-    this->m_lib_handle = ::dlopen ("libc.so.6", RTLD_LAZY);
-
-    // validate library pointer
-    if (this->m_lib_handle == nullptr) {
-        Logging::log_error ("Error while dlopen'ing libc.so.6.");
-        return;
-    }
+    this->initialize ();
 }
 
 // PosixPassthrough parameterized constructor.
@@ -32,16 +23,11 @@ PosixPassthrough::PosixPassthrough (const std::string& lib, bool stat_collection
         return;
     }
 
-    // Dynamic loading of the library referred by 'lib'.
-    // loads the dynamic shared object (shared library) file named by the null-terminated string
-    // filename and returns an opaque "handle" for the loaded object.
-    this->m_lib_handle = ::dlopen (lib.data (), RTLD_LAZY);
+    // set new name for the library to be intercepted
+    this->set_lib_name (lib);
 
-    // validate library pointer
-    if (this->m_lib_handle == nullptr) {
-        Logging::log_error ("Error while dlopen'ing " + lib + ".");
-        return;
-    }
+    // initialize library handle pointer
+    this->initialize ();
 }
 
 // PosixPassthrough default destructor.
@@ -88,6 +74,27 @@ PosixPassthrough::~PosixPassthrough ()
     } else {
         Logging::log_debug (this->to_string ());
     }
+}
+
+// initialize call.
+void PosixPassthrough::initialize ()
+{
+    // Dynamic loading of the libc library (referred to as 'libc.so.6').
+    // loads the dynamic shared object (shared library) file named by the null-terminated string
+    // filename and returns an opaque "handle" for the loaded object.
+    this->m_lib_handle = ::dlopen (this->m_lib_name.data(), RTLD_LAZY);
+
+    // validate library pointer
+    if (this->m_lib_handle == nullptr) {
+        Logging::log_error ("Error while dlopen'ing " + this->m_lib_name + ".");
+        return;
+    }
+}
+
+// set_lib_name call. (...)
+void PosixPassthrough::set_lib_name (const std::string& lib_name)
+{
+    this->m_lib_name = lib_name;
 }
 
 // set_statistic_collection call. (...)
@@ -170,7 +177,7 @@ ssize_t PosixPassthrough::passthrough_write (int fd, const void* buf, ssize_t co
     // validate and assign pointer to write function
     if (!m_data_operations.m_write) {
         if (this->m_lib_handle == nullptr) {
-            this->m_lib_handle = ::dlopen("libc.so.6", RTLD_LAZY);
+            this->m_lib_handle = ::dlopen (this->m_lib_name.data(), RTLD_LAZY);
             m_data_operations.m_write = (libc_write_t)dlsym (this->m_lib_handle, "write");
         } else {
             m_data_operations.m_write = (libc_write_t)dlsym (RTLD_NEXT, "write");
@@ -274,9 +281,9 @@ PosixPassthrough::passthrough_fwrite (const void* ptr, size_t size, size_t nmemb
 
     if (this->m_lib_handle == nullptr) {
         std::cout << "will open m_lib_handle from libc.so.6 \n";
-        this->m_lib_handle = ::dlopen("libc.so.6", RTLD_LAZY);
+        this->m_lib_handle = ::dlopen (this->m_lib_name.data(), RTLD_LAZY);
         printf ("--> %ld\n", this->m_lib_handle);
-//        m_libc_write = (libc_write_t)dlsym (this->m_lib_handle, "write");
+        // m_libc_write = (libc_write_t)dlsym (this->m_lib_handle, "write");
         std::cout << "Passei no lib_c_fwrite\n";
     }
 
@@ -1285,9 +1292,9 @@ int PosixPassthrough::passthrough_fflush (FILE* stream)
 
     if (this->m_lib_handle == nullptr) {
         std::cout << "will open m_lib_handle from libc.so.6 \n";
-        this->m_lib_handle = ::dlopen("libc.so.6", RTLD_LAZY);
+        this->m_lib_handle = ::dlopen (this->m_lib_name.data(), RTLD_LAZY);
         printf ("--> %ld\n", this->m_lib_handle);
-//        m_libc_write = (libc_write_t)dlsym (this->m_lib_handle, "write");
+        //        m_libc_write = (libc_write_t)dlsym (this->m_lib_handle, "write");
         std::cout << "Passei no lib_c_fflush\n";
     }
 
