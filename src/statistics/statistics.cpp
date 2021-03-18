@@ -15,10 +15,6 @@ Statistics::Statistics (std::string identifier, const OperationType& operation_t
     m_stats_identifier { std::move (identifier) }
 {
     this->initialize (operation_type);
-
-    // int fd = ::open ("/tmp/foo", O_CREAT | O_APPEND | O_WRONLY, 0700);
-    ::write (1, "hello world\n", 12);
-    //::close (fd);
 }
 
 // Statistics default destructor.

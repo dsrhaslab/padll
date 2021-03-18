@@ -10,6 +10,7 @@ namespace padll {
 // PosixPassthrough default constructor.
 PosixPassthrough::PosixPassthrough ()
 {
+    Logging::log_info ("PosixPassthrough default constructor.");
     // Dynamic loading of the libc library (referred to as 'libc.so.6').
     // loads the dynamic shared object (shared library) file named by the null-terminated string
     // filename and returns an opaque "handle" for the loaded object.
@@ -26,6 +27,7 @@ PosixPassthrough::PosixPassthrough ()
 PosixPassthrough::PosixPassthrough (const std::string& lib, bool stat_collection) :
     m_collect { stat_collection }
 {
+    Logging::log_info ("PosixPassthrough parameterized constructor.");
     // validate if 'lib' is valid
     if (lib.empty ()) {
         Logging::log_error ("Library not valid.");
@@ -173,6 +175,7 @@ ssize_t PosixPassthrough::passthrough_write (int fd, const void* buf, ssize_t co
         if (this->m_lib_handle == nullptr) {
             std::cout << "m_lib_handle opened \n";
             this->m_lib_handle = ::dlopen("libc.so.6", RTLD_LAZY);
+            printf ("--> %ld\n", this->m_lib_handle);
         }
         m_libc_write = (libc_write_t)dlsym (this->m_lib_handle, "write");
         std::cout << "Passei no lib_c_write\n";
@@ -270,6 +273,14 @@ PosixPassthrough::passthrough_fwrite (const void* ptr, size_t size, size_t nmemb
     // logging message
     if (option_default_detailed_logging) {
         Logging::log_debug ("passthrough-fwrite");
+    }
+
+    if (this->m_lib_handle == nullptr) {
+        std::cout << "will open m_lib_handle from libc.so.6 \n";
+        this->m_lib_handle = ::dlopen("libc.so.6", RTLD_LAZY);
+        printf ("--> %ld\n", this->m_lib_handle);
+//        m_libc_write = (libc_write_t)dlsym (this->m_lib_handle, "write");
+        std::cout << "Passei no lib_c_fwrite\n";
     }
 
     // perform original POSIX fwrite operation
@@ -1273,6 +1284,14 @@ int PosixPassthrough::passthrough_fflush (FILE* stream)
     // logging message
     if (option_default_detailed_logging) {
         Logging::log_debug ("passthrough-fflush");
+    }
+
+    if (this->m_lib_handle == nullptr) {
+        std::cout << "will open m_lib_handle from libc.so.6 \n";
+        this->m_lib_handle = ::dlopen("libc.so.6", RTLD_LAZY);
+        printf ("--> %ld\n", this->m_lib_handle);
+//        m_libc_write = (libc_write_t)dlsym (this->m_lib_handle, "write");
+        std::cout << "Passei no lib_c_fflush\n";
     }
 
     // perform original POSIX fflush operation
