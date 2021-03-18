@@ -938,8 +938,22 @@ int PosixPassthrough::passthrough_xstat (int version, const char* path, struct s
         Logging::log_debug ("passthrough-xstat (" + std::string (path) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_xstat && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_metadata_operations.m_xstat = (libc_xstat_t)dlsym (this->m_lib_handle, "__xstat")
+        : m_metadata_operations.m_xstat = (libc_xstat_t)dlsym (RTLD_NEXT, "__xstat");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_xstat) {
+        m_metadata_operations.m_xstat = (libc_xstat_t)dlsym (this->m_lib_handle, "__xstat");
+    }
+
     // perform original POSIX __xstat (stat) operation
-    int result = ((libc_xstat_t)dlsym (this->m_lib_handle, "__xstat")) (version, path, statbuf);
+    // int result = ((libc_xstat_t)dlsym (this->m_lib_handle, "__xstat")) (version, path, statbuf);
+    int result = m_metadata_operations.m_xstat (version, path, statbuf);
 
     // update statistic entry
     if (this->m_collect) {
@@ -964,8 +978,22 @@ int PosixPassthrough::passthrough_lxstat (int version, const char* path, struct 
         Logging::log_debug ("passthrough-lxstat (" + std::string (path) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_lxstat && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_metadata_operations.m_lxstat = (libc_lxstat_t)dlsym (this->m_lib_handle, "__lxstat")
+        : m_metadata_operations.m_lxstat = (libc_lxstat_t)dlsym (RTLD_NEXT, "__lxstat");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_lxstat) {
+        m_metadata_operations.m_lxstat = (libc_lxstat_t)dlsym (this->m_lib_handle, "__lxstat");
+    }
+
     // perform original POSIX __lxstat (lstat) operation
-    int result = ((libc_lxstat_t)dlsym (this->m_lib_handle, "__lxstat")) (version, path, statbuf);
+    // int result = ((libc_lxstat_t)dlsym (this->m_lib_handle, "__lxstat")) (version, path, statbuf);
+    int result = m_metadata_operations.m_lxstat (version, path, statbuf);
 
     // update statistic entry
     if (this->m_collect) {
@@ -992,8 +1020,22 @@ int PosixPassthrough::passthrough_fxstat (int version, int fd, struct stat* stat
         Logging::log_debug ("passthrough-fxstat (" + std::to_string (fd) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_fxstat && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_metadata_operations.m_fxstat = (libc_fxstat_t)dlsym (this->m_lib_handle, "__fxstat")
+        : m_metadata_operations.m_fxstat = (libc_fxstat_t)dlsym (RTLD_NEXT, "__fxstat");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_fxstat) {
+        m_metadata_operations.m_fxstat = (libc_fxstat_t)dlsym (this->m_lib_handle, "__fxstat");
+    }
+
     // perform original POSIX __fxstat (fstat) operation
-    int result = ((libc_fxstat_t)dlsym (this->m_lib_handle, "__fxstat")) (version, fd, statbuf);
+    // int result = ((libc_fxstat_t)dlsym (this->m_lib_handle, "__fxstat")) (version, fd, statbuf);
+    int result = m_metadata_operations.m_fxstat (version, fd, statbuf);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1025,9 +1067,23 @@ int PosixPassthrough::passthrough_fxstatat (int version,
             "passthrough-fxstatat (" + std::to_string (dirfd) + ", " + std::string (path) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_fxstatat && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_metadata_operations.m_fxstatat = (libc_fxstatat_t)dlsym (this->m_lib_handle, "__fxstatat")
+        : m_metadata_operations.m_fxstatat = (libc_fxstatat_t)dlsym (RTLD_NEXT, "__fxstatat");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_fxstatat) {
+        m_metadata_operations.m_fxstatat = (libc_fxstatat_t)dlsym (this->m_lib_handle, "__fxstatat");
+    }
+
     // perform original POSIX __fxstatat (fstatat) operation
-    int result = ((libc_fxstatat_t)dlsym (this->m_lib_handle,
-        "__fxstatat")) (version, dirfd, path, statbuf, flags);
+    // int result = ((libc_fxstatat_t)dlsym (this->m_lib_handle,
+    //     "__fxstatat")) (version, dirfd, path, statbuf, flags);
+    int result = m_metadata_operations.m_fxstatat (version, dirfd, path, statbuf, flags);
 
     // update statistic entry
     if (this->m_collect) {
