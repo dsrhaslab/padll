@@ -452,8 +452,21 @@ int PosixPassthrough::passthrough_creat (const char* path, mode_t mode)
         Logging::log_debug ("passthrough-creat (" + std::string (path) + ")");
     }
 
-    // perform original POSIX open operation
-    int result = ((libc_creat_t)dlsym (this->m_lib_handle, "creat")) (path, mode);
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_creat && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle()) ?
+                m_metadata_operations.m_creat = (libc_creat_t)dlsym (this->m_lib_handle, "creat") :
+                m_metadata_operations.m_creat = (libc_creat_t)dlsym (RTLD_NEXT, "creat");
+
+    // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_creat) {
+        m_metadata_operations.m_creat = (libc_creat_t)dlsym (this->m_lib_handle, "creat");
+    }
+
+    // perform original POSIX creat operation
+    int result = m_metadata_operations.m_creat (path, mode);
 
     // update statistic entry
     if (this->m_collect) {
@@ -481,9 +494,21 @@ int PosixPassthrough::passthrough_openat (int dirfd, const char* path, int flags
             + std::string (path) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_openat_var && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle()) ?
+                m_metadata_operations.m_openat_var = (libc_openat_variadic_t)dlsym (this->m_lib_handle, "openat") :
+                m_metadata_operations.m_openat_var = (libc_openat_variadic_t)dlsym (RTLD_NEXT, "openat");
+
+    // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_openat_var) {
+        m_metadata_operations.m_openat_var = (libc_openat_variadic_t)dlsym (this->m_lib_handle, "openat");
+    }
+
     // perform original POSIX openat operation
-    int result
-        = ((libc_openat_variadic_t)dlsym (this->m_lib_handle, "openat")) (dirfd, path, flags, mode);
+    int result = m_metadata_operations.m_openat_var (dirfd, path, flags, mode);
 
     // update statistic entry
     if (this->m_collect) {
@@ -510,8 +535,21 @@ int PosixPassthrough::passthrough_openat (int dirfd, const char* path, int flags
             "passthrough-openat (" + std::to_string (dirfd) + ", " + std::string (path) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_openat && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle()) ?
+                m_metadata_operations.m_openat = (libc_openat_t)dlsym (this->m_lib_handle, "openat") :
+                m_metadata_operations.m_openat = (libc_openat_t)dlsym (RTLD_NEXT, "openat");
+
+    // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_openat) {
+        m_metadata_operations.m_openat = (libc_openat_t)dlsym (this->m_lib_handle, "openat");
+    }
+
     // perform original POSIX openat operation
-    int result = ((libc_openat_t)dlsym (this->m_lib_handle, "openat")) (dirfd, path, flags);
+    int result = m_metadata_operations.m_openat (dirfd, path, flags);
 
     // update statistic entry
     if (this->m_collect) {
