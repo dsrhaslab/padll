@@ -112,6 +112,7 @@ if (LDPAIO_BUILD_LIBC_TESTS)
     endfunction(ldpaio_test)
 
     ldpaio_test("tests/ldpaio_test.cpp" "ldpaio_test")
+    ldpaio_test("tests/ldpaio_hybrid_calls_test.cpp" "hybrid_test")
     ldpaio_test("tests/ldpaio_directory_calls_test.cpp" "dir_test")
     ldpaio_test("tests/ldpaio_extended_attributes_calls_test.cpp" "xattr_test")
 
