@@ -1914,8 +1914,21 @@ int PosixPassthrough::passthrough_mkdir (const char* path, mode_t mode)
         Logging::log_debug ("passthrough-mkdir (" + std::string (path) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_directory_operations.m_mkdir && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_directory_operations.m_mkdir = (libc_mkdir_t)dlsym (this->m_lib_handle, "mkdir")
+        : m_directory_operations.m_mkdir = (libc_mkdir_t)dlsym (RTLD_NEXT, "mkdir");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_directory_operations.m_mkdir) {
+        m_directory_operations.m_mkdir = (libc_mkdir_t)dlsym (this->m_lib_handle, "mkdir");
+    }
+
     // perform original POSIX mkdir operation
-    int result = ((libc_mkdir_t)dlsym (this->m_lib_handle, "mkdir")) (path, mode);
+    int result = m_directory_operations.m_mkdir (path, mode);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1938,8 +1951,21 @@ int PosixPassthrough::passthrough_mkdirat (int dirfd, const char* path, mode_t m
             "passthrough-mkdirat (" + std::to_string (dirfd) + ", " + std::string (path) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_directory_operations.m_mkdirat && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_directory_operations.m_mkdirat = (libc_mkdirat_t)dlsym (this->m_lib_handle, "mkdirat")
+        : m_directory_operations.m_mkdirat = (libc_mkdirat_t)dlsym (RTLD_NEXT, "mkdirat");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_directory_operations.m_mkdirat) {
+        m_directory_operations.m_mkdirat = (libc_mkdirat_t)dlsym (this->m_lib_handle, "mkdirat");
+    }
+
     // perform original POSIX mkdirat operation
-    int result = ((libc_mkdirat_t)dlsym (this->m_lib_handle, "mkdirat")) (dirfd, path, mode);
+    int result = m_directory_operations.m_mkdirat (dirfd, path, mode);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1964,10 +1990,21 @@ struct dirent* PosixPassthrough::passthrough_readdir (DIR* dirp)
         Logging::log_debug ("passthrough-readdir");
     }
 
-    struct dirent* entry;
+    // validate function and library handle pointers
+    if (!m_directory_operations.m_readdir && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_directory_operations.m_readdir = (libc_readdir_t)dlsym (this->m_lib_handle, "readdir")
+        : m_directory_operations.m_readdir = (libc_readdir_t)dlsym (RTLD_NEXT, "readdir");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_directory_operations.m_readdir) {
+        m_directory_operations.m_readdir = (libc_readdir_t)dlsym (this->m_lib_handle, "readdir");
+    }
 
     // perform original POSIX readdir operation
-    entry = ((libc_readdir_t)dlsym (this->m_lib_handle, "readdir")) (dirp);
+    struct dirent* entry = m_directory_operations.m_readdir (dirp);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1992,10 +2029,21 @@ DIR* PosixPassthrough::passthrough_opendir (const char* path)
         Logging::log_debug ("passthrough-opendir (" + std::string (path) + ")");
     }
 
-    DIR* folder;
+    // validate function and library handle pointers
+    if (!m_directory_operations.m_opendir && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_directory_operations.m_opendir = (libc_opendir_t)dlsym (this->m_lib_handle, "opendir")
+        : m_directory_operations.m_opendir = (libc_opendir_t)dlsym (RTLD_NEXT, "opendir");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_directory_operations.m_opendir) {
+        m_directory_operations.m_opendir = (libc_opendir_t)dlsym (this->m_lib_handle, "opendir");
+    }
 
     // perform original POSIX opendir operation
-    folder = ((libc_opendir_t)dlsym (this->m_lib_handle, "opendir")) (path);
+    DIR* folder = m_directory_operations.m_opendir (path);
 
     // update statistic entry
     if (this->m_collect) {
@@ -2020,10 +2068,21 @@ DIR* PosixPassthrough::passthrough_fdopendir (int fd)
         Logging::log_debug ("passthrough-fdopendir (" + std::to_string (fd) + ")");
     }
 
-    DIR* folder;
+    // validate function and library handle pointers
+    if (!m_directory_operations.m_fdopendir && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_directory_operations.m_fdopendir = (libc_fdopendir_t)dlsym (this->m_lib_handle, "fdopendir")
+        : m_directory_operations.m_fdopendir = (libc_fdopendir_t)dlsym (RTLD_NEXT, "fdopendir");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_directory_operations.m_fdopendir) {
+        m_directory_operations.m_fdopendir = (libc_fdopendir_t)dlsym (this->m_lib_handle, "fdopendir");
+    }
 
     // perform original POSIX fopendir operation
-    folder = ((libc_fdopendir_t)dlsym (this->m_lib_handle, "fdopendir")) (fd);
+    DIR* folder = m_directory_operations.m_fdopendir (fd);
 
     // update statistic entry
     if (this->m_collect) {
@@ -2050,8 +2109,21 @@ int PosixPassthrough::passthrough_closedir (DIR* dirp)
         Logging::log_debug ("passthrough-closedir");
     }
 
+    // validate function and library handle pointers
+    if (!m_directory_operations.m_closedir && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_directory_operations.m_closedir = (libc_closedir_t)dlsym (this->m_lib_handle, "closedir")
+        : m_directory_operations.m_closedir = (libc_closedir_t)dlsym (RTLD_NEXT, "closedir");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_directory_operations.m_closedir) {
+        m_directory_operations.m_closedir = (libc_closedir_t)dlsym (this->m_lib_handle, "closedir");
+    }
+
     // perform original POSIX closedir operation
-    int result = ((libc_closedir_t)dlsym (this->m_lib_handle, "closedir")) (dirp);
+    int result = m_directory_operations.m_closedir (dirp);
 
     // update statistic entry
     if (this->m_collect) {
@@ -2076,8 +2148,21 @@ int PosixPassthrough::passthrough_rmdir (const char* path)
         Logging::log_debug ("passthrough-rmdir");
     }
 
+    // validate function and library handle pointers
+    if (!m_directory_operations.m_rmdir && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_directory_operations.m_rmdir = (libc_rmdir_t)dlsym (this->m_lib_handle, "rmdir")
+        : m_directory_operations.m_rmdir = (libc_rmdir_t)dlsym (RTLD_NEXT, "rmdir");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_directory_operations.m_rmdir) {
+        m_directory_operations.m_rmdir = (libc_rmdir_t)dlsym (this->m_lib_handle, "rmdir");
+    }
+
     // perform original POSIX rmdir operation
-    int result = ((libc_rmdir_t)dlsym (this->m_lib_handle, "rmdir")) (path);
+    int result = m_directory_operations.m_rmdir (path);
 
     // update statistic entry
     if (this->m_collect) {
@@ -2099,8 +2184,21 @@ int PosixPassthrough::passthrough_dirfd (DIR* dirp)
         Logging::log_debug ("passthrough-dirfd");
     }
 
+    // validate function and library handle pointers
+    if (!m_directory_operations.m_dirfd && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_directory_operations.m_dirfd = (libc_dirfd_t)dlsym (this->m_lib_handle, "dirfd")
+        : m_directory_operations.m_dirfd = (libc_dirfd_t)dlsym (RTLD_NEXT, "dirfd");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_directory_operations.m_dirfd) {
+        m_directory_operations.m_dirfd = (libc_dirfd_t)dlsym (this->m_lib_handle, "dirfd");
+    }
+
     // perform original POSIX dirfd operation
-    int result = ((libc_dirfd_t)dlsym (this->m_lib_handle, "dirfd")) (dirp);
+    int result = m_directory_operations.m_dirfd (dirp);
 
     // update statistic entry
     if (this->m_collect) {
