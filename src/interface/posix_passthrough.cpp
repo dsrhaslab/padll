@@ -1207,8 +1207,8 @@ int PosixPassthrough::passthrough_link (const char* old_path, const char* new_pa
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_metadata_operations.m_link = (libc_link_t)dlsym (this->m_lib_handle, "link")
-        : m_metadata_operations.m_link = (libc_link_t)dlsym (RTLD_NEXT, "link");
+            ? m_metadata_operations.m_link = (libc_link_t)dlsym (this->m_lib_handle, "link")
+            : m_metadata_operations.m_link = (libc_link_t)dlsym (RTLD_NEXT, "link");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_metadata_operations.m_link) {
@@ -1246,8 +1246,8 @@ int PosixPassthrough::passthrough_unlink (const char* path)
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_metadata_operations.m_unlink = (libc_unlink_t)dlsym (this->m_lib_handle, "unlink")
-        : m_metadata_operations.m_unlink = (libc_unlink_t)dlsym (RTLD_NEXT, "unlink");
+            ? m_metadata_operations.m_unlink = (libc_unlink_t)dlsym (this->m_lib_handle, "unlink")
+            : m_metadata_operations.m_unlink = (libc_unlink_t)dlsym (RTLD_NEXT, "unlink");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_metadata_operations.m_unlink) {
@@ -1293,8 +1293,8 @@ int PosixPassthrough::passthrough_linkat (int olddirfd,
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_metadata_operations.m_linkat = (libc_linkat_t)dlsym (this->m_lib_handle, "linkat")
-        : m_metadata_operations.m_linkat = (libc_linkat_t)dlsym (RTLD_NEXT, "linkat");
+            ? m_metadata_operations.m_linkat = (libc_linkat_t)dlsym (this->m_lib_handle, "linkat")
+            : m_metadata_operations.m_linkat = (libc_linkat_t)dlsym (RTLD_NEXT, "linkat");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_metadata_operations.m_linkat) {
@@ -1335,8 +1335,9 @@ int PosixPassthrough::passthrough_unlinkat (int dirfd, const char* pathname, int
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_metadata_operations.m_unlinkat = (libc_unlinkat_t)dlsym (this->m_lib_handle, "unlinkat")
-        : m_metadata_operations.m_unlinkat = (libc_unlinkat_t)dlsym (RTLD_NEXT, "unlinkat");
+            ? m_metadata_operations.m_unlinkat
+            = (libc_unlinkat_t)dlsym (this->m_lib_handle, "unlinkat")
+            : m_metadata_operations.m_unlinkat = (libc_unlinkat_t)dlsym (RTLD_NEXT, "unlinkat");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_metadata_operations.m_unlinkat) {
@@ -1377,8 +1378,8 @@ int PosixPassthrough::passthrough_rename (const char* old_path, const char* new_
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_metadata_operations.m_rename = (libc_rename_t)dlsym (this->m_lib_handle, "rename")
-        : m_metadata_operations.m_rename = (libc_rename_t)dlsym (RTLD_NEXT, "rename");
+            ? m_metadata_operations.m_rename = (libc_rename_t)dlsym (this->m_lib_handle, "rename")
+            : m_metadata_operations.m_rename = (libc_rename_t)dlsym (RTLD_NEXT, "rename");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_metadata_operations.m_rename) {
@@ -1423,8 +1424,9 @@ int PosixPassthrough::passthrough_renameat (int olddirfd,
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_metadata_operations.m_renameat = (libc_renameat_t)dlsym (this->m_lib_handle, "renameat")
-        : m_metadata_operations.m_renameat = (libc_renameat_t)dlsym (RTLD_NEXT, "renameat");
+            ? m_metadata_operations.m_renameat
+            = (libc_renameat_t)dlsym (this->m_lib_handle, "renameat")
+            : m_metadata_operations.m_renameat = (libc_renameat_t)dlsym (RTLD_NEXT, "renameat");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_metadata_operations.m_renameat) {
@@ -1465,8 +1467,9 @@ int PosixPassthrough::passthrough_symlink (const char* target, const char* linkp
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_metadata_operations.m_symlink = (libc_symlink_t)dlsym (this->m_lib_handle, "symlink")
-        : m_metadata_operations.m_symlink = (libc_symlink_t)dlsym (RTLD_NEXT, "symlink");
+            ? m_metadata_operations.m_symlink
+            = (libc_symlink_t)dlsym (this->m_lib_handle, "symlink")
+            : m_metadata_operations.m_symlink = (libc_symlink_t)dlsym (RTLD_NEXT, "symlink");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_metadata_operations.m_symlink) {
@@ -1507,12 +1510,14 @@ int PosixPassthrough::passthrough_symlinkat (const char* target, int newdirfd, c
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_metadata_operations.m_symlinkat = (libc_symlinkat_t)dlsym (this->m_lib_handle, "symlinkat")
-        : m_metadata_operations.m_symlinkat = (libc_symlinkat_t)dlsym (RTLD_NEXT, "symlinkat");
+            ? m_metadata_operations.m_symlinkat
+            = (libc_symlinkat_t)dlsym (this->m_lib_handle, "symlinkat")
+            : m_metadata_operations.m_symlinkat = (libc_symlinkat_t)dlsym (RTLD_NEXT, "symlinkat");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_metadata_operations.m_symlinkat) {
-        m_metadata_operations.m_symlinkat = (libc_symlinkat_t)dlsym (this->m_lib_handle, "symlinkat");
+        m_metadata_operations.m_symlinkat
+            = (libc_symlinkat_t)dlsym (this->m_lib_handle, "symlinkat");
     }
 
     // perform original POSIX symlinkat operation
@@ -1548,8 +1553,9 @@ ssize_t PosixPassthrough::passthrough_readlink (const char* path, char* buf, siz
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_metadata_operations.m_readlink = (libc_readlink_t)dlsym (this->m_lib_handle, "readlink")
-        : m_metadata_operations.m_readlink = (libc_readlink_t)dlsym (RTLD_NEXT, "readlink");
+            ? m_metadata_operations.m_readlink
+            = (libc_readlink_t)dlsym (this->m_lib_handle, "readlink")
+            : m_metadata_operations.m_readlink = (libc_readlink_t)dlsym (RTLD_NEXT, "readlink");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_metadata_operations.m_readlink) {
@@ -1590,13 +1596,15 @@ PosixPassthrough::passthrough_readlinkat (int dirfd, const char* path, char* buf
     if (!m_metadata_operations.m_readlinkat && !this->m_lib_handle) {
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-        ? m_metadata_operations.m_readlinkat = (libc_readlinkat_t)dlsym (this->m_lib_handle, "readlinkat")
-        : m_metadata_operations.m_readlinkat = (libc_readlinkat_t)dlsym (RTLD_NEXT, "readlinkat");
+        (this->dlopen_library_handle ()) ? m_metadata_operations.m_readlinkat
+            = (libc_readlinkat_t)dlsym (this->m_lib_handle, "readlinkat")
+                                         : m_metadata_operations.m_readlinkat
+            = (libc_readlinkat_t)dlsym (RTLD_NEXT, "readlinkat");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_metadata_operations.m_readlinkat) {
-        m_metadata_operations.m_readlinkat = (libc_readlinkat_t)dlsym (this->m_lib_handle, "readlinkat");
+        m_metadata_operations.m_readlinkat
+            = (libc_readlinkat_t)dlsym (this->m_lib_handle, "readlinkat");
     }
 
     // perform original POSIX readlinkat operation
@@ -1632,8 +1640,8 @@ FILE* PosixPassthrough::passthrough_fopen (const char* pathname, const char* mod
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_metadata_operations.m_fopen = (libc_fopen_t)dlsym (this->m_lib_handle, "fopen")
-        : m_metadata_operations.m_fopen = (libc_fopen_t)dlsym (RTLD_NEXT, "fopen");
+            ? m_metadata_operations.m_fopen = (libc_fopen_t)dlsym (this->m_lib_handle, "fopen")
+            : m_metadata_operations.m_fopen = (libc_fopen_t)dlsym (RTLD_NEXT, "fopen");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_metadata_operations.m_fopen) {
@@ -1673,8 +1681,8 @@ FILE* PosixPassthrough::passthrough_fdopen (int fd, const char* mode)
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_metadata_operations.m_fdopen = (libc_fdopen_t)dlsym (this->m_lib_handle, "fdopen")
-        : m_metadata_operations.m_fdopen = (libc_fdopen_t)dlsym (RTLD_NEXT, "fdopen");
+            ? m_metadata_operations.m_fdopen = (libc_fdopen_t)dlsym (this->m_lib_handle, "fdopen")
+            : m_metadata_operations.m_fdopen = (libc_fdopen_t)dlsym (RTLD_NEXT, "fdopen");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_metadata_operations.m_fdopen) {
@@ -1714,8 +1722,9 @@ FILE* PosixPassthrough::passthrough_freopen (const char* pathname, const char* m
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_metadata_operations.m_freopen = (libc_freopen_t)dlsym (this->m_lib_handle, "freopen")
-        : m_metadata_operations.m_freopen = (libc_freopen_t)dlsym (RTLD_NEXT, "freopen");
+            ? m_metadata_operations.m_freopen
+            = (libc_freopen_t)dlsym (this->m_lib_handle, "freopen")
+            : m_metadata_operations.m_freopen = (libc_freopen_t)dlsym (RTLD_NEXT, "freopen");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_metadata_operations.m_freopen) {
@@ -1755,8 +1764,8 @@ int PosixPassthrough::passthrough_fclose (FILE* stream)
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_metadata_operations.m_fclose = (libc_fclose_t)dlsym (this->m_lib_handle, "fclose")
-        : m_metadata_operations.m_fclose = (libc_fclose_t)dlsym (RTLD_NEXT, "fclose");
+            ? m_metadata_operations.m_fclose = (libc_fclose_t)dlsym (this->m_lib_handle, "fclose")
+            : m_metadata_operations.m_fclose = (libc_fclose_t)dlsym (RTLD_NEXT, "fclose");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_metadata_operations.m_fclose) {
@@ -1796,8 +1805,8 @@ int PosixPassthrough::passthrough_fflush (FILE* stream)
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_metadata_operations.m_fflush = (libc_fflush_t)dlsym (this->m_lib_handle, "fflush")
-        : m_metadata_operations.m_fflush = (libc_fflush_t)dlsym (RTLD_NEXT, "fflush");
+            ? m_metadata_operations.m_fflush = (libc_fflush_t)dlsym (this->m_lib_handle, "fflush")
+            : m_metadata_operations.m_fflush = (libc_fflush_t)dlsym (RTLD_NEXT, "fflush");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_metadata_operations.m_fflush) {
@@ -1837,8 +1846,8 @@ int PosixPassthrough::passthrough_access (const char* path, int mode)
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_metadata_operations.m_access = (libc_access_t)dlsym (this->m_lib_handle, "access")
-        : m_metadata_operations.m_access = (libc_access_t)dlsym (RTLD_NEXT, "access");
+            ? m_metadata_operations.m_access = (libc_access_t)dlsym (this->m_lib_handle, "access")
+            : m_metadata_operations.m_access = (libc_access_t)dlsym (RTLD_NEXT, "access");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_metadata_operations.m_access) {
@@ -1878,12 +1887,14 @@ int PosixPassthrough::passthrough_faccessat (int dirfd, const char* path, int mo
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_metadata_operations.m_faccessat = (libc_faccessat_t)dlsym (this->m_lib_handle, "faccessat")
-        : m_metadata_operations.m_faccessat = (libc_faccessat_t)dlsym (RTLD_NEXT, "faccessat");
+            ? m_metadata_operations.m_faccessat
+            = (libc_faccessat_t)dlsym (this->m_lib_handle, "faccessat")
+            : m_metadata_operations.m_faccessat = (libc_faccessat_t)dlsym (RTLD_NEXT, "faccessat");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_metadata_operations.m_faccessat) {
-        m_metadata_operations.m_faccessat = (libc_faccessat_t)dlsym (this->m_lib_handle, "faccessat");
+        m_metadata_operations.m_faccessat
+            = (libc_faccessat_t)dlsym (this->m_lib_handle, "faccessat");
     }
 
     // perform original POSIX faccessat operation
@@ -1919,8 +1930,8 @@ int PosixPassthrough::passthrough_mkdir (const char* path, mode_t mode)
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_directory_operations.m_mkdir = (libc_mkdir_t)dlsym (this->m_lib_handle, "mkdir")
-        : m_directory_operations.m_mkdir = (libc_mkdir_t)dlsym (RTLD_NEXT, "mkdir");
+            ? m_directory_operations.m_mkdir = (libc_mkdir_t)dlsym (this->m_lib_handle, "mkdir")
+            : m_directory_operations.m_mkdir = (libc_mkdir_t)dlsym (RTLD_NEXT, "mkdir");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_directory_operations.m_mkdir) {
@@ -1956,8 +1967,9 @@ int PosixPassthrough::passthrough_mkdirat (int dirfd, const char* path, mode_t m
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_directory_operations.m_mkdirat = (libc_mkdirat_t)dlsym (this->m_lib_handle, "mkdirat")
-        : m_directory_operations.m_mkdirat = (libc_mkdirat_t)dlsym (RTLD_NEXT, "mkdirat");
+            ? m_directory_operations.m_mkdirat
+            = (libc_mkdirat_t)dlsym (this->m_lib_handle, "mkdirat")
+            : m_directory_operations.m_mkdirat = (libc_mkdirat_t)dlsym (RTLD_NEXT, "mkdirat");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_directory_operations.m_mkdirat) {
@@ -1995,8 +2007,9 @@ struct dirent* PosixPassthrough::passthrough_readdir (DIR* dirp)
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_directory_operations.m_readdir = (libc_readdir_t)dlsym (this->m_lib_handle, "readdir")
-        : m_directory_operations.m_readdir = (libc_readdir_t)dlsym (RTLD_NEXT, "readdir");
+            ? m_directory_operations.m_readdir
+            = (libc_readdir_t)dlsym (this->m_lib_handle, "readdir")
+            : m_directory_operations.m_readdir = (libc_readdir_t)dlsym (RTLD_NEXT, "readdir");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_directory_operations.m_readdir) {
@@ -2034,8 +2047,9 @@ DIR* PosixPassthrough::passthrough_opendir (const char* path)
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_directory_operations.m_opendir = (libc_opendir_t)dlsym (this->m_lib_handle, "opendir")
-        : m_directory_operations.m_opendir = (libc_opendir_t)dlsym (RTLD_NEXT, "opendir");
+            ? m_directory_operations.m_opendir
+            = (libc_opendir_t)dlsym (this->m_lib_handle, "opendir")
+            : m_directory_operations.m_opendir = (libc_opendir_t)dlsym (RTLD_NEXT, "opendir");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_directory_operations.m_opendir) {
@@ -2073,12 +2087,14 @@ DIR* PosixPassthrough::passthrough_fdopendir (int fd)
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_directory_operations.m_fdopendir = (libc_fdopendir_t)dlsym (this->m_lib_handle, "fdopendir")
-        : m_directory_operations.m_fdopendir = (libc_fdopendir_t)dlsym (RTLD_NEXT, "fdopendir");
+            ? m_directory_operations.m_fdopendir
+            = (libc_fdopendir_t)dlsym (this->m_lib_handle, "fdopendir")
+            : m_directory_operations.m_fdopendir = (libc_fdopendir_t)dlsym (RTLD_NEXT, "fdopendir");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_directory_operations.m_fdopendir) {
-        m_directory_operations.m_fdopendir = (libc_fdopendir_t)dlsym (this->m_lib_handle, "fdopendir");
+        m_directory_operations.m_fdopendir
+            = (libc_fdopendir_t)dlsym (this->m_lib_handle, "fdopendir");
     }
 
     // perform original POSIX fopendir operation
@@ -2114,8 +2130,9 @@ int PosixPassthrough::passthrough_closedir (DIR* dirp)
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_directory_operations.m_closedir = (libc_closedir_t)dlsym (this->m_lib_handle, "closedir")
-        : m_directory_operations.m_closedir = (libc_closedir_t)dlsym (RTLD_NEXT, "closedir");
+            ? m_directory_operations.m_closedir
+            = (libc_closedir_t)dlsym (this->m_lib_handle, "closedir")
+            : m_directory_operations.m_closedir = (libc_closedir_t)dlsym (RTLD_NEXT, "closedir");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_directory_operations.m_closedir) {
@@ -2153,8 +2170,8 @@ int PosixPassthrough::passthrough_rmdir (const char* path)
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_directory_operations.m_rmdir = (libc_rmdir_t)dlsym (this->m_lib_handle, "rmdir")
-        : m_directory_operations.m_rmdir = (libc_rmdir_t)dlsym (RTLD_NEXT, "rmdir");
+            ? m_directory_operations.m_rmdir = (libc_rmdir_t)dlsym (this->m_lib_handle, "rmdir")
+            : m_directory_operations.m_rmdir = (libc_rmdir_t)dlsym (RTLD_NEXT, "rmdir");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_directory_operations.m_rmdir) {
@@ -2189,8 +2206,8 @@ int PosixPassthrough::passthrough_dirfd (DIR* dirp)
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_directory_operations.m_dirfd = (libc_dirfd_t)dlsym (this->m_lib_handle, "dirfd")
-        : m_directory_operations.m_dirfd = (libc_dirfd_t)dlsym (RTLD_NEXT, "dirfd");
+            ? m_directory_operations.m_dirfd = (libc_dirfd_t)dlsym (this->m_lib_handle, "dirfd")
+            : m_directory_operations.m_dirfd = (libc_dirfd_t)dlsym (RTLD_NEXT, "dirfd");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_directory_operations.m_dirfd) {
