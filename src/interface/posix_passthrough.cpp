@@ -1750,8 +1750,21 @@ int PosixPassthrough::passthrough_fclose (FILE* stream)
         Logging::log_debug ("passthrough-fclose");
     }
 
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_fclose && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_metadata_operations.m_fclose = (libc_fclose_t)dlsym (this->m_lib_handle, "fclose")
+        : m_metadata_operations.m_fclose = (libc_fclose_t)dlsym (RTLD_NEXT, "fclose");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_fclose) {
+        m_metadata_operations.m_fclose = (libc_fclose_t)dlsym (this->m_lib_handle, "fclose");
+    }
+
     // perform original POSIX fclose operation
-    int result = ((libc_fclose_t)dlsym (this->m_lib_handle, "fclose")) (stream);
+    int result = m_metadata_operations.m_fclose (stream);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1778,16 +1791,21 @@ int PosixPassthrough::passthrough_fflush (FILE* stream)
         Logging::log_debug ("passthrough-fflush");
     }
 
-    if (this->m_lib_handle == nullptr) {
-        std::cout << "will open m_lib_handle from libc.so.6 \n";
-        this->m_lib_handle = ::dlopen (this->m_lib_name.data (), RTLD_LAZY);
-        printf ("--> %ld\n", this->m_lib_handle);
-        //        m_libc_write = (libc_write_t)dlsym (this->m_lib_handle, "write");
-        std::cout << "Passei no lib_c_fflush\n";
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_fflush && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_metadata_operations.m_fflush = (libc_fflush_t)dlsym (this->m_lib_handle, "fflush")
+        : m_metadata_operations.m_fflush = (libc_fflush_t)dlsym (RTLD_NEXT, "fflush");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_fflush) {
+        m_metadata_operations.m_fflush = (libc_fflush_t)dlsym (this->m_lib_handle, "fflush");
     }
 
     // perform original POSIX fflush operation
-    int result = ((libc_fflush_t)dlsym (this->m_lib_handle, "fflush")) (stream);
+    int result = m_metadata_operations.m_fflush (stream);
 
     // update statistic entry
     if (this->m_collect) {
