@@ -1501,6 +1501,7 @@ int PosixPassthrough::passthrough_symlinkat (const char* target, int newdirfd, c
         Logging::log_debug ("passthrough-symlinkat (" + std::string (target) + ", "
             + std::to_string (newdirfd) + ", " + std::string (linkpath) + ")");
     }
+
     // validate function and library handle pointers
     if (!m_metadata_operations.m_symlinkat && !this->m_lib_handle) {
         // open library handle, and assign the operation pointer through m_lib_handle if the open
@@ -1542,8 +1543,21 @@ ssize_t PosixPassthrough::passthrough_readlink (const char* path, char* buf, siz
         Logging::log_debug ("passthrough-readlink (" + std::string (path) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_readlink && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_metadata_operations.m_readlink = (libc_readlink_t)dlsym (this->m_lib_handle, "readlink")
+        : m_metadata_operations.m_readlink = (libc_readlink_t)dlsym (RTLD_NEXT, "readlink");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_readlink) {
+        m_metadata_operations.m_readlink = (libc_readlink_t)dlsym (this->m_lib_handle, "readlink");
+    }
+
     // perform original POSIX readlink operation
-    ssize_t result = ((libc_readlink_t)dlsym (this->m_lib_handle, "readlink")) (path, buf, bufsize);
+    ssize_t result = m_metadata_operations.m_readlink (path, buf, bufsize);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1572,9 +1586,21 @@ PosixPassthrough::passthrough_readlinkat (int dirfd, const char* path, char* buf
             "passthrough-readlinkat (" + std::to_string (dirfd) + ", " + std::string (path) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_readlinkat && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_metadata_operations.m_readlinkat = (libc_readlinkat_t)dlsym (this->m_lib_handle, "readlinkat")
+        : m_metadata_operations.m_readlinkat = (libc_readlinkat_t)dlsym (RTLD_NEXT, "readlinkat");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_readlinkat) {
+        m_metadata_operations.m_readlinkat = (libc_readlinkat_t)dlsym (this->m_lib_handle, "readlinkat");
+    }
+
     // perform original POSIX readlinkat operation
-    ssize_t result
-        = ((libc_readlinkat_t)dlsym (this->m_lib_handle, "readlinkat")) (dirfd, path, buf, bufsize);
+    ssize_t result = m_metadata_operations.m_readlinkat (dirfd, path, buf, bufsize);
 
     // update statistic entry
     if (this->m_collect) {
