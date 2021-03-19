@@ -1832,8 +1832,21 @@ int PosixPassthrough::passthrough_access (const char* path, int mode)
         Logging::log_debug ("passthrough-access");
     }
 
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_access && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_metadata_operations.m_access = (libc_access_t)dlsym (this->m_lib_handle, "access")
+        : m_metadata_operations.m_access = (libc_access_t)dlsym (RTLD_NEXT, "access");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_access) {
+        m_metadata_operations.m_access = (libc_access_t)dlsym (this->m_lib_handle, "access");
+    }
+
     // perform original POSIX access operation
-    int result = ((libc_access_t)dlsym (this->m_lib_handle, "access")) (path, mode);
+    int result = m_metadata_operations.m_access (path, mode);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1860,9 +1873,21 @@ int PosixPassthrough::passthrough_faccessat (int dirfd, const char* path, int mo
         Logging::log_debug ("passthrough-faccessat");
     }
 
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_faccessat && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_metadata_operations.m_faccessat = (libc_faccessat_t)dlsym (this->m_lib_handle, "faccessat")
+        : m_metadata_operations.m_faccessat = (libc_faccessat_t)dlsym (RTLD_NEXT, "faccessat");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_faccessat) {
+        m_metadata_operations.m_faccessat = (libc_faccessat_t)dlsym (this->m_lib_handle, "faccessat");
+    }
+
     // perform original POSIX faccessat operation
-    int result
-        = ((libc_faccessat_t)dlsym (this->m_lib_handle, "faccessat")) (dirfd, path, mode, flags);
+    int result = m_metadata_operations.m_faccessat (dirfd, path, mode, flags);
 
     // update statistic entry
     if (this->m_collect) {
