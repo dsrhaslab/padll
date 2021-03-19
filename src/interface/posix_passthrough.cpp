@@ -1372,8 +1372,21 @@ int PosixPassthrough::passthrough_rename (const char* old_path, const char* new_
             "passthrough-rename (" + std::string (old_path) + ", " + std::string (new_path) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_rename && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_metadata_operations.m_rename = (libc_rename_t)dlsym (this->m_lib_handle, "rename")
+        : m_metadata_operations.m_rename = (libc_rename_t)dlsym (RTLD_NEXT, "rename");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_rename) {
+        m_metadata_operations.m_rename = (libc_rename_t)dlsym (this->m_lib_handle, "rename");
+    }
+
     // perform original POSIX rename operation
-    int result = ((libc_rename_t)dlsym (this->m_lib_handle, "rename")) (old_path, new_path);
+    int result = m_metadata_operations.m_rename (old_path, new_path);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1405,9 +1418,21 @@ int PosixPassthrough::passthrough_renameat (int olddirfd,
             + std::string (new_path) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_renameat && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_metadata_operations.m_renameat = (libc_renameat_t)dlsym (this->m_lib_handle, "renameat")
+        : m_metadata_operations.m_renameat = (libc_renameat_t)dlsym (RTLD_NEXT, "renameat");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_renameat) {
+        m_metadata_operations.m_renameat = (libc_renameat_t)dlsym (this->m_lib_handle, "renameat");
+    }
+
     // perform original POSIX renameat operation
-    int result = ((libc_renameat_t)dlsym (this->m_lib_handle,
-        "renameat")) (olddirfd, old_path, newdirfd, new_path);
+    int result = m_metadata_operations.m_renameat (olddirfd, old_path, newdirfd, new_path);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1435,8 +1460,21 @@ int PosixPassthrough::passthrough_symlink (const char* target, const char* linkp
             "passthrough-symlink (" + std::string (target) + ", " + std::string (linkpath) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_symlink && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_metadata_operations.m_symlink = (libc_symlink_t)dlsym (this->m_lib_handle, "symlink")
+        : m_metadata_operations.m_symlink = (libc_symlink_t)dlsym (RTLD_NEXT, "symlink");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_symlink) {
+        m_metadata_operations.m_symlink = (libc_symlink_t)dlsym (this->m_lib_handle, "symlink");
+    }
+
     // perform original POSIX symlink operation
-    int result = ((libc_symlink_t)dlsym (this->m_lib_handle, "symlink")) (target, linkpath);
+    int result = m_metadata_operations.m_symlink (target, linkpath);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1463,10 +1501,21 @@ int PosixPassthrough::passthrough_symlinkat (const char* target, int newdirfd, c
         Logging::log_debug ("passthrough-symlinkat (" + std::string (target) + ", "
             + std::to_string (newdirfd) + ", " + std::string (linkpath) + ")");
     }
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_symlinkat && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_metadata_operations.m_symlinkat = (libc_symlinkat_t)dlsym (this->m_lib_handle, "symlinkat")
+        : m_metadata_operations.m_symlinkat = (libc_symlinkat_t)dlsym (RTLD_NEXT, "symlinkat");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_symlinkat) {
+        m_metadata_operations.m_symlinkat = (libc_symlinkat_t)dlsym (this->m_lib_handle, "symlinkat");
+    }
 
     // perform original POSIX symlinkat operation
-    int result
-        = ((libc_symlinkat_t)dlsym (this->m_lib_handle, "symlinkat")) (target, newdirfd, linkpath);
+    int result = m_metadata_operations.m_symlinkat (target, newdirfd, linkpath);
 
     // update statistic entry
     if (this->m_collect) {
