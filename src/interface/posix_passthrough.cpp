@@ -1627,8 +1627,21 @@ FILE* PosixPassthrough::passthrough_fopen (const char* pathname, const char* mod
         Logging::log_debug ("passthrough-fopen (" + std::string (pathname) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_fopen && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_metadata_operations.m_fopen = (libc_fopen_t)dlsym (this->m_lib_handle, "fopen")
+        : m_metadata_operations.m_fopen = (libc_fopen_t)dlsym (RTLD_NEXT, "fopen");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_fopen) {
+        m_metadata_operations.m_fopen = (libc_fopen_t)dlsym (this->m_lib_handle, "fopen");
+    }
+
     // perform original POSIX fopen operation
-    FILE* result = ((libc_fopen_t)dlsym (this->m_lib_handle, "fopen")) (pathname, mode);
+    FILE* result = m_metadata_operations.m_fopen (pathname, mode);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1655,8 +1668,21 @@ FILE* PosixPassthrough::passthrough_fdopen (int fd, const char* mode)
         Logging::log_debug ("passthrough-fdopen (" + std::to_string (fd) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_fdopen && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_metadata_operations.m_fdopen = (libc_fdopen_t)dlsym (this->m_lib_handle, "fdopen")
+        : m_metadata_operations.m_fdopen = (libc_fdopen_t)dlsym (RTLD_NEXT, "fdopen");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_fdopen) {
+        m_metadata_operations.m_fdopen = (libc_fdopen_t)dlsym (this->m_lib_handle, "fdopen");
+    }
+
     // perform original POSIX fdopen operation
-    FILE* result = ((libc_fdopen_t)dlsym (this->m_lib_handle, "fdopen")) (fd, mode);
+    FILE* result = m_metadata_operations.m_fdopen (fd, mode);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1683,8 +1709,21 @@ FILE* PosixPassthrough::passthrough_freopen (const char* pathname, const char* m
         Logging::log_debug ("passthrough-freopen (" + std::string (pathname) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_freopen && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_metadata_operations.m_freopen = (libc_freopen_t)dlsym (this->m_lib_handle, "freopen")
+        : m_metadata_operations.m_freopen = (libc_freopen_t)dlsym (RTLD_NEXT, "freopen");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_freopen) {
+        m_metadata_operations.m_freopen = (libc_freopen_t)dlsym (this->m_lib_handle, "freopen");
+    }
+
     // perform original POSIX freopen operation
-    FILE* result = ((libc_freopen_t)dlsym (this->m_lib_handle, "freopen")) (pathname, mode, stream);
+    FILE* result = m_metadata_operations.m_freopen (pathname, mode, stream);
 
     // update statistic entry
     if (this->m_collect) {
