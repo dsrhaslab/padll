@@ -1202,8 +1202,21 @@ int PosixPassthrough::passthrough_link (const char* old_path, const char* new_pa
             "passthrough-link (" + std::string (old_path) + ", " + std::string (new_path) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_link && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_metadata_operations.m_link = (libc_link_t)dlsym (this->m_lib_handle, "link")
+        : m_metadata_operations.m_link = (libc_link_t)dlsym (RTLD_NEXT, "link");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_link) {
+        m_metadata_operations.m_link = (libc_link_t)dlsym (this->m_lib_handle, "link");
+    }
+
     // perform original POSIX link operation
-    int result = ((libc_link_t)dlsym (this->m_lib_handle, "link")) (old_path, new_path);
+    int result = m_metadata_operations.m_link (old_path, new_path);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1228,8 +1241,21 @@ int PosixPassthrough::passthrough_unlink (const char* path)
         Logging::log_debug ("passthrough-unlink (" + std::string (path) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_unlink && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_metadata_operations.m_unlink = (libc_unlink_t)dlsym (this->m_lib_handle, "unlink")
+        : m_metadata_operations.m_unlink = (libc_unlink_t)dlsym (RTLD_NEXT, "unlink");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_unlink) {
+        m_metadata_operations.m_unlink = (libc_unlink_t)dlsym (this->m_lib_handle, "unlink");
+    }
+
     // perform original POSIX unlink operation
-    int result = ((libc_unlink_t)dlsym (this->m_lib_handle, "unlink")) (path);
+    int result = m_metadata_operations.m_unlink (path);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1262,9 +1288,21 @@ int PosixPassthrough::passthrough_linkat (int olddirfd,
             + std::string (new_path) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_linkat && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_metadata_operations.m_linkat = (libc_linkat_t)dlsym (this->m_lib_handle, "linkat")
+        : m_metadata_operations.m_linkat = (libc_linkat_t)dlsym (RTLD_NEXT, "linkat");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_linkat) {
+        m_metadata_operations.m_linkat = (libc_linkat_t)dlsym (this->m_lib_handle, "linkat");
+    }
+
     // perform original POSIX linkat operation
-    int result = ((libc_linkat_t)dlsym (this->m_lib_handle,
-        "linkat")) (olddirfd, old_path, newdirfd, new_path, flags);
+    int result = m_metadata_operations.m_linkat (olddirfd, old_path, newdirfd, new_path, flags);
 
     // update statistic entry
     if (this->m_collect) {
@@ -1292,8 +1330,21 @@ int PosixPassthrough::passthrough_unlinkat (int dirfd, const char* pathname, int
             + std::string (pathname) + ", " + std::to_string (flags) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_unlinkat && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_metadata_operations.m_unlinkat = (libc_unlinkat_t)dlsym (this->m_lib_handle, "unlinkat")
+        : m_metadata_operations.m_unlinkat = (libc_unlinkat_t)dlsym (RTLD_NEXT, "unlinkat");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_unlinkat) {
+        m_metadata_operations.m_unlinkat = (libc_unlinkat_t)dlsym (this->m_lib_handle, "unlinkat");
+    }
+
     // perform original POSIX unlinkat operation
-    int result = ((libc_unlinkat_t)dlsym (this->m_lib_handle, "unlinkat")) (dirfd, pathname, flags);
+    int result = m_metadata_operations.m_unlinkat (dirfd, pathname, flags);
 
     // update statistic entry
     if (this->m_collect) {
