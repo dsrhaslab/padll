@@ -2883,8 +2883,21 @@ int PosixPassthrough::passthrough_chown (const char* pathname, uid_t owner, gid_
         Logging::log_debug ("passthrough-chown (" + std::string (pathname) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_filemodes_operations.m_chown && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_filemodes_operations.m_chown = (libc_chown_t)dlsym (this->m_lib_handle, "chown")
+        : m_filemodes_operations.m_chown = (libc_chown_t)dlsym (RTLD_NEXT, "chown");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_filemodes_operations.m_chown) {
+        m_filemodes_operations.m_chown = (libc_chown_t)dlsym (this->m_lib_handle, "chown");
+    }
+
     // perform original POSIX chown operation
-    int result = ((libc_chown_t)dlsym (this->m_lib_handle, "chown")) (pathname, owner, group);
+    int result = m_filemodes_operations.m_chown (pathname, owner, group);
 
     // update statistic entry
     if (this->m_collect) {
@@ -2911,8 +2924,21 @@ int PosixPassthrough::passthrough_lchown (const char* pathname, uid_t owner, gid
         Logging::log_debug ("passthrough-lchown (" + std::string (pathname) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_filemodes_operations.m_lchown && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_filemodes_operations.m_lchown = (libc_chown_t)dlsym (this->m_lib_handle, "lchown")
+        : m_filemodes_operations.m_lchown = (libc_chown_t)dlsym (RTLD_NEXT, "lchown");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_filemodes_operations.m_lchown) {
+        m_filemodes_operations.m_lchown = (libc_chown_t)dlsym (this->m_lib_handle, "lchown");
+    }
+
     // perform original POSIX lchown operation
-    int result = ((libc_lchown_t)dlsym (this->m_lib_handle, "lchown")) (pathname, owner, group);
+    int result = m_filemodes_operations.m_lchown (pathname, owner, group);
 
     // update statistic entry
     if (this->m_collect) {
@@ -2939,8 +2965,21 @@ int PosixPassthrough::passthrough_fchown (int fd, uid_t owner, gid_t group)
         Logging::log_debug ("passthrough-fchown (" + std::to_string (fd) + ")");
     }
 
-    // perform original POSIX lchown operation
-    int result = ((libc_fchown_t)dlsym (this->m_lib_handle, "fchown")) (fd, owner, group);
+    // validate function and library handle pointers
+    if (!m_filemodes_operations.m_fchown && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_filemodes_operations.m_fchown = (libc_fchown_t)dlsym (this->m_lib_handle, "fchown")
+        : m_filemodes_operations.m_fchown = (libc_fchown_t)dlsym (RTLD_NEXT, "fchown");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_filemodes_operations.m_fchown) {
+        m_filemodes_operations.m_fchown = (libc_fchown_t)dlsym (this->m_lib_handle, "fchown");
+    }
+
+    // perform original POSIX fchown operation
+    int result = m_filemodes_operations.m_fchown (fd, owner, group);
 
     // update statistic entry
     if (this->m_collect) {
@@ -2972,9 +3011,21 @@ int PosixPassthrough::passthrough_fchownat (int dirfd,
             + std::string (pathname) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_filemodes_operations.m_fchownat && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_filemodes_operations.m_fchownat = (libc_fchownat_t)dlsym (this->m_lib_handle, "fchownat")
+        : m_filemodes_operations.m_fchownat = (libc_fchownat_t)dlsym (RTLD_NEXT, "fchownat");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_filemodes_operations.m_fchownat) {
+        m_filemodes_operations.m_fchownat = (libc_fchownat_t)dlsym (this->m_lib_handle, "fchownat");
+    }
+
     // perform original POSIX fchownat operation
-    int result = ((libc_fchownat_t)dlsym (this->m_lib_handle,
-        "fchownat")) (dirfd, pathname, owner, group, flags);
+    int result = m_filemodes_operations.m_fchownat (dirfd, pathname, owner, group, flags);
 
     // update statistic entry
     if (this->m_collect) {

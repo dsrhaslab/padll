@@ -205,7 +205,7 @@ struct libc_file_modes {
     libc_fchmodat_t m_fchmodat { nullptr };
     libc_chown_t m_chown { nullptr };
     libc_lchown_t m_lchown { nullptr };
-    libc_fchown_t m_fchwon { nullptr };
+    libc_fchown_t m_fchown { nullptr };
     libc_fchownat_t m_fchownat { nullptr };
 };
 
