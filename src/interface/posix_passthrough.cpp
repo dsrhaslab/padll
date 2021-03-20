@@ -2501,8 +2501,21 @@ ssize_t PosixPassthrough::passthrough_listxattr (const char* path, char* list, s
         Logging::log_debug ("passthrough-listxattr (" + std::string (path) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_extattr_operations.m_listxattr && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_extattr_operations.m_listxattr = (libc_listxattr_t)dlsym (this->m_lib_handle, "listxattr")
+        : m_extattr_operations.m_listxattr = (libc_listxattr_t)dlsym (RTLD_NEXT, "listxattr");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_extattr_operations.m_listxattr) {
+        m_extattr_operations.m_listxattr = (libc_listxattr_t)dlsym (this->m_lib_handle, "listxattr");
+    }
+
     // perform original POSIX listxattr operation
-    ssize_t result = ((libc_listxattr_t)dlsym (this->m_lib_handle, "listxattr")) (path, list, size);
+    ssize_t result = m_extattr_operations.m_listxattr (path, list, size);
 
     // update statistic entry
     if (this->m_collect) {
@@ -2528,9 +2541,21 @@ ssize_t PosixPassthrough::passthrough_llistxattr (const char* path, char* list, 
         Logging::log_debug ("passthrough-llistxattr (" + std::string (path) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_extattr_operations.m_llistxattr && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_extattr_operations.m_llistxattr = (libc_llistxattr_t)dlsym (this->m_lib_handle, "llistxattr")
+        : m_extattr_operations.m_llistxattr = (libc_llistxattr_t)dlsym (RTLD_NEXT, "llistxattr");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_extattr_operations.m_llistxattr) {
+        m_extattr_operations.m_llistxattr = (libc_llistxattr_t)dlsym (this->m_lib_handle, "llistxattr");
+    }
+
     // perform original POSIX llistxattr operation
-    ssize_t result
-        = ((libc_llistxattr_t)dlsym (this->m_lib_handle, "llistxattr")) (path, list, size);
+    ssize_t result = m_extattr_operations.m_llistxattr (path, list, size);
 
     // update statistic entry
     if (this->m_collect) {
@@ -2559,8 +2584,21 @@ ssize_t PosixPassthrough::passthrough_flistxattr (int fd, char* list, size_t siz
         Logging::log_debug ("passthrough-flistxattr (" + std::to_string (fd) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_extattr_operations.m_flistxattr && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_extattr_operations.m_flistxattr = (libc_flistxattr_t)dlsym (this->m_lib_handle, "flistxattr")
+        : m_extattr_operations.m_flistxattr = (libc_flistxattr_t)dlsym (RTLD_NEXT, "flistxattr");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_extattr_operations.m_flistxattr) {
+        m_extattr_operations.m_flistxattr = (libc_flistxattr_t)dlsym (this->m_lib_handle, "flistxattr");
+    }
+
     // perform original POSIX flistxattr operation
-    ssize_t result = ((libc_flistxattr_t)dlsym (this->m_lib_handle, "flistxattr")) (fd, list, size);
+    ssize_t result = m_extattr_operations.m_flistxattr (fd, list, size);
 
     // update statistic entry
     if (this->m_collect) {
