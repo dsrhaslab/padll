@@ -2759,8 +2759,21 @@ int PosixPassthrough::passthrough_chmod (const char* path, mode_t mode)
         Logging::log_debug ("passthrough-chmod (" + std::string (path) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_filemodes_operations.m_chmod && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_filemodes_operations.m_chmod = (libc_chmod_t)dlsym (this->m_lib_handle, "chmod")
+        : m_filemodes_operations.m_chmod = (libc_chmod_t)dlsym (RTLD_NEXT, "chmod");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_filemodes_operations.m_chmod) {
+        m_filemodes_operations.m_chmod = (libc_chmod_t)dlsym (this->m_lib_handle, "chmod");
+    }
+
     // perform original POSIX chmod operation
-    int result = ((libc_chmod_t)dlsym (this->m_lib_handle, "chmod")) (path, mode);
+    int result = m_filemodes_operations.m_chmod (path, mode);
 
     // update statistic entry
     if (this->m_collect) {
@@ -2787,8 +2800,21 @@ int PosixPassthrough::passthrough_fchmod (int fd, mode_t mode)
         Logging::log_debug ("passthrough-fchmod (" + std::to_string (fd) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_filemodes_operations.m_fchmod && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_filemodes_operations.m_fchmod = (libc_fchmod_t)dlsym (this->m_lib_handle, "fchmod")
+        : m_filemodes_operations.m_fchmod = (libc_fchmod_t)dlsym (RTLD_NEXT, "fchmod");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_filemodes_operations.m_fchmod) {
+        m_filemodes_operations.m_fchmod = (libc_fchmod_t)dlsym (this->m_lib_handle, "fchmod");
+    }
+
     // perform original POSIX fchmod operation
-    int result = ((libc_fchmod_t)dlsym (this->m_lib_handle, "fchmod")) (fd, mode);
+    int result = m_filemodes_operations.m_fchmod (fd, mode);
 
     // update statistic entry
     if (this->m_collect) {
@@ -2816,9 +2842,21 @@ int PosixPassthrough::passthrough_fchmodat (int dirfd, const char* path, mode_t 
             "passthrough-fchmodat (" + std::to_string (dirfd) + ", " + std::string (path) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_filemodes_operations.m_fchmodat && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_filemodes_operations.m_fchmodat = (libc_fchmodat_t)dlsym (this->m_lib_handle, "fchmodat")
+        : m_filemodes_operations.m_fchmodat = (libc_fchmodat_t)dlsym (RTLD_NEXT, "fchmodat");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_filemodes_operations.m_fchmodat) {
+        m_filemodes_operations.m_fchmodat = (libc_fchmodat_t)dlsym (this->m_lib_handle, "fchmodat");
+    }
+
     // perform original POSIX fchmodat operation
-    int result
-        = ((libc_fchmodat_t)dlsym (this->m_lib_handle, "fchmodat")) (dirfd, path, mode, flags);
+    int result = m_filemodes_operations.m_fchmodat (dirfd, path, mode, flags);
 
     // update statistic entry
     if (this->m_collect) {
