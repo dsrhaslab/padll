@@ -2371,9 +2371,21 @@ int PosixPassthrough::passthrough_setxattr (const char* path,
             "passthrough-setxattr (" + std::string (path) + ", " + std::string (name) + ")");
     }
 
-    // perform original POSIX getxattr operation
-    int result = ((
-        libc_setxattr_t)dlsym (this->m_lib_handle, "setxattr")) (path, name, value, size, flags);
+    // validate function and library handle pointers
+    if (!m_extattr_operations.m_setxattr && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_extattr_operations.m_setxattr = (libc_setxattr_t)dlsym (this->m_lib_handle, "setxattr")
+        : m_extattr_operations.m_setxattr = (libc_setxattr_t)dlsym (RTLD_NEXT, "setxattr");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_extattr_operations.m_setxattr) {
+        m_extattr_operations.m_setxattr = (libc_setxattr_t)dlsym (this->m_lib_handle, "setxattr");
+    }
+
+    // perform original POSIX setxattr operation
+    int result = m_extattr_operations.m_setxattr (path, name, value, size, flags);
 
     // update statistic entry
     if (this->m_collect) {
@@ -2404,9 +2416,21 @@ int PosixPassthrough::passthrough_lsetxattr (const char* path,
             "passthrough-lsetxattr (" + std::string (path) + ", " + std::string (name) + ")");
     }
 
-    // perform original POSIX lgetxattr operation
-    int result = ((
-        libc_lsetxattr_t)dlsym (this->m_lib_handle, "lsetxattr")) (path, name, value, size, flags);
+    // validate function and library handle pointers
+    if (!m_extattr_operations.m_lsetxattr && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_extattr_operations.m_lsetxattr = (libc_lsetxattr_t)dlsym (this->m_lib_handle, "lsetxattr")
+        : m_extattr_operations.m_lsetxattr = (libc_lsetxattr_t)dlsym (RTLD_NEXT, "lsetxattr");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_extattr_operations.m_lsetxattr) {
+        m_extattr_operations.m_lsetxattr = (libc_lsetxattr_t)dlsym (this->m_lib_handle, "lsetxattr");
+    }
+
+    // perform original POSIX lsetxattr operation
+    int result = m_extattr_operations.m_lsetxattr (path, name, value, size, flags);
 
     // update statistic entry
     if (this->m_collect) {
@@ -2437,9 +2461,21 @@ int PosixPassthrough::passthrough_fsetxattr (int fd,
             "passthrough-fsetxattr (" + std::to_string (fd) + ", " + std::string (name) + ")");
     }
 
-    // perform original POSIX getxattr operation
-    int result = ((
-        libc_fsetxattr_t)dlsym (this->m_lib_handle, "fsetxattr")) (fd, name, value, size, flags);
+    // validate function and library handle pointers
+    if (!m_extattr_operations.m_fsetxattr && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_extattr_operations.m_fsetxattr = (libc_fsetxattr_t)dlsym (this->m_lib_handle, "fsetxattr")
+        : m_extattr_operations.m_fsetxattr = (libc_fsetxattr_t)dlsym (RTLD_NEXT, "fsetxattr");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_extattr_operations.m_fsetxattr) {
+        m_extattr_operations.m_fsetxattr = (libc_fsetxattr_t)dlsym (this->m_lib_handle, "fsetxattr");
+    }
+
+    // perform original POSIX fsetxattr operation
+    int result = m_extattr_operations.m_fsetxattr (fd, name, value, size, flags);
 
     // update statistic entry
     if (this->m_collect) {
