@@ -2628,8 +2628,21 @@ int PosixPassthrough::passthrough_removexattr (const char* path, const char* nam
             "passthrough-removexattr (" + std::string (path) + ", " + std::string (name) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_extattr_operations.m_removexattr && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_extattr_operations.m_removexattr = (libc_removexattr_t)dlsym (this->m_lib_handle, "removexattr")
+        : m_extattr_operations.m_removexattr = (libc_removexattr_t)dlsym (RTLD_NEXT, "removexattr");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_extattr_operations.m_removexattr) {
+        m_extattr_operations.m_removexattr = (libc_removexattr_t)dlsym (this->m_lib_handle, "removexattr");
+    }
+
     // perform original POSIX removexattr operation
-    int result = ((libc_removexattr_t)dlsym (this->m_lib_handle, "removexattr")) (path, name);
+    int result = m_extattr_operations.m_removexattr (path, name);
 
     // update statistic entry
     if (this->m_collect) {
@@ -2659,8 +2672,21 @@ int PosixPassthrough::passthrough_lremovexattr (const char* path, const char* na
             "passthrough-lremovexattr (" + std::string (path) + ", " + std::string (name) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_extattr_operations.m_lremovexattr && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_extattr_operations.m_lremovexattr = (libc_lremovexattr_t)dlsym (this->m_lib_handle, "lremovexattr")
+        : m_extattr_operations.m_lremovexattr = (libc_lremovexattr_t)dlsym (RTLD_NEXT, "lremovexattr");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_extattr_operations.m_lremovexattr) {
+        m_extattr_operations.m_lremovexattr = (libc_lremovexattr_t)dlsym (this->m_lib_handle, "lremovexattr");
+    }
+
     // perform original POSIX lremovexattr operation
-    int result = ((libc_lremovexattr_t)dlsym (this->m_lib_handle, "lremovexattr")) (path, name);
+    int result = m_extattr_operations.m_lremovexattr (path, name);
 
     // update statistic entry
     if (this->m_collect) {
@@ -2690,8 +2716,21 @@ int PosixPassthrough::passthrough_fremovexattr (int fd, const char* name)
             "passthrough-fremovexattr (" + std::to_string (fd) + ", " + std::string (name) + ")");
     }
 
+    // validate function and library handle pointers
+    if (!m_extattr_operations.m_fremovexattr && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_extattr_operations.m_fremovexattr = (libc_fremovexattr_t)dlsym (this->m_lib_handle, "fremovexattr")
+        : m_extattr_operations.m_fremovexattr = (libc_fremovexattr_t)dlsym (RTLD_NEXT, "fremovexattr");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_extattr_operations.m_fremovexattr) {
+        m_extattr_operations.m_fremovexattr = (libc_fremovexattr_t)dlsym (this->m_lib_handle, "fremovexattr");
+    }
+
     // perform original POSIX fremovexattr operation
-    int result = ((libc_fremovexattr_t)dlsym (this->m_lib_handle, "fremovexattr")) (fd, name);
+    int result = m_extattr_operations.m_fremovexattr (fd, name);
 
     // update statistic entry
     if (this->m_collect) {
