@@ -2246,8 +2246,9 @@ ssize_t PosixPassthrough::passthrough_getxattr (const char* path,
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_extattr_operations.m_getxattr = (libc_getxattr_t)dlsym (this->m_lib_handle, "getxattr")
-        : m_extattr_operations.m_getxattr = (libc_getxattr_t)dlsym (RTLD_NEXT, "getxattr");
+            ? m_extattr_operations.m_getxattr
+            = (libc_getxattr_t)dlsym (this->m_lib_handle, "getxattr")
+            : m_extattr_operations.m_getxattr = (libc_getxattr_t)dlsym (RTLD_NEXT, "getxattr");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_extattr_operations.m_getxattr) {
@@ -2290,12 +2291,14 @@ ssize_t PosixPassthrough::passthrough_lgetxattr (const char* path,
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_extattr_operations.m_lgetxattr = (libc_lgetxattr_t)dlsym (this->m_lib_handle, "lgetxattr")
-        : m_extattr_operations.m_lgetxattr = (libc_lgetxattr_t)dlsym (RTLD_NEXT, "lgetxattr");
+            ? m_extattr_operations.m_lgetxattr
+            = (libc_lgetxattr_t)dlsym (this->m_lib_handle, "lgetxattr")
+            : m_extattr_operations.m_lgetxattr = (libc_lgetxattr_t)dlsym (RTLD_NEXT, "lgetxattr");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_extattr_operations.m_lgetxattr) {
-        m_extattr_operations.m_lgetxattr = (libc_lgetxattr_t)dlsym (this->m_lib_handle, "lgetxattr");
+        m_extattr_operations.m_lgetxattr
+            = (libc_lgetxattr_t)dlsym (this->m_lib_handle, "lgetxattr");
     }
 
     // perform original POSIX lgetxattr operation
@@ -2331,12 +2334,14 @@ ssize_t PosixPassthrough::passthrough_fgetxattr (int fd, const char* name, void*
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_extattr_operations.m_fgetxattr = (libc_fgetxattr_t)dlsym (this->m_lib_handle, "fgetxattr")
-        : m_extattr_operations.m_fgetxattr = (libc_fgetxattr_t)dlsym (RTLD_NEXT, "fgetxattr");
+            ? m_extattr_operations.m_fgetxattr
+            = (libc_fgetxattr_t)dlsym (this->m_lib_handle, "fgetxattr")
+            : m_extattr_operations.m_fgetxattr = (libc_fgetxattr_t)dlsym (RTLD_NEXT, "fgetxattr");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_extattr_operations.m_fgetxattr) {
-        m_extattr_operations.m_fgetxattr = (libc_fgetxattr_t)dlsym (this->m_lib_handle, "fgetxattr");
+        m_extattr_operations.m_fgetxattr
+            = (libc_fgetxattr_t)dlsym (this->m_lib_handle, "fgetxattr");
     }
 
     // perform original POSIX fgetxattr operation
@@ -2376,8 +2381,9 @@ int PosixPassthrough::passthrough_setxattr (const char* path,
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_extattr_operations.m_setxattr = (libc_setxattr_t)dlsym (this->m_lib_handle, "setxattr")
-        : m_extattr_operations.m_setxattr = (libc_setxattr_t)dlsym (RTLD_NEXT, "setxattr");
+            ? m_extattr_operations.m_setxattr
+            = (libc_setxattr_t)dlsym (this->m_lib_handle, "setxattr")
+            : m_extattr_operations.m_setxattr = (libc_setxattr_t)dlsym (RTLD_NEXT, "setxattr");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_extattr_operations.m_setxattr) {
@@ -2421,12 +2427,14 @@ int PosixPassthrough::passthrough_lsetxattr (const char* path,
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_extattr_operations.m_lsetxattr = (libc_lsetxattr_t)dlsym (this->m_lib_handle, "lsetxattr")
-        : m_extattr_operations.m_lsetxattr = (libc_lsetxattr_t)dlsym (RTLD_NEXT, "lsetxattr");
+            ? m_extattr_operations.m_lsetxattr
+            = (libc_lsetxattr_t)dlsym (this->m_lib_handle, "lsetxattr")
+            : m_extattr_operations.m_lsetxattr = (libc_lsetxattr_t)dlsym (RTLD_NEXT, "lsetxattr");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_extattr_operations.m_lsetxattr) {
-        m_extattr_operations.m_lsetxattr = (libc_lsetxattr_t)dlsym (this->m_lib_handle, "lsetxattr");
+        m_extattr_operations.m_lsetxattr
+            = (libc_lsetxattr_t)dlsym (this->m_lib_handle, "lsetxattr");
     }
 
     // perform original POSIX lsetxattr operation
@@ -2466,12 +2474,14 @@ int PosixPassthrough::passthrough_fsetxattr (int fd,
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_extattr_operations.m_fsetxattr = (libc_fsetxattr_t)dlsym (this->m_lib_handle, "fsetxattr")
-        : m_extattr_operations.m_fsetxattr = (libc_fsetxattr_t)dlsym (RTLD_NEXT, "fsetxattr");
+            ? m_extattr_operations.m_fsetxattr
+            = (libc_fsetxattr_t)dlsym (this->m_lib_handle, "fsetxattr")
+            : m_extattr_operations.m_fsetxattr = (libc_fsetxattr_t)dlsym (RTLD_NEXT, "fsetxattr");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_extattr_operations.m_fsetxattr) {
-        m_extattr_operations.m_fsetxattr = (libc_fsetxattr_t)dlsym (this->m_lib_handle, "fsetxattr");
+        m_extattr_operations.m_fsetxattr
+            = (libc_fsetxattr_t)dlsym (this->m_lib_handle, "fsetxattr");
     }
 
     // perform original POSIX fsetxattr operation
@@ -2506,12 +2516,14 @@ ssize_t PosixPassthrough::passthrough_listxattr (const char* path, char* list, s
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_extattr_operations.m_listxattr = (libc_listxattr_t)dlsym (this->m_lib_handle, "listxattr")
-        : m_extattr_operations.m_listxattr = (libc_listxattr_t)dlsym (RTLD_NEXT, "listxattr");
+            ? m_extattr_operations.m_listxattr
+            = (libc_listxattr_t)dlsym (this->m_lib_handle, "listxattr")
+            : m_extattr_operations.m_listxattr = (libc_listxattr_t)dlsym (RTLD_NEXT, "listxattr");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_extattr_operations.m_listxattr) {
-        m_extattr_operations.m_listxattr = (libc_listxattr_t)dlsym (this->m_lib_handle, "listxattr");
+        m_extattr_operations.m_listxattr
+            = (libc_listxattr_t)dlsym (this->m_lib_handle, "listxattr");
     }
 
     // perform original POSIX listxattr operation
@@ -2545,13 +2557,15 @@ ssize_t PosixPassthrough::passthrough_llistxattr (const char* path, char* list, 
     if (!m_extattr_operations.m_llistxattr && !this->m_lib_handle) {
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-        ? m_extattr_operations.m_llistxattr = (libc_llistxattr_t)dlsym (this->m_lib_handle, "llistxattr")
-        : m_extattr_operations.m_llistxattr = (libc_llistxattr_t)dlsym (RTLD_NEXT, "llistxattr");
+        (this->dlopen_library_handle ()) ? m_extattr_operations.m_llistxattr
+            = (libc_llistxattr_t)dlsym (this->m_lib_handle, "llistxattr")
+                                         : m_extattr_operations.m_llistxattr
+            = (libc_llistxattr_t)dlsym (RTLD_NEXT, "llistxattr");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_extattr_operations.m_llistxattr) {
-        m_extattr_operations.m_llistxattr = (libc_llistxattr_t)dlsym (this->m_lib_handle, "llistxattr");
+        m_extattr_operations.m_llistxattr
+            = (libc_llistxattr_t)dlsym (this->m_lib_handle, "llistxattr");
     }
 
     // perform original POSIX llistxattr operation
@@ -2588,13 +2602,15 @@ ssize_t PosixPassthrough::passthrough_flistxattr (int fd, char* list, size_t siz
     if (!m_extattr_operations.m_flistxattr && !this->m_lib_handle) {
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-        ? m_extattr_operations.m_flistxattr = (libc_flistxattr_t)dlsym (this->m_lib_handle, "flistxattr")
-        : m_extattr_operations.m_flistxattr = (libc_flistxattr_t)dlsym (RTLD_NEXT, "flistxattr");
+        (this->dlopen_library_handle ()) ? m_extattr_operations.m_flistxattr
+            = (libc_flistxattr_t)dlsym (this->m_lib_handle, "flistxattr")
+                                         : m_extattr_operations.m_flistxattr
+            = (libc_flistxattr_t)dlsym (RTLD_NEXT, "flistxattr");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_extattr_operations.m_flistxattr) {
-        m_extattr_operations.m_flistxattr = (libc_flistxattr_t)dlsym (this->m_lib_handle, "flistxattr");
+        m_extattr_operations.m_flistxattr
+            = (libc_flistxattr_t)dlsym (this->m_lib_handle, "flistxattr");
     }
 
     // perform original POSIX flistxattr operation
@@ -2632,13 +2648,15 @@ int PosixPassthrough::passthrough_removexattr (const char* path, const char* nam
     if (!m_extattr_operations.m_removexattr && !this->m_lib_handle) {
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-        ? m_extattr_operations.m_removexattr = (libc_removexattr_t)dlsym (this->m_lib_handle, "removexattr")
-        : m_extattr_operations.m_removexattr = (libc_removexattr_t)dlsym (RTLD_NEXT, "removexattr");
+        (this->dlopen_library_handle ()) ? m_extattr_operations.m_removexattr
+            = (libc_removexattr_t)dlsym (this->m_lib_handle, "removexattr")
+                                         : m_extattr_operations.m_removexattr
+            = (libc_removexattr_t)dlsym (RTLD_NEXT, "removexattr");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_extattr_operations.m_removexattr) {
-        m_extattr_operations.m_removexattr = (libc_removexattr_t)dlsym (this->m_lib_handle, "removexattr");
+        m_extattr_operations.m_removexattr
+            = (libc_removexattr_t)dlsym (this->m_lib_handle, "removexattr");
     }
 
     // perform original POSIX removexattr operation
@@ -2676,13 +2694,15 @@ int PosixPassthrough::passthrough_lremovexattr (const char* path, const char* na
     if (!m_extattr_operations.m_lremovexattr && !this->m_lib_handle) {
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-        ? m_extattr_operations.m_lremovexattr = (libc_lremovexattr_t)dlsym (this->m_lib_handle, "lremovexattr")
-        : m_extattr_operations.m_lremovexattr = (libc_lremovexattr_t)dlsym (RTLD_NEXT, "lremovexattr");
+        (this->dlopen_library_handle ()) ? m_extattr_operations.m_lremovexattr
+            = (libc_lremovexattr_t)dlsym (this->m_lib_handle, "lremovexattr")
+                                         : m_extattr_operations.m_lremovexattr
+            = (libc_lremovexattr_t)dlsym (RTLD_NEXT, "lremovexattr");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_extattr_operations.m_lremovexattr) {
-        m_extattr_operations.m_lremovexattr = (libc_lremovexattr_t)dlsym (this->m_lib_handle, "lremovexattr");
+        m_extattr_operations.m_lremovexattr
+            = (libc_lremovexattr_t)dlsym (this->m_lib_handle, "lremovexattr");
     }
 
     // perform original POSIX lremovexattr operation
@@ -2720,13 +2740,15 @@ int PosixPassthrough::passthrough_fremovexattr (int fd, const char* name)
     if (!m_extattr_operations.m_fremovexattr && !this->m_lib_handle) {
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-        ? m_extattr_operations.m_fremovexattr = (libc_fremovexattr_t)dlsym (this->m_lib_handle, "fremovexattr")
-        : m_extattr_operations.m_fremovexattr = (libc_fremovexattr_t)dlsym (RTLD_NEXT, "fremovexattr");
+        (this->dlopen_library_handle ()) ? m_extattr_operations.m_fremovexattr
+            = (libc_fremovexattr_t)dlsym (this->m_lib_handle, "fremovexattr")
+                                         : m_extattr_operations.m_fremovexattr
+            = (libc_fremovexattr_t)dlsym (RTLD_NEXT, "fremovexattr");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_extattr_operations.m_fremovexattr) {
-        m_extattr_operations.m_fremovexattr = (libc_fremovexattr_t)dlsym (this->m_lib_handle, "fremovexattr");
+        m_extattr_operations.m_fremovexattr
+            = (libc_fremovexattr_t)dlsym (this->m_lib_handle, "fremovexattr");
     }
 
     // perform original POSIX fremovexattr operation
@@ -2764,8 +2786,8 @@ int PosixPassthrough::passthrough_chmod (const char* path, mode_t mode)
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_filemodes_operations.m_chmod = (libc_chmod_t)dlsym (this->m_lib_handle, "chmod")
-        : m_filemodes_operations.m_chmod = (libc_chmod_t)dlsym (RTLD_NEXT, "chmod");
+            ? m_filemodes_operations.m_chmod = (libc_chmod_t)dlsym (this->m_lib_handle, "chmod")
+            : m_filemodes_operations.m_chmod = (libc_chmod_t)dlsym (RTLD_NEXT, "chmod");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_filemodes_operations.m_chmod) {
@@ -2805,8 +2827,8 @@ int PosixPassthrough::passthrough_fchmod (int fd, mode_t mode)
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_filemodes_operations.m_fchmod = (libc_fchmod_t)dlsym (this->m_lib_handle, "fchmod")
-        : m_filemodes_operations.m_fchmod = (libc_fchmod_t)dlsym (RTLD_NEXT, "fchmod");
+            ? m_filemodes_operations.m_fchmod = (libc_fchmod_t)dlsym (this->m_lib_handle, "fchmod")
+            : m_filemodes_operations.m_fchmod = (libc_fchmod_t)dlsym (RTLD_NEXT, "fchmod");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_filemodes_operations.m_fchmod) {
@@ -2847,8 +2869,9 @@ int PosixPassthrough::passthrough_fchmodat (int dirfd, const char* path, mode_t 
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_filemodes_operations.m_fchmodat = (libc_fchmodat_t)dlsym (this->m_lib_handle, "fchmodat")
-        : m_filemodes_operations.m_fchmodat = (libc_fchmodat_t)dlsym (RTLD_NEXT, "fchmodat");
+            ? m_filemodes_operations.m_fchmodat
+            = (libc_fchmodat_t)dlsym (this->m_lib_handle, "fchmodat")
+            : m_filemodes_operations.m_fchmodat = (libc_fchmodat_t)dlsym (RTLD_NEXT, "fchmodat");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_filemodes_operations.m_fchmodat) {
@@ -2888,8 +2911,8 @@ int PosixPassthrough::passthrough_chown (const char* pathname, uid_t owner, gid_
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_filemodes_operations.m_chown = (libc_chown_t)dlsym (this->m_lib_handle, "chown")
-        : m_filemodes_operations.m_chown = (libc_chown_t)dlsym (RTLD_NEXT, "chown");
+            ? m_filemodes_operations.m_chown = (libc_chown_t)dlsym (this->m_lib_handle, "chown")
+            : m_filemodes_operations.m_chown = (libc_chown_t)dlsym (RTLD_NEXT, "chown");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_filemodes_operations.m_chown) {
@@ -2929,8 +2952,8 @@ int PosixPassthrough::passthrough_lchown (const char* pathname, uid_t owner, gid
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_filemodes_operations.m_lchown = (libc_chown_t)dlsym (this->m_lib_handle, "lchown")
-        : m_filemodes_operations.m_lchown = (libc_chown_t)dlsym (RTLD_NEXT, "lchown");
+            ? m_filemodes_operations.m_lchown = (libc_chown_t)dlsym (this->m_lib_handle, "lchown")
+            : m_filemodes_operations.m_lchown = (libc_chown_t)dlsym (RTLD_NEXT, "lchown");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_filemodes_operations.m_lchown) {
@@ -2970,8 +2993,8 @@ int PosixPassthrough::passthrough_fchown (int fd, uid_t owner, gid_t group)
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_filemodes_operations.m_fchown = (libc_fchown_t)dlsym (this->m_lib_handle, "fchown")
-        : m_filemodes_operations.m_fchown = (libc_fchown_t)dlsym (RTLD_NEXT, "fchown");
+            ? m_filemodes_operations.m_fchown = (libc_fchown_t)dlsym (this->m_lib_handle, "fchown")
+            : m_filemodes_operations.m_fchown = (libc_fchown_t)dlsym (RTLD_NEXT, "fchown");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_filemodes_operations.m_fchown) {
@@ -3016,8 +3039,9 @@ int PosixPassthrough::passthrough_fchownat (int dirfd,
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_filemodes_operations.m_fchownat = (libc_fchownat_t)dlsym (this->m_lib_handle, "fchownat")
-        : m_filemodes_operations.m_fchownat = (libc_fchownat_t)dlsym (RTLD_NEXT, "fchownat");
+            ? m_filemodes_operations.m_fchownat
+            = (libc_fchownat_t)dlsym (this->m_lib_handle, "fchownat")
+            : m_filemodes_operations.m_fchownat = (libc_fchownat_t)dlsym (RTLD_NEXT, "fchownat");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_filemodes_operations.m_fchownat) {
