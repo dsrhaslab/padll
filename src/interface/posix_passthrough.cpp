@@ -1917,6 +1917,129 @@ int PosixPassthrough::passthrough_faccessat (int dirfd, const char* path, int mo
     return result;
 }
 
+// passthrough_lseek call. (...)
+off_t PosixPassthrough::passthrough_lseek (int fd, off_t offset, int whence)
+{
+    // logging message
+    if (option_default_detailed_logging) {
+        Logging::log_debug ("passthrough-lseek");
+    }
+
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_lseek && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+            ? m_metadata_operations.m_lseek = (libc_lseek_t)dlsym (this->m_lib_handle, "lseek")
+            : m_metadata_operations.m_lseek = (libc_lseek_t)dlsym (RTLD_NEXT, "lseek");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_lseek) {
+        m_metadata_operations.m_lseek = (libc_lseek_t)dlsym (this->m_lib_handle, "lseek");
+    }
+
+    // perform original POSIX lseek operation
+    off_t result = m_metadata_operations.m_lseek (fd, offset, whence);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result >= 0) {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::lseek),
+                1,
+                0);
+        } else {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::lseek),
+                1,
+                0,
+                1);
+        }
+    }
+
+    return result;
+}
+
+// passthrough_fseek call. (...)
+int PosixPassthrough::passthrough_fseek (FILE* stream, long offset, int whence)
+{
+    // logging message
+    if (option_default_detailed_logging) {
+        Logging::log_debug ("passthrough-fseek");
+    }
+
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_fseek && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+            ? m_metadata_operations.m_fseek = (libc_fseek_t)dlsym (this->m_lib_handle, "fseek")
+            : m_metadata_operations.m_fseek = (libc_fseek_t)dlsym (RTLD_NEXT, "fseek");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_fseek) {
+        m_metadata_operations.m_fseek = (libc_fseek_t)dlsym (this->m_lib_handle, "fseek");
+    }
+
+    // perform original POSIX fseek operation
+    int result = m_metadata_operations.m_fseek (stream, offset, whence);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result == 0) {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fseek),
+                1,
+                0);
+        } else {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fseek),
+                1,
+                0,
+                1);
+        }
+    }
+
+    return result;
+}
+
+// passthrough_ftell call. (...)
+long PosixPassthrough::passthrough_ftell (FILE* stream)
+{
+    // logging message
+    if (option_default_detailed_logging) {
+        Logging::log_debug ("passthrough-ftell");
+    }
+
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_ftell && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+            ? m_metadata_operations.m_ftell = (libc_ftell_t)dlsym (this->m_lib_handle, "ftell")
+            : m_metadata_operations.m_ftell = (libc_ftell_t)dlsym (RTLD_NEXT, "ftell");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_ftell) {
+        m_metadata_operations.m_ftell = (libc_ftell_t)dlsym (this->m_lib_handle, "ftell");
+    }
+
+    // perform original POSIX ftell operation
+    long result = m_metadata_operations.m_ftell (stream);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result >= 0) {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::ftell),
+                1,
+                0);
+        } else {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::ftell),
+                1,
+                0,
+                1);
+        }
+    }
+
+    return result;
+}
+
 // passthrough_mkdir call. (...)
 int PosixPassthrough::passthrough_mkdir (const char* path, mode_t mode)
 {

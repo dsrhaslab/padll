@@ -55,6 +55,9 @@ typedef int (*libc_fclose_t) (FILE*);
 typedef int (*libc_fflush_t) (FILE*);
 typedef int (*libc_access_t) (const char*, int);
 typedef int (*libc_faccessat_t) (int, const char*, int, int);
+typedef off_t (*libc_lseek_t) (int, off_t, int);
+typedef int (*libc_fseek_t) (FILE*, long, int);
+typedef long (*libc_ftell_t) (FILE*);
 
 /**
  * libc_metadata struct: provides an object with the function pointers to all libc metadata-like
@@ -98,6 +101,9 @@ struct libc_metadata {
     libc_fflush_t m_fflush { nullptr };
     libc_access_t m_access { nullptr };
     libc_faccessat_t m_faccessat { nullptr };
+    libc_lseek_t m_lseek { nullptr };
+    libc_fseek_t m_fseek { nullptr };
+    libc_ftell_t m_ftell { nullptr };
 };
 
 /**

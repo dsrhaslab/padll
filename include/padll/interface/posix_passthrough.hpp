@@ -525,6 +525,34 @@ public:
     int passthrough_faccessat (int dirfd, const char* path, int mode, int flags);
 
     /**
+     * passthrough_lseek:
+     *  https://linux.die.net/man/2/lseek
+     * @param fd
+     * @param offset
+     * @param whence
+     * @return
+     */
+    off_t passthrough_lseek (int fd, off_t offset, int whence);
+
+    /**
+     * passthrough_fseek:
+     *  https://linux.die.net/man/3/fseek
+     * @param stream
+     * @param offset
+     * @param whence
+     * @return
+     */
+    int passthrough_fseek (FILE* stream, long offset, int whence);
+
+    /**
+     * passthrough_ftell:
+     *  https://linux.die.net/man/3/ftell
+     * @param stream
+     * @return
+     */
+    long passthrough_ftell (FILE* stream);
+
+    /**
      * passthrough_mkdir:
      *  https://linux.die.net/man/2/mkdir
      * @param path
