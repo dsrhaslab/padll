@@ -275,6 +275,24 @@ int faccessat (int dirfd, const char* path, int mode, int flags)
     return m_posix_passthrough.passthrough_faccessat (dirfd, path, mode, flags);
 }
 
+// lseek call. (...)
+off_t lseek (int fd, off_t offset, int whence)
+{
+    return m_posix_passthrough.passthrough_lseek (fd, offset, whence);
+}
+
+// fseek call. (...)
+int fseek (FILE* stream, long offset, int whence)
+{
+    return m_posix_passthrough.passthrough_fseek (stream, offset, whence);
+}
+
+// ftell call. (...)
+long ftell (FILE* stream)
+{
+    return m_posix_passthrough.passthrough_ftell (stream);
+}
+
 // mkdir call. (...)
 int mkdir (const char* path, mode_t mode)
 {

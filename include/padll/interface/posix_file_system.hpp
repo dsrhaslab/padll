@@ -392,6 +392,31 @@ extern "C" int access (const char* path, int mode);
 extern "C" int faccessat (int dirfd, const char* path, int mode, int flags);
 
 /**
+ * lseek:
+ * @param fd
+ * @param offset
+ * @param whence
+ * @return
+ */
+extern "C" off_t lseek (int fd, off_t offset, int whence);
+
+/**
+ * fseek:
+ * @param stream
+ * @param offset
+ * @param whence
+ * @return
+ */
+extern "C" int fseek (FILE* stream, long offset, int whence);
+
+/**
+ * ftell:
+ * @param stream
+ * @return
+ */
+extern "C" long ftell (FILE* stream);
+
+/**
  * mkdir:
  * @param path
  * @param mode
