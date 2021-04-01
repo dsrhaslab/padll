@@ -1463,6 +1463,91 @@ int PosixPassthrough::passthrough_fstatfs (int fd, struct statfs* buf)
     return result;
 }
 
+// passthrough_statfs64 call. (...)
+int PosixPassthrough::passthrough_statfs64 (const char* path, struct statfs64* buf)
+{
+    // logging message
+    if (option_default_detailed_logging) {
+        Logging::log_debug ("passthrough-statfs64 (" + std::string (path) + ")");
+    }
+
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_statfs64 && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+            ? m_metadata_operations.m_statfs64
+            = (libc_statfs64_t)dlsym (this->m_lib_handle, "statfs64")
+            : m_metadata_operations.m_statfs64 = (libc_statfs64_t)dlsym (RTLD_NEXT, "statfs64");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_statfs64) {
+        m_metadata_operations.m_statfs64 = (libc_statfs64_t)dlsym (this->m_lib_handle, "statfs64");
+    }
+
+    // perform original POSIX statfs64 operation
+    int result = m_metadata_operations.m_statfs64 (path, buf);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result == 0) {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::statfs64),
+                1,
+                0);
+        } else {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::statfs64),
+                1,
+                0,
+                1);
+        }
+    }
+
+    return result;
+}
+
+// passthrough_fstatfs64 call. (...)
+int PosixPassthrough::passthrough_fstatfs64 (int fd, struct statfs64* buf)
+{
+    // logging message
+    if (option_default_detailed_logging) {
+        Logging::log_debug ("passthrough-fstatfs64 (" + std::to_string (fd) + ")");
+    }
+
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_fstatfs64 && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+            ? m_metadata_operations.m_fstatfs64
+            = (libc_fstatfs64_t)dlsym (this->m_lib_handle, "fstatfs64")
+            : m_metadata_operations.m_fstatfs64 = (libc_fstatfs64_t)dlsym (RTLD_NEXT, "fstatfs64");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_fstatfs64) {
+        m_metadata_operations.m_fstatfs64
+            = (libc_fstatfs64_t)dlsym (this->m_lib_handle, "fstatfs64");
+    }
+
+    // perform original POSIX fstatfs64 operation
+    int result = m_metadata_operations.m_fstatfs64 (fd, buf);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result == 0) {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fstatfs64),
+                1,
+                0);
+        } else {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fstatfs64),
+                1,
+                0,
+                1);
+        }
+    }
+
+    return result;
+}
+
 // passthrough_link call. (...)
 int PosixPassthrough::passthrough_link (const char* old_path, const char* new_path)
 {

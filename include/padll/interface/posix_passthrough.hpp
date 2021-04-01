@@ -362,7 +362,7 @@ public:
      * passthrough_stat64:
      *  This method respects to the stat call.
      *  https://refspecs.linuxbase.org/LSB_3.0.0/LSB-PDA/LSB-PDA/baselib-xstat-1.html
-     *  https://linux.die.net/man/2/stat
+     *  https://linux.die.net/man/2/stat64
      * @param version
      * @param path
      * @param statbuf
@@ -372,7 +372,8 @@ public:
 
     /**
      * passthrough_lxstat64:
-     *  https://linux.die.net/man/2/lstat
+     *  https://linux.die.net/man/2/lstat64
+     *  https://refspecs.linuxbase.org/LSB_3.0.0/LSB-PDA/LSB-PDA/baselib-xstat64-1.html
      * @param version
      * @param path
      * @param statbuf
@@ -382,7 +383,8 @@ public:
 
     /**
      * passthrough_fxstat64:
-     *  https://linux.die.net/man/2/fstat
+     *  https://linux.die.net/man/2/fstat64
+     *  https://refspecs.linuxbase.org/LSB_3.0.0/LSB-PDA/LSB-PDA/baselib-xstat64-1.html
      * @param version
      * @param fd
      * @param statbuf
@@ -424,6 +426,26 @@ public:
      * @return
      */
     int passthrough_fstatfs (int fd, struct statfs* buf);
+
+    /**
+     * passthrough_statfs64:
+     *  https://linux.die.net/man/2/statfs64
+     *  https://refspecs.linuxbase.org/LSB_5.0.0/LSB-Core-generic/LSB-Core-generic/baselib-statfs64.html
+     * @param path
+     * @param buf
+     * @return
+     */
+    int passthrough_statfs64 (const char* path, struct statfs64* buf);
+
+    /**
+     * passthrough_fstatfs64
+     *  https://linux.die.net/man/2/fstatfs64
+     *  https://refspecs.linuxbase.org/LSB_5.0.0/LSB-Core-generic/LSB-Core-generic/baselib-fstatfs64.html
+     * @param fd
+     * @param buf
+     * @return
+     */
+    int passthrough_fstatfs64 (int fd, struct statfs64* buf);
 
     /**
      * passthrough_link:
