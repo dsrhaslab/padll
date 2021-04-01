@@ -241,6 +241,49 @@ extern "C" int
 __fxstatat (int version, int dirfd, const char* path, struct stat* statbuf, int flags);
 
 /**
+ * __xstat64:
+ *  This method respects to the stat64 call.
+ * @param version
+ * @param path
+ * @param statbuf
+ * @return
+ */
+extern "C" int __xstat64 (int version, const char* path, struct stat64* statbuf);
+
+/**
+ * __lxstat64:
+ *  This method respects to the lstat64 call.
+ * @param version
+ * @param path
+ * @param statbuf
+ * @return
+ */
+extern "C" int __lxstat64 (int version, const char* path, struct stat64* statbuf);
+
+/**
+ * __fxstat64:
+ *  This method respects to the fstat64 call.
+ * @param version
+ * @param fd
+ * @param statbuf
+ * @return
+ */
+extern "C" int __fxstat64 (int version, int fd, struct stat64* statbuf);
+
+/**
+ * fxstatat64:
+ *  This method respects to the fstatat64 call.
+ * @param version
+ * @param dirfd
+ * @param path
+ * @param statbuf
+ * @param flags
+ * @return
+ */
+extern "C" int
+__fxstatat64 (int version, int dirfd, const char* path, struct stat64* statbuf, int flags);
+
+/**
  * statfs:
  * @param path
  * @param buf
@@ -255,6 +298,22 @@ extern "C" int statfs (const char* path, struct statfs* buf);
  * @return
  */
 extern "C" int fstatfs (int fd, struct statfs* buf);
+
+/**
+ * statfs64:
+ * @param path
+ * @param buf
+ * @return
+ */
+extern "C" int statfs64 (const char* path, struct statfs64* buf);
+
+/**
+ * fstatfs64:
+ * @param fd
+ * @param buf
+ * @return
+ */
+extern "C" int fstatfs64 (int fd, struct statfs64* buf);
 
 /**
  * link:

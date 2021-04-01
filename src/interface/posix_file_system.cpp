@@ -173,6 +173,30 @@ int __fxstatat (int version, int dirfd, const char* path, struct stat* statbuf, 
     return m_posix_passthrough.passthrough_fxstatat (version, dirfd, path, statbuf, flags);
 }
 
+// __xstat64 call. (...)
+int __xstat64 (int version, const char* path, struct stat64* statbuf)
+{
+    return m_posix_passthrough.passthrough_xstat64 (version, path, statbuf);
+}
+
+// __lxstat64 call. (...)
+int __lxstat64 (int version, const char* path, struct stat64* statbuf)
+{
+    return m_posix_passthrough.passthrough_lxstat64 (version, path, statbuf);
+}
+
+// __fxstat64 call. (...)
+int __fxstat64 (int version, int fd, struct stat64* statbuf)
+{
+    return m_posix_passthrough.passthrough_fxstat64 (version, fd, statbuf);
+}
+
+// __fxstatat64 call. (...)
+int __fxstatat64 (int version, int dirfd, const char* path, struct stat64* statbuf, int flags)
+{
+    return m_posix_passthrough.passthrough_fxstatat64 (version, dirfd, path, statbuf, flags);
+}
+
 // statfs call. (...)
 int statfs (const char* path, struct statfs* buf)
 {
@@ -183,6 +207,18 @@ int statfs (const char* path, struct statfs* buf)
 int fstatfs (int fd, struct statfs* buf)
 {
     return m_posix_passthrough.passthrough_fstatfs (fd, buf);
+}
+
+// statfs64 call. (...)
+int statfs64 (const char* path, struct statfs64* buf)
+{
+    return m_posix_passthrough.passthrough_statfs64 (path, buf);
+}
+
+// fstatfs64 call. (...)
+int fstatfs64 (int fd, struct statfs64* buf)
+{
+    return m_posix_passthrough.passthrough_fstatfs64 (fd, buf);
 }
 
 // link call. (...)
