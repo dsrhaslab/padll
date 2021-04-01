@@ -290,6 +290,26 @@ public:
     int passthrough_ftruncate (int fd, off_t length);
 
     /**
+     * passthrough_truncate64:
+     *  https://linux.die.net/man/2/truncate64
+     *  https://code.woboq.org/userspace/glibc/sysdeps/unix/sysv/linux/truncate64.c.html
+     * @param path
+     * @param length
+     * @return
+     */
+    int passthrough_truncate64 (const char* path, off_t length);
+
+    /**
+     * passthrough_ftruncate64:
+     *  https://linux.die.net/man/2/ftruncate64
+     *  https://code.woboq.org/userspace/glibc/sysdeps/unix/sysv/linux/ftruncate64.c.html
+     * @param fd
+     * @param length
+     * @return
+     */
+    int passthrough_ftruncate64 (int fd, off_t length);
+
+    /**
      * passthrough_stat:
      *  This method respects to the stat call.
      *  https://refspecs.linuxbase.org/LSB_3.0.0/LSB-PDA/LSB-PDA/baselib-xstat-1.html

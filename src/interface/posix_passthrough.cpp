@@ -892,12 +892,12 @@ int PosixPassthrough::passthrough_truncate (const char* path, off_t length)
     return result;
 }
 
-// passthrough_truncate call. (...)
+// passthrough_ftruncate call. (...)
 int PosixPassthrough::passthrough_ftruncate (int fd, off_t length)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-truncate (" + std::to_string (fd) + ")");
+        Logging::log_debug ("passthrough-ftruncate (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -929,6 +929,91 @@ int PosixPassthrough::passthrough_ftruncate (int fd, off_t length)
                 1,
                 0,
                 1);
+        }
+    }
+
+    return result;
+}
+
+// passthrough_truncate64 call. (...)
+int PosixPassthrough::passthrough_truncate64 (const char* path, off_t length)
+{
+    // logging message
+    if (option_default_detailed_logging) {
+        Logging::log_debug ("passthrough-truncate64 (" + std::string (path) + ")");
+    }
+
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_truncate64 && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_metadata_operations.m_truncate64
+                  = (libc_truncate64_t)dlsym (this->m_lib_handle, "truncate64")
+        : m_metadata_operations.m_truncate64 = (libc_truncate64_t)dlsym (RTLD_NEXT, "truncate64");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_truncate64) {
+        m_metadata_operations.m_truncate64 = (libc_truncate64_t)dlsym (this->m_lib_handle, "truncate64");
+    }
+
+    // perform original POSIX truncate64 operation
+    int result = m_metadata_operations.m_truncate64 (path, length);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result == 0) {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::truncate64),
+                                                           1,
+                                                           0);
+        } else {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::truncate64),
+                                                           1,
+                                                           0,
+                                                           1);
+        }
+    }
+
+    return result;
+}
+
+// passthrough_ftruncate64 call. (...)
+int PosixPassthrough::passthrough_ftruncate64 (int fd, off_t length)
+{
+    // logging message
+    if (option_default_detailed_logging) {
+        Logging::log_debug ("passthrough-ftruncate64 (" + std::to_string (fd) + ")");
+    }
+
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_ftruncate64 && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_metadata_operations.m_ftruncate64
+                  = (libc_ftruncate64_t)dlsym (this->m_lib_handle, "ftruncate64")
+        : m_metadata_operations.m_ftruncate64 = (libc_ftruncate64_t)dlsym (RTLD_NEXT, "ftruncate64");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_ftruncate64) {
+        m_metadata_operations.m_ftruncate64
+                = (libc_ftruncate64_t)dlsym (this->m_lib_handle, "ftruncate64");
+    }
+
+    // perform original POSIX ftruncate64 operation
+    int result = m_metadata_operations.m_ftruncate64 (fd, length);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result == 0) {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::ftruncate64),
+                                                           1,
+                                                           0);
+        } else {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::ftruncate64),
+                                                           1,
+                                                           0,
+                                                           1);
         }
     }
 
