@@ -359,6 +359,55 @@ public:
         int flags);
 
     /**
+     * passthrough_stat64:
+     *  This method respects to the stat call.
+     *  https://refspecs.linuxbase.org/LSB_3.0.0/LSB-PDA/LSB-PDA/baselib-xstat-1.html
+     *  https://linux.die.net/man/2/stat
+     * @param version
+     * @param path
+     * @param statbuf
+     * @return
+     */
+    int passthrough_xstat64 (int version, const char* path, struct stat64* statbuf);
+
+    /**
+     * passthrough_lxstat64:
+     *  https://linux.die.net/man/2/lstat
+     * @param version
+     * @param path
+     * @param statbuf
+     * @return
+     */
+    int passthrough_lxstat64 (int version, const char* path, struct stat64* statbuf);
+
+    /**
+     * passthrough_fxstat64:
+     *  https://linux.die.net/man/2/fstat
+     * @param version
+     * @param fd
+     * @param statbuf
+     * @return
+     */
+    int passthrough_fxstat64 (int version, int fd, struct stat64* statbuf);
+
+    /**
+     * passthrough_fxstatat64:
+     *  https://refspecs.linuxbase.org/LSB_5.0.0/LSB-Core-generic/LSB-Core-generic/baselib---fxstatat-1.html
+     *  https://linux.die.net/man/2/fstatat
+     * @param version
+     * @param dirfd
+     * @param path
+     * @param statbuf
+     * @param flags
+     * @return
+     */
+    int passthrough_fxstatat64 (int version,
+        int dirfd,
+        const char* path,
+        struct stat64* statbuf,
+        int flags);
+
+    /**
      * passthrough_statfs:
      *  https://linux.die.net/man/2/statfs
      * @param path
