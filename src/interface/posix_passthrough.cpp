@@ -2408,8 +2408,9 @@ off_t PosixPassthrough::passthrough_lseek64 (int fd, off_t offset, int whence)
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_metadata_operations.m_lseek64 = (libc_lseek64_t)dlsym (this->m_lib_handle, "lseek64")
-        : m_metadata_operations.m_lseek64 = (libc_lseek64_t)dlsym (RTLD_NEXT, "lseek64");
+            ? m_metadata_operations.m_lseek64
+            = (libc_lseek64_t)dlsym (this->m_lib_handle, "lseek64")
+            : m_metadata_operations.m_lseek64 = (libc_lseek64_t)dlsym (RTLD_NEXT, "lseek64");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_metadata_operations.m_lseek64) {
@@ -2423,13 +2424,13 @@ off_t PosixPassthrough::passthrough_lseek64 (int fd, off_t offset, int whence)
     if (this->m_collect) {
         if (result >= 0) {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::lseek64),
-                                                           1,
-                                                           0);
+                1,
+                0);
         } else {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::lseek64),
-                                                           1,
-                                                           0,
-                                                           1);
+                1,
+                0,
+                1);
         }
     }
 
@@ -2449,8 +2450,9 @@ int PosixPassthrough::passthrough_fseeko64 (FILE* stream, off_t offset, int when
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_metadata_operations.m_fseeko64 = (libc_fseeko64_t)dlsym (this->m_lib_handle, "fseeko64")
-        : m_metadata_operations.m_fseeko64 = (libc_fseeko64_t)dlsym (RTLD_NEXT, "fseeko64");
+            ? m_metadata_operations.m_fseeko64
+            = (libc_fseeko64_t)dlsym (this->m_lib_handle, "fseeko64")
+            : m_metadata_operations.m_fseeko64 = (libc_fseeko64_t)dlsym (RTLD_NEXT, "fseeko64");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_metadata_operations.m_fseeko64) {
@@ -2464,13 +2466,13 @@ int PosixPassthrough::passthrough_fseeko64 (FILE* stream, off_t offset, int when
     if (this->m_collect) {
         if (result == 0) {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fseeko64),
-                                                           1,
-                                                           0);
+                1,
+                0);
         } else {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fseeko64),
-                                                           1,
-                                                           0,
-                                                           1);
+                1,
+                0,
+                1);
         }
     }
 
@@ -2490,8 +2492,9 @@ off_t PosixPassthrough::passthrough_ftello64 (FILE* stream)
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_metadata_operations.m_ftello64 = (libc_ftello64_t)dlsym (this->m_lib_handle, "ftello64")
-        : m_metadata_operations.m_ftello64 = (libc_ftello64_t)dlsym (RTLD_NEXT, "ftello64");
+            ? m_metadata_operations.m_ftello64
+            = (libc_ftello64_t)dlsym (this->m_lib_handle, "ftello64")
+            : m_metadata_operations.m_ftello64 = (libc_ftello64_t)dlsym (RTLD_NEXT, "ftello64");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_metadata_operations.m_ftello64) {
@@ -2505,13 +2508,13 @@ off_t PosixPassthrough::passthrough_ftello64 (FILE* stream)
     if (this->m_collect) {
         if (result >= 0) {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::ftello64),
-                                                           1,
-                                                           0);
+                1,
+                0);
         } else {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::ftello64),
-                                                           1,
-                                                           0,
-                                                           1);
+                1,
+                0,
+                1);
         }
     }
 
