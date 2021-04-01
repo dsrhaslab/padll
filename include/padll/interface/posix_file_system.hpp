@@ -182,6 +182,22 @@ extern "C" int truncate (const char* path, off_t length);
 extern "C" int ftruncate (int fd, off_t length);
 
 /**
+ * truncate64:
+ * @param path
+ * @param length
+ * @return
+ */
+extern "C" int truncate64 (const char* path, off_t length);
+
+/**
+ * ftruncate64:
+ * @param fd
+ * @param length
+ * @return
+ */
+extern "C" int ftruncate64 (int fd, off_t length);
+
+/**
  * __xstat:
  *  This method respects to the stat call.
  * @param version

@@ -137,6 +137,18 @@ int ftruncate (int fd, off_t length)
     return m_posix_passthrough.passthrough_ftruncate (fd, length);
 }
 
+// truncate64 call. (...)
+int truncate64 (const char* path, off_t length)
+{
+    return m_posix_passthrough.passthrough_truncate64 (path, length);
+}
+
+// ftruncate64 call. (...)
+int ftruncate64 (int fd, off_t length)
+{
+    return m_posix_passthrough.passthrough_ftruncate64 (fd, length);
+}
+
 // __xstat call. (...)
 int __xstat (int version, const char* path, struct stat* statbuf)
 {
