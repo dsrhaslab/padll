@@ -66,6 +66,9 @@ typedef int (*libc_faccessat_t) (int, const char*, int, int);
 typedef off_t (*libc_lseek_t) (int, off_t, int);
 typedef int (*libc_fseek_t) (FILE*, long, int);
 typedef long (*libc_ftell_t) (FILE*);
+typedef off_t (*libc_lseek64_t) (int, off_t, int);
+typedef int (*libc_fseeko64_t) (FILE*, off_t, int);
+typedef off_t (*libc_ftello64_t) (FILE*);
 
 /**
  * libc_metadata struct: provides an object with the function pointers to all libc metadata-like
@@ -120,6 +123,9 @@ struct libc_metadata {
     libc_lseek_t m_lseek { nullptr };
     libc_fseek_t m_fseek { nullptr };
     libc_ftell_t m_ftell { nullptr };
+    libc_lseek64_t m_lseek64 { nullptr };
+    libc_fseeko64_t m_fseeko64 { nullptr };
+    libc_ftello64_t m_ftello64 { nullptr };
 };
 
 /**

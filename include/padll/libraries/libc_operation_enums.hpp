@@ -74,7 +74,10 @@ BETTER_ENUM (Metadata,
     faccessat = 45,
     lseek = 46,
     fseek = 47,
-    ftell = 48);
+    ftell = 48,
+    lseek64 = 49,
+    fseeko64 = 50,
+    ftello64 = 51);
 
 /**
  * Data Definitions.

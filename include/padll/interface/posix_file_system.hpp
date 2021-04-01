@@ -492,6 +492,31 @@ extern "C" int fseek (FILE* stream, long offset, int whence);
 extern "C" long ftell (FILE* stream);
 
 /**
+ * lseek64:
+ * @param fd
+ * @param offset
+ * @param whence
+ * @return
+ */
+extern "C" off_t lseek64 (int fd, off_t offset, int whence);
+
+/**
+ * fseeko64:
+ * @param stream
+ * @param offset
+ * @param whence
+ * @return
+ */
+extern "C" int fseeko64 (FILE* stream, off_t offset, int whence);
+
+/**
+ * ftello64:
+ * @param stream
+ * @return
+ */
+extern "C" off_t ftello64 (FILE* stream);
+
+/**
  * mkdir:
  * @param path
  * @param mode

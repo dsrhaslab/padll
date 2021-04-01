@@ -341,6 +341,24 @@ long ftell (FILE* stream)
     return m_posix_passthrough.passthrough_ftell (stream);
 }
 
+// lseek64 call. (...)
+off_t lseek64 (int fd, off_t offset, int whence)
+{
+    return m_posix_passthrough.passthrough_lseek64 (fd, offset, whence);
+}
+
+// fseeko64 call. (...)
+int fseeko64 (FILE* stream, off_t offset, int whence)
+{
+    return m_posix_passthrough.passthrough_fseeko64 (stream, offset, whence);
+}
+
+// ftello64 call. (...)
+off_t ftello64 (FILE* stream)
+{
+    return m_posix_passthrough.passthrough_ftello64 (stream);
+}
+
 // mkdir call. (...)
 int mkdir (const char* path, mode_t mode)
 {

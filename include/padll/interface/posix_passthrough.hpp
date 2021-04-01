@@ -644,6 +644,32 @@ public:
     long passthrough_ftell (FILE* stream);
 
     /**
+     * passthrough_lseek64:
+     *  https://linux.die.net/man/2/lseek64
+     * @param fd
+     * @param offset
+     * @param whence
+     * @return
+     */
+    off_t passthrough_lseek64 (int fd, off_t offset, int whence);
+
+    /**
+     * passthrough_fseeko64:
+     * @param stream
+     * @param offset
+     * @param whence
+     * @return
+     */
+    int passthrough_fseeko64 (FILE* stream, off_t offset, int whence);
+
+    /**
+     * passthrough_ftello64:
+     * @param stream
+     * @return
+     */
+    off_t passthrough_ftello64 (FILE* stream);
+
+    /**
      * passthrough_mkdir:
      *  https://linux.die.net/man/2/mkdir
      * @param path
