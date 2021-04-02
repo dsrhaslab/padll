@@ -561,6 +561,15 @@ public:
     FILE* passthrough_fopen (const char* pathname, const char* mode);
 
     /**
+     * passthrough_fopen64:
+     *  https://sites.ualberta.ca/dept/chemeng/AIX-43/share/man/info/C/a_doc_lib/libs/basetrf1/fopen.htm
+     * @param pathname
+     * @param mode
+     * @return
+     */
+    FILE* passthrough_fopen64 (const char* pathname, const char* mode);
+
+    /**
      * passthrough_fdopen:
      *  https://linux.die.net/man/3/fdopen
      * @param fd
@@ -578,6 +587,16 @@ public:
      * @return
      */
     FILE* passthrough_freopen (const char* pathname, const char* mode, FILE* stream);
+
+    /**
+     * passthrough_freopen64:
+     *  https://sites.ualberta.ca/dept/chemeng/AIX-43/share/man/info/C/a_doc_lib/libs/basetrf1/fopen.htm
+     * @param pathname
+     * @param mode
+     * @param stream
+     * @return
+     */
+    FILE* passthrough_freopen64 (const char* pathname, const char* mode, FILE* stream);
 
     /**
      * passthrough_fclose:

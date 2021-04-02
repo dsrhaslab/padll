@@ -416,6 +416,14 @@ extern "C" ssize_t readlinkat (int dirfd, const char* path, char* buf, size_t bu
 extern "C" FILE* fopen (const char* pathname, const char* mode);
 
 /**
+ * fopen64:
+ * @param pathname
+ * @param mode
+ * @return
+ */
+extern "C" FILE* fopen64 (const char* pathname, const char* mode);
+
+/**
  * fdopen:
  * @param fd
  * @param mode
@@ -431,6 +439,15 @@ extern "C" FILE* fdopen (int fd, const char* mode);
  * @return
  */
 extern "C" FILE* freopen (const char* pathname, const char* mode, FILE* stream);
+
+/**
+ * freopen64:
+ * @param pathname
+ * @param mode
+ * @param stream
+ * @return
+ */
+extern "C" FILE* freopen64 (const char* pathname, const char* mode, FILE* stream);
 
 /**
  * fclose:

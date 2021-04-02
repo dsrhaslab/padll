@@ -2023,6 +2023,47 @@ FILE* PosixPassthrough::passthrough_fopen (const char* pathname, const char* mod
     return result;
 }
 
+// passthrough_fopen64 call. (...)
+FILE* PosixPassthrough::passthrough_fopen64 (const char* pathname, const char* mode)
+{
+    // logging message
+    if (option_default_detailed_logging) {
+        Logging::log_debug ("passthrough-fopen64 (" + std::string (pathname) + ")");
+    }
+
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_fopen64 && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_metadata_operations.m_fopen64 = (libc_fopen64_t)dlsym (this->m_lib_handle, "fopen64")
+        : m_metadata_operations.m_fopen64 = (libc_fopen64_t)dlsym (RTLD_NEXT, "fopen64");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_fopen64) {
+        m_metadata_operations.m_fopen64 = (libc_fopen64_t)dlsym (this->m_lib_handle, "fopen64");
+    }
+
+    // perform original POSIX fopen64 operation
+    FILE* result = m_metadata_operations.m_fopen64 (pathname, mode);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result != nullptr) {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fopen64),
+                                                           1,
+                                                           0);
+        } else {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fopen64),
+                                                           1,
+                                                           0,
+                                                           1);
+        }
+    }
+
+    return result;
+}
+
 // passthrough_fdopen call. (...)
 FILE* PosixPassthrough::passthrough_fdopen (int fd, const char* mode)
 {
@@ -2100,6 +2141,48 @@ FILE* PosixPassthrough::passthrough_freopen (const char* pathname, const char* m
                 1,
                 0,
                 1);
+        }
+    }
+
+    return result;
+}
+
+// passthrough_freopen64 call. (...)
+FILE* PosixPassthrough::passthrough_freopen64 (const char* pathname, const char* mode, FILE* stream)
+{
+    // logging message
+    if (option_default_detailed_logging) {
+        Logging::log_debug ("passthrough-freopen64 (" + std::string (pathname) + ")");
+    }
+
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_freopen64 && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_metadata_operations.m_freopen64
+                  = (libc_freopen64_t)dlsym (this->m_lib_handle, "freopen64")
+        : m_metadata_operations.m_freopen64 = (libc_freopen64_t)dlsym (RTLD_NEXT, "freopen64");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_freopen64) {
+        m_metadata_operations.m_freopen64 = (libc_freopen64_t)dlsym (this->m_lib_handle, "freopen64");
+    }
+
+    // perform original POSIX freopen64 operation
+    FILE* result = m_metadata_operations.m_freopen64 (pathname, mode, stream);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result != nullptr) {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::freopen64),
+                                                           1,
+                                                           0);
+        } else {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::freopen64),
+                                                           1,
+                                                           0,
+                                                           1);
         }
     }
 

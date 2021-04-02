@@ -287,6 +287,12 @@ FILE* fopen (const char* pathname, const char* mode)
     return m_posix_passthrough.passthrough_fopen (pathname, mode);
 }
 
+// fopen64 call. (...)
+FILE* fopen64 (const char* pathname, const char* mode)
+{
+    return m_posix_passthrough.passthrough_fopen64 (pathname, mode);
+}
+
 // fdopen call. (...)
 FILE* fdopen (int fd, const char* mode)
 {
@@ -297,6 +303,12 @@ FILE* fdopen (int fd, const char* mode)
 FILE* freopen (const char* pathname, const char* mode, FILE* stream)
 {
     return m_posix_passthrough.passthrough_freopen (pathname, mode, stream);
+}
+
+// freopen64 call. (...)
+FILE* freopen64 (const char* pathname, const char* mode, FILE* stream)
+{
+    return m_posix_passthrough.passthrough_freopen64 (pathname, mode, stream);
 }
 
 // fclose call. (...)
