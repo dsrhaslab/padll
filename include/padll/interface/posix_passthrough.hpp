@@ -725,6 +725,14 @@ public:
     struct dirent* passthrough_readdir (DIR* dirp);
 
     /**
+     * passthrough_readdir64:
+     *  https://www.mkssoftware.com/docs/man3/readdir.3.asp
+     * @param dirp
+     * @return
+     */
+    struct dirent64* passthrough_readdir64 (DIR* dirp);
+
+    /**
      * passthrough_opendir:
      *  https://linux.die.net/man/3/opendir
      * @param path

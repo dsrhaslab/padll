@@ -162,6 +162,7 @@ struct libc_data {
 typedef int (*libc_mkdir_t) (const char*, mode_t);
 typedef int (*libc_mkdirat_t) (int, const char*, mode_t);
 typedef struct dirent* (*libc_readdir_t) (DIR*);
+typedef struct dirent64* (*libc_readdir64_t) (DIR*);
 typedef DIR* (*libc_opendir_t) (const char*);
 typedef DIR* (*libc_fdopendir_t) (int);
 typedef int (*libc_closedir_t) (DIR*);
@@ -176,6 +177,7 @@ struct libc_directory {
     libc_mkdir_t m_mkdir { nullptr };
     libc_mkdirat_t m_mkdirat { nullptr };
     libc_readdir_t m_readdir { nullptr };
+    libc_readdir64_t m_readdir64 { nullptr };
     libc_opendir_t m_opendir { nullptr };
     libc_fdopendir_t m_fdopendir { nullptr };
     libc_closedir_t m_closedir { nullptr };

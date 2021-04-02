@@ -395,6 +395,15 @@ struct dirent* readdir (DIR* dirp)
     return m_posix_passthrough.passthrough_readdir (dirp);
 }
 
+// readdir64 call. (...)
+struct dirent64* readdir64 (DIR* dirp)
+{
+    #if defined(__unix__) || defined(__linux)
+        return m_posix_passthrough.passthrough_readdir64 (dirp);
+    #endif
+    return nullptr;
+}
+
 // opendir call. (...)
 DIR* opendir (const char* path)
 {

@@ -566,6 +566,13 @@ extern "C" int mkdirat (int dirfd, const char* path, mode_t mode);
 extern "C" struct dirent* readdir (DIR* dirp);
 
 /**
+ * readdir64:
+ * @param dirp
+ * @return
+ */
+extern "C" struct dirent64* readdir64 (DIR* dirp);
+
+/**
  * opendir:
  * @param path
  * @return

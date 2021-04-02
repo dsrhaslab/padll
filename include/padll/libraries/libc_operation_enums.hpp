@@ -104,11 +104,12 @@ BETTER_ENUM (Directory,
     mkdir = 1,
     mkdirat = 2,
     readdir = 3,
-    opendir = 4,
-    fdopendir = 5,
-    closedir = 6,
-    rmdir = 7,
-    dirfd = 8);
+    readdir64 = 4,
+    opendir = 5,
+    fdopendir = 6,
+    closedir = 7,
+    rmdir = 8,
+    dirfd = 9);
 
 /**
  * ExtendedAttributes Definitions.

@@ -2762,6 +2762,46 @@ struct dirent* PosixPassthrough::passthrough_readdir (DIR* dirp)
     return entry;
 }
 
+// passthrough_readdir64 call. (...)
+struct dirent64* PosixPassthrough::passthrough_readdir64 (DIR* dirp)
+{
+    // logging message
+    if (option_default_detailed_logging) {
+        Logging::log_debug ("passthrough-readdir64");
+    }
+
+    // validate function and library handle pointers
+    if (!m_directory_operations.m_readdir64 && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_directory_operations.m_readdir64
+                  = (libc_readdir64_t)dlsym (this->m_lib_handle, "readdir64")
+        : m_directory_operations.m_readdir64 = (libc_readdir64_t)dlsym (RTLD_NEXT, "readdir64");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_directory_operations.m_readdir64) {
+        m_directory_operations.m_readdir64 = (libc_readdir64_t)dlsym (this->m_lib_handle, "readdir64");
+    }
+
+    // perform original POSIX readdir64 operation
+    struct dirent64* entry = m_directory_operations.m_readdir64 (dirp);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (entry != nullptr) {
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::readdir64), 1, 0);
+        } else {
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::readdir64),
+                                                      1,
+                                                      0,
+                                                      1);
+        }
+    }
+
+    return entry;
+}
+
 // passthrough_opendir call. (...)
 DIR* PosixPassthrough::passthrough_opendir (const char* path)
 {
