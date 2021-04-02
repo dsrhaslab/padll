@@ -486,6 +486,47 @@ int PosixPassthrough::passthrough_creat (const char* path, mode_t mode)
     return result;
 }
 
+// passthrough_creat64 call.
+int PosixPassthrough::passthrough_creat64 (const char* path, mode_t mode)
+{
+    // logging message
+    if (option_default_detailed_logging) {
+        Logging::log_debug ("passthrough-creat64 (" + std::string (path) + ")");
+    }
+
+    // validate function and library handle pointers
+    if (!m_metadata_operations.m_creat64 && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_metadata_operations.m_creat64 = (libc_creat64_t)dlsym (this->m_lib_handle, "creat64")
+        : m_metadata_operations.m_creat64 = (libc_creat64_t)dlsym (RTLD_NEXT, "creat64");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_metadata_operations.m_creat64) {
+        m_metadata_operations.m_creat64 = (libc_creat64_t)dlsym (this->m_lib_handle, "creat64");
+    }
+
+    // perform original POSIX creat64 operation
+    int result = m_metadata_operations.m_creat64 (path, mode);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result >= 0) {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::creat64),
+                                                           1,
+                                                           0);
+        } else {
+            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::creat64),
+                                                           1,
+                                                           0,
+                                                           1);
+        }
+    }
+
+    return result;
+}
+
 // passthrough_openat call.
 int PosixPassthrough::passthrough_openat (int dirfd, const char* path, int flags, mode_t mode)
 {

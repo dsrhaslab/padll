@@ -194,6 +194,15 @@ public:
     int passthrough_creat (const char* path, mode_t mode);
 
     /**
+     * passthrough_creat64:
+     *  https://www.unix.com/man-page/hpux/2/creat64/
+     * @param path
+     * @param mode
+     * @return
+     */
+    int passthrough_creat64 (const char* path, mode_t mode);
+
+    /**
      * passthrough_openat:
      *  https://linux.die.net/man/2/openat
      * @param dirfd

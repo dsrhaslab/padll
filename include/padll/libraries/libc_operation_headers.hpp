@@ -21,6 +21,7 @@ namespace padll {
 typedef int (*libc_open_variadic_t) (const char*, int, ...);
 typedef int (*libc_open_t) (const char*, int);
 typedef int (*libc_creat_t) (const char*, mode_t);
+typedef int (*libc_creat64_t) (const char*, mode_t);
 typedef int (*libc_openat_variadic_t) (int, const char*, int, ...);
 typedef int (*libc_openat_t) (int, const char*, int);
 typedef int (*libc_open64_variadic_t) (const char*, int, ...);
@@ -80,6 +81,7 @@ struct libc_metadata {
     libc_open_variadic_t m_open_var { nullptr };
     libc_open_t m_open { nullptr };
     libc_creat_t m_creat { nullptr };
+    libc_creat64_t m_creat64 { nullptr };
     libc_openat_variadic_t m_openat_var { nullptr };
     libc_openat_t m_openat { nullptr };
     libc_open64_variadic_t m_open64_var { nullptr };

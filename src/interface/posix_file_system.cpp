@@ -63,6 +63,12 @@ int creat (const char* path, mode_t mode)
     return m_posix_passthrough.passthrough_creat (path, mode);
 }
 
+// creat64 call. (...)
+int creat64 (const char* path, mode_t mode)
+{
+    return m_posix_passthrough.passthrough_creat64 (path, mode);
+}
+
 // openat call. (...)
 int openat (int dirfd, const char* path, int flags, ...)
 {
