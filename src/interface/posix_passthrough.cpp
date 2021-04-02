@@ -292,6 +292,83 @@ PosixPassthrough::passthrough_pwrite (int fd, const void* buf, ssize_t counter, 
     return result;
 }
 
+// passthrough_pread64 call.
+#if defined(__USE_LARGEFILE64)
+ssize_t PosixPassthrough::passthrough_pread64 (int fd, void* buf, ssize_t counter, off64_t offset)
+{
+    // logging message
+    if (option_default_detailed_logging) {
+        Logging::log_debug ("passthrough-pread64 (" + std::to_string (fd) + ")");
+    }
+
+    // validate function and library handle pointers
+    if (!m_data_operations.m_pread64 && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_data_operations.m_pread64 = (libc_pread64_t)dlsym (this->m_lib_handle, "pread64")
+        : m_data_operations.m_pread64 = (libc_pread64_t)dlsym (RTLD_NEXT, "pread64");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_data_operations.m_pread64) {
+        m_data_operations.m_pread64 = (libc_pread64_t)dlsym (this->m_lib_handle, "pread64");
+    }
+
+    // perform original POSIX pread64 operation
+    ssize_t result = m_data_operations.m_pread64 (fd, buf, counter, offset);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result >= 0) {
+            this->m_data_stats.update_statistic_entry (static_cast<int> (Data::pread64), 1, result);
+        } else {
+            this->m_data_stats.update_statistic_entry (static_cast<int> (Data::pread64), 1, 0, 1);
+        }
+    }
+
+    return result;
+}
+#endif
+
+// passthrough_pwrite64 call.
+#if defined(__USE_LARGEFILE64)
+ssize_t
+PosixPassthrough::passthrough_pwrite64 (int fd, const void* buf, ssize_t counter, off64_t offset)
+{
+    // logging message
+    if (option_default_detailed_logging) {
+        Logging::log_debug ("passthrough-pwrite64 (" + std::to_string (fd) + ")");
+    }
+
+    // validate function and library handle pointers
+    if (!m_data_operations.m_pwrite64 && !this->m_lib_handle) {
+        // open library handle, and assign the operation pointer through m_lib_handle if the open
+        // was successful, or through the next operation link.
+        (this->dlopen_library_handle ())
+        ? m_data_operations.m_pwrite64 = (libc_pwrite64_t)dlsym (this->m_lib_handle, "pwrite64")
+        : m_data_operations.m_pwrite64 = (libc_pwrite64_t)dlsym (RTLD_NEXT, "pwrite64");
+
+        // in case the library handle pointer is valid, assign the operation pointer
+    } else if (!m_data_operations.m_pwrite64) {
+        m_data_operations.m_pwrite64 = (libc_pwrite64_t)dlsym (this->m_lib_handle, "pwrite64");
+    }
+
+    // perform original POSIX pwrite64 operation
+    ssize_t result = m_data_operations.m_pwrite64 (fd, buf, counter, offset);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result >= 0) {
+            this->m_data_stats.update_statistic_entry (static_cast<int> (Data::pwrite64), 1, result);
+        } else {
+            this->m_data_stats.update_statistic_entry (static_cast<int> (Data::pwrite64), 1, 0, 1);
+        }
+    }
+
+    return result;
+}
+#endif
+
 // passthrough_fread call. (...)
 size_t PosixPassthrough::passthrough_fread (void* ptr, size_t size, size_t nmemb, FILE* stream)
 {

@@ -92,8 +92,10 @@ BETTER_ENUM (Data,
     write = 2,
     pread = 3,
     pwrite = 4,
-    fread = 5,
-    fwrite = 6);
+    pread64 = 5,
+    pwrite64 = 6,
+    fread = 7,
+    fwrite = 8);
 
 /**
  * Directory Definitions.

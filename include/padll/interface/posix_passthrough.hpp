@@ -141,6 +141,34 @@ public:
     ssize_t passthrough_pwrite (int fd, const void* buf, ssize_t counter, off_t offset);
 
     /**
+     * passthrough_pread64:
+     *  https://linux.die.net/man/2/pread64
+     *  https://www.mkssoftware.com/docs/man3/read.3.asp
+     * @param fd
+     * @param buf
+     * @param counter
+     * @param offset
+     * @return
+     */
+#if defined(__USE_LARGEFILE64)
+    ssize_t passthrough_pread64 (int fd, void* buf, ssize_t counter, off64_t offset);
+#endif
+
+    /**
+     * passthrough_pwrite:
+     *  https://linux.die.net/man/2/pwrite64
+     *  https://www.mkssoftware.com/docs/man3/write.3.asp
+     * @param fd
+     * @param buf
+     * @param counter
+     * @param offset
+     * @return
+     */
+#if defined(__USE_LARGEFILE64)
+    ssize_t passthrough_pwrite64 (int fd, const void* buf, ssize_t counter, off64_t offset);
+#endif
+
+    /**
      * passthrough_fread:
      *  https://linux.die.net/man/3/fread
      * @param ptr

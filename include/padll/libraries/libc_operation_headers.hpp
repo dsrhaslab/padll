@@ -143,6 +143,10 @@ typedef ssize_t (*libc_pread_t) (int, void*, size_t, off_t);
 typedef ssize_t (*libc_pwrite_t) (int, const void*, size_t, off_t);
 typedef size_t (*libc_fread_t) (void*, size_t, size_t, FILE*);
 typedef size_t (*libc_fwrite_t) (const void*, size_t, size_t, FILE*);
+#if defined(__USE_LARGEFILE64)
+typedef ssize_t (*libc_pread64_t) (int, void*, size_t, off64_t);
+typedef ssize_t (*libc_pwrite64_t) (int, const void*, size_t, off64_t);
+#endif
 
 /**
  * libc_data: provides an object with the function pointers to all libc data-like operations.
@@ -154,6 +158,10 @@ struct libc_data {
     libc_pwrite_t m_pwrite { nullptr };
     libc_fread_t m_fread { nullptr };
     libc_fwrite_t m_fwrite { nullptr };
+#if defined(__USE_LARGEFILE64)
+    libc_pread64_t m_pread64 { nullptr };
+    libc_pwrite64_t m_pwrite64 { nullptr };
+#endif
 };
 
 /**
