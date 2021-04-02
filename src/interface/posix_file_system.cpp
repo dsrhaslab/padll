@@ -29,6 +29,22 @@ ssize_t pwrite (int fd, const void* buf, size_t size, off_t offset)
     return m_posix_passthrough.passthrough_pwrite (fd, buf, size, offset);
 }
 
+// pread64 call. (...)
+#if defined(__USE_LARGEFILE64)
+ssize_t pread64 (int fd, void* buf, size_t size, off64_t offset)
+{
+    return m_posix_passthrough.passthrough_pread64 (fd, buf, size, offset);
+}
+#endif
+
+// pwrite64 call. (...)
+#if defined(__USE_LARGEFILE64)
+ssize_t pwrite64 (int fd, const void* buf, size_t size, off64_t offset)
+{
+    return m_posix_passthrough.passthrough_pwrite64 (fd, buf, size, offset);
+}
+#endif
+
 // fread call. (...)
 size_t fread (void* ptr, size_t size, size_t nmemb, FILE* stream)
 {

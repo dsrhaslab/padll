@@ -76,6 +76,30 @@ extern "C" ssize_t pread (int fd, void* buf, size_t size, off_t offset);
 extern "C" ssize_t pwrite (int fd, const void* buf, size_t size, off_t offset);
 
 /**
+ * pread64:
+ * @param fd
+ * @param buf
+ * @param size
+ * @param offset
+ * @return
+ */
+#if defined(__USE_LARGEFILE64)
+extern "C" ssize_t pread64 (int fd, void* buf, size_t size, off64_t offset);
+#endif
+
+/**
+ * pwrite64:
+ * @param fd
+ * @param buf
+ * @param size
+ * @param offset
+ * @return
+ */
+#if defined(__USE_LARGEFILE64)
+extern "C" ssize_t pwrite64 (int fd, const void* buf, size_t size, off64_t offset);
+#endif
+
+/**
  * fread:
  * @param ptr
  * @param size
