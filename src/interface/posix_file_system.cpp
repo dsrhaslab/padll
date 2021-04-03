@@ -8,7 +8,13 @@
 // read call. (...)
 ssize_t read (int fd, void* buf, size_t size)
 {
-    return m_posix_passthrough.passthrough_read (fd, buf, size);
+    if (use_read) {
+        printf ("posix_passhtrough read\n");
+        return m_posix_passthrough.passthrough_read(fd, buf, size);
+    } else {
+        printf ("vanilla read\n");
+        return ::read (fd, buf, size);
+    }
 }
 
 // write call. (...)

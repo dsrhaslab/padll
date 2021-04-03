@@ -14,6 +14,7 @@
 
 padll::Logging m_logger { false };
 padll::PosixPassthrough m_posix_passthrough {};
+bool use_read = false;
 
 /**
  * init_method: constructor of the PosixFileSystem.
