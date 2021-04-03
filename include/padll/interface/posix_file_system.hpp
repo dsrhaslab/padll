@@ -45,7 +45,9 @@ static __attribute__ ((destructor)) void destroy_method ()
  * @param size
  * @return
  */
+#if intercept_read
 extern "C" ssize_t read (int fd, void* buf, size_t size);
+#endif
 
 /**
  * write:

@@ -57,6 +57,7 @@ target_link_libraries(padll Threads::Threads)
 target_sources(
     padll
     PUBLIC
+    ${PROJECT_SOURCE_DIR}/include/padll/configurations/libc_calls.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/interface/posix_file_system.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/interface/posix_passthrough.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/statistics/statistic_entry.hpp
