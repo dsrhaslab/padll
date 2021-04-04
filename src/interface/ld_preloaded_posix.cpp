@@ -3,19 +3,19 @@
  *   Copyright (c) 2021 INESC TEC.
  **/
 
-#include <padll/interface/posix_passthrough.hpp>
+#include <padll/interface/ld_preloaded_posix.hpp>
 
 namespace padll {
 
-// PosixPassthrough default constructor.
-PosixPassthrough::PosixPassthrough ()
+// LdPreloadedPosix default constructor.
+LdPreloadedPosix::LdPreloadedPosix ()
 {
     // initialize library handle pointer
     this->initialize ();
 }
 
-// PosixPassthrough parameterized constructor.
-PosixPassthrough::PosixPassthrough (const std::string& lib, bool stat_collection) :
+// LdPreloadedPosix parameterized constructor.
+LdPreloadedPosix::LdPreloadedPosix (const std::string& lib, bool stat_collection) :
     m_lib_name { lib },
     m_collect { stat_collection }
 {
@@ -29,10 +29,10 @@ PosixPassthrough::PosixPassthrough (const std::string& lib, bool stat_collection
     this->initialize ();
 }
 
-// PosixPassthrough default destructor.
-PosixPassthrough::~PosixPassthrough ()
+// LdPreloadedPosix default destructor.
+LdPreloadedPosix::~LdPreloadedPosix ()
 {
-    Logging::log_info ("PosixPassthrough default destructor.");
+    Logging::log_info ("LdPreloadedPosix default destructor.");
 
     // validate if library handle is valid and close dynamic linking
     if (this->m_lib_handle != nullptr) {
@@ -76,7 +76,7 @@ PosixPassthrough::~PosixPassthrough ()
 }
 
 // dlopen_library_handle call. (...)
-bool PosixPassthrough::dlopen_library_handle ()
+bool LdPreloadedPosix::dlopen_library_handle ()
 {
     std::unique_lock<std::mutex> unique_lock (this->m_lock);
     // Dynamic loading of the libc library (referred to as 'libc.so.6').
@@ -89,7 +89,7 @@ bool PosixPassthrough::dlopen_library_handle ()
 }
 
 // initialize call. (...)
-void PosixPassthrough::initialize ()
+void LdPreloadedPosix::initialize ()
 {
     // open library and assign pointer to m_lib_handle
     bool open_lib_handle = this->dlopen_library_handle ();
@@ -102,13 +102,13 @@ void PosixPassthrough::initialize ()
 }
 
 // set_statistic_collection call. (...)
-void PosixPassthrough::set_statistic_collection (bool value)
+void LdPreloadedPosix::set_statistic_collection (bool value)
 {
     this->m_collect.store (value);
 }
 
 // get_statistic_entry call.
-StatisticEntry PosixPassthrough::get_statistic_entry (const OperationType& operation_type,
+StatisticEntry LdPreloadedPosix::get_statistic_entry (const OperationType& operation_type,
     const int& operation_entry)
 {
     switch (operation_type) {
@@ -133,10 +133,10 @@ StatisticEntry PosixPassthrough::get_statistic_entry (const OperationType& opera
 }
 
 // to_string call. (...)
-std::string PosixPassthrough::to_string ()
+std::string LdPreloadedPosix::to_string ()
 {
     std::stringstream stream;
-    stream << "PosixPassthrough {\n";
+    stream << "LdPreloadedPosix {\n";
     stream << "\t" << this->m_metadata_stats.to_string () << "\n";
     stream << "\t" << this->m_data_stats.to_string () << "\n";
     stream << "\t" << this->m_dir_stats.to_string () << "\n";
@@ -147,12 +147,12 @@ std::string PosixPassthrough::to_string ()
     return stream.str ();
 }
 
-// passthrough_read call.
-ssize_t PosixPassthrough::passthrough_read (int fd, void* buf, ssize_t counter)
+// ld_preloaded_posix_read call.
+ssize_t LdPreloadedPosix::ld_preloaded_posix_read (int fd, void* buf, ssize_t counter)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-read (" + std::to_string (fd) + ")");
+        Logging::log_debug ("ld_preloaded_posix-read (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -183,12 +183,12 @@ ssize_t PosixPassthrough::passthrough_read (int fd, void* buf, ssize_t counter)
     return result;
 }
 
-// passthrough_write call.
-ssize_t PosixPassthrough::passthrough_write (int fd, const void* buf, ssize_t counter)
+// ld_preloaded_posix_write call.
+ssize_t LdPreloadedPosix::ld_preloaded_posix_write (int fd, const void* buf, ssize_t counter)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-write (" + std::to_string (fd) + ")");
+        Logging::log_debug ("ld_preloaded_posix-write (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -219,12 +219,13 @@ ssize_t PosixPassthrough::passthrough_write (int fd, const void* buf, ssize_t co
     return result;
 }
 
-// passthrough_pread call.
-ssize_t PosixPassthrough::passthrough_pread (int fd, void* buf, ssize_t counter, off_t offset)
+// ld_preloaded_posix_pread call.
+ssize_t
+LdPreloadedPosix::ld_preloaded_posix_pread (int fd, void* buf, ssize_t counter, off_t offset)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-pread (" + std::to_string (fd) + ")");
+        Logging::log_debug ("ld_preloaded_posix-pread (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -255,13 +256,13 @@ ssize_t PosixPassthrough::passthrough_pread (int fd, void* buf, ssize_t counter,
     return result;
 }
 
-// passthrough_pwrite call.
+// ld_preloaded_posix_pwrite call.
 ssize_t
-PosixPassthrough::passthrough_pwrite (int fd, const void* buf, ssize_t counter, off_t offset)
+LdPreloadedPosix::ld_preloaded_posix_pwrite (int fd, const void* buf, ssize_t counter, off_t offset)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-pwrite (" + std::to_string (fd) + ")");
+        Logging::log_debug ("ld_preloaded_posix-pwrite (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -292,13 +293,14 @@ PosixPassthrough::passthrough_pwrite (int fd, const void* buf, ssize_t counter, 
     return result;
 }
 
-// passthrough_pread64 call.
+// ld_preloaded_posix_pread64 call.
 #if defined(__USE_LARGEFILE64)
-ssize_t PosixPassthrough::passthrough_pread64 (int fd, void* buf, ssize_t counter, off64_t offset)
+ssize_t
+LdPreloadedPosix::ld_preloaded_posix_pread64 (int fd, void* buf, ssize_t counter, off64_t offset)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-pread64 (" + std::to_string (fd) + ")");
+        Logging::log_debug ("ld_preloaded_posix-pread64 (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -306,8 +308,8 @@ ssize_t PosixPassthrough::passthrough_pread64 (int fd, void* buf, ssize_t counte
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_data_operations.m_pread64 = (libc_pread64_t)dlsym (this->m_lib_handle, "pread64")
-        : m_data_operations.m_pread64 = (libc_pread64_t)dlsym (RTLD_NEXT, "pread64");
+            ? m_data_operations.m_pread64 = (libc_pread64_t)dlsym (this->m_lib_handle, "pread64")
+            : m_data_operations.m_pread64 = (libc_pread64_t)dlsym (RTLD_NEXT, "pread64");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_data_operations.m_pread64) {
@@ -330,14 +332,16 @@ ssize_t PosixPassthrough::passthrough_pread64 (int fd, void* buf, ssize_t counte
 }
 #endif
 
-// passthrough_pwrite64 call.
+// ld_preloaded_posix_pwrite64 call.
 #if defined(__USE_LARGEFILE64)
-ssize_t
-PosixPassthrough::passthrough_pwrite64 (int fd, const void* buf, ssize_t counter, off64_t offset)
+ssize_t LdPreloadedPosix::ld_preloaded_posix_pwrite64 (int fd,
+    const void* buf,
+    ssize_t counter,
+    off64_t offset)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-pwrite64 (" + std::to_string (fd) + ")");
+        Logging::log_debug ("ld_preloaded_posix-pwrite64 (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -345,8 +349,8 @@ PosixPassthrough::passthrough_pwrite64 (int fd, const void* buf, ssize_t counter
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_data_operations.m_pwrite64 = (libc_pwrite64_t)dlsym (this->m_lib_handle, "pwrite64")
-        : m_data_operations.m_pwrite64 = (libc_pwrite64_t)dlsym (RTLD_NEXT, "pwrite64");
+            ? m_data_operations.m_pwrite64 = (libc_pwrite64_t)dlsym (this->m_lib_handle, "pwrite64")
+            : m_data_operations.m_pwrite64 = (libc_pwrite64_t)dlsym (RTLD_NEXT, "pwrite64");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_data_operations.m_pwrite64) {
@@ -359,7 +363,9 @@ PosixPassthrough::passthrough_pwrite64 (int fd, const void* buf, ssize_t counter
     // update statistic entry
     if (this->m_collect) {
         if (result >= 0) {
-            this->m_data_stats.update_statistic_entry (static_cast<int> (Data::pwrite64), 1, result);
+            this->m_data_stats.update_statistic_entry (static_cast<int> (Data::pwrite64),
+                1,
+                result);
         } else {
             this->m_data_stats.update_statistic_entry (static_cast<int> (Data::pwrite64), 1, 0, 1);
         }
@@ -369,12 +375,13 @@ PosixPassthrough::passthrough_pwrite64 (int fd, const void* buf, ssize_t counter
 }
 #endif
 
-// passthrough_fread call. (...)
-size_t PosixPassthrough::passthrough_fread (void* ptr, size_t size, size_t nmemb, FILE* stream)
+// ld_preloaded_posix_fread call. (...)
+size_t
+LdPreloadedPosix::ld_preloaded_posix_fread (void* ptr, size_t size, size_t nmemb, FILE* stream)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-fpread");
+        Logging::log_debug ("ld_preloaded_posix-fpread");
     }
 
     // validate function and library handle pointers
@@ -405,13 +412,15 @@ size_t PosixPassthrough::passthrough_fread (void* ptr, size_t size, size_t nmemb
     return result;
 }
 
-// passthrough_fwrite call. (...)
-size_t
-PosixPassthrough::passthrough_fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stream)
+// ld_preloaded_posix_fwrite call. (...)
+size_t LdPreloadedPosix::ld_preloaded_posix_fwrite (const void* ptr,
+    size_t size,
+    size_t nmemb,
+    FILE* stream)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-fwrite");
+        Logging::log_debug ("ld_preloaded_posix-fwrite");
     }
 
     // validate function and library handle pointers
@@ -442,12 +451,12 @@ PosixPassthrough::passthrough_fwrite (const void* ptr, size_t size, size_t nmemb
     return result;
 }
 
-// passthrough_open call.
-int PosixPassthrough::passthrough_open (const char* path, int flags, mode_t mode)
+// ld_preloaded_posix_open call.
+int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags, mode_t mode)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-open-variadic (" + std::string (path) + ")");
+        Logging::log_debug ("ld_preloaded_posix-open-variadic (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -483,12 +492,12 @@ int PosixPassthrough::passthrough_open (const char* path, int flags, mode_t mode
     return result;
 }
 
-// passthrough_open call.
-int PosixPassthrough::passthrough_open (const char* path, int flags)
+// ld_preloaded_posix_open call.
+int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-open (" + std::string (path) + ")");
+        Logging::log_debug ("ld_preloaded_posix-open (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -522,12 +531,12 @@ int PosixPassthrough::passthrough_open (const char* path, int flags)
     return result;
 }
 
-// passthrough_creat call.
-int PosixPassthrough::passthrough_creat (const char* path, mode_t mode)
+// ld_preloaded_posix_creat call.
+int LdPreloadedPosix::ld_preloaded_posix_creat (const char* path, mode_t mode)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-creat (" + std::string (path) + ")");
+        Logging::log_debug ("ld_preloaded_posix-creat (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -563,12 +572,12 @@ int PosixPassthrough::passthrough_creat (const char* path, mode_t mode)
     return result;
 }
 
-// passthrough_creat64 call.
-int PosixPassthrough::passthrough_creat64 (const char* path, mode_t mode)
+// ld_preloaded_posix_creat64 call.
+int LdPreloadedPosix::ld_preloaded_posix_creat64 (const char* path, mode_t mode)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-creat64 (" + std::string (path) + ")");
+        Logging::log_debug ("ld_preloaded_posix-creat64 (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -576,8 +585,9 @@ int PosixPassthrough::passthrough_creat64 (const char* path, mode_t mode)
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_metadata_operations.m_creat64 = (libc_creat64_t)dlsym (this->m_lib_handle, "creat64")
-        : m_metadata_operations.m_creat64 = (libc_creat64_t)dlsym (RTLD_NEXT, "creat64");
+            ? m_metadata_operations.m_creat64
+            = (libc_creat64_t)dlsym (this->m_lib_handle, "creat64")
+            : m_metadata_operations.m_creat64 = (libc_creat64_t)dlsym (RTLD_NEXT, "creat64");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_metadata_operations.m_creat64) {
@@ -591,25 +601,28 @@ int PosixPassthrough::passthrough_creat64 (const char* path, mode_t mode)
     if (this->m_collect) {
         if (result >= 0) {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::creat64),
-                                                           1,
-                                                           0);
+                1,
+                0);
         } else {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::creat64),
-                                                           1,
-                                                           0,
-                                                           1);
+                1,
+                0,
+                1);
         }
     }
 
     return result;
 }
 
-// passthrough_openat call.
-int PosixPassthrough::passthrough_openat (int dirfd, const char* path, int flags, mode_t mode)
+// ld_preloaded_posix_openat call.
+int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd,
+    const char* path,
+    int flags,
+    mode_t mode)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-openat-variadic (" + std::to_string (dirfd) + ", "
+        Logging::log_debug ("ld_preloaded_posix-openat-variadic (" + std::to_string (dirfd) + ", "
             + std::string (path) + ")");
     }
 
@@ -647,13 +660,13 @@ int PosixPassthrough::passthrough_openat (int dirfd, const char* path, int flags
     return result;
 }
 
-// passthrough_openat call.
-int PosixPassthrough::passthrough_openat (int dirfd, const char* path, int flags)
+// ld_preloaded_posix_openat call.
+int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd, const char* path, int flags)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug (
-            "passthrough-openat (" + std::to_string (dirfd) + ", " + std::string (path) + ")");
+        Logging::log_debug ("ld_preloaded_posix-openat (" + std::to_string (dirfd) + ", "
+            + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -689,12 +702,12 @@ int PosixPassthrough::passthrough_openat (int dirfd, const char* path, int flags
     return result;
 }
 
-// passthrough_open64 call. (...)
-int PosixPassthrough::passthrough_open64 (const char* path, int flags, mode_t mode)
+// ld_preloaded_posix_open64 call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags, mode_t mode)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-open64-variadic (" + std::string (path) + ")");
+        Logging::log_debug ("ld_preloaded_posix-open64-variadic (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -731,12 +744,12 @@ int PosixPassthrough::passthrough_open64 (const char* path, int flags, mode_t mo
     return result;
 }
 
-// passthrough_open64 call. (...)
-int PosixPassthrough::passthrough_open64 (const char* path, int flags)
+// ld_preloaded_posix_open64 call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-open64 (" + std::string (path) + ")");
+        Logging::log_debug ("ld_preloaded_posix-open64 (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -772,12 +785,12 @@ int PosixPassthrough::passthrough_open64 (const char* path, int flags)
     return result;
 }
 
-// passthrough_close call.
-int PosixPassthrough::passthrough_close (int fd)
+// ld_preloaded_posix_close call.
+int LdPreloadedPosix::ld_preloaded_posix_close (int fd)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-close (" + std::to_string (fd) + ")");
+        Logging::log_debug ("ld_preloaded_posix-close (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -813,12 +826,12 @@ int PosixPassthrough::passthrough_close (int fd)
     return result;
 }
 
-// passthrough_fsync call. (...)
-int PosixPassthrough::passthrough_fsync (int fd)
+// ld_preloaded_posix_fsync call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_fsync (int fd)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-fsync (" + std::to_string (fd) + ")");
+        Logging::log_debug ("ld_preloaded_posix-fsync (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -854,12 +867,12 @@ int PosixPassthrough::passthrough_fsync (int fd)
     return result;
 }
 
-// passthrough_fdatasync call. (...)
-int PosixPassthrough::passthrough_fdatasync (int fd)
+// ld_preloaded_posix_fdatasync call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_fdatasync (int fd)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-fdatasync (" + std::to_string (fd) + ")");
+        Logging::log_debug ("ld_preloaded_posix-fdatasync (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -897,12 +910,12 @@ int PosixPassthrough::passthrough_fdatasync (int fd)
     return result;
 }
 
-// passthrough_sync call. (...)
-void PosixPassthrough::passthrough_sync ()
+// ld_preloaded_posix_sync call. (...)
+void LdPreloadedPosix::ld_preloaded_posix_sync ()
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-sync");
+        Logging::log_debug ("ld_preloaded_posix-sync");
     }
 
     // validate function and library handle pointers
@@ -927,12 +940,12 @@ void PosixPassthrough::passthrough_sync ()
     }
 }
 
-// passthrough_syncfs call. (...)
-int PosixPassthrough::passthrough_syncfs (int fd)
+// ld_preloaded_posix_syncfs call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_syncfs (int fd)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-syncfs (" + std::to_string (fd) + ")");
+        Logging::log_debug ("ld_preloaded_posix-syncfs (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -968,12 +981,12 @@ int PosixPassthrough::passthrough_syncfs (int fd)
     return result;
 }
 
-// passthrough_truncate call. (...)
-int PosixPassthrough::passthrough_truncate (const char* path, off_t length)
+// ld_preloaded_posix_truncate call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_truncate (const char* path, off_t length)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-truncate (" + std::string (path) + ")");
+        Logging::log_debug ("ld_preloaded_posix-truncate (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -1010,12 +1023,12 @@ int PosixPassthrough::passthrough_truncate (const char* path, off_t length)
     return result;
 }
 
-// passthrough_ftruncate call. (...)
-int PosixPassthrough::passthrough_ftruncate (int fd, off_t length)
+// ld_preloaded_posix_ftruncate call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_ftruncate (int fd, off_t length)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-ftruncate (" + std::to_string (fd) + ")");
+        Logging::log_debug ("ld_preloaded_posix-ftruncate (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -1053,12 +1066,12 @@ int PosixPassthrough::passthrough_ftruncate (int fd, off_t length)
     return result;
 }
 
-// passthrough_truncate64 call. (...)
-int PosixPassthrough::passthrough_truncate64 (const char* path, off_t length)
+// ld_preloaded_posix_truncate64 call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_truncate64 (const char* path, off_t length)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-truncate64 (" + std::string (path) + ")");
+        Logging::log_debug ("ld_preloaded_posix-truncate64 (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -1096,12 +1109,12 @@ int PosixPassthrough::passthrough_truncate64 (const char* path, off_t length)
     return result;
 }
 
-// passthrough_ftruncate64 call. (...)
-int PosixPassthrough::passthrough_ftruncate64 (int fd, off_t length)
+// ld_preloaded_posix_ftruncate64 call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_ftruncate64 (int fd, off_t length)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-ftruncate64 (" + std::to_string (fd) + ")");
+        Logging::log_debug ("ld_preloaded_posix-ftruncate64 (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -1139,12 +1152,12 @@ int PosixPassthrough::passthrough_ftruncate64 (int fd, off_t length)
     return result;
 }
 
-// passthrough_xstat call. (...)
-int PosixPassthrough::passthrough_xstat (int version, const char* path, struct stat* statbuf)
+// ld_preloaded_posix_xstat call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_xstat (int version, const char* path, struct stat* statbuf)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-xstat (" + std::string (path) + ")");
+        Logging::log_debug ("ld_preloaded_posix-xstat (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -1179,12 +1192,14 @@ int PosixPassthrough::passthrough_xstat (int version, const char* path, struct s
     return result;
 }
 
-// passthrough_lxstat call. (...)
-int PosixPassthrough::passthrough_lxstat (int version, const char* path, struct stat* statbuf)
+// ld_preloaded_posix_lxstat call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_lxstat (int version,
+    const char* path,
+    struct stat* statbuf)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-lxstat (" + std::string (path) + ")");
+        Logging::log_debug ("ld_preloaded_posix-lxstat (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -1222,12 +1237,12 @@ int PosixPassthrough::passthrough_lxstat (int version, const char* path, struct 
     return result;
 }
 
-// passthrough_fxstat call. (...)
-int PosixPassthrough::passthrough_fxstat (int version, int fd, struct stat* statbuf)
+// ld_preloaded_posix_fxstat call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_fxstat (int version, int fd, struct stat* statbuf)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-fxstat (" + std::to_string (fd) + ")");
+        Logging::log_debug ("ld_preloaded_posix-fxstat (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -1264,8 +1279,8 @@ int PosixPassthrough::passthrough_fxstat (int version, int fd, struct stat* stat
     return result;
 }
 
-// passthrough_fxstatat call. (...)
-int PosixPassthrough::passthrough_fxstatat (int version,
+// ld_preloaded_posix_fxstatat call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_fxstatat (int version,
     int dirfd,
     const char* path,
     struct stat* statbuf,
@@ -1273,8 +1288,8 @@ int PosixPassthrough::passthrough_fxstatat (int version,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug (
-            "passthrough-fxstatat (" + std::to_string (dirfd) + ", " + std::string (path) + ")");
+        Logging::log_debug ("ld_preloaded_posix-fxstatat (" + std::to_string (dirfd) + ", "
+            + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -1314,12 +1329,14 @@ int PosixPassthrough::passthrough_fxstatat (int version,
     return result;
 }
 
-// passthrough_xstat64 call. (...)
-int PosixPassthrough::passthrough_xstat64 (int version, const char* path, struct stat64* statbuf)
+// ld_preloaded_posix_xstat64 call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_xstat64 (int version,
+    const char* path,
+    struct stat64* statbuf)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-xstat64 (" + std::string (path) + ")");
+        Logging::log_debug ("ld_preloaded_posix-xstat64 (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -1358,12 +1375,14 @@ int PosixPassthrough::passthrough_xstat64 (int version, const char* path, struct
     return result;
 }
 
-// passthrough_lxstat64 call. (...)
-int PosixPassthrough::passthrough_lxstat64 (int version, const char* path, struct stat64* statbuf)
+// ld_preloaded_posix_lxstat64 call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_lxstat64 (int version,
+    const char* path,
+    struct stat64* statbuf)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-lxstat64 (" + std::string (path) + ")");
+        Logging::log_debug ("ld_preloaded_posix-lxstat64 (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -1403,12 +1422,12 @@ int PosixPassthrough::passthrough_lxstat64 (int version, const char* path, struc
     return result;
 }
 
-// passthrough_fxstat64 call. (...)
-int PosixPassthrough::passthrough_fxstat64 (int version, int fd, struct stat64* statbuf)
+// ld_preloaded_posix_fxstat64 call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_fxstat64 (int version, int fd, struct stat64* statbuf)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-fxstat64 (" + std::to_string (fd) + ")");
+        Logging::log_debug ("ld_preloaded_posix-fxstat64 (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -1448,8 +1467,8 @@ int PosixPassthrough::passthrough_fxstat64 (int version, int fd, struct stat64* 
     return result;
 }
 
-// passthrough_fxstatat64 call. (...)
-int PosixPassthrough::passthrough_fxstatat64 (int version,
+// ld_preloaded_posix_fxstatat64 call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_fxstatat64 (int version,
     int dirfd,
     const char* path,
     struct stat64* statbuf,
@@ -1457,8 +1476,8 @@ int PosixPassthrough::passthrough_fxstatat64 (int version,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug (
-            "passthrough-fxstatat64 (" + std::to_string (dirfd) + ", " + std::string (path) + ")");
+        Logging::log_debug ("ld_preloaded_posix-fxstatat64 (" + std::to_string (dirfd) + ", "
+            + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -1498,12 +1517,12 @@ int PosixPassthrough::passthrough_fxstatat64 (int version,
     return result;
 }
 
-// passthrough_statfs call. (...)
-int PosixPassthrough::passthrough_statfs (const char* path, struct statfs* buf)
+// ld_preloaded_posix_statfs call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_statfs (const char* path, struct statfs* buf)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-statfs (" + std::string (path) + ")");
+        Logging::log_debug ("ld_preloaded_posix-statfs (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -1539,12 +1558,12 @@ int PosixPassthrough::passthrough_statfs (const char* path, struct statfs* buf)
     return result;
 }
 
-// passthrough_fstatfs call. (...)
-int PosixPassthrough::passthrough_fstatfs (int fd, struct statfs* buf)
+// ld_preloaded_posix_fstatfs call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_fstatfs (int fd, struct statfs* buf)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-fstatfs (" + std::to_string (fd) + ")");
+        Logging::log_debug ("ld_preloaded_posix-fstatfs (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -1581,12 +1600,12 @@ int PosixPassthrough::passthrough_fstatfs (int fd, struct statfs* buf)
     return result;
 }
 
-// passthrough_statfs64 call. (...)
-int PosixPassthrough::passthrough_statfs64 (const char* path, struct statfs64* buf)
+// ld_preloaded_posix_statfs64 call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_statfs64 (const char* path, struct statfs64* buf)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-statfs64 (" + std::string (path) + ")");
+        Logging::log_debug ("ld_preloaded_posix-statfs64 (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -1623,12 +1642,12 @@ int PosixPassthrough::passthrough_statfs64 (const char* path, struct statfs64* b
     return result;
 }
 
-// passthrough_fstatfs64 call. (...)
-int PosixPassthrough::passthrough_fstatfs64 (int fd, struct statfs64* buf)
+// ld_preloaded_posix_fstatfs64 call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_fstatfs64 (int fd, struct statfs64* buf)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-fstatfs64 (" + std::to_string (fd) + ")");
+        Logging::log_debug ("ld_preloaded_posix-fstatfs64 (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -1666,13 +1685,13 @@ int PosixPassthrough::passthrough_fstatfs64 (int fd, struct statfs64* buf)
     return result;
 }
 
-// passthrough_link call. (...)
-int PosixPassthrough::passthrough_link (const char* old_path, const char* new_path)
+// ld_preloaded_posix_link call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_link (const char* old_path, const char* new_path)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug (
-            "passthrough-link (" + std::string (old_path) + ", " + std::string (new_path) + ")");
+        Logging::log_debug ("ld_preloaded_posix-link (" + std::string (old_path) + ", "
+            + std::string (new_path) + ")");
     }
 
     // validate function and library handle pointers
@@ -1706,12 +1725,12 @@ int PosixPassthrough::passthrough_link (const char* old_path, const char* new_pa
     return result;
 }
 
-// passthrough_unlink call. (...)
-int PosixPassthrough::passthrough_unlink (const char* path)
+// ld_preloaded_posix_unlink call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_unlink (const char* path)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-unlink (" + std::string (path) + ")");
+        Logging::log_debug ("ld_preloaded_posix-unlink (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -1747,8 +1766,8 @@ int PosixPassthrough::passthrough_unlink (const char* path)
     return result;
 }
 
-// passthrough_linkat call. (...)
-int PosixPassthrough::passthrough_linkat (int olddirfd,
+// ld_preloaded_posix_linkat call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_linkat (int olddirfd,
     const char* old_path,
     int newdirfd,
     const char* new_path,
@@ -1756,7 +1775,7 @@ int PosixPassthrough::passthrough_linkat (int olddirfd,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-linkat (" + std::to_string (olddirfd) + ", "
+        Logging::log_debug ("ld_preloaded_posix-linkat (" + std::to_string (olddirfd) + ", "
             + std::string (old_path) + ", " + std::to_string (newdirfd) + ", "
             + std::string (new_path) + ")");
     }
@@ -1794,12 +1813,12 @@ int PosixPassthrough::passthrough_linkat (int olddirfd,
     return result;
 }
 
-// passthrough_unlinkat call. (...)
-int PosixPassthrough::passthrough_unlinkat (int dirfd, const char* pathname, int flags)
+// ld_preloaded_posix_unlinkat call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_unlinkat (int dirfd, const char* pathname, int flags)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-unlinkat (" + std::to_string (dirfd) + ", "
+        Logging::log_debug ("ld_preloaded_posix-unlinkat (" + std::to_string (dirfd) + ", "
             + std::string (pathname) + ", " + std::to_string (flags) + ")");
     }
 
@@ -1837,13 +1856,13 @@ int PosixPassthrough::passthrough_unlinkat (int dirfd, const char* pathname, int
     return result;
 }
 
-// passthrough_rename call. (...)
-int PosixPassthrough::passthrough_rename (const char* old_path, const char* new_path)
+// ld_preloaded_posix_rename call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_rename (const char* old_path, const char* new_path)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug (
-            "passthrough-rename (" + std::string (old_path) + ", " + std::string (new_path) + ")");
+        Logging::log_debug ("ld_preloaded_posix-rename (" + std::string (old_path) + ", "
+            + std::string (new_path) + ")");
     }
 
     // validate function and library handle pointers
@@ -1879,15 +1898,15 @@ int PosixPassthrough::passthrough_rename (const char* old_path, const char* new_
     return result;
 }
 
-// passthrough_renameat call. (...)
-int PosixPassthrough::passthrough_renameat (int olddirfd,
+// ld_preloaded_posix_renameat call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_renameat (int olddirfd,
     const char* old_path,
     int newdirfd,
     const char* new_path)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-renameat (" + std::to_string (olddirfd) + ", "
+        Logging::log_debug ("ld_preloaded_posix-renameat (" + std::to_string (olddirfd) + ", "
             + std::string (old_path) + ", " + std::to_string (newdirfd) + ", "
             + std::string (new_path) + ")");
     }
@@ -1926,13 +1945,13 @@ int PosixPassthrough::passthrough_renameat (int olddirfd,
     return result;
 }
 
-// passthrough_symlink call. (...)
-int PosixPassthrough::passthrough_symlink (const char* target, const char* linkpath)
+// ld_preloaded_posix_symlink call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_symlink (const char* target, const char* linkpath)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug (
-            "passthrough-symlink (" + std::string (target) + ", " + std::string (linkpath) + ")");
+        Logging::log_debug ("ld_preloaded_posix-symlink (" + std::string (target) + ", "
+            + std::string (linkpath) + ")");
     }
 
     // validate function and library handle pointers
@@ -1969,12 +1988,14 @@ int PosixPassthrough::passthrough_symlink (const char* target, const char* linkp
     return result;
 }
 
-// passthrough_symlinkat call. (...)
-int PosixPassthrough::passthrough_symlinkat (const char* target, int newdirfd, const char* linkpath)
+// ld_preloaded_posix_symlinkat call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_symlinkat (const char* target,
+    int newdirfd,
+    const char* linkpath)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-symlinkat (" + std::string (target) + ", "
+        Logging::log_debug ("ld_preloaded_posix-symlinkat (" + std::string (target) + ", "
             + std::to_string (newdirfd) + ", " + std::string (linkpath) + ")");
     }
 
@@ -2013,12 +2034,12 @@ int PosixPassthrough::passthrough_symlinkat (const char* target, int newdirfd, c
     return result;
 }
 
-// passthrough_readlink call. (...)
-ssize_t PosixPassthrough::passthrough_readlink (const char* path, char* buf, size_t bufsize)
+// ld_preloaded_posix_readlink call. (...)
+ssize_t LdPreloadedPosix::ld_preloaded_posix_readlink (const char* path, char* buf, size_t bufsize)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-readlink (" + std::string (path) + ")");
+        Logging::log_debug ("ld_preloaded_posix-readlink (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -2055,14 +2076,16 @@ ssize_t PosixPassthrough::passthrough_readlink (const char* path, char* buf, siz
     return result;
 }
 
-// passthrough_readlinkat call. (...)
-ssize_t
-PosixPassthrough::passthrough_readlinkat (int dirfd, const char* path, char* buf, size_t bufsize)
+// ld_preloaded_posix_readlinkat call. (...)
+ssize_t LdPreloadedPosix::ld_preloaded_posix_readlinkat (int dirfd,
+    const char* path,
+    char* buf,
+    size_t bufsize)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug (
-            "passthrough-readlinkat (" + std::to_string (dirfd) + ", " + std::string (path) + ")");
+        Logging::log_debug ("ld_preloaded_posix-readlinkat (" + std::to_string (dirfd) + ", "
+            + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -2100,12 +2123,12 @@ PosixPassthrough::passthrough_readlinkat (int dirfd, const char* path, char* buf
     return result;
 }
 
-// passthrough_fopen call. (...)
-FILE* PosixPassthrough::passthrough_fopen (const char* pathname, const char* mode)
+// ld_preloaded_posix_fopen call. (...)
+FILE* LdPreloadedPosix::ld_preloaded_posix_fopen (const char* pathname, const char* mode)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-fopen (" + std::string (pathname) + ")");
+        Logging::log_debug ("ld_preloaded_posix-fopen (" + std::string (pathname) + ")");
     }
 
     // validate function and library handle pointers
@@ -2141,12 +2164,12 @@ FILE* PosixPassthrough::passthrough_fopen (const char* pathname, const char* mod
     return result;
 }
 
-// passthrough_fopen64 call. (...)
-FILE* PosixPassthrough::passthrough_fopen64 (const char* pathname, const char* mode)
+// ld_preloaded_posix_fopen64 call. (...)
+FILE* LdPreloadedPosix::ld_preloaded_posix_fopen64 (const char* pathname, const char* mode)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-fopen64 (" + std::string (pathname) + ")");
+        Logging::log_debug ("ld_preloaded_posix-fopen64 (" + std::string (pathname) + ")");
     }
 
     // validate function and library handle pointers
@@ -2154,8 +2177,9 @@ FILE* PosixPassthrough::passthrough_fopen64 (const char* pathname, const char* m
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_metadata_operations.m_fopen64 = (libc_fopen64_t)dlsym (this->m_lib_handle, "fopen64")
-        : m_metadata_operations.m_fopen64 = (libc_fopen64_t)dlsym (RTLD_NEXT, "fopen64");
+            ? m_metadata_operations.m_fopen64
+            = (libc_fopen64_t)dlsym (this->m_lib_handle, "fopen64")
+            : m_metadata_operations.m_fopen64 = (libc_fopen64_t)dlsym (RTLD_NEXT, "fopen64");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_metadata_operations.m_fopen64) {
@@ -2169,25 +2193,25 @@ FILE* PosixPassthrough::passthrough_fopen64 (const char* pathname, const char* m
     if (this->m_collect) {
         if (result != nullptr) {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fopen64),
-                                                           1,
-                                                           0);
+                1,
+                0);
         } else {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fopen64),
-                                                           1,
-                                                           0,
-                                                           1);
+                1,
+                0,
+                1);
         }
     }
 
     return result;
 }
 
-// passthrough_fdopen call. (...)
-FILE* PosixPassthrough::passthrough_fdopen (int fd, const char* mode)
+// ld_preloaded_posix_fdopen call. (...)
+FILE* LdPreloadedPosix::ld_preloaded_posix_fdopen (int fd, const char* mode)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-fdopen (" + std::to_string (fd) + ")");
+        Logging::log_debug ("ld_preloaded_posix-fdopen (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -2223,12 +2247,14 @@ FILE* PosixPassthrough::passthrough_fdopen (int fd, const char* mode)
     return result;
 }
 
-// passthrough_freopen call. (...)
-FILE* PosixPassthrough::passthrough_freopen (const char* pathname, const char* mode, FILE* stream)
+// ld_preloaded_posix_freopen call. (...)
+FILE* LdPreloadedPosix::ld_preloaded_posix_freopen (const char* pathname,
+    const char* mode,
+    FILE* stream)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-freopen (" + std::string (pathname) + ")");
+        Logging::log_debug ("ld_preloaded_posix-freopen (" + std::string (pathname) + ")");
     }
 
     // validate function and library handle pointers
@@ -2265,12 +2291,14 @@ FILE* PosixPassthrough::passthrough_freopen (const char* pathname, const char* m
     return result;
 }
 
-// passthrough_freopen64 call. (...)
-FILE* PosixPassthrough::passthrough_freopen64 (const char* pathname, const char* mode, FILE* stream)
+// ld_preloaded_posix_freopen64 call. (...)
+FILE* LdPreloadedPosix::ld_preloaded_posix_freopen64 (const char* pathname,
+    const char* mode,
+    FILE* stream)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-freopen64 (" + std::string (pathname) + ")");
+        Logging::log_debug ("ld_preloaded_posix-freopen64 (" + std::string (pathname) + ")");
     }
 
     // validate function and library handle pointers
@@ -2278,13 +2306,14 @@ FILE* PosixPassthrough::passthrough_freopen64 (const char* pathname, const char*
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_metadata_operations.m_freopen64
-                  = (libc_freopen64_t)dlsym (this->m_lib_handle, "freopen64")
-        : m_metadata_operations.m_freopen64 = (libc_freopen64_t)dlsym (RTLD_NEXT, "freopen64");
+            ? m_metadata_operations.m_freopen64
+            = (libc_freopen64_t)dlsym (this->m_lib_handle, "freopen64")
+            : m_metadata_operations.m_freopen64 = (libc_freopen64_t)dlsym (RTLD_NEXT, "freopen64");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_metadata_operations.m_freopen64) {
-        m_metadata_operations.m_freopen64 = (libc_freopen64_t)dlsym (this->m_lib_handle, "freopen64");
+        m_metadata_operations.m_freopen64
+            = (libc_freopen64_t)dlsym (this->m_lib_handle, "freopen64");
     }
 
     // perform original POSIX freopen64 operation
@@ -2294,25 +2323,25 @@ FILE* PosixPassthrough::passthrough_freopen64 (const char* pathname, const char*
     if (this->m_collect) {
         if (result != nullptr) {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::freopen64),
-                                                           1,
-                                                           0);
+                1,
+                0);
         } else {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::freopen64),
-                                                           1,
-                                                           0,
-                                                           1);
+                1,
+                0,
+                1);
         }
     }
 
     return result;
 }
 
-// passthrough_fclose call. (...)
-int PosixPassthrough::passthrough_fclose (FILE* stream)
+// ld_preloaded_posix_fclose call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_fclose (FILE* stream)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-fclose");
+        Logging::log_debug ("ld_preloaded_posix-fclose");
     }
 
     // validate function and library handle pointers
@@ -2348,12 +2377,12 @@ int PosixPassthrough::passthrough_fclose (FILE* stream)
     return result;
 }
 
-// passthrough_fflush call. (...)
-int PosixPassthrough::passthrough_fflush (FILE* stream)
+// ld_preloaded_posix_fflush call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_fflush (FILE* stream)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-fflush");
+        Logging::log_debug ("ld_preloaded_posix-fflush");
     }
 
     // validate function and library handle pointers
@@ -2389,12 +2418,12 @@ int PosixPassthrough::passthrough_fflush (FILE* stream)
     return result;
 }
 
-// passthrough_access call. (...)
-int PosixPassthrough::passthrough_access (const char* path, int mode)
+// ld_preloaded_posix_access call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_access (const char* path, int mode)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-access");
+        Logging::log_debug ("ld_preloaded_posix-access");
     }
 
     // validate function and library handle pointers
@@ -2430,12 +2459,15 @@ int PosixPassthrough::passthrough_access (const char* path, int mode)
     return result;
 }
 
-// passthrough_faccessat call. (...)
-int PosixPassthrough::passthrough_faccessat (int dirfd, const char* path, int mode, int flags)
+// ld_preloaded_posix_faccessat call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_faccessat (int dirfd,
+    const char* path,
+    int mode,
+    int flags)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-faccessat");
+        Logging::log_debug ("ld_preloaded_posix-faccessat");
     }
 
     // validate function and library handle pointers
@@ -2473,12 +2505,12 @@ int PosixPassthrough::passthrough_faccessat (int dirfd, const char* path, int mo
     return result;
 }
 
-// passthrough_lseek call. (...)
-off_t PosixPassthrough::passthrough_lseek (int fd, off_t offset, int whence)
+// ld_preloaded_posix_lseek call. (...)
+off_t LdPreloadedPosix::ld_preloaded_posix_lseek (int fd, off_t offset, int whence)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-lseek");
+        Logging::log_debug ("ld_preloaded_posix-lseek");
     }
 
     // validate function and library handle pointers
@@ -2514,12 +2546,12 @@ off_t PosixPassthrough::passthrough_lseek (int fd, off_t offset, int whence)
     return result;
 }
 
-// passthrough_fseek call. (...)
-int PosixPassthrough::passthrough_fseek (FILE* stream, long offset, int whence)
+// ld_preloaded_posix_fseek call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_fseek (FILE* stream, long offset, int whence)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-fseek");
+        Logging::log_debug ("ld_preloaded_posix-fseek");
     }
 
     // validate function and library handle pointers
@@ -2555,12 +2587,12 @@ int PosixPassthrough::passthrough_fseek (FILE* stream, long offset, int whence)
     return result;
 }
 
-// passthrough_ftell call. (...)
-long PosixPassthrough::passthrough_ftell (FILE* stream)
+// ld_preloaded_posix_ftell call. (...)
+long LdPreloadedPosix::ld_preloaded_posix_ftell (FILE* stream)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-ftell");
+        Logging::log_debug ("ld_preloaded_posix-ftell");
     }
 
     // validate function and library handle pointers
@@ -2596,12 +2628,12 @@ long PosixPassthrough::passthrough_ftell (FILE* stream)
     return result;
 }
 
-// passthrough_lseek64 call. (...)
-off_t PosixPassthrough::passthrough_lseek64 (int fd, off_t offset, int whence)
+// ld_preloaded_posix_lseek64 call. (...)
+off_t LdPreloadedPosix::ld_preloaded_posix_lseek64 (int fd, off_t offset, int whence)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-lseek64");
+        Logging::log_debug ("ld_preloaded_posix-lseek64");
     }
 
     // validate function and library handle pointers
@@ -2638,12 +2670,12 @@ off_t PosixPassthrough::passthrough_lseek64 (int fd, off_t offset, int whence)
     return result;
 }
 
-// passthrough_fseeko64 call. (...)
-int PosixPassthrough::passthrough_fseeko64 (FILE* stream, off_t offset, int whence)
+// ld_preloaded_posix_fseeko64 call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_fseeko64 (FILE* stream, off_t offset, int whence)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-fseeko64");
+        Logging::log_debug ("ld_preloaded_posix-fseeko64");
     }
 
     // validate function and library handle pointers
@@ -2680,12 +2712,12 @@ int PosixPassthrough::passthrough_fseeko64 (FILE* stream, off_t offset, int when
     return result;
 }
 
-// passthrough_ftello64 call. (...)
-off_t PosixPassthrough::passthrough_ftello64 (FILE* stream)
+// ld_preloaded_posix_ftello64 call. (...)
+off_t LdPreloadedPosix::ld_preloaded_posix_ftello64 (FILE* stream)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-ftello64");
+        Logging::log_debug ("ld_preloaded_posix-ftello64");
     }
 
     // validate function and library handle pointers
@@ -2722,12 +2754,12 @@ off_t PosixPassthrough::passthrough_ftello64 (FILE* stream)
     return result;
 }
 
-// passthrough_mkdir call. (...)
-int PosixPassthrough::passthrough_mkdir (const char* path, mode_t mode)
+// ld_preloaded_posix_mkdir call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_mkdir (const char* path, mode_t mode)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-mkdir (" + std::string (path) + ")");
+        Logging::log_debug ("ld_preloaded_posix-mkdir (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -2758,13 +2790,13 @@ int PosixPassthrough::passthrough_mkdir (const char* path, mode_t mode)
     return result;
 }
 
-// passthrough_mkdirat call. (...)
-int PosixPassthrough::passthrough_mkdirat (int dirfd, const char* path, mode_t mode)
+// ld_preloaded_posix_mkdirat call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_mkdirat (int dirfd, const char* path, mode_t mode)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug (
-            "passthrough-mkdirat (" + std::to_string (dirfd) + ", " + std::string (path) + ")");
+        Logging::log_debug ("ld_preloaded_posix-mkdirat (" + std::to_string (dirfd) + ", "
+            + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -2799,12 +2831,12 @@ int PosixPassthrough::passthrough_mkdirat (int dirfd, const char* path, mode_t m
     return result;
 }
 
-// passthrough_readdir call. (...)
-struct dirent* PosixPassthrough::passthrough_readdir (DIR* dirp)
+// ld_preloaded_posix_readdir call. (...)
+struct dirent* LdPreloadedPosix::ld_preloaded_posix_readdir (DIR* dirp)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-readdir");
+        Logging::log_debug ("ld_preloaded_posix-readdir");
     }
 
     // validate function and library handle pointers
@@ -2839,12 +2871,12 @@ struct dirent* PosixPassthrough::passthrough_readdir (DIR* dirp)
     return entry;
 }
 
-// passthrough_readdir64 call. (...)
-struct dirent64* PosixPassthrough::passthrough_readdir64 (DIR* dirp)
+// ld_preloaded_posix_readdir64 call. (...)
+struct dirent64* LdPreloadedPosix::ld_preloaded_posix_readdir64 (DIR* dirp)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-readdir64");
+        Logging::log_debug ("ld_preloaded_posix-readdir64");
     }
 
     // validate function and library handle pointers
@@ -2852,13 +2884,14 @@ struct dirent64* PosixPassthrough::passthrough_readdir64 (DIR* dirp)
         // open library handle, and assign the operation pointer through m_lib_handle if the open
         // was successful, or through the next operation link.
         (this->dlopen_library_handle ())
-        ? m_directory_operations.m_readdir64
-                  = (libc_readdir64_t)dlsym (this->m_lib_handle, "readdir64")
-        : m_directory_operations.m_readdir64 = (libc_readdir64_t)dlsym (RTLD_NEXT, "readdir64");
+            ? m_directory_operations.m_readdir64
+            = (libc_readdir64_t)dlsym (this->m_lib_handle, "readdir64")
+            : m_directory_operations.m_readdir64 = (libc_readdir64_t)dlsym (RTLD_NEXT, "readdir64");
 
         // in case the library handle pointer is valid, assign the operation pointer
     } else if (!m_directory_operations.m_readdir64) {
-        m_directory_operations.m_readdir64 = (libc_readdir64_t)dlsym (this->m_lib_handle, "readdir64");
+        m_directory_operations.m_readdir64
+            = (libc_readdir64_t)dlsym (this->m_lib_handle, "readdir64");
     }
 
     // perform original POSIX readdir64 operation
@@ -2867,24 +2900,26 @@ struct dirent64* PosixPassthrough::passthrough_readdir64 (DIR* dirp)
     // update statistic entry
     if (this->m_collect) {
         if (entry != nullptr) {
-            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::readdir64), 1, 0);
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::readdir64),
+                1,
+                0);
         } else {
             this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::readdir64),
-                                                      1,
-                                                      0,
-                                                      1);
+                1,
+                0,
+                1);
         }
     }
 
     return entry;
 }
 
-// passthrough_opendir call. (...)
-DIR* PosixPassthrough::passthrough_opendir (const char* path)
+// ld_preloaded_posix_opendir call. (...)
+DIR* LdPreloadedPosix::ld_preloaded_posix_opendir (const char* path)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-opendir (" + std::string (path) + ")");
+        Logging::log_debug ("ld_preloaded_posix-opendir (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -2919,12 +2954,12 @@ DIR* PosixPassthrough::passthrough_opendir (const char* path)
     return folder;
 }
 
-// passthrough_fdopendir call. (...)
-DIR* PosixPassthrough::passthrough_fdopendir (int fd)
+// ld_preloaded_posix_fdopendir call. (...)
+DIR* LdPreloadedPosix::ld_preloaded_posix_fdopendir (int fd)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-fdopendir (" + std::to_string (fd) + ")");
+        Logging::log_debug ("ld_preloaded_posix-fdopendir (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -2962,12 +2997,12 @@ DIR* PosixPassthrough::passthrough_fdopendir (int fd)
     return folder;
 }
 
-// passthrough_closedir call. (...)
-int PosixPassthrough::passthrough_closedir (DIR* dirp)
+// ld_preloaded_posix_closedir call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_closedir (DIR* dirp)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-closedir");
+        Logging::log_debug ("ld_preloaded_posix-closedir");
     }
 
     // validate function and library handle pointers
@@ -3002,12 +3037,12 @@ int PosixPassthrough::passthrough_closedir (DIR* dirp)
     return result;
 }
 
-// passthrough_rmdir call. (...)
-int PosixPassthrough::passthrough_rmdir (const char* path)
+// ld_preloaded_posix_rmdir call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_rmdir (const char* path)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-rmdir");
+        Logging::log_debug ("ld_preloaded_posix-rmdir");
     }
 
     // validate function and library handle pointers
@@ -3038,12 +3073,12 @@ int PosixPassthrough::passthrough_rmdir (const char* path)
     return result;
 }
 
-// passthrough_dirfd call. (...)
-int PosixPassthrough::passthrough_dirfd (DIR* dirp)
+// ld_preloaded_posix_dirfd call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_dirfd (DIR* dirp)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-dirfd");
+        Logging::log_debug ("ld_preloaded_posix-dirfd");
     }
 
     // validate function and library handle pointers
@@ -3074,8 +3109,8 @@ int PosixPassthrough::passthrough_dirfd (DIR* dirp)
     return result;
 }
 
-// passthrough_getxattr call. (...)
-ssize_t PosixPassthrough::passthrough_getxattr (const char* path,
+// ld_preloaded_posix_getxattr call. (...)
+ssize_t LdPreloadedPosix::ld_preloaded_posix_getxattr (const char* path,
     const char* name,
     void* value,
     size_t size)
@@ -3083,7 +3118,7 @@ ssize_t PosixPassthrough::passthrough_getxattr (const char* path,
     // logging message
     if (option_default_detailed_logging) {
         Logging::log_debug (
-            "passthrough-getxattr (" + std::string (path) + ", " + std::string (name) + ")");
+            "ld_preloaded_posix-getxattr (" + std::string (path) + ", " + std::string (name) + ")");
     }
 
     // validate function and library handle pointers
@@ -3119,16 +3154,16 @@ ssize_t PosixPassthrough::passthrough_getxattr (const char* path,
     return result;
 }
 
-// passthrough_lgetxattr call. (...)
-ssize_t PosixPassthrough::passthrough_lgetxattr (const char* path,
+// ld_preloaded_posix_lgetxattr call. (...)
+ssize_t LdPreloadedPosix::ld_preloaded_posix_lgetxattr (const char* path,
     const char* name,
     void* value,
     size_t size)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug (
-            "passthrough-lgetxattr (" + std::string (path) + ", " + std::string (name) + ")");
+        Logging::log_debug ("ld_preloaded_posix-lgetxattr (" + std::string (path) + ", "
+            + std::string (name) + ")");
     }
 
     // validate function and library handle pointers
@@ -3165,13 +3200,14 @@ ssize_t PosixPassthrough::passthrough_lgetxattr (const char* path,
     return result;
 }
 
-// passthrough_fgetxattr call. (...)
-ssize_t PosixPassthrough::passthrough_fgetxattr (int fd, const char* name, void* value, size_t size)
+// ld_preloaded_posix_fgetxattr call. (...)
+ssize_t
+LdPreloadedPosix::ld_preloaded_posix_fgetxattr (int fd, const char* name, void* value, size_t size)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug (
-            "passthrough-fgetxattr (" + std::to_string (fd) + ", " + std::string (name) + ")");
+        Logging::log_debug ("ld_preloaded_posix-fgetxattr (" + std::to_string (fd) + ", "
+            + std::string (name) + ")");
     }
 
     // validate function and library handle pointers
@@ -3208,8 +3244,8 @@ ssize_t PosixPassthrough::passthrough_fgetxattr (int fd, const char* name, void*
     return result;
 }
 
-// passthrough_setxattr call. (...)
-int PosixPassthrough::passthrough_setxattr (const char* path,
+// ld_preloaded_posix_setxattr call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_setxattr (const char* path,
     const char* name,
     const void* value,
     size_t size,
@@ -3218,7 +3254,7 @@ int PosixPassthrough::passthrough_setxattr (const char* path,
     // logging message
     if (option_default_detailed_logging) {
         Logging::log_debug (
-            "passthrough-setxattr (" + std::string (path) + ", " + std::string (name) + ")");
+            "ld_preloaded_posix-setxattr (" + std::string (path) + ", " + std::string (name) + ")");
     }
 
     // validate function and library handle pointers
@@ -3254,8 +3290,8 @@ int PosixPassthrough::passthrough_setxattr (const char* path,
     return result;
 }
 
-// passthrough_lsetxattr call. (...)
-int PosixPassthrough::passthrough_lsetxattr (const char* path,
+// ld_preloaded_posix_lsetxattr call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_lsetxattr (const char* path,
     const char* name,
     const void* value,
     size_t size,
@@ -3263,8 +3299,8 @@ int PosixPassthrough::passthrough_lsetxattr (const char* path,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug (
-            "passthrough-lsetxattr (" + std::string (path) + ", " + std::string (name) + ")");
+        Logging::log_debug ("ld_preloaded_posix-lsetxattr (" + std::string (path) + ", "
+            + std::string (name) + ")");
     }
 
     // validate function and library handle pointers
@@ -3301,8 +3337,8 @@ int PosixPassthrough::passthrough_lsetxattr (const char* path,
     return result;
 }
 
-// passthrough_fsetxattr call. (...)
-int PosixPassthrough::passthrough_fsetxattr (int fd,
+// ld_preloaded_posix_fsetxattr call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_fsetxattr (int fd,
     const char* name,
     const void* value,
     size_t size,
@@ -3310,8 +3346,8 @@ int PosixPassthrough::passthrough_fsetxattr (int fd,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug (
-            "passthrough-fsetxattr (" + std::to_string (fd) + ", " + std::string (name) + ")");
+        Logging::log_debug ("ld_preloaded_posix-fsetxattr (" + std::to_string (fd) + ", "
+            + std::string (name) + ")");
     }
 
     // validate function and library handle pointers
@@ -3348,12 +3384,12 @@ int PosixPassthrough::passthrough_fsetxattr (int fd,
     return result;
 }
 
-// passthrough_listxattr call. (...)
-ssize_t PosixPassthrough::passthrough_listxattr (const char* path, char* list, size_t size)
+// ld_preloaded_posix_listxattr call. (...)
+ssize_t LdPreloadedPosix::ld_preloaded_posix_listxattr (const char* path, char* list, size_t size)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-listxattr (" + std::string (path) + ")");
+        Logging::log_debug ("ld_preloaded_posix-listxattr (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -3390,12 +3426,12 @@ ssize_t PosixPassthrough::passthrough_listxattr (const char* path, char* list, s
     return result;
 }
 
-// passthrough_llistxattr call. (...)
-ssize_t PosixPassthrough::passthrough_llistxattr (const char* path, char* list, size_t size)
+// ld_preloaded_posix_llistxattr call. (...)
+ssize_t LdPreloadedPosix::ld_preloaded_posix_llistxattr (const char* path, char* list, size_t size)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-llistxattr (" + std::string (path) + ")");
+        Logging::log_debug ("ld_preloaded_posix-llistxattr (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -3435,12 +3471,12 @@ ssize_t PosixPassthrough::passthrough_llistxattr (const char* path, char* list, 
     return result;
 }
 
-// passthrough_flistxattr call. (...)
-ssize_t PosixPassthrough::passthrough_flistxattr (int fd, char* list, size_t size)
+// ld_preloaded_posix_flistxattr call. (...)
+ssize_t LdPreloadedPosix::ld_preloaded_posix_flistxattr (int fd, char* list, size_t size)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-flistxattr (" + std::to_string (fd) + ")");
+        Logging::log_debug ("ld_preloaded_posix-flistxattr (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -3480,13 +3516,13 @@ ssize_t PosixPassthrough::passthrough_flistxattr (int fd, char* list, size_t siz
     return result;
 }
 
-// passthrough_removexattr call. (...)
-int PosixPassthrough::passthrough_removexattr (const char* path, const char* name)
+// ld_preloaded_posix_removexattr call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_removexattr (const char* path, const char* name)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug (
-            "passthrough-removexattr (" + std::string (path) + ", " + std::string (name) + ")");
+        Logging::log_debug ("ld_preloaded_posix-removexattr (" + std::string (path) + ", "
+            + std::string (name) + ")");
     }
 
     // validate function and library handle pointers
@@ -3526,13 +3562,13 @@ int PosixPassthrough::passthrough_removexattr (const char* path, const char* nam
     return result;
 }
 
-// passthrough_lremovexattr call. (...)
-int PosixPassthrough::passthrough_lremovexattr (const char* path, const char* name)
+// ld_preloaded_posix_lremovexattr call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_lremovexattr (const char* path, const char* name)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug (
-            "passthrough-lremovexattr (" + std::string (path) + ", " + std::string (name) + ")");
+        Logging::log_debug ("ld_preloaded_posix-lremovexattr (" + std::string (path) + ", "
+            + std::string (name) + ")");
     }
 
     // validate function and library handle pointers
@@ -3572,13 +3608,13 @@ int PosixPassthrough::passthrough_lremovexattr (const char* path, const char* na
     return result;
 }
 
-// passthrough_fremovexattr call. (...)
-int PosixPassthrough::passthrough_fremovexattr (int fd, const char* name)
+// ld_preloaded_posix_fremovexattr call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_fremovexattr (int fd, const char* name)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug (
-            "passthrough-fremovexattr (" + std::to_string (fd) + ", " + std::string (name) + ")");
+        Logging::log_debug ("ld_preloaded_posix-fremovexattr (" + std::to_string (fd) + ", "
+            + std::string (name) + ")");
     }
 
     // validate function and library handle pointers
@@ -3618,12 +3654,12 @@ int PosixPassthrough::passthrough_fremovexattr (int fd, const char* name)
     return result;
 }
 
-// passthrough_chmod call. (...)
-int PosixPassthrough::passthrough_chmod (const char* path, mode_t mode)
+// ld_preloaded_posix_chmod call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_chmod (const char* path, mode_t mode)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-chmod (" + std::string (path) + ")");
+        Logging::log_debug ("ld_preloaded_posix-chmod (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -3659,12 +3695,12 @@ int PosixPassthrough::passthrough_chmod (const char* path, mode_t mode)
     return result;
 }
 
-// passthrough_fchmod call. (...)
-int PosixPassthrough::passthrough_fchmod (int fd, mode_t mode)
+// ld_preloaded_posix_fchmod call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_fchmod (int fd, mode_t mode)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-fchmod (" + std::to_string (fd) + ")");
+        Logging::log_debug ("ld_preloaded_posix-fchmod (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -3700,13 +3736,16 @@ int PosixPassthrough::passthrough_fchmod (int fd, mode_t mode)
     return result;
 }
 
-// passthrough_fchmodat call. (...)
-int PosixPassthrough::passthrough_fchmodat (int dirfd, const char* path, mode_t mode, int flags)
+// ld_preloaded_posix_fchmodat call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_fchmodat (int dirfd,
+    const char* path,
+    mode_t mode,
+    int flags)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug (
-            "passthrough-fchmodat (" + std::to_string (dirfd) + ", " + std::string (path) + ")");
+        Logging::log_debug ("ld_preloaded_posix-fchmodat (" + std::to_string (dirfd) + ", "
+            + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -3743,12 +3782,12 @@ int PosixPassthrough::passthrough_fchmodat (int dirfd, const char* path, mode_t 
     return result;
 }
 
-// passthrough_chown call. (...)
-int PosixPassthrough::passthrough_chown (const char* pathname, uid_t owner, gid_t group)
+// ld_preloaded_posix_chown call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_chown (const char* pathname, uid_t owner, gid_t group)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-chown (" + std::string (pathname) + ")");
+        Logging::log_debug ("ld_preloaded_posix-chown (" + std::string (pathname) + ")");
     }
 
     // validate function and library handle pointers
@@ -3784,12 +3823,12 @@ int PosixPassthrough::passthrough_chown (const char* pathname, uid_t owner, gid_
     return result;
 }
 
-// passthrough_lchown call. (...)
-int PosixPassthrough::passthrough_lchown (const char* pathname, uid_t owner, gid_t group)
+// ld_preloaded_posix_lchown call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_lchown (const char* pathname, uid_t owner, gid_t group)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-lchown (" + std::string (pathname) + ")");
+        Logging::log_debug ("ld_preloaded_posix-lchown (" + std::string (pathname) + ")");
     }
 
     // validate function and library handle pointers
@@ -3825,12 +3864,12 @@ int PosixPassthrough::passthrough_lchown (const char* pathname, uid_t owner, gid
     return result;
 }
 
-// passthrough_fchown call. (...)
-int PosixPassthrough::passthrough_fchown (int fd, uid_t owner, gid_t group)
+// ld_preloaded_posix_fchown call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_fchown (int fd, uid_t owner, gid_t group)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-fchown (" + std::to_string (fd) + ")");
+        Logging::log_debug ("ld_preloaded_posix-fchown (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -3866,8 +3905,8 @@ int PosixPassthrough::passthrough_fchown (int fd, uid_t owner, gid_t group)
     return result;
 }
 
-// passthrough_fchownat call. (...)
-int PosixPassthrough::passthrough_fchownat (int dirfd,
+// ld_preloaded_posix_fchownat call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_fchownat (int dirfd,
     const char* pathname,
     uid_t owner,
     gid_t group,
@@ -3875,7 +3914,7 @@ int PosixPassthrough::passthrough_fchownat (int dirfd,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("passthrough-fchownat (" + std::to_string (dirfd) + ", "
+        Logging::log_debug ("ld_preloaded_posix-fchownat (" + std::to_string (dirfd) + ", "
             + std::string (pathname) + ")");
     }
 

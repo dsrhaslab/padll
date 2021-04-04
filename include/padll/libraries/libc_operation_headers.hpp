@@ -118,7 +118,7 @@ struct libc_metadata {
     libc_readlink_t m_readlink { nullptr };
     libc_readlinkat_t m_readlinkat { nullptr };
     libc_fopen_t m_fopen { nullptr };
-    libc_fopen64_t m_fopen64 { nullptr};
+    libc_fopen64_t m_fopen64 { nullptr };
     libc_fdopen_t m_fdopen { nullptr };
     libc_freopen_t m_freopen { nullptr };
     libc_freopen64_t m_freopen64 { nullptr };

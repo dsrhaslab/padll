@@ -97,7 +97,7 @@ int test_readdir_call (const char* pathname)
  * test_opendir_closedir_call:
  *
  * Validation: the statistic entries 'opendir' and 'closedir' of the Statistics' container reserved
- * for directory-based calls (PosixPassthrough::m_dir_stats) should be updated.
+ * for directory-based calls (LdPreloadedPosix::m_dir_stats) should be updated.
  * @param pathname
  * @return
  */

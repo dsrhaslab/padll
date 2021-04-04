@@ -8,12 +8,13 @@
 
 #include <cstdarg>
 #include <cstring>
-#include <padll/interface/posix_passthrough.hpp>
+#include <padll/configurations/libc_calls.hpp>
+#include <padll/interface/ld_preloaded_posix.hpp>
 #include <padll/utils/logging.hpp>
 #include <thread>
 
 padll::Logging m_logger { false };
-padll::PosixPassthrough m_posix_passthrough {};
+padll::LdPreloadedPosix m_ld_preloaded_posix {};
 bool use_read = false;
 
 /**
@@ -45,9 +46,7 @@ static __attribute__ ((destructor)) void destroy_method ()
  * @param size
  * @return
  */
-#if intercept_read
 extern "C" ssize_t read (int fd, void* buf, size_t size);
-#endif
 
 /**
  * write:
