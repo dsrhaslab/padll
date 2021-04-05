@@ -69,6 +69,77 @@ public:
      */
     ssize_t passthrough_posix_write (int fd, const void* buf, ssize_t counter);
 
+    /**
+     * passthrough_posix_pread:
+     *  https://linux.die.net/man/2/pread
+     * @param fd
+     * @param buf
+     * @param counter
+     * @param offset
+     * @return
+     */
+    ssize_t passthrough_posix_pread (int fd, void* buf, ssize_t counter, off_t offset);
+
+    /**
+     * passthrough_posix_pwrite:
+     *  https://linux.die.net/man/2/pwrite
+     * @param fd
+     * @param buf
+     * @param counter
+     * @param offset
+     * @return
+     */
+    ssize_t passthrough_posix_pwrite (int fd, const void* buf, ssize_t counter, off_t offset);
+
+    /**
+     * passthrough_posix_pread64:
+     *  https://linux.die.net/man/2/pread64
+     *  https://www.mkssoftware.com/docs/man3/read.3.asp
+     * @param fd
+     * @param buf
+     * @param counter
+     * @param offset
+     * @return
+     */
+#if defined(__USE_LARGEFILE64)
+    ssize_t passthrough_posix_pread64 (int fd, void* buf, ssize_t counter, off64_t offset);
+#endif
+
+    /**
+     * passthrough_posix_pwrite64:
+     *  https://linux.die.net/man/2/pwrite64
+     *  https://www.mkssoftware.com/docs/man3/write.3.asp
+     * @param fd
+     * @param buf
+     * @param counter
+     * @param offset
+     * @return
+     */
+#if defined(__USE_LARGEFILE64)
+    ssize_t passthrough_posix_pwrite64 (int fd, const void* buf, ssize_t counter, off64_t offset);
+#endif
+
+    /**
+     * passthrough_posix_fread:
+     *  https://linux.die.net/man/3/fread
+     * @param ptr
+     * @param size
+     * @param nmemb
+     * @param stream
+     * @return
+     */
+    size_t passthrough_posix_fread (void* ptr, size_t size, size_t nmemb, FILE* stream);
+
+    /**
+     * passthrough_posix_fwrite:
+     *  https://linux.die.net/man/3/fwrite
+     * @param ptr
+     * @param size
+     * @param nmemb
+     * @param stream
+     * @return
+     */
+    size_t passthrough_posix_fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stream);
 
 };
 }

@@ -70,14 +70,67 @@ void PosixPassthrough::initialize ()
 
 // passthrough_posix_read call. (...)
 ssize_t PosixPassthrough::passthrough_posix_read (int fd, void *buf, ssize_t counter) {
-    std::cout << "passthrough posix read\n";
     return ((libc_read_t) dlsym (RTLD_NEXT, "read")) (fd, buf, counter);
 }
 
 // passthrough_posix_write call. (...)
 ssize_t PosixPassthrough::passthrough_posix_write (int fd, const void *buf, ssize_t counter) {
-    std::cout << "passthrough posix write\n";
     return ((libc_write_t) dlsym (RTLD_NEXT, "write")) (fd, buf, counter);
+}
+
+// passthrough_posix_pread call. (...)
+ssize_t PosixPassthrough::passthrough_posix_pread (int fd, void *buf, ssize_t counter, off_t offset)
+{
+    return ((libc_pread_t) dlsym (RTLD_NEXT, "pread")) (fd, buf, counter, offset);
+}
+
+// passthrough_posix_pwrite call. (...)
+ssize_t PosixPassthrough::passthrough_posix_pwrite (int fd,
+    const void* buf,
+    ssize_t counter,
+    off_t offset)
+{
+    return ((libc_pwrite_t) dlsym (RTLD_NEXT, "pwrite")) (fd, buf, counter, offset);
+}
+
+// passthrough_posix_pread64 call. (...)
+#if defined(__USE_LARGEFILE64)
+    ssize_t PosixPassthrough::passthrough_posix_pread64 (int fd,
+        void* buf,
+        ssize_t counter,
+        off64_t offset)
+    {
+        return ((libc_pread64_t) dlsym (RTLD_NEXT, "pread64")) (fd, buf, counter, offset);
+    }
+#endif
+
+// passthrough_posix_pwrite64 call. (...)
+#if defined(__USE_LARGEFILE64)
+    ssize_t PosixPassthrough::passthrough_posix_pwrite64 (int fd,
+        const void* buf,
+        ssize_t counter,
+        off64_t offset)
+    {
+        return ((libc_pwrite64_t) dlsym (RTLD_NEXT, "pwrite64")) (fd, buf, counter, offset);
+    }
+#endif
+
+// passthrough_posix_fread call. (...)
+size_t PosixPassthrough::passthrough_posix_fread (void* ptr,
+    size_t size,
+    size_t nmemb,
+    FILE* stream)
+{
+    return ((libc_fread_t) dlsym (RTLD_NEXT, "fread")) (ptr, size, nmemb, stream);
+}
+
+// passthrough_posix_fwrite call. (...)
+size_t PosixPassthrough::passthrough_posix_fwrite (const void* ptr,
+    size_t size,
+    size_t nmemb,
+    FILE* stream)
+{
+    return ((libc_fwrite_t) dlsym (RTLD_NEXT, "fwrite")) (ptr, size, nmemb, stream);
 }
 
 
