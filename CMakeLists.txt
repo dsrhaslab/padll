@@ -58,8 +58,9 @@ target_sources(
     padll
     PUBLIC
     ${PROJECT_SOURCE_DIR}/include/padll/configurations/libc_calls.hpp
-    ${PROJECT_SOURCE_DIR}/include/padll/interface/posix_file_system.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/interface/ld_preloaded_posix.hpp
+    ${PROJECT_SOURCE_DIR}/include/padll/interface/posix_file_system.hpp
+    ${PROJECT_SOURCE_DIR}/include/padll/interface/posix_passthrough.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/statistics/statistic_entry.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/statistics/statistics.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/utils/logging.hpp
@@ -73,8 +74,9 @@ target_sources(
 target_sources(
         padll
         PRIVATE
-        src/interface/posix_file_system.cpp
         src/interface/ld_preloaded_posix.cpp
+        src/interface/posix_file_system.cpp
+        src/interface/posix_passthrough.cpp
         src/statistics/statistic_entry.cpp
         src/statistics/statistics.cpp
         src/utils/logging.cpp

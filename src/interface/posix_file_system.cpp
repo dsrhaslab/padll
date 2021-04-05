@@ -8,13 +8,17 @@
 // read call. (...)
 ssize_t read (int fd, void* buf, size_t size)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_read (fd, buf, size);
+    return (posix_data_calls.padll_intercept_read)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_read (fd, buf, size)
+        : m_posix_passthrough.passthrough_posix_read (fd, buf, size);
 }
 
 // write call. (...)
 ssize_t write (int fd, const void* buf, size_t size)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_write (fd, buf, size);
+    return (posix_data_calls.padll_intercept_write)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_write (fd, buf, size)
+        : m_posix_passthrough.passthrough_posix_write (fd, buf, size);
 }
 
 // pread call. (...)

@@ -6,7 +6,12 @@
 #ifndef PADLL_LIBC_CALLS_HPP
 #define PADLL_LIBC_CALLS_HPP
 
-#define padll_intercept_read  0;
-#define padll_intercept_write true;
+
+struct PosixDataCalls {
+    bool padll_intercept_read = false;
+    bool padll_intercept_write = true;
+};
+
+static PosixDataCalls posix_data_calls;
 
 #endif // PADLL_LIBC_CALLS_HPP

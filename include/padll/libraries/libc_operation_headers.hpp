@@ -6,7 +6,14 @@
 #ifndef PADLL_LIBC_OPERATION_HEADERS_HPP
 #define PADLL_LIBC_OPERATION_HEADERS_HPP
 
+#include <dirent.h>
+#include <dlfcn.h>
+#include <fcntl.h>
+#include <sstream>
+#include <stdio.h>
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 #ifdef __linux__
 #include <sys/vfs.h>
 #elif __APPLE__

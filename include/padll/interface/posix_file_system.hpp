@@ -10,11 +10,13 @@
 #include <cstring>
 #include <padll/configurations/libc_calls.hpp>
 #include <padll/interface/ld_preloaded_posix.hpp>
+#include <padll/interface/posix_passthrough.hpp>
 #include <padll/utils/logging.hpp>
 #include <thread>
 
 padll::Logging m_logger { false };
 padll::LdPreloadedPosix m_ld_preloaded_posix {};
+padll::PosixPassthrough m_posix_passthrough {};
 bool use_read = false;
 
 /**

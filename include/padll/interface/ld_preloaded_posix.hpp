@@ -8,19 +8,11 @@
 
 #define _GNU_SOURCE 1
 
-#include <dirent.h>
-#include <dlfcn.h>
-#include <fcntl.h>
 #include <iostream>
 #include <padll/libraries/libc_operation_enums.hpp>
 #include <padll/libraries/libc_operation_headers.hpp>
 #include <padll/statistics/statistics.hpp>
 #include <padll/utils/options.hpp>
-#include <sstream>
-#include <stdio.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
 
 namespace padll {
 
