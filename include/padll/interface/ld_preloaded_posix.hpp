@@ -98,7 +98,7 @@ public:
      * @param counter
      * @return
      */
-    ssize_t ld_preloaded_posix_read (int fd, void* buf, ssize_t counter);
+    ssize_t ld_preloaded_posix_read (int fd, void* buf, size_t counter);
 
     /**
      * ld_preloaded_posix_write:
@@ -108,7 +108,7 @@ public:
      * @param counter
      * @return
      */
-    ssize_t ld_preloaded_posix_write (int fd, const void* buf, ssize_t counter);
+    ssize_t ld_preloaded_posix_write (int fd, const void* buf, size_t counter);
 
     /**
      * ld_preloaded_posix_pread:
@@ -119,7 +119,7 @@ public:
      * @param offset
      * @return
      */
-    ssize_t ld_preloaded_posix_pread (int fd, void* buf, ssize_t counter, off_t offset);
+    ssize_t ld_preloaded_posix_pread (int fd, void* buf, size_t counter, off_t offset);
 
     /**
      * ld_preloaded_posix_pwrite:
@@ -130,7 +130,7 @@ public:
      * @param offset
      * @return
      */
-    ssize_t ld_preloaded_posix_pwrite (int fd, const void* buf, ssize_t counter, off_t offset);
+    ssize_t ld_preloaded_posix_pwrite (int fd, const void* buf, size_t counter, off_t offset);
 
     /**
      * ld_preloaded_posix_pread64:
@@ -143,7 +143,7 @@ public:
      * @return
      */
 #if defined(__USE_LARGEFILE64)
-    ssize_t ld_preloaded_posix_pread64 (int fd, void* buf, ssize_t counter, off64_t offset);
+    ssize_t ld_preloaded_posix_pread64 (int fd, void* buf, size_t counter, off64_t offset);
 #endif
 
     /**
@@ -157,7 +157,7 @@ public:
      * @return
      */
 #if defined(__USE_LARGEFILE64)
-    ssize_t ld_preloaded_posix_pwrite64 (int fd, const void* buf, ssize_t counter, off64_t offset);
+    ssize_t ld_preloaded_posix_pwrite64 (int fd, const void* buf, size_t counter, off64_t offset);
 #endif
 
     /**

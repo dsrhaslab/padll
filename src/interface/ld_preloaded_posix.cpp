@@ -148,7 +148,7 @@ std::string LdPreloadedPosix::to_string ()
 }
 
 // ld_preloaded_posix_read call.
-ssize_t LdPreloadedPosix::ld_preloaded_posix_read (int fd, void* buf, ssize_t counter)
+ssize_t LdPreloadedPosix::ld_preloaded_posix_read (int fd, void* buf, size_t counter)
 {
     // logging message
     if (option_default_detailed_logging) {
@@ -184,7 +184,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_read (int fd, void* buf, ssize_t co
 }
 
 // ld_preloaded_posix_write call.
-ssize_t LdPreloadedPosix::ld_preloaded_posix_write (int fd, const void* buf, ssize_t counter)
+ssize_t LdPreloadedPosix::ld_preloaded_posix_write (int fd, const void* buf, size_t counter)
 {
     // logging message
     if (option_default_detailed_logging) {
@@ -222,7 +222,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_write (int fd, const void* buf, ssi
 
 // ld_preloaded_posix_pread call.
 ssize_t
-LdPreloadedPosix::ld_preloaded_posix_pread (int fd, void* buf, ssize_t counter, off_t offset)
+LdPreloadedPosix::ld_preloaded_posix_pread (int fd, void* buf, size_t counter, off_t offset)
 {
     // logging message
     if (option_default_detailed_logging) {
@@ -259,7 +259,7 @@ LdPreloadedPosix::ld_preloaded_posix_pread (int fd, void* buf, ssize_t counter, 
 
 // ld_preloaded_posix_pwrite call.
 ssize_t
-LdPreloadedPosix::ld_preloaded_posix_pwrite (int fd, const void* buf, ssize_t counter, off_t offset)
+LdPreloadedPosix::ld_preloaded_posix_pwrite (int fd, const void* buf, size_t counter, off_t offset)
 {
     // logging message
     if (option_default_detailed_logging) {

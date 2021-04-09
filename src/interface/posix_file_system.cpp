@@ -24,20 +24,26 @@ ssize_t write (int fd, const void* buf, size_t size)
 // pread call. (...)
 ssize_t pread (int fd, void* buf, size_t size, off_t offset)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_pread (fd, buf, size, offset);
+    return (posix_data_calls.padll_intercept_pread)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_pread (fd, buf, size, offset)
+        : m_posix_passthrough.passthrough_posix_pread (fd, buf, size, offset);
 }
 
 // pwrite call. (...)
 ssize_t pwrite (int fd, const void* buf, size_t size, off_t offset)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_pwrite (fd, buf, size, offset);
+    return (posix_data_calls.padll_intercept_pwrite)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_pwrite (fd, buf, size, offset)
+        : m_posix_passthrough.passthrough_posix_pwrite (fd, buf, size, offset);
 }
 
 // pread64 call. (...)
 #if defined(__USE_LARGEFILE64)
 ssize_t pread64 (int fd, void* buf, size_t size, off64_t offset)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_pread64 (fd, buf, size, offset);
+    return (posix_data_calls.padll_intercept_pread64)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_pread64 (fd, buf, size, offset)
+        : m_posix_passthrough.passthrough_posix_pread64 (fd, buf, size, offset);
 }
 #endif
 
@@ -45,20 +51,26 @@ ssize_t pread64 (int fd, void* buf, size_t size, off64_t offset)
 #if defined(__USE_LARGEFILE64)
 ssize_t pwrite64 (int fd, const void* buf, size_t size, off64_t offset)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_pwrite64 (fd, buf, size, offset);
+    return (posix_data_calls.padll_intercept_pwrite64)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_pwrite64 (fd, buf, size, offset)
+        : m_posix_passthrough.passthrough_posix_pwrite64 (fd, buf, size, offset);
 }
 #endif
 
 // fread call. (...)
 size_t fread (void* ptr, size_t size, size_t nmemb, FILE* stream)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_fread (ptr, size, nmemb, stream);
+    return (posix_data_calls.padll_intercept_fread)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_fread (ptr, size, nmemb, stream)
+        : m_posix_passthrough.passthrough_posix_fread (ptr, size, nmemb, stream);
 }
 
 // fwrite call. (...)
 size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stream)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_fwrite (ptr, size, nmemb, stream);
+    return (posix_data_calls.padll_intercept_fwrite)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_fwrite (ptr, size, nmemb, stream)
+        : m_posix_passthrough.passthrough_posix_fwrite (ptr, size, nmemb, stream);
 }
 
 // open call. (...)
