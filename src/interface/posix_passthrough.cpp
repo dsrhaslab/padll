@@ -182,4 +182,95 @@ int PosixPassthrough::passthrough_posix_dirfd (DIR* dirp)
     return ((libc_dirfd_t)dlsym (RTLD_NEXT, "dirfd")) (dirp);
 }
 
+// passthrough_posix_getxattr call. (...)
+ssize_t PosixPassthrough::passthrough_posix_getxattr (const char* path,
+    const char* name,
+    void* value,
+    size_t size)
+{
+    return ((libc_getxattr_t)dlsym (RTLD_NEXT, "getxattr")) (path, name, value, size);
+}
+
+// passthrough_posix_lgetxattr call. (...)
+ssize_t PosixPassthrough::passthrough_posix_lgetxattr (const char* path,
+    const char* name,
+    void* value,
+    size_t size)
+{
+    return ((libc_lgetxattr_t)dlsym (RTLD_NEXT, "lgetxattr")) (path, name, value, size);
+}
+
+// passthrough_posix_fgetxattr call. (...)
+ssize_t
+PosixPassthrough::passthrough_posix_fgetxattr (int fd, const char* name, void* value, size_t size)
+{
+    return ((libc_fgetxattr_t)dlsym (RTLD_NEXT, "fgetxattr")) (fd, name, value, size);
+}
+
+// passthrough_posix_setxattr call. (...)
+int PosixPassthrough::passthrough_posix_setxattr (const char* path,
+    const char* name,
+    const void* value,
+    size_t size,
+    int flags)
+{
+    return ((libc_setxattr_t)dlsym (RTLD_NEXT, "setxattr")) (path, name, value, size, flags);
+}
+
+// passthrough_posix_lsetxattr call. (...)
+int PosixPassthrough::passthrough_posix_lsetxattr (const char* path,
+    const char* name,
+    const void* value,
+    size_t size,
+    int flags)
+{
+    return ((libc_lsetxattr_t)dlsym (RTLD_NEXT, "lsetxattr")) (path, name, value, size, flags);
+}
+
+// passthrough_posix_fsetxattr call. (...)
+int PosixPassthrough::passthrough_posix_fsetxattr (int fd,
+    const char* name,
+    const void* value,
+    size_t size,
+    int flags)
+{
+    return ((libc_fsetxattr_t)dlsym (RTLD_NEXT, "fsetxattr")) (fd, name, value, size, flags);
+}
+
+// passthrough_posix_listxattr call. (...)
+ssize_t PosixPassthrough::passthrough_posix_listxattr (const char* path, char* list, size_t size)
+{
+    return ((libc_listxattr_t)dlsym (RTLD_NEXT, "listxattr")) (path, list, size);
+}
+
+// passthrough_posix_llistxattr call. (...)
+ssize_t PosixPassthrough::passthrough_posix_llistxattr (const char* path, char* list, size_t size)
+{
+    return ((libc_llistxattr_t)dlsym (RTLD_NEXT, "llistxattr")) (path, list, size);
+}
+
+// passthrough_posix_flistxattr call. (...)
+ssize_t PosixPassthrough::passthrough_posix_flistxattr (int fd, char* list, size_t size)
+{
+    return ((libc_flistxattr_t)dlsym (RTLD_NEXT, "flistxattr")) (fd, list, size);
+}
+
+// passthrough_posix_removexattr call. (...)
+int PosixPassthrough::passthrough_posix_removexattr (const char* path, const char* name)
+{
+    return ((libc_removexattr_t)dlsym (RTLD_NEXT, "removexattr")) (path, name);
+}
+
+// passthrough_posix_lremovexattr call. (...)
+int PosixPassthrough::passthrough_posix_lremovexattr (const char* path, const char* name)
+{
+    return ((libc_lremovexattr_t)dlsym (RTLD_NEXT, "lremovexattr")) (path, name);
+}
+
+// passthrough_posix_fremovexattr call. (...)
+int PosixPassthrough::passthrough_posix_fremovexattr (int fd, const char* name)
+{
+    return ((libc_fremovexattr_t)dlsym (RTLD_NEXT, "fremovexattr")) (fd, name);
+}
+
 } // namespace padll

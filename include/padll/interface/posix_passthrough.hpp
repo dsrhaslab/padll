@@ -214,6 +214,221 @@ public:
      * @return
      */
     int passthrough_posix_dirfd (DIR* dirp);
+
+    /**
+     * passthrough_posix_getxattr:
+     *  https://linux.die.net/man/2/getxattr
+     * @param path
+     * @param name
+     * @param value
+     * @param size
+     * @return
+     */
+    ssize_t
+    passthrough_posix_getxattr (const char* path, const char* name, void* value, size_t size);
+
+    /**
+     * passthrough_posix_lgetxattr:
+     *  https://linux.die.net/man/2/lgetxattr
+     * @param path
+     * @param name
+     * @param value
+     * @param size
+     * @return
+     */
+    ssize_t
+    passthrough_posix_lgetxattr (const char* path, const char* name, void* value, size_t size);
+
+    /**
+     * passthrough_posix_fgetxattr:
+     *  https://linux.die.net/man/2/fgetxattr
+     * @param fd
+     * @param name
+     * @param value
+     * @param size
+     * @return
+     */
+    ssize_t passthrough_posix_fgetxattr (int fd, const char* name, void* value, size_t size);
+
+    /**
+     * passthrough_posix_setxattr:
+     *  https://linux.die.net/man/2/setxattr
+     * @param path
+     * @param name
+     * @param value
+     * @param size
+     * @param flags
+     * @return
+     */
+    int passthrough_posix_setxattr (const char* path,
+        const char* name,
+        const void* value,
+        size_t size,
+        int flags);
+
+    /**
+     * passthrough_posix_lsetxattr:
+     *  https://linux.die.net/man/2/lsetxattr
+     * @param path
+     * @param name
+     * @param value
+     * @param size
+     * @param flags
+     * @return
+     */
+    int passthrough_posix_lsetxattr (const char* path,
+        const char* name,
+        const void* value,
+        size_t size,
+        int flags);
+
+    /**
+     * passthrough_posix_fsetxattr:
+     *  https://linux.die.net/man/2/fsetxattr
+     * @param fd
+     * @param name
+     * @param value
+     * @param size
+     * @param flags
+     * @return
+     */
+    int passthrough_posix_fsetxattr (int fd,
+        const char* name,
+        const void* value,
+        size_t size,
+        int flags);
+
+    /**
+     * passthrough_posix_listxattr:
+     *  https://linux.die.net/man/2/listxattr
+     * @param path
+     * @param list
+     * @param size
+     * @return
+     */
+    ssize_t passthrough_posix_listxattr (const char* path, char* list, size_t size);
+
+    /**
+     * passthrough_posix_llistxattr:
+     *  https://linux.die.net/man/2/llistxattr
+     * @param path
+     * @param list
+     * @param size
+     * @return
+     */
+    ssize_t passthrough_posix_llistxattr (const char* path, char* list, size_t size);
+
+    /**
+     * passthrough_posix_flistxattr:
+     *  https://linux.die.net/man/2/flistxattr
+     * @param fd
+     * @param list
+     * @param size
+     * @return
+     */
+    ssize_t passthrough_posix_flistxattr (int fd, char* list, size_t size);
+
+    /**
+     * passthrough_posix_removexattr:
+     *  https://linux.die.net/man/2/removexattr
+     * @param path
+     * @param name
+     * @return
+     */
+    int passthrough_posix_removexattr (const char* path, const char* name);
+
+    /**
+     * passthrough_posix_lremovexattr:
+     *  https://linux.die.net/man/2/lremovexattr
+     * @param path
+     * @param name
+     * @return
+     */
+    int passthrough_posix_lremovexattr (const char* path, const char* name);
+
+    /**
+     * passthrough_posix_fremovexattr:
+     *  https://linux.die.net/man/2/fremovexattr
+     * @param fd
+     * @param name
+     * @return
+     */
+    int passthrough_posix_fremovexattr (int fd, const char* name);
+
+    /**
+     * passthrough_posix_chmod:
+     *  https://linux.die.net/man/2/chmod
+     * @param path
+     * @param mode
+     * @return
+     */
+    int passthrough_posix_chmod (const char* path, mode_t mode);
+
+    /**
+     * fchmod:
+     *  https://linux.die.net/man/2/fchmod
+     * @param fd
+     * @param mode
+     * @return
+     */
+    int passthrough_posix_fchmod (int fd, mode_t mode);
+
+    /**
+     * passthrough_posix_fchmodat:
+     *  https://linux.die.net/man/2/fchmodat
+     * @param dirfd
+     * @param path
+     * @param mode
+     * @param flags
+     * @return
+     */
+    int passthrough_posix_fchmodat (int dirfd, const char* path, mode_t mode, int flags);
+
+    /**
+     * passthrough_posix_chown:
+     *  https://linux.die.net/man/2/chmod
+     * @param pathname
+     * @param owner
+     * @param group
+     * @return
+     */
+    int passthrough_posix_chown (const char* pathname, uid_t owner, gid_t group);
+
+    /**
+     * passthrough_posix_lchown:
+     *  https://linux.die.net/man/2/lchmod
+     * @param pathname
+     * @param owner
+     * @param group
+     * @return
+     */
+    int passthrough_posix_lchown (const char* pathname, uid_t owner, gid_t group);
+
+    /**
+     * passthrough_posix_fchown:
+     *  https://linux.die.net/man/2/fchmod
+     * @param fd
+     * @param owner
+     * @param group
+     * @return
+     */
+    int passthrough_posix_fchown (int fd, uid_t owner, gid_t group);
+
+    /**
+     * passthrough_posix_fchownat:
+     *  https://linux.die.net/man/2/fchmodat
+     * @param dirfd
+     * @param pathname
+     * @param owner
+     * @param group
+     * @param flags
+     * @return
+     */
+    int passthrough_posix_fchownat (int dirfd,
+        const char* pathname,
+        uid_t owner,
+        gid_t group,
+        int flags);
 };
 } // namespace padll
 #endif // PADLL_POSIX_PASSTHROUGH_H
