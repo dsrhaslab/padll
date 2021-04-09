@@ -594,41 +594,55 @@ int fremovexattr (int fd, const char* name)
 // chmod call. (...)
 int chmod (const char* pathname, mode_t mode)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_chmod (pathname, mode);
+    return (posix_file_modes_calls.padll_intercept_chmod)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_chmod (pathname, mode)
+        : m_posix_passthrough.passthrough_posix_chmod (pathname, mode);
 }
 
 // fchmod call. (...)
 int fchmod (int fd, mode_t mode)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_fchmod (fd, mode);
+    return (posix_file_modes_calls.padll_intercept_fchmod)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_fchmod (fd, mode)
+        : m_posix_passthrough.passthrough_posix_fchmod (fd, mode);
 }
 
 // fchmodat call. (...)
 int fchmodat (int dirfd, const char* pathname, mode_t mode, int flags)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_fchmodat (dirfd, pathname, mode, flags);
+    return (posix_file_modes_calls.padll_intercept_fchmod)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_fchmodat (dirfd, pathname, mode, flags)
+        : m_posix_passthrough.passthrough_posix_fchmodat (dirfd, pathname, mode, flags);
 }
 
 // chown call. (...)
 int chown (const char* pathname, uid_t owner, gid_t group)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_chown (pathname, owner, group);
+    return (posix_file_modes_calls.padll_intercept_chown)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_chown (pathname, owner, group)
+        : m_posix_passthrough.passthrough_posix_chown (pathname, owner, group);
 }
 
 // lchown call. (...)
 int lchown (const char* pathname, uid_t owner, gid_t group)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_lchown (pathname, owner, group);
+    return (posix_file_modes_calls.padll_intercept_chown)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_lchown (pathname, owner, group)
+        : m_posix_passthrough.passthrough_posix_lchown (pathname, owner, group);
 }
 
 // fchown call. (...)
 int fchown (int fd, uid_t owner, gid_t group)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_fchown (fd, owner, group);
+    return (posix_file_modes_calls.padll_intercept_fchown)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_fchown (fd, owner, group)
+        : m_posix_passthrough.passthrough_posix_fchown (fd, owner, group);
 }
 
 // fchownat call. (...)
 int fchownat (int dirfd, const char* pathname, uid_t owner, gid_t group, int flags)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_fchownat (dirfd, pathname, owner, group, flags);
+    return (posix_file_modes_calls.padll_intercept_fchownat)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_fchownat (dirfd, pathname, owner, group, flags)
+        : m_posix_passthrough.passthrough_posix_fchownat (dirfd, pathname, owner, group, flags);
 }
