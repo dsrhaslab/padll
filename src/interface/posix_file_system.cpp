@@ -423,26 +423,34 @@ off_t ftello64 (FILE* stream)
 // mkdir call. (...)
 int mkdir (const char* path, mode_t mode)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_mkdir (path, mode);
+    return (posix_directory_calls.padll_intercept_mkdir)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_mkdir (path, mode)
+        : m_posix_passthrough.passthrough_posix_mkdir (path, mode);
 }
 
 // mkdirat call. (...)
 int mkdirat (int dirfd, const char* path, mode_t mode)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_mkdirat (dirfd, path, mode);
+    return (posix_directory_calls.padll_intercept_mkdirat)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_mkdirat (dirfd, path, mode)
+        : m_posix_passthrough.passthrough_posix_mkdirat (dirfd, path, mode);
 }
 
 // readdir call. (...)
 struct dirent* readdir (DIR* dirp)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_readdir (dirp);
+    return (posix_directory_calls.padll_intercept_readdir)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_readdir (dirp)
+        : m_posix_passthrough.passthrough_posix_readdir (dirp);
 }
 
 // readdir64 call. (...)
 struct dirent64* readdir64 (DIR* dirp)
 {
 #if defined(__unix__) || defined(__linux)
-    return m_ld_preloaded_posix.ld_preloaded_posix_readdir64 (dirp);
+    return (posix_directory_calls.padll_intercept_readdir64)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_readdir64 (dirp)
+        : m_posix_passthrough.passthrough_posix_readdir64 (dirp);
 #endif
     return nullptr;
 }
@@ -450,31 +458,41 @@ struct dirent64* readdir64 (DIR* dirp)
 // opendir call. (...)
 DIR* opendir (const char* path)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_opendir (path);
+    return (posix_directory_calls.padll_intercept_opendir)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_opendir (path)
+        : m_posix_passthrough.passthrough_posix_opendir (path);
 }
 
 // fdopendir call. (...)
 DIR* fdopendir (int fd)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_fdopendir (fd);
+    return (posix_directory_calls.padll_intercept_fdopendir)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_fdopendir (fd)
+        : m_posix_passthrough.passthrough_posix_fdopendir (fd);
 }
 
 // closedir call. (...)
 int closedir (DIR* dirp)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_closedir (dirp);
+    return (posix_directory_calls.padll_intercept_closedir)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_closedir (dirp)
+        : m_posix_passthrough.passthrough_posix_closedir (dirp);
 }
 
 // rmdir call. (...)
 int rmdir (const char* path)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_rmdir (path);
+    return (posix_directory_calls.padll_intercept_rmdir)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_rmdir (path)
+        : m_posix_passthrough.passthrough_posix_rmdir (path);
 }
 
 // dirfd call. (...)
 int dirfd (DIR* dirp)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_dirfd (dirp);
+    return (posix_directory_calls.padll_intercept_dirfd)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_dirfd (dirp)
+        : m_posix_passthrough.passthrough_posix_dirfd (dirp);
 }
 
 // getxattr call. (...)
