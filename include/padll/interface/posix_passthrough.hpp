@@ -1,14 +1,14 @@
 /**
-*   Written by Ricardo Macedo.
-*   Copyright (c) 2021 INESC TEC.
-**/
+ *   Written by Ricardo Macedo.
+ *   Copyright (c) 2021 INESC TEC.
+ **/
 
 #ifndef PADLL_POSIX_PASSTHROUGH_H
 #define PADLL_POSIX_PASSTHROUGH_H
 
 #include <mutex>
-#include <padll/utils/logging.hpp>
 #include <padll/libraries/libc_operation_headers.hpp>
+#include <padll/utils/logging.hpp>
 #include <string>
 
 namespace padll {
@@ -32,7 +32,6 @@ private:
     bool dlopen_library_handle ();
 
 public:
-
     /**
      * PosixPassthrough default constructor.
      */
@@ -141,6 +140,80 @@ public:
      */
     size_t passthrough_posix_fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stream);
 
+    /**
+     * passthrough_posix_mkdir:
+     *  https://linux.die.net/man/2/mkdir
+     * @param path
+     * @param mode
+     * @return
+     */
+    int passthrough_posix_mkdir (const char* path, mode_t mode);
+
+    /**
+     * passthrough_posix_mkdirat:
+     *  https://linux.die.net/man/2/mkdirat
+     * @param dirfd
+     * @param path
+     * @param mode
+     * @return
+     */
+    int passthrough_posix_mkdirat (int dirfd, const char* path, mode_t mode);
+
+    /**
+     * passthrough_posix_readdir:
+     *  https://linux.die.net/man/3/readdir
+     * @param dirp
+     * @return
+     */
+    struct dirent* passthrough_posix_readdir (DIR* dirp);
+
+    /**
+     * passthrough_posix_readdir64:
+     *  https://www.mkssoftware.com/docs/man3/readdir.3.asp
+     * @param dirp
+     * @return
+     */
+    struct dirent64* passthrough_posix_readdir64 (DIR* dirp);
+
+    /**
+     * passthrough_posix_opendir:
+     *  https://linux.die.net/man/3/opendir
+     * @param path
+     * @return
+     */
+    DIR* passthrough_posix_opendir (const char* path);
+
+    /**
+     * passthrough_posix_fdopendir:
+     *  https://linux.die.net/man/3/fdopendir
+     * @param fd
+     * @return
+     */
+    DIR* passthrough_posix_fdopendir (int fd);
+
+    /**
+     * passthrough_posix_closedir:
+     *  https://linux.die.net/man/3/closedir
+     * @param dirp
+     * @return
+     */
+    int passthrough_posix_closedir (DIR* dirp);
+
+    /**
+     * passthrough_posix_rmdir:
+     *  https://linux.die.net/man/3/rmdir
+     * @param path
+     * @return
+     */
+    int passthrough_posix_rmdir (const char* path);
+
+    /**
+     * passthrough_posix_dirfd:
+     *  https://linux.die.net/man/3/dirfd
+     * @param dirp
+     * @return
+     */
+    int passthrough_posix_dirfd (DIR* dirp);
 };
-}
-#endif //PADLL_POSIX_PASSTHROUGH_H
+} // namespace padll
+#endif // PADLL_POSIX_PASSTHROUGH_H

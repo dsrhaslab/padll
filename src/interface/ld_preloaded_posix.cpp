@@ -221,8 +221,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_write (int fd, const void* buf, siz
 }
 
 // ld_preloaded_posix_pread call.
-ssize_t
-LdPreloadedPosix::ld_preloaded_posix_pread (int fd, void* buf, size_t counter, off_t offset)
+ssize_t LdPreloadedPosix::ld_preloaded_posix_pread (int fd, void* buf, size_t counter, off_t offset)
 {
     // logging message
     if (option_default_detailed_logging) {
