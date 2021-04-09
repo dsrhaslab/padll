@@ -273,4 +273,53 @@ int PosixPassthrough::passthrough_posix_fremovexattr (int fd, const char* name)
     return ((libc_fremovexattr_t)dlsym (RTLD_NEXT, "fremovexattr")) (fd, name);
 }
 
+// passthrough_posix_chmod call. (...)
+int PosixPassthrough::passthrough_posix_chmod (const char* path, mode_t mode)
+{
+    return ((libc_chmod_t)dlsym (RTLD_NEXT, "chmod")) (path, mode);
+}
+
+// passthrough_posix_fchmod call. (...)
+int PosixPassthrough::passthrough_posix_fchmod (int fd, mode_t mode)
+{
+    return ((libc_fchmod_t)dlsym (RTLD_NEXT, "fchmod")) (fd, mode);
+}
+
+// passthrough_posix_fchmodat call. (...)
+int PosixPassthrough::passthrough_posix_fchmodat (int dirfd,
+    const char* path,
+    mode_t mode,
+    int flags)
+{
+    return ((libc_fchmodat_t)dlsym (RTLD_NEXT, "fchmodat")) (dirfd, path, mode, flags);
+}
+
+// passthrough_posix_chown call. (...)
+int PosixPassthrough::passthrough_posix_chown (const char* pathname, uid_t owner, gid_t group)
+{
+    return ((libc_chown_t)dlsym (RTLD_NEXT, "chown")) (pathname, owner, group);
+}
+
+// passthrough_posix_lchown call. (...)
+int PosixPassthrough::passthrough_posix_lchown (const char* pathname, uid_t owner, gid_t group)
+{
+    return ((libc_lchown_t)dlsym (RTLD_NEXT, "lchown")) (pathname, owner, group);
+}
+
+// passthrough_posix_fchown call. (...)
+int PosixPassthrough::passthrough_posix_fchown (int fd, uid_t owner, gid_t group)
+{
+    return ((libc_fchown_t)dlsym (RTLD_NEXT, "fchown")) (fd, owner, group);
+}
+
+// passthrough_posix_fchownat call. (...)
+int PosixPassthrough::passthrough_posix_fchownat (int dirfd,
+    const char* pathname,
+    uid_t owner,
+    gid_t group,
+    int flags)
+{
+    return ((libc_fchownat_t)dlsym (RTLD_NEXT, "fchownat")) (dirfd, pathname, owner, group, flags);
+}
+
 } // namespace padll

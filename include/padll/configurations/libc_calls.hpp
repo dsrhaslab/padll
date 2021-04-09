@@ -42,8 +42,19 @@ struct PosixExtendedAttributesCalls {
     bool padll_intercept_fremovexattr = false;
 };
 
+struct PosixFileModesCalls {
+    bool padll_intercept_chmod = false;
+    bool padll_intercept_fchmod = false;
+    bool padll_intercept_fchmodat = false;
+    bool padll_intercept_chown = false;
+    bool padll_intercept_lchown = false;
+    bool padll_intercept_fchown = false;
+    bool padll_intercept_fchownat = false;
+};
+
 static PosixDataCalls posix_data_calls;
 static PosixDirectoryCalls posix_directory_calls;
 static PosixDirectoryCalls posix_extended_attributes_calls;
+static PosixFileModesCalls posix_file_modes_calls;
 
 #endif // PADLL_LIBC_CALLS_HPP
