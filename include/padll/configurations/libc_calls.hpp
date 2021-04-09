@@ -54,7 +54,7 @@ struct PosixFileModesCalls {
 
 static PosixDataCalls posix_data_calls;
 static PosixDirectoryCalls posix_directory_calls;
-static PosixDirectoryCalls posix_extended_attributes_calls;
+static PosixExtendedAttributesCalls posix_extended_attributes_calls;
 static PosixFileModesCalls posix_file_modes_calls;
 
 #endif // PADLL_LIBC_CALLS_HPP

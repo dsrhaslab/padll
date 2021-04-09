@@ -498,73 +498,97 @@ int dirfd (DIR* dirp)
 // getxattr call. (...)
 ssize_t getxattr (const char* path, const char* name, void* value, size_t size)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_getxattr (path, name, value, size);
+    return (posix_extended_attributes_calls.padll_intercept_getxattr)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_getxattr (path, name, value, size)
+        : m_posix_passthrough.passthrough_posix_getxattr (path, name, value, size);
 }
 
 // lgetxattr call. (...)
 ssize_t lgetxattr (const char* path, const char* name, void* value, size_t size)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_lgetxattr (path, name, value, size);
+    return (posix_extended_attributes_calls.padll_intercept_lgetxattr)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_lgetxattr (path, name, value, size)
+        : m_posix_passthrough.passthrough_posix_lgetxattr (path, name, value, size);
 }
 
 // fgetxattr call. (...)
 ssize_t fgetxattr (int fd, const char* name, void* value, size_t size)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_fgetxattr (fd, name, value, size);
+    return (posix_extended_attributes_calls.padll_intercept_fgetxattr)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_fgetxattr (fd, name, value, size)
+        : m_posix_passthrough.passthrough_posix_fgetxattr (fd, name, value, size);
 }
 
 // setxattr call. (...)
 int setxattr (const char* path, const char* name, const void* value, size_t size, int flags)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_setxattr (path, name, value, size, flags);
+    return (posix_extended_attributes_calls.padll_intercept_setxattr)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_setxattr (path, name, value, size, flags)
+        : m_posix_passthrough.passthrough_posix_setxattr (path, name, value, size, flags);
 }
 
 // lsetxattr call. (...)
 int lsetxattr (const char* path, const char* name, const void* value, size_t size, int flags)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_lsetxattr (path, name, value, size, flags);
+    return (posix_extended_attributes_calls.padll_intercept_lsetxattr)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_lsetxattr (path, name, value, size, flags)
+        : m_posix_passthrough.passthrough_posix_lsetxattr (path, name, value, size, flags);
 }
 
 // fsetxaatr call. (...)
 int fsetxattr (int fd, const char* name, const void* value, size_t size, int flags)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_fsetxattr (fd, name, value, size, flags);
+    return (posix_extended_attributes_calls.padll_intercept_fsetxattr)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_fsetxattr (fd, name, value, size, flags)
+        : m_posix_passthrough.passthrough_posix_fsetxattr (fd, name, value, size, flags);
 }
 
 // listxattr call. (...)
 ssize_t listxattr (const char* path, char* list, size_t size)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_listxattr (path, list, size);
+    return (posix_extended_attributes_calls.padll_intercept_listxattr)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_listxattr (path, list, size)
+        : m_posix_passthrough.passthrough_posix_listxattr (path, list, size);
 }
 
 // llistxattr call. (...)
 ssize_t llistxattr (const char* path, char* list, size_t size)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_llistxattr (path, list, size);
+    return (posix_extended_attributes_calls.padll_intercept_llistxattr)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_llistxattr (path, list, size)
+        : m_posix_passthrough.passthrough_posix_llistxattr (path, list, size);
 }
 
 // flistxattr call. (...)
 ssize_t flistxattr (int fd, char* list, size_t size)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_flistxattr (fd, list, size);
+    return (posix_extended_attributes_calls.padll_intercept_flistxattr)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_flistxattr (fd, list, size)
+        : m_posix_passthrough.passthrough_posix_flistxattr (fd, list, size);
 }
 
 // removexattr call. (...)
 int removexattr (const char* path, const char* name)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_removexattr (path, name);
+    return (posix_extended_attributes_calls.padll_intercept_removexattr)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_removexattr (path, name)
+        : m_posix_passthrough.passthrough_posix_removexattr (path, name);
 }
 
 // lremovexattr call. (...)
 int lremovexattr (const char* path, const char* name)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_lremovexattr (path, name);
+    return (posix_extended_attributes_calls.padll_intercept_lremovexattr)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_lremovexattr (path, name)
+        : m_posix_passthrough.passthrough_posix_lremovexattr (path, name);
 }
 
 // fremovexattr call. (...)
 int fremovexattr (int fd, const char* name)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_fremovexattr (fd, name);
+    return (posix_extended_attributes_calls.padll_intercept_fremovexattr)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_fremovexattr (fd, name)
+        : m_posix_passthrough.passthrough_posix_fremovexattr (fd, name);
 }
 
 // chmod call. (...)
