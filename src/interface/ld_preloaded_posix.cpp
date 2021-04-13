@@ -296,7 +296,7 @@ LdPreloadedPosix::ld_preloaded_posix_pwrite (int fd, const void* buf, size_t cou
 // ld_preloaded_posix_pread64 call.
 #if defined(__USE_LARGEFILE64)
 ssize_t
-LdPreloadedPosix::ld_preloaded_posix_pread64 (int fd, void* buf, ssize_t counter, off64_t offset)
+LdPreloadedPosix::ld_preloaded_posix_pread64 (int fd, void* buf, size_t counter, off64_t offset)
 {
     // logging message
     if (option_default_detailed_logging) {
@@ -336,7 +336,7 @@ LdPreloadedPosix::ld_preloaded_posix_pread64 (int fd, void* buf, ssize_t counter
 #if defined(__USE_LARGEFILE64)
 ssize_t LdPreloadedPosix::ld_preloaded_posix_pwrite64 (int fd,
     const void* buf,
-    ssize_t counter,
+    size_t counter,
     off64_t offset)
 {
     // logging message
