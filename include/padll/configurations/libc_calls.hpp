@@ -13,6 +13,10 @@ struct PosixDataCalls {
     bool padll_intercept_pwrite = true;
     bool padll_intercept_fread = false;
     bool padll_intercept_fwrite = true;
+#if defined(__USE_LARGEFILE64)
+    bool padll_intercept_pread64 = false;
+    bool padll_intercept_pwrite64 = false;
+#endif
 };
 
 struct PosixDirectoryCalls {
