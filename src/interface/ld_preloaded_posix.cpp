@@ -154,7 +154,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_read (int fd, void* buf, size_t cou
     if (option_default_detailed_logging) {
         Logging::log_debug ("ld_preloaded_posix-read (" + std::to_string (fd) + ")");
     }
-    std::cout << "ld-preloaded posix read\n";
+
     // validate function and library handle pointers
     if (!m_data_operations.m_read && !this->m_lib_handle) {
         // open library handle, and assign the operation pointer through m_lib_handle if the open

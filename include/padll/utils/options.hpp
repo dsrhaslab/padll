@@ -16,12 +16,12 @@ const bool option_default_statistic_collection { true };
 /**
  * option_default_detailed_logging:
  */
-const bool option_default_detailed_logging { false };
+const bool option_default_detailed_logging { true };
 
 /**
  * option_default_table_format:
  */
-const bool option_default_table_format { true };
+const bool option_default_table_format { false };
 
 } // namespace padll
 
