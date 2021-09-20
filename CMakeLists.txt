@@ -91,10 +91,9 @@ target_sources(
 #        GIT_REPOSITORY  https://github.com/rgmacedo/paio.git
 #        GIT_TAG         origin/rgmacedo_arch
 #        )
-
+#
 #FetchContent_MakeAvailable(paio)
 #target_link_libraries(padll paio)
-#target_link_libraries(padll /home/acb11912na/db/paio/build/libpaio.a)
 
 find_library(PAIO_LIBRARY paio HINTS /home/acb11912na/db/paio/build)
 target_link_libraries(padll ${PAIO_LIBRARY})

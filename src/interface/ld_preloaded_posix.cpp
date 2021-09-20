@@ -15,7 +15,7 @@ LdPreloadedPosix::LdPreloadedPosix ()
     this->initialize ();
 
     // Fixme: this is temporary
-    this->initialize_stage();
+    //this->initialize_stage();
 }
 
 // LdPreloadedPosix parameterized constructor.
@@ -34,7 +34,7 @@ LdPreloadedPosix::LdPreloadedPosix (const std::string& lib, bool stat_collection
     this->initialize ();
 
     // Fixme: this is temporary
-    this->initialize_stage();
+    //this->initialize_stage();
 }
 
 // LdPreloadedPosix default destructor.
@@ -112,6 +112,8 @@ void LdPreloadedPosix::initialize ()
 
 void LdPreloadedPosix::initialize_stage ()
 {
+    std::unique_lock<std::mutex> unique_lock (this->m_lock);
+
     int channels = 1;
     bool default_object_creation = true;
     std::string stage_name = "tensorflow-";
@@ -121,6 +123,7 @@ void LdPreloadedPosix::initialize_stage ()
 
 	std::this_thread::sleep_for (std::chrono::seconds(5));
 
+    this->m_stage_initialized.store (true);
 }
 
 // set_statistic_collection call. (...)
@@ -252,11 +255,12 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_pread (int fd, void* buf, size_t co
         Logging::log_debug ("ld_preloaded_posix-pread (" + std::to_string (fd) + ")");
     }
 
-//    if (m_stage == nullptr) {
-//        this->initialize_stage ();
-//        std::cout << this->m_stage->get_stage_info().to_string() << "\n";
-//        std::this_thread::sleep_for (std::chrono::seconds(5));
-//    }
+    if (m_stage_initialized.load () == false) {
+        this->initialize_stage ();
+        std::cout << this->m_stage->get_stage_info().to_string() << "\n";
+    } else {
+        Logging::log_debug ("Stage was already initialized ...");
+    }
 
     // validate function and library handle pointers
     if (!m_data_operations.m_pread && !this->m_lib_handle) {

@@ -42,7 +42,7 @@ private:
     Statistics m_ext_attr_stats { "ext-attr", OperationType::ext_attr_calls };
     Statistics m_file_mode_stats { "file-mode", OperationType::file_mode_calls };
 
-
+    std::atomic<bool> m_stage_initialized { false };
     std::shared_ptr<paio::PaioStage> m_stage { nullptr };
     std::unique_ptr<paio::PosixLayer> m_posix_instance { nullptr };
 
