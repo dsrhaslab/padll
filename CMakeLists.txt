@@ -66,6 +66,7 @@ target_sources(
     ${PROJECT_SOURCE_DIR}/include/padll/utils/logging.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/libraries/libc_operation_enums.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/libraries/libc_operation_headers.hpp
+    ${PROJECT_SOURCE_DIR}/include/padll/utils/make_unique.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/utils/options.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/thrid_party/enum.h
     ${PROJECT_SOURCE_DIR}/include/padll/thrid_party/tabulate.hpp
@@ -81,6 +82,18 @@ target_sources(
         src/statistics/statistics.cpp
         src/utils/logging.cpp
 )
+
+
+# ---------------------------------------------------------------------------- #
+# paio -- Paio library
+
+FetchContent_Declare(paio
+        GIT_REPOSITORY  https://github.com/rgmacedo/paio.git
+        GIT_TAG         origin/rgmacedo_arch
+        )
+
+FetchContent_MakeAvailable(paio)
+target_link_libraries(padll paio)
 
 # ---------------------------------------------------------------------------- #
 # spdlog -- logging library

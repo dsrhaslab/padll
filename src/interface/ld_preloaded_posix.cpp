@@ -13,6 +13,9 @@ LdPreloadedPosix::LdPreloadedPosix ()
     std::printf ("LdPreloadedPosix default constructor.\n");
     // initialize library handle pointer
     this->initialize ();
+
+    // Fixme: this is temporary
+    this->initialize_stage();
 }
 
 // LdPreloadedPosix parameterized constructor.
@@ -29,6 +32,9 @@ LdPreloadedPosix::LdPreloadedPosix (const std::string& lib, bool stat_collection
 
     // initialize library handle pointer
     this->initialize ();
+
+    // Fixme: this is temporary
+    this->initialize_stage();
 }
 
 // LdPreloadedPosix default destructor.
@@ -102,6 +108,16 @@ void LdPreloadedPosix::initialize ()
         Logging::log_error ("Error while dlopen'ing " + this->m_lib_name + ".");
         return;
     }
+}
+
+void LdPreloadedPosix::initialize_stage ()
+{
+    int channels = 1;
+    bool default_object_creation = true;
+    std::string stage_name = "tensorflow-";
+
+    this->m_stage = { std::make_shared<paio::PaioStage> (channels, default_object_creation, stage_name) };
+    this->m_posix_instance = paio::make_unique<paio::PosixLayer> (this->m_stage);
 }
 
 // set_statistic_collection call. (...)
@@ -232,6 +248,12 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_pread (int fd, void* buf, size_t co
     if (option_default_detailed_logging) {
         Logging::log_debug ("ld_preloaded_posix-pread (" + std::to_string (fd) + ")");
     }
+
+//    if (m_stage == nullptr) {
+//        this->initialize_stage ();
+//        std::cout << this->m_stage->get_stage_info().to_string() << "\n";
+//        std::this_thread::sleep_for (std::chrono::seconds(5));
+//    }
 
     // validate function and library handle pointers
     if (!m_data_operations.m_pread && !this->m_lib_handle) {

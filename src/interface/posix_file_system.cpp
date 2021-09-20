@@ -8,8 +8,6 @@
 // read call. (...)
 ssize_t read (int fd, void* buf, size_t size)
 {
-    std::printf ("posix-file-system:read\n");
-
     return (posix_data_calls.padll_intercept_read)
         ? m_ld_preloaded_posix.ld_preloaded_posix_read (fd, buf, size)
         : m_posix_passthrough.passthrough_posix_read (fd, buf, size);
@@ -18,8 +16,6 @@ ssize_t read (int fd, void* buf, size_t size)
 // write call. (...)
 ssize_t write (int fd, const void* buf, size_t size)
 {
-    std::printf ("posix-file-system:write\n");
-
     return (posix_data_calls.padll_intercept_write)
         ? m_ld_preloaded_posix.ld_preloaded_posix_write (fd, buf, size)
         : m_posix_passthrough.passthrough_posix_write (fd, buf, size);
@@ -28,8 +24,7 @@ ssize_t write (int fd, const void* buf, size_t size)
 // pread call. (...)
 ssize_t pread (int fd, void* buf, size_t size, off_t offset)
 {
-    std::printf ("posix-file-system:pread\n");
-
+//    std::printf ("posix-file-system:pread\n");
     return (posix_data_calls.padll_intercept_pread)
         ? m_ld_preloaded_posix.ld_preloaded_posix_pread (fd, buf, size, offset)
         : m_posix_passthrough.passthrough_posix_pread (fd, buf, size, offset);

@@ -70,21 +70,18 @@ void PosixPassthrough::initialize ()
 // passthrough_posix_read call. (...)
 ssize_t PosixPassthrough::passthrough_posix_read (int fd, void* buf, size_t counter)
 {
-    std::printf ("passthrough-posix:read\n");
     return ((libc_read_t)dlsym (RTLD_NEXT, "read")) (fd, buf, counter);
 }
 
 // passthrough_posix_write call. (...)
 ssize_t PosixPassthrough::passthrough_posix_write (int fd, const void* buf, size_t counter)
 {
-    std::printf ("passthrough-posix:write\n");
     return ((libc_write_t)dlsym (RTLD_NEXT, "write")) (fd, buf, counter);
 }
 
 // passthrough_posix_pread call. (...)
 ssize_t PosixPassthrough::passthrough_posix_pread (int fd, void* buf, size_t counter, off_t offset)
 {
-    std::printf ("passthrough-posix:pread\n");
     return ((libc_pread_t)dlsym (RTLD_NEXT, "pread")) (fd, buf, counter, offset);
 }
 

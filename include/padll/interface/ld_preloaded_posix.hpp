@@ -13,6 +13,9 @@
 #include <padll/libraries/libc_operation_headers.hpp>
 #include <padll/statistics/statistics.hpp>
 #include <padll/utils/options.hpp>
+#include <padll/utils/make_unique.hpp>
+#include <paio/interface/posix_layer.hpp>
+#include <paio/stage/paio_stage.hpp>
 
 namespace padll {
 
@@ -39,6 +42,10 @@ private:
     Statistics m_ext_attr_stats { "ext-attr", OperationType::ext_attr_calls };
     Statistics m_file_mode_stats { "file-mode", OperationType::file_mode_calls };
 
+
+    std::shared_ptr<paio::PaioStage> m_stage { nullptr };
+    std::unique_ptr<paio::PosixLayer> m_posix_instance { nullptr };
+
     /**
      * initialize:
      */
@@ -49,6 +56,13 @@ private:
      * @return
      */
     bool dlopen_library_handle ();
+
+
+    /**
+     * initialize_stage:
+     */
+    void initialize_stage ();
+
 
 public:
     /**
