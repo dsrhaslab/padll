@@ -126,6 +126,22 @@ void LdPreloadedPosix::initialize_stage ()
     this->m_stage_initialized.store (true);
 }
 
+void LdPreloadedPosix::enforce_request (const long& workflow_id,
+    const int& operation_type,
+    const int& operation_context,
+    const uint64_t& operation_size)
+{
+    // create a read-based Context object
+    auto context_obj = this->m_posix_instance->build_context_object (workflow_id,
+        operation_type,
+        operation_context,
+        operation_size,
+        1);
+
+    // submit request through posix_noop
+    this->m_posix_instance->posix_noop (nullptr, operation_size, context_obj);
+}
+
 // set_statistic_collection call. (...)
 void LdPreloadedPosix::set_statistic_collection (bool value)
 {
@@ -260,6 +276,10 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_pread (int fd, void* buf, size_t co
         std::cout << this->m_stage->get_stage_info().to_string() << "\n";
     } else {
         Logging::log_debug ("Stage was already initialized ...");
+        this->enforce_request (1000,
+            static_cast<int> (paio::POSIX::read),
+            static_cast<int> (paio::POSIX::no_op),
+            counter);
     }
 
     // validate function and library handle pointers

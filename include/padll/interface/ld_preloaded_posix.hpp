@@ -64,6 +64,11 @@ private:
     void initialize_stage ();
 
 
+    void enforce_request (const long& workflow_id,
+                          const int& operation_type,
+                          const int& operation_context,
+                          const uint64_t& operation_size);
+
 public:
     /**
      * LdPreloadedPosix default constructor.
