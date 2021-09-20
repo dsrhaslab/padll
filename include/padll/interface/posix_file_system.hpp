@@ -14,7 +14,7 @@
 #include <padll/utils/logging.hpp>
 #include <thread>
 
-padll::Logging m_logger { false };
+padll::Logging m_logger { true };
 padll::LdPreloadedPosix m_ld_preloaded_posix {};
 padll::PosixPassthrough m_posix_passthrough {};
 bool use_read = false;
@@ -39,6 +39,7 @@ static __attribute__ ((constructor)) void init_method ()
 static __attribute__ ((destructor)) void destroy_method ()
 {
     std::printf ("PosixFileSystem destructor\n");
+    _exit(EXIT_SUCCESS);
 }
 
 /**

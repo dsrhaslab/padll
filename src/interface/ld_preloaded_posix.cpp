@@ -10,6 +10,7 @@ namespace padll {
 // LdPreloadedPosix default constructor.
 LdPreloadedPosix::LdPreloadedPosix ()
 {
+    std::printf ("LdPreloadedPosix default constructor.\n");
     // initialize library handle pointer
     this->initialize ();
 }
@@ -19,6 +20,7 @@ LdPreloadedPosix::LdPreloadedPosix (const std::string& lib, bool stat_collection
     m_lib_name { lib },
     m_collect { stat_collection }
 {
+    std::printf ("LdPreloadedPosix parameterized constructor.\n");
     // validate if 'lib' is valid
     if (lib.empty ()) {
         Logging::log_error ("Library not valid.");
@@ -32,6 +34,7 @@ LdPreloadedPosix::LdPreloadedPosix (const std::string& lib, bool stat_collection
 // LdPreloadedPosix default destructor.
 LdPreloadedPosix::~LdPreloadedPosix ()
 {
+    std::printf ("LdPreloadedPosix default destructor.\n");
     Logging::log_info ("LdPreloadedPosix default destructor.");
 
     // validate if library handle is valid and close dynamic linking
@@ -154,6 +157,8 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_read (int fd, void* buf, size_t cou
     if (option_default_detailed_logging) {
         Logging::log_debug ("ld_preloaded_posix-read (" + std::to_string (fd) + ")");
     }
+
+    std::printf ("ld_preloaded_posix_read (%d)\n", fd);
 
     // validate function and library handle pointers
     if (!m_data_operations.m_read && !this->m_lib_handle) {

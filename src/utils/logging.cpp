@@ -8,7 +8,7 @@
 namespace padll {
 
 // static variable debug_enabled
-bool Logging::m_debug_enabled = false;
+bool Logging::m_debug_enabled = true;
 
 // Logging default constructor.
 Logging::Logging () = default;
