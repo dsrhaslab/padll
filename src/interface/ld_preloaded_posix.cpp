@@ -118,6 +118,9 @@ void LdPreloadedPosix::initialize_stage ()
 
     this->m_stage = { std::make_shared<paio::PaioStage> (channels, default_object_creation, stage_name) };
     this->m_posix_instance = paio::make_unique<paio::PosixLayer> (this->m_stage);
+
+	std::this_thread::sleep_for (std::chrono::seconds(5));
+
 }
 
 // set_statistic_collection call. (...)
