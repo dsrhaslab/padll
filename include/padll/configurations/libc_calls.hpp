@@ -57,8 +57,8 @@ struct PosixFileModesCalls {
 };
 
 struct PosixMetadataCalls {
-    bool paddl_intercept_open_var = true;
-    bool paddl_intercept_open = true;
+    bool paddl_intercept_open_var = false;
+    bool paddl_intercept_open = false;
     bool paddl_intercept_creat = false;
     bool paddl_intercept_creat64 = false;
     bool paddl_intercept_openat_var = false;
