@@ -13,9 +13,6 @@ LdPreloadedPosix::LdPreloadedPosix ()
     std::printf ("LdPreloadedPosix default constructor.\n");
     // initialize library handle pointer
     this->initialize ();
-
-    // Fixme: this is temporary
-    //this->initialize_stage();
 }
 
 // LdPreloadedPosix parameterized constructor.
@@ -32,9 +29,6 @@ LdPreloadedPosix::LdPreloadedPosix (const std::string& lib, bool stat_collection
 
     // initialize library handle pointer
     this->initialize ();
-
-    // Fixme: this is temporary
-    //this->initialize_stage();
 }
 
 // LdPreloadedPosix default destructor.
@@ -112,26 +106,28 @@ void LdPreloadedPosix::initialize ()
 
 void LdPreloadedPosix::initialize_stage ()
 {
-    std::unique_lock<std::mutex> unique_lock (this->m_lock);
+    std::unique_lock<std::mutex> lock (this->m_lock);
 
-    int channels = 1;
-    bool default_object_creation = true;
-    std::string stage_name = "tensorflow-";
-
-    this->m_stage = { std::make_shared<paio::PaioStage> (channels, default_object_creation, stage_name) };
+    // initialize PAIO structures (stage and instance-interface)
+    this->m_stage = { std::make_shared<paio::PaioStage> (option_default_stage_channels,
+                      option_default_stage_object_creation,
+                      option_default_stage_name) };
     this->m_posix_instance = paio::make_unique<paio::PosixLayer> (this->m_stage);
 
+    // temporary ...
 	std::this_thread::sleep_for (std::chrono::seconds(5));
 
+    // update initialization status
     this->m_stage_initialized.store (true);
 }
 
+// enforce_request call. (...)
 void LdPreloadedPosix::enforce_request (const long& workflow_id,
     const int& operation_type,
     const int& operation_context,
     const uint64_t& operation_size)
 {
-    // create a read-based Context object
+    // create Context object
     auto context_obj = this->m_posix_instance->build_context_object (workflow_id,
         operation_type,
         operation_context,
@@ -196,8 +192,6 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_read (int fd, void* buf, size_t cou
         Logging::log_debug ("ld_preloaded_posix-read (" + std::to_string (fd) + ")");
     }
 
-    std::printf ("ld_preloaded_posix_read (%d)\n", fd);
-
     // validate function and library handle pointers
     if (!m_data_operations.m_read && !this->m_lib_handle) {
         // open library handle, and assign the operation pointer through m_lib_handle if the open
@@ -234,7 +228,6 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_write (int fd, const void* buf, siz
         Logging::log_debug ("ld_preloaded_posix-write (" + std::to_string (fd) + ")");
     }
 
-    std::cout << "ld-preloaded posix write\n";
     // validate function and library handle pointers
     if (!m_data_operations.m_write && !this->m_lib_handle) {
         // open library handle, and assign the operation pointer through m_lib_handle if the open
@@ -275,8 +268,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_pread (int fd, void* buf, size_t co
         this->initialize_stage ();
         std::cout << this->m_stage->get_stage_info().to_string() << "\n";
     } else {
-        Logging::log_debug ("Stage was already initialized ...");
-        this->enforce_request (1000,
+        this->enforce_request (this->m_workflow_id,
             static_cast<int> (paio::POSIX::read),
             static_cast<int> (paio::POSIX::no_op),
             counter);

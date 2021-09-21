@@ -23,6 +23,25 @@ const bool option_default_detailed_logging { true };
  */
 const bool option_default_table_format { false };
 
+// *************************************************************************************************
+//  Default PAIO data plane stage configuration
+// *************************************************************************************************
+
+/**
+ * option_default_stage_channels:
+ */
+const int option_default_stage_channels { 1 };
+
+/**
+ * option_default_stage_object_creation:
+ */
+const bool option_default_stage_object_creation { true };
+
+/**
+ * option_default_stage_name:
+ */
+const std::string option_default_stage_name { "tensorflow-" };
+
 } // namespace padll
 
 #endif // PADDL_OPTIONS_HPP

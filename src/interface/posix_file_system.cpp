@@ -24,7 +24,6 @@ ssize_t write (int fd, const void* buf, size_t size)
 // pread call. (...)
 ssize_t pread (int fd, void* buf, size_t size, off_t offset)
 {
-//    std::printf ("posix-file-system:pread\n");
     return (posix_data_calls.padll_intercept_pread)
         ? m_ld_preloaded_posix.ld_preloaded_posix_pread (fd, buf, size, offset)
         : m_posix_passthrough.passthrough_posix_pread (fd, buf, size, offset);

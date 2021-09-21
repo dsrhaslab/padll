@@ -13,6 +13,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 option(PADLL_INSTALL "Install PADLL's header and library" ON)
 option(PADLL_BUILD_TESTS "Build PADLL's unit tests" ON)
 option(PADLL_BUILD_LIBC_TESTS "Build libc tests" ON)
+option(ABCI_DEPLOYMENT "Install PADLL in ABCI supercomputer" OFF)
 
 # Setup the basic C++ Compiler flags
 if (APPLE)
@@ -50,7 +51,6 @@ if (HAVE_CLANG_THREAD_SAFETY)
     target_compile_options(padll PUBLIC -Wthread-safety)
 endif (HAVE_CLANG_THREAD_SAFETY)
 
-# needed by (LevelDB's?) port_stdcxx.h
 find_package(Threads REQUIRED)
 target_link_libraries(padll Threads::Threads)
 
@@ -66,7 +66,6 @@ target_sources(
     ${PROJECT_SOURCE_DIR}/include/padll/utils/logging.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/libraries/libc_operation_enums.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/libraries/libc_operation_headers.hpp
-    ${PROJECT_SOURCE_DIR}/include/padll/utils/make_unique.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/utils/options.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/thrid_party/enum.h
     ${PROJECT_SOURCE_DIR}/include/padll/thrid_party/tabulate.hpp
@@ -83,20 +82,23 @@ target_sources(
         src/utils/logging.cpp
 )
 
-
 # ---------------------------------------------------------------------------- #
 # paio -- Paio library
 
-#FetchContent_Declare(paio
-#        GIT_REPOSITORY  https://github.com/rgmacedo/paio.git
-#        GIT_TAG         origin/rgmacedo_arch
-#        )
-#
-#FetchContent_MakeAvailable(paio)
-#target_link_libraries(padll paio)
+if (NOT ABCI_DEPLOYMENT)
+    message(STATUS "Detecting local deployment")
+    FetchContent_Declare(paio
+            GIT_REPOSITORY  https://github.com/rgmacedo/paio.git
+            GIT_TAG         origin/rgmacedo_arch
+            )
 
-find_library(PAIO_LIBRARY paio HINTS /home/acb11912na/db/paio/build)
-target_link_libraries(padll ${PAIO_LIBRARY})
+    FetchContent_MakeAvailable(paio)
+    target_link_libraries(padll paio)
+else()
+    message(STATUS "Detecting ABCI deployment")
+    find_library(PAIO_LIBRARY paio HINTS /home/acb11912na/db/paio/build)
+    target_link_libraries(padll ${PAIO_LIBRARY})
+endif()
 
 # ---------------------------------------------------------------------------- #
 # spdlog -- logging library
