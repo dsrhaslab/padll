@@ -16,7 +16,7 @@ const bool option_default_statistic_collection { true };
 /**
  * option_default_detailed_logging:
  */
-const bool option_default_detailed_logging { true };
+const bool option_default_detailed_logging { false };
 
 /**
  * option_default_table_format:
