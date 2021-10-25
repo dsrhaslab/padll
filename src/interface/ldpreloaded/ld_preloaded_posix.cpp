@@ -3,7 +3,7 @@
  *   Copyright (c) 2021 INESC TEC.
  **/
 
-#include <padll/interface/ld_preloaded_posix.hpp>
+#include <padll/interface/ldpreloaded/ld_preloaded_posix.hpp>
 
 namespace padll {
 
@@ -192,6 +192,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_read (int fd, void* buf, size_t cou
         Logging::log_debug ("ld_preloaded_posix-read (" + std::to_string (fd) + ")");
     }
 
+    // TODO: move this "ld_preload" logic to a dedicated class or something like that
     // validate function and library handle pointers
     if (!m_data_operations.m_read && !this->m_lib_handle) {
         // open library handle, and assign the operation pointer through m_lib_handle if the open
@@ -204,6 +205,8 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_read (int fd, void* buf, size_t cou
     } else if (!m_data_operations.m_read) {
         m_data_operations.m_read = (libc_read_t)dlsym (this->m_lib_handle, "read");
     }
+
+    // TODO: add here call to the paio-stage
 
     // perform original POSIX read operation
     ssize_t result = m_data_operations.m_read (fd, buf, counter);

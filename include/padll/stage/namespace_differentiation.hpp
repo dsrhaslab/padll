@@ -1,0 +1,9 @@
+/**
+*   Written by Ricardo Macedo.
+*   Copyright (c) 2021 INESC TEC.
+**/
+
+#ifndef PADLL_NAMESPACE_DIFFERENTIATION_HPP
+#define PADLL_NAMESPACE_DIFFERENTIATION_HPP
+
+#endif //PADLL_NAMESPACE_DIFFERENTIATION_HPP

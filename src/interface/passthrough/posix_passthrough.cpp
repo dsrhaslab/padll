@@ -3,7 +3,7 @@
  *   Copyright (c) 2021 INESC TEC.
  **/
 
-#include <padll/interface/posix_passthrough.hpp>
+#include <padll/interface/passthrough/posix_passthrough.hpp>
 
 namespace padll {
 

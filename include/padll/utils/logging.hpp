@@ -18,7 +18,10 @@ namespace padll {
  * This class contains the primitives to write logging messages of the data plane stage. Currently,
  * the class supports log messages of INFO, ERROR, and DEBUG qualifiers. Log messages can also be
  * written to stdout or file.
- * TODO: currently, the logger only reports to stdout. Persist logging messages as future work.
+ * TODO:
+ *  - have a macro to define if writes/fwrites/.../ are LD_preloaded
+ *  - submit to "original" or spdlog based on the macro
+ *
  */
 class Logging {
 
@@ -26,6 +29,7 @@ private:
     std::string m_logger_name { "basic_logger" };
     std::string m_log_file_path { "/tmp/padll_info.txt" };
     std::shared_ptr<spdlog::logger> m_logger {};
+    bool m_is_ld_preloaded { true };
 
     /**
      * Enable logging debug messages.
