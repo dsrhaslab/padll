@@ -3,8 +3,8 @@
  *   Copyright (c) 2021 INESC TEC.
  **/
 
-#ifndef PADLL_LIBC_OPERATION_HEADERS_HPP
-#define PADLL_LIBC_OPERATION_HEADERS_HPP
+#ifndef PADLL_LIBC_HEADERS_HPP
+#define PADLL_LIBC_HEADERS_HPP
 
 #include <dirent.h>
 #include <dlfcn.h>
@@ -262,4 +262,4 @@ struct libc_file_modes {
 
 } // namespace padll
 
-#endif // PADLL_LIBC_OPERATION_HEADERS_HPP
+#endif // PADLL_LIBC_HEADERS_HPP

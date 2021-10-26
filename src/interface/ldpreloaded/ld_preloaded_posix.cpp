@@ -206,18 +206,20 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_read (int fd, void* buf, size_t cou
     }
 
     // TODO: move this "ld_preload" logic to a dedicated class or something like that
-    // validate function and library handle pointers
-    if (!m_data_operations.m_read && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_data_operations.m_read = (libc_read_t)dlsym (this->m_lib_handle, "read")
-            : m_data_operations.m_read = (libc_read_t)dlsym (RTLD_NEXT, "read");
+//    // validate function and library handle pointers
+//    if (!m_data_operations.m_read && !this->m_lib_handle) {
+//        // open library handle, and assign the operation pointer through m_lib_handle if the open
+//        // was successful, or through the next operation link.
+//        (this->dlopen_library_handle ())
+//            ? m_data_operations.m_read = (libc_read_t)dlsym (this->m_lib_handle, "read")
+//            : m_data_operations.m_read = (libc_read_t)dlsym (RTLD_NEXT, "read");
+//
+//        // in case the library handle pointer is valid, assign the operation pointer
+//    } else if (!m_data_operations.m_read) {
+//        m_data_operations.m_read = (libc_read_t)dlsym (this->m_lib_handle, "read");
+//    }
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_data_operations.m_read) {
-        m_data_operations.m_read = (libc_read_t)dlsym (this->m_lib_handle, "read");
-    }
+    this->m_dlsym_hook.hook_posix_read (m_data_operations.m_read, this->m_lib_handle, this->m_lib_name);
 
     // TODO: add here call to the paio-stage
 

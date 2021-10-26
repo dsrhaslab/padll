@@ -9,8 +9,9 @@
 #define _GNU_SOURCE 1
 
 #include <iostream>
-#include <padll/libraries/libc_operation_enums.hpp>
-#include <padll/libraries/libc_operation_headers.hpp>
+#include <padll/interface/ldpreloaded/libc_dlsym_hook.hpp>
+#include <padll/libraries/libc_enums.hpp>
+#include <padll/libraries/libc_headers.hpp>
 #include <padll/statistics/statistics.hpp>
 #include <padll/utils/options.hpp>
 #include <paio/interface/posix_layer.hpp>
@@ -41,6 +42,7 @@ private:
     Statistics m_ext_attr_stats { "ext-attr", OperationType::ext_attr_calls };
     Statistics m_file_mode_stats { "file-mode", OperationType::file_mode_calls };
     std::shared_ptr<Logging> m_logger_ptr { nullptr };
+    LibcDlsymHook m_dlsym_hook {};
 
     // data plane stage configurations
     std::atomic<bool> m_stage_initialized { false };

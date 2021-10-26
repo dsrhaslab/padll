@@ -3,8 +3,8 @@
  *   Copyright (c) 2021 INESC TEC.
  **/
 
-#ifndef PADLL_LIBC_OPERATION_ENUMS_HPP
-#define PADLL_LIBC_OPERATION_ENUMS_HPP
+#ifndef PADLL_LIBC_ENUMS_HPP
+#define PADLL_LIBC_ENUMS_HPP
 
 #include <padll/thrid_party/enum.h>
 
@@ -148,4 +148,4 @@ BETTER_ENUM (FileModes,
 
 } // namespace padll
 
-#endif // PADLL_LIBC_OPERATION_ENUMS_HPP
+#endif // PADLL_LIBC_ENUMS_HPP

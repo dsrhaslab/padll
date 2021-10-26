@@ -43,14 +43,13 @@ void Logging::initialize ()
     // bypass spdlog to prevent recursive dependency and/or null pointers to libc functions
     if (this->m_is_ld_preloaded) {
         if (!this->m_log_file_path.empty ()) {
-            // fixme: use open with dlsym
-            this->m_fd = ::open (m_log_file_path.c_str (), O_CREAT | O_WRONLY | O_APPEND, 0666);
+            // open file using dlsym'ed close
+            this->m_fd =
+                    ((libc_open_variadic_t)dlsym (RTLD_NEXT, "open")) (m_log_file_path.c_str (), O_CREAT | O_WRONLY | O_APPEND, 0666);
 
+            // verify file descriptor result
             if (this->m_fd == -1) {
-                std::printf ("Logging: Error on initialize (%d, %s)\n",
-                    this->m_fd,
-                    this->m_log_file_path.c_str ());
-                perror ("Error in initialize");
+                perror ("Error in Logging::initialize");
                 this->m_fd = STDOUT_FILENO;
             }
         }

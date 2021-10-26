@@ -7,7 +7,7 @@
 #define PADLL_POSIX_PASSTHROUGH_H
 
 #include <mutex>
-#include <padll/libraries/libc_operation_headers.hpp>
+#include <padll/libraries/libc_headers.hpp>
 #include <padll/utils/logging.hpp>
 #include <string>
 
