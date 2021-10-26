@@ -14,10 +14,12 @@
 #include <padll/utils/logging.hpp>
 #include <thread>
 
-padll::Logging m_logger { true };
-padll::LdPreloadedPosix m_ld_preloaded_posix {};
-padll::PosixPassthrough m_posix_passthrough {};
-bool use_read = false;
+std::shared_ptr<padll::Logging> m_logger_ptr { std::make_shared<padll::Logging> (
+    padll::option_default_enable_debug_level,
+    padll::option_default_enable_debug_with_ld_preload,
+    padll::option_default_log_path) };
+padll::LdPreloadedPosix m_ld_preloaded_posix { m_logger_ptr };
+padll::PosixPassthrough m_posix_passthrough { m_logger_ptr };
 
 /**
  * init_method: constructor of the PosixFileSystem.
@@ -133,7 +135,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param ...
 // * @return
 // */
-//extern "C" int open (const char* path, int flags, ...);
+// extern "C" int open (const char* path, int flags, ...);
 //
 ///**
 // * creat:
@@ -141,7 +143,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param mode
 // * @return
 // */
-//extern "C" int creat (const char* path, mode_t mode);
+// extern "C" int creat (const char* path, mode_t mode);
 //
 ///**
 // * creat64:
@@ -149,7 +151,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param mode
 // * @return
 // */
-//extern "C" int creat64 (const char* path, mode_t mode);
+// extern "C" int creat64 (const char* path, mode_t mode);
 //
 ///**
 // * openat:
@@ -159,7 +161,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param ...
 // * @return
 // */
-//extern "C" int openat (int dirfd, const char* path, int flags, ...);
+// extern "C" int openat (int dirfd, const char* path, int flags, ...);
 //
 ///**
 // * open64:
@@ -168,39 +170,39 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param ...
 // * @return
 // */
-//extern "C" int open64 (const char* path, int flags, ...);
+// extern "C" int open64 (const char* path, int flags, ...);
 //
 ///**
 // * close:
 // * @param fd
 // * @return
 // */
-//extern "C" int close (int fd);
+// extern "C" int close (int fd);
 //
 ///**
 // * fsync:
 // * @param fd
 // * @return
 // */
-//extern "C" int fsync (int fd);
+// extern "C" int fsync (int fd);
 //
 ///**
 // * fdatasync:
 // * @param fd
 // * @return
 // */
-//extern "C" int fdatasync (int fd);
+// extern "C" int fdatasync (int fd);
 //
 ///**
 // * sync:
 // */
-//extern "C" void sync ();
+// extern "C" void sync ();
 //
 ///**
 // * syncfs:
 // * @param fd
 // */
-//extern "C" int syncfs (int fd);
+// extern "C" int syncfs (int fd);
 //
 ///**
 // * truncate:
@@ -208,7 +210,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param length
 // * @return
 // */
-//extern "C" int truncate (const char* path, off_t length);
+// extern "C" int truncate (const char* path, off_t length);
 //
 ///**
 // * ftruncate:
@@ -216,7 +218,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param length
 // * @return
 // */
-//extern "C" int ftruncate (int fd, off_t length);
+// extern "C" int ftruncate (int fd, off_t length);
 //
 ///**
 // * truncate64:
@@ -224,7 +226,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param length
 // * @return
 // */
-//extern "C" int truncate64 (const char* path, off_t length);
+// extern "C" int truncate64 (const char* path, off_t length);
 //
 ///**
 // * ftruncate64:
@@ -232,7 +234,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param length
 // * @return
 // */
-//extern "C" int ftruncate64 (int fd, off_t length);
+// extern "C" int ftruncate64 (int fd, off_t length);
 //
 ///**
 // * __xstat:
@@ -242,7 +244,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param statbuf
 // * @return
 // */
-//extern "C" int __xstat (int version, const char* path, struct stat* statbuf);
+// extern "C" int __xstat (int version, const char* path, struct stat* statbuf);
 //
 ///**
 // * __lxstat:
@@ -252,7 +254,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param statbuf
 // * @return
 // */
-//extern "C" int __lxstat (int version, const char* path, struct stat* statbuf);
+// extern "C" int __lxstat (int version, const char* path, struct stat* statbuf);
 //
 ///**
 // * __fxstat:
@@ -262,7 +264,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param statbuf
 // * @return
 // */
-//extern "C" int __fxstat (int version, int fd, struct stat* statbuf);
+// extern "C" int __fxstat (int version, int fd, struct stat* statbuf);
 //
 ///**
 // * fxstatat:
@@ -274,7 +276,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param flags
 // * @return
 // */
-//extern "C" int
+// extern "C" int
 //__fxstatat (int version, int dirfd, const char* path, struct stat* statbuf, int flags);
 //
 ///**
@@ -285,7 +287,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param statbuf
 // * @return
 // */
-//extern "C" int __xstat64 (int version, const char* path, struct stat64* statbuf);
+// extern "C" int __xstat64 (int version, const char* path, struct stat64* statbuf);
 //
 ///**
 // * __lxstat64:
@@ -295,7 +297,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param statbuf
 // * @return
 // */
-//extern "C" int __lxstat64 (int version, const char* path, struct stat64* statbuf);
+// extern "C" int __lxstat64 (int version, const char* path, struct stat64* statbuf);
 //
 ///**
 // * __fxstat64:
@@ -305,7 +307,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param statbuf
 // * @return
 // */
-//extern "C" int __fxstat64 (int version, int fd, struct stat64* statbuf);
+// extern "C" int __fxstat64 (int version, int fd, struct stat64* statbuf);
 //
 ///**
 // * fxstatat64:
@@ -317,7 +319,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param flags
 // * @return
 // */
-//extern "C" int
+// extern "C" int
 //__fxstatat64 (int version, int dirfd, const char* path, struct stat64* statbuf, int flags);
 //
 ///**
@@ -326,7 +328,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param buf
 // * @return
 // */
-//extern "C" int statfs (const char* path, struct statfs* buf);
+// extern "C" int statfs (const char* path, struct statfs* buf);
 //
 ///**
 // * fstatfs:
@@ -334,7 +336,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param buf
 // * @return
 // */
-//extern "C" int fstatfs (int fd, struct statfs* buf);
+// extern "C" int fstatfs (int fd, struct statfs* buf);
 //
 ///**
 // * statfs64:
@@ -342,7 +344,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param buf
 // * @return
 // */
-//extern "C" int statfs64 (const char* path, struct statfs64* buf);
+// extern "C" int statfs64 (const char* path, struct statfs64* buf);
 //
 ///**
 // * fstatfs64:
@@ -350,7 +352,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param buf
 // * @return
 // */
-//extern "C" int fstatfs64 (int fd, struct statfs64* buf);
+// extern "C" int fstatfs64 (int fd, struct statfs64* buf);
 //
 ///**
 // * link:
@@ -358,14 +360,14 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param new_path
 // * @return
 // */
-//extern "C" int link (const char* old_path, const char* new_path);
+// extern "C" int link (const char* old_path, const char* new_path);
 //
 ///**
 // * unlink:
 // * @param path
 // * @return
 // */
-//extern "C" int unlink (const char* path);
+// extern "C" int unlink (const char* path);
 //
 ///**
 // * linkat:
@@ -376,8 +378,8 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param flags
 // * @return
 // */
-//extern "C" int
-//linkat (int olddirfd, const char* old_path, int newdirfd, const char* new_path, int flags);
+// extern "C" int
+// linkat (int olddirfd, const char* old_path, int newdirfd, const char* new_path, int flags);
 //
 ///**
 // * unlinkat:
@@ -386,7 +388,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param flags
 // * @return
 // */
-//extern "C" int unlinkat (int dirfd, const char* pathname, int flags);
+// extern "C" int unlinkat (int dirfd, const char* pathname, int flags);
 //
 ///**
 // * rename:
@@ -395,7 +397,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param new_path
 // * @return
 // */
-//extern "C" int rename (const char* old_path, const char* new_path);
+// extern "C" int rename (const char* old_path, const char* new_path);
 //
 ///**
 // * renameat:
@@ -406,7 +408,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param new_path
 // * @return
 // */
-//extern "C" int renameat (int olddirfd, const char* old_path, int newdirfd, const char* new_path);
+// extern "C" int renameat (int olddirfd, const char* old_path, int newdirfd, const char* new_path);
 //
 ///**
 // * symlink:
@@ -414,7 +416,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param linkpath
 // * @return
 // */
-//extern "C" int symlink (const char* target, const char* linkpath);
+// extern "C" int symlink (const char* target, const char* linkpath);
 //
 ///**
 // * symlinkat:
@@ -423,7 +425,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param linkpath
 // * @return
 // */
-//extern "C" int symlinkat (const char* target, int newdirfd, const char* linkpath);
+// extern "C" int symlinkat (const char* target, int newdirfd, const char* linkpath);
 //
 ///**
 // * readlink:
@@ -432,7 +434,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param bufsize
 // * @return
 // */
-//extern "C" ssize_t readlink (const char* path, char* buf, size_t bufsize);
+// extern "C" ssize_t readlink (const char* path, char* buf, size_t bufsize);
 //
 ///**
 // * readlinkat:
@@ -442,7 +444,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param bufsize
 // * @return
 // */
-//extern "C" ssize_t readlinkat (int dirfd, const char* path, char* buf, size_t bufsize);
+// extern "C" ssize_t readlinkat (int dirfd, const char* path, char* buf, size_t bufsize);
 //
 ///**
 // * fopen:
@@ -450,7 +452,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param mode
 // * @return
 // */
-//extern "C" FILE* fopen (const char* pathname, const char* mode);
+// extern "C" FILE* fopen (const char* pathname, const char* mode);
 //
 ///**
 // * fopen64:
@@ -458,7 +460,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param mode
 // * @return
 // */
-//extern "C" FILE* fopen64 (const char* pathname, const char* mode);
+// extern "C" FILE* fopen64 (const char* pathname, const char* mode);
 //
 ///**
 // * fdopen:
@@ -466,7 +468,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param mode
 // * @return
 // */
-//extern "C" FILE* fdopen (int fd, const char* mode);
+// extern "C" FILE* fdopen (int fd, const char* mode);
 //
 ///**
 // * freopen:
@@ -475,7 +477,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param stream
 // * @return
 // */
-//extern "C" FILE* freopen (const char* pathname, const char* mode, FILE* stream);
+// extern "C" FILE* freopen (const char* pathname, const char* mode, FILE* stream);
 //
 ///**
 // * freopen64:
@@ -484,14 +486,14 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param stream
 // * @return
 // */
-//extern "C" FILE* freopen64 (const char* pathname, const char* mode, FILE* stream);
+// extern "C" FILE* freopen64 (const char* pathname, const char* mode, FILE* stream);
 //
 ///**
 // * fclose:
 // * @param stream
 // * @return
 // */
-//extern "C" int fclose (FILE* stream);
+// extern "C" int fclose (FILE* stream);
 //
 ///**
 // * fflush:
@@ -500,7 +502,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param stream
 // * @return
 // */
-//extern "C" int fflush (FILE* stream);
+// extern "C" int fflush (FILE* stream);
 //
 ///**
 // * access:
@@ -508,7 +510,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param mode
 // * @return
 // */
-//extern "C" int access (const char* path, int mode);
+// extern "C" int access (const char* path, int mode);
 //
 ///**
 // * faccessat:
@@ -518,7 +520,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param flags
 // * @return
 // */
-//extern "C" int faccessat (int dirfd, const char* path, int mode, int flags);
+// extern "C" int faccessat (int dirfd, const char* path, int mode, int flags);
 //
 ///**
 // * lseek:
@@ -527,7 +529,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param whence
 // * @return
 // */
-//extern "C" off_t lseek (int fd, off_t offset, int whence);
+// extern "C" off_t lseek (int fd, off_t offset, int whence);
 //
 ///**
 // * fseek:
@@ -536,14 +538,14 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param whence
 // * @return
 // */
-//extern "C" int fseek (FILE* stream, long offset, int whence);
+// extern "C" int fseek (FILE* stream, long offset, int whence);
 //
 ///**
 // * ftell:
 // * @param stream
 // * @return
 // */
-//extern "C" long ftell (FILE* stream);
+// extern "C" long ftell (FILE* stream);
 //
 ///**
 // * lseek64:
@@ -552,7 +554,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param whence
 // * @return
 // */
-//extern "C" off_t lseek64 (int fd, off_t offset, int whence);
+// extern "C" off_t lseek64 (int fd, off_t offset, int whence);
 //
 ///**
 // * fseeko64:
@@ -561,14 +563,14 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param whence
 // * @return
 // */
-//extern "C" int fseeko64 (FILE* stream, off_t offset, int whence);
+// extern "C" int fseeko64 (FILE* stream, off_t offset, int whence);
 //
 ///**
 // * ftello64:
 // * @param stream
 // * @return
 // */
-//extern "C" off_t ftello64 (FILE* stream);
+// extern "C" off_t ftello64 (FILE* stream);
 //
 ///**
 // * mkdir:
@@ -576,7 +578,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param mode
 // * @return
 // */
-//extern "C" int mkdir (const char* path, mode_t mode);
+// extern "C" int mkdir (const char* path, mode_t mode);
 //
 ///**
 // * mkdirat:
@@ -585,56 +587,56 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param mode
 // * @return
 // */
-//extern "C" int mkdirat (int dirfd, const char* path, mode_t mode);
+// extern "C" int mkdirat (int dirfd, const char* path, mode_t mode);
 //
 ///**
 // * readdir:
 // * @param dirp
 // * @return
 // */
-//extern "C" struct dirent* readdir (DIR* dirp);
+// extern "C" struct dirent* readdir (DIR* dirp);
 //
 ///**
 // * readdir64:
 // * @param dirp
 // * @return
 // */
-//extern "C" struct dirent64* readdir64 (DIR* dirp);
+// extern "C" struct dirent64* readdir64 (DIR* dirp);
 //
 ///**
 // * opendir:
 // * @param path
 // * @return
 // */
-//extern "C" DIR* opendir (const char* path);
+// extern "C" DIR* opendir (const char* path);
 //
 ///**
 // * fdopendir:
 // * @param fd
 // * @return
 // */
-//extern "C" DIR* fdopendir (int fd);
+// extern "C" DIR* fdopendir (int fd);
 //
 ///**
 // * closedir:
 // * @param dirp
 // * @return
 // */
-//extern "C" int closedir (DIR* dirp);
+// extern "C" int closedir (DIR* dirp);
 //
 ///**
 // * rmdir:
 // * @param path
 // * @return
 // */
-//extern "C" int rmdir (const char* path);
+// extern "C" int rmdir (const char* path);
 //
 ///**
 // * dirfd:
 // * @param dirp
 // * @return
 // */
-//extern "C" int dirfd (DIR* dirp);
+// extern "C" int dirfd (DIR* dirp);
 //
 ///**
 // * getxattr:
@@ -644,7 +646,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param size
 // * @return
 // */
-//extern "C" ssize_t getxattr (const char* path, const char* name, void* value, size_t size);
+// extern "C" ssize_t getxattr (const char* path, const char* name, void* value, size_t size);
 //
 ///**
 // * lgetxattr:
@@ -654,7 +656,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param size
 // * @return
 // */
-//extern "C" ssize_t lgetxattr (const char* path, const char* name, void* value, size_t size);
+// extern "C" ssize_t lgetxattr (const char* path, const char* name, void* value, size_t size);
 //
 ///**
 // * fgetxattr:
@@ -664,7 +666,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param size
 // * @return
 // */
-//extern "C" ssize_t fgetxattr (int fd, const char* name, void* value, size_t size);
+// extern "C" ssize_t fgetxattr (int fd, const char* name, void* value, size_t size);
 //
 ///**
 // * setxattr:
@@ -675,8 +677,8 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param flags
 // * @return
 // */
-//extern "C" int
-//setxattr (const char* path, const char* name, const void* value, size_t size, int flags);
+// extern "C" int
+// setxattr (const char* path, const char* name, const void* value, size_t size, int flags);
 //
 ///**
 // * lsetxattr:
@@ -687,8 +689,8 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param flags
 // * @return
 // */
-//extern "C" int
-//lsetxattr (const char* path, const char* name, const void* value, size_t size, int flags);
+// extern "C" int
+// lsetxattr (const char* path, const char* name, const void* value, size_t size, int flags);
 //
 ///**
 // * fsetxattr:
@@ -699,7 +701,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param flags
 // * @return
 // */
-//extern "C" int fsetxattr (int fd, const char* name, const void* value, size_t size, int flags);
+// extern "C" int fsetxattr (int fd, const char* name, const void* value, size_t size, int flags);
 //
 ///**
 // * listxattr:
@@ -708,7 +710,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param size
 // * @return
 // */
-//extern "C" ssize_t listxattr (const char* path, char* list, size_t size);
+// extern "C" ssize_t listxattr (const char* path, char* list, size_t size);
 //
 ///**
 // * llistxattr:
@@ -717,7 +719,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param size
 // * @return
 // */
-//extern "C" ssize_t llistxattr (const char* path, char* list, size_t size);
+// extern "C" ssize_t llistxattr (const char* path, char* list, size_t size);
 //
 ///**
 // * flistxattr:
@@ -726,7 +728,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param size
 // * @return
 // */
-//extern "C" ssize_t flistxattr (int fd, char* list, size_t size);
+// extern "C" ssize_t flistxattr (int fd, char* list, size_t size);
 //
 ///**
 // * removexattr:
@@ -734,7 +736,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param name
 // * @return
 // */
-//extern "C" int removexattr (const char* path, const char* name);
+// extern "C" int removexattr (const char* path, const char* name);
 //
 ///**
 // * lremovexattr:
@@ -742,7 +744,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param name
 // * @return
 // */
-//extern "C" int lremovexattr (const char* path, const char* name);
+// extern "C" int lremovexattr (const char* path, const char* name);
 //
 ///**
 // * fremovexattr:
@@ -750,7 +752,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param name
 // * @return
 // */
-//extern "C" int fremovexattr (int fd, const char* name);
+// extern "C" int fremovexattr (int fd, const char* name);
 //
 ///**
 // * chmod:
@@ -758,7 +760,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param mode
 // * @return
 // */
-//extern "C" int chmod (const char* pathname, mode_t mode);
+// extern "C" int chmod (const char* pathname, mode_t mode);
 //
 ///**
 // * fchmod:
@@ -766,7 +768,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param mode
 // * @return
 // */
-//extern "C" int fchmod (int fd, mode_t mode);
+// extern "C" int fchmod (int fd, mode_t mode);
 //
 ///**
 // * fchmodat:
@@ -776,7 +778,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param flags
 // * @return
 // */
-//extern "C" int fchmodat (int dirfd, const char* pathname, mode_t mode, int flags);
+// extern "C" int fchmodat (int dirfd, const char* pathname, mode_t mode, int flags);
 //
 ///**
 // * chown:
@@ -785,7 +787,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param group
 // * @return
 // */
-//extern "C" int chown (const char* pathname, uid_t owner, gid_t group);
+// extern "C" int chown (const char* pathname, uid_t owner, gid_t group);
 //
 ///**
 // * lchown:
@@ -794,7 +796,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param group
 // * @return
 // */
-//extern "C" int lchown (const char* pathname, uid_t owner, gid_t group);
+// extern "C" int lchown (const char* pathname, uid_t owner, gid_t group);
 //
 ///**
 // * fchown:
@@ -803,7 +805,7 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param group
 // * @return
 // */
-//extern "C" int fchown (int fd, uid_t owner, gid_t group);
+// extern "C" int fchown (int fd, uid_t owner, gid_t group);
 //
 ///**
 // * fchownat:
@@ -814,6 +816,6 @@ extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stre
 // * @param flags
 // * @return
 // */
-//extern "C" int fchownat (int dirfd, const char* pathname, uid_t owner, gid_t group, int flags);
+// extern "C" int fchownat (int dirfd, const char* pathname, uid_t owner, gid_t group, int flags);
 
 #endif // PADLL_POSIX_FILE_SYSTEM_H

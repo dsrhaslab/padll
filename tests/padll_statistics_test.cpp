@@ -9,18 +9,23 @@
 namespace padll {
 
 class StatisticsTest {
+private:
+    Logging m_logger;
 
 public:
+    StatisticsTest () : m_logger { true, true, "/tmp/padll-info.log" }
+    { }
+
     /**
      * test_statistics_constructors:
      */
     void test_statistics_constructors ()
     {
         Statistics stats {};
-        Logging::log_info (stats.to_string ());
+        this->m_logger.log_info (stats.to_string ());
 
         Statistics stats_param { "stats-parameterized-test", OperationType::metadata_calls };
-        Logging::log_info (stats_param.to_string ());
+        this->m_logger.log_info (stats_param.to_string ());
     }
 
     /**

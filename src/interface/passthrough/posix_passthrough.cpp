@@ -5,17 +5,30 @@
 
 #include <padll/interface/passthrough/posix_passthrough.hpp>
 
+/**
+ * Missing: passthrough_posix_open
+ */
+
 namespace padll {
 
 // PosixPassthrough default constructor.
-PosixPassthrough::PosixPassthrough ()
+PosixPassthrough::PosixPassthrough () : m_logger_ptr { std::make_shared<Logging> () }
 {
     // initialize library handle pointer.
     this->initialize ();
 }
 
 // PosixPassthrough explicit parameterized constructor.
-PosixPassthrough::PosixPassthrough (const std::string& lib_name) : m_lib_name { lib_name }
+PosixPassthrough::PosixPassthrough (std::shared_ptr<Logging> log_ptr) : m_logger_ptr { log_ptr }
+{
+    // initialize library handle pointer.
+    this->initialize ();
+}
+
+// PosixPassthrough explicit parameterized constructor.
+PosixPassthrough::PosixPassthrough (const std::string& lib_name, std::shared_ptr<Logging> log_ptr) :
+    m_lib_name { lib_name },
+    m_logger_ptr { log_ptr }
 {
     // initialize library handle pointer.
     this->initialize ();
@@ -35,7 +48,7 @@ PosixPassthrough::~PosixPassthrough ()
 
         // validate result from dlclose
         if (dlclose_result != 0) {
-            Logging::log_error ("PosixPassthrough::Error while closing dynamic link ("
+            this->m_logger_ptr->log_error ("PosixPassthrough::Error while closing dynamic link ("
                 + std::to_string (dlclose_result) + ").");
         }
     }
@@ -62,7 +75,8 @@ void PosixPassthrough::initialize ()
 
     // validate library pointer
     if (!open_lib_handle) {
-        Logging::log_error ("PosixPassthrough::Error while dlopen'ing " + this->m_lib_name + ".");
+        this->m_logger_ptr->log_error (
+            "PosixPassthrough::Error while dlopen'ing " + this->m_lib_name + ".");
         return;
     }
 }

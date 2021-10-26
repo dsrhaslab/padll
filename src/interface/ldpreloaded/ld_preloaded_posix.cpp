@@ -8,22 +8,35 @@
 namespace padll {
 
 // LdPreloadedPosix default constructor.
-LdPreloadedPosix::LdPreloadedPosix ()
+LdPreloadedPosix::LdPreloadedPosix () : m_logger_ptr { std::make_shared<Logging> () }
 {
     std::printf ("LdPreloadedPosix default constructor.\n");
     // initialize library handle pointer
     this->initialize ();
 }
 
+// LdPreloadedPosix explicit constructor.
+LdPreloadedPosix::LdPreloadedPosix (std::shared_ptr<Logging> logging_ptr) :
+    m_logger_ptr { logging_ptr }
+{
+    std::printf ("LdPreloadedPosix explicit constructor.\n");
+
+    // initialize library handle pointer
+    this->initialize ();
+}
+
 // LdPreloadedPosix parameterized constructor.
-LdPreloadedPosix::LdPreloadedPosix (const std::string& lib, bool stat_collection) :
+LdPreloadedPosix::LdPreloadedPosix (const std::string& lib,
+    const bool& stat_collection,
+    std::shared_ptr<Logging> logging_ptr) :
     m_lib_name { lib },
-    m_collect { stat_collection }
+    m_collect { stat_collection },
+    m_logger_ptr { logging_ptr }
 {
     std::printf ("LdPreloadedPosix parameterized constructor.\n");
     // validate if 'lib' is valid
     if (lib.empty ()) {
-        Logging::log_error ("Library not valid.");
+        this->m_logger_ptr->log_error ("Library not valid.");
         return;
     }
 
@@ -35,7 +48,7 @@ LdPreloadedPosix::LdPreloadedPosix (const std::string& lib, bool stat_collection
 LdPreloadedPosix::~LdPreloadedPosix ()
 {
     std::printf ("LdPreloadedPosix default destructor.\n");
-    Logging::log_info ("LdPreloadedPosix default destructor.");
+    this->m_logger_ptr->log_info ("LdPreloadedPosix default destructor.");
 
     // validate if library handle is valid and close dynamic linking
     if (this->m_lib_handle != nullptr) {
@@ -48,7 +61,7 @@ LdPreloadedPosix::~LdPreloadedPosix ()
 
         // validate result from dlclose
         if (dlclose_result != 0) {
-            Logging::log_error (
+            this->m_logger_ptr->log_error (
                 "Error while closing dynamic link (" + std::to_string (dlclose_result) + ").");
         }
     }
@@ -74,7 +87,7 @@ LdPreloadedPosix::~LdPreloadedPosix ()
         this->m_file_mode_stats.tabulate ();
         std::cout << "\n";
     } else {
-        Logging::log_debug (this->to_string ());
+        this->m_logger_ptr->log_debug (this->to_string ());
     }
 }
 
@@ -99,7 +112,7 @@ void LdPreloadedPosix::initialize ()
 
     // validate library pointer
     if (!open_lib_handle) {
-        Logging::log_error ("Error while dlopen'ing " + this->m_lib_name + ".");
+        this->m_logger_ptr->log_error ("Error while dlopen'ing " + this->m_lib_name + ".");
         return;
     }
 }
@@ -110,12 +123,12 @@ void LdPreloadedPosix::initialize_stage ()
 
     // initialize PAIO structures (stage and instance-interface)
     this->m_stage = { std::make_shared<paio::PaioStage> (option_default_stage_channels,
-                      option_default_stage_object_creation,
-                      option_default_stage_name) };
+        option_default_stage_object_creation,
+        option_default_stage_name) };
     this->m_posix_instance = paio::make_unique<paio::PosixLayer> (this->m_stage);
 
     // temporary ...
-	std::this_thread::sleep_for (std::chrono::seconds(5));
+    std::this_thread::sleep_for (std::chrono::seconds (5));
 
     // update initialization status
     this->m_stage_initialized.store (true);
@@ -189,7 +202,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_read (int fd, void* buf, size_t cou
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-read (" + std::to_string (fd) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-read (" + std::to_string (fd) + ")");
     }
 
     // TODO: move this "ld_preload" logic to a dedicated class or something like that
@@ -228,7 +241,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_write (int fd, const void* buf, siz
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-write (" + std::to_string (fd) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-write (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -264,12 +277,12 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_pread (int fd, void* buf, size_t co
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-pread (" + std::to_string (fd) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-pread (" + std::to_string (fd) + ")");
     }
 
     if (m_stage_initialized.load () == false) {
         this->initialize_stage ();
-        std::cout << this->m_stage->get_stage_info().to_string() << "\n";
+        std::cout << this->m_stage->get_stage_info ().to_string () << "\n";
     } else {
         this->enforce_request (this->m_workflow_id,
             static_cast<int> (paio::POSIX::read),
@@ -311,7 +324,7 @@ LdPreloadedPosix::ld_preloaded_posix_pwrite (int fd, const void* buf, size_t cou
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-pwrite (" + std::to_string (fd) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-pwrite (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -349,7 +362,7 @@ LdPreloadedPosix::ld_preloaded_posix_pread64 (int fd, void* buf, size_t counter,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-pread64 (" + std::to_string (fd) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-pread64 (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -390,7 +403,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_pwrite64 (int fd,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-pwrite64 (" + std::to_string (fd) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-pwrite64 (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -430,7 +443,7 @@ LdPreloadedPosix::ld_preloaded_posix_fread (void* ptr, size_t size, size_t nmemb
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-fpread");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fpread");
     }
 
     // validate function and library handle pointers
@@ -469,7 +482,7 @@ size_t LdPreloadedPosix::ld_preloaded_posix_fwrite (const void* ptr,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-fwrite");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fwrite");
     }
 
     // validate function and library handle pointers
@@ -505,7 +518,8 @@ int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags, mode
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-open-variadic (" + std::string (path) + ")");
+        this->m_logger_ptr->log_debug (
+            "ld_preloaded_posix-open-variadic (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -546,7 +560,7 @@ int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-open (" + std::string (path) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-open (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -585,7 +599,7 @@ int LdPreloadedPosix::ld_preloaded_posix_creat (const char* path, mode_t mode)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-creat (" + std::string (path) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-creat (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -626,7 +640,7 @@ int LdPreloadedPosix::ld_preloaded_posix_creat64 (const char* path, mode_t mode)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-creat64 (" + std::string (path) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-creat64 (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -671,8 +685,8 @@ int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-openat-variadic (" + std::to_string (dirfd) + ", "
-            + std::string (path) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-openat-variadic ("
+            + std::to_string (dirfd) + ", " + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -714,7 +728,7 @@ int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd, const char* path, in
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-openat (" + std::to_string (dirfd) + ", "
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-openat (" + std::to_string (dirfd) + ", "
             + std::string (path) + ")");
     }
 
@@ -756,7 +770,8 @@ int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags, mo
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-open64-variadic (" + std::string (path) + ")");
+        this->m_logger_ptr->log_debug (
+            "ld_preloaded_posix-open64-variadic (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -798,7 +813,7 @@ int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-open64 (" + std::string (path) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-open64 (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -839,7 +854,7 @@ int LdPreloadedPosix::ld_preloaded_posix_close (int fd)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-close (" + std::to_string (fd) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-close (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -880,7 +895,7 @@ int LdPreloadedPosix::ld_preloaded_posix_fsync (int fd)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-fsync (" + std::to_string (fd) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fsync (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -921,7 +936,8 @@ int LdPreloadedPosix::ld_preloaded_posix_fdatasync (int fd)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-fdatasync (" + std::to_string (fd) + ")");
+        this->m_logger_ptr->log_debug (
+            "ld_preloaded_posix-fdatasync (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -964,7 +980,7 @@ void LdPreloadedPosix::ld_preloaded_posix_sync ()
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-sync");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-sync");
     }
 
     // validate function and library handle pointers
@@ -994,7 +1010,7 @@ int LdPreloadedPosix::ld_preloaded_posix_syncfs (int fd)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-syncfs (" + std::to_string (fd) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-syncfs (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -1035,7 +1051,7 @@ int LdPreloadedPosix::ld_preloaded_posix_truncate (const char* path, off_t lengt
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-truncate (" + std::string (path) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-truncate (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -1077,7 +1093,8 @@ int LdPreloadedPosix::ld_preloaded_posix_ftruncate (int fd, off_t length)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-ftruncate (" + std::to_string (fd) + ")");
+        this->m_logger_ptr->log_debug (
+            "ld_preloaded_posix-ftruncate (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -1120,7 +1137,8 @@ int LdPreloadedPosix::ld_preloaded_posix_truncate64 (const char* path, off_t len
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-truncate64 (" + std::string (path) + ")");
+        this->m_logger_ptr->log_debug (
+            "ld_preloaded_posix-truncate64 (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -1163,7 +1181,8 @@ int LdPreloadedPosix::ld_preloaded_posix_ftruncate64 (int fd, off_t length)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-ftruncate64 (" + std::to_string (fd) + ")");
+        this->m_logger_ptr->log_debug (
+            "ld_preloaded_posix-ftruncate64 (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -1206,7 +1225,7 @@ int LdPreloadedPosix::ld_preloaded_posix_xstat (int version, const char* path, s
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-xstat (" + std::string (path) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-xstat (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -1248,7 +1267,7 @@ int LdPreloadedPosix::ld_preloaded_posix_lxstat (int version,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-lxstat (" + std::string (path) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-lxstat (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -1291,7 +1310,7 @@ int LdPreloadedPosix::ld_preloaded_posix_fxstat (int version, int fd, struct sta
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-fxstat (" + std::to_string (fd) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fxstat (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -1337,8 +1356,8 @@ int LdPreloadedPosix::ld_preloaded_posix_fxstatat (int version,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-fxstatat (" + std::to_string (dirfd) + ", "
-            + std::string (path) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fxstatat (" + std::to_string (dirfd)
+            + ", " + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -1385,7 +1404,7 @@ int LdPreloadedPosix::ld_preloaded_posix_xstat64 (int version,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-xstat64 (" + std::string (path) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-xstat64 (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -1431,7 +1450,7 @@ int LdPreloadedPosix::ld_preloaded_posix_lxstat64 (int version,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-lxstat64 (" + std::string (path) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-lxstat64 (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -1476,7 +1495,7 @@ int LdPreloadedPosix::ld_preloaded_posix_fxstat64 (int version, int fd, struct s
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-fxstat64 (" + std::to_string (fd) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fxstat64 (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -1525,8 +1544,8 @@ int LdPreloadedPosix::ld_preloaded_posix_fxstatat64 (int version,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-fxstatat64 (" + std::to_string (dirfd) + ", "
-            + std::string (path) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fxstatat64 (" + std::to_string (dirfd)
+            + ", " + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -1571,7 +1590,7 @@ int LdPreloadedPosix::ld_preloaded_posix_statfs (const char* path, struct statfs
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-statfs (" + std::string (path) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-statfs (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -1612,7 +1631,7 @@ int LdPreloadedPosix::ld_preloaded_posix_fstatfs (int fd, struct statfs* buf)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-fstatfs (" + std::to_string (fd) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fstatfs (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -1654,7 +1673,7 @@ int LdPreloadedPosix::ld_preloaded_posix_statfs64 (const char* path, struct stat
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-statfs64 (" + std::string (path) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-statfs64 (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -1696,7 +1715,8 @@ int LdPreloadedPosix::ld_preloaded_posix_fstatfs64 (int fd, struct statfs64* buf
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-fstatfs64 (" + std::to_string (fd) + ")");
+        this->m_logger_ptr->log_debug (
+            "ld_preloaded_posix-fstatfs64 (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -1739,7 +1759,7 @@ int LdPreloadedPosix::ld_preloaded_posix_link (const char* old_path, const char*
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-link (" + std::string (old_path) + ", "
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-link (" + std::string (old_path) + ", "
             + std::string (new_path) + ")");
     }
 
@@ -1779,7 +1799,7 @@ int LdPreloadedPosix::ld_preloaded_posix_unlink (const char* path)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-unlink (" + std::string (path) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-unlink (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -1824,8 +1844,8 @@ int LdPreloadedPosix::ld_preloaded_posix_linkat (int olddirfd,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-linkat (" + std::to_string (olddirfd) + ", "
-            + std::string (old_path) + ", " + std::to_string (newdirfd) + ", "
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-linkat (" + std::to_string (olddirfd)
+            + ", " + std::string (old_path) + ", " + std::to_string (newdirfd) + ", "
             + std::string (new_path) + ")");
     }
 
@@ -1867,8 +1887,8 @@ int LdPreloadedPosix::ld_preloaded_posix_unlinkat (int dirfd, const char* pathna
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-unlinkat (" + std::to_string (dirfd) + ", "
-            + std::string (pathname) + ", " + std::to_string (flags) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-unlinkat (" + std::to_string (dirfd)
+            + ", " + std::string (pathname) + ", " + std::to_string (flags) + ")");
     }
 
     // validate function and library handle pointers
@@ -1910,7 +1930,7 @@ int LdPreloadedPosix::ld_preloaded_posix_rename (const char* old_path, const cha
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-rename (" + std::string (old_path) + ", "
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-rename (" + std::string (old_path) + ", "
             + std::string (new_path) + ")");
     }
 
@@ -1955,8 +1975,8 @@ int LdPreloadedPosix::ld_preloaded_posix_renameat (int olddirfd,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-renameat (" + std::to_string (olddirfd) + ", "
-            + std::string (old_path) + ", " + std::to_string (newdirfd) + ", "
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-renameat (" + std::to_string (olddirfd)
+            + ", " + std::string (old_path) + ", " + std::to_string (newdirfd) + ", "
             + std::string (new_path) + ")");
     }
 
@@ -1999,7 +2019,7 @@ int LdPreloadedPosix::ld_preloaded_posix_symlink (const char* target, const char
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-symlink (" + std::string (target) + ", "
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-symlink (" + std::string (target) + ", "
             + std::string (linkpath) + ")");
     }
 
@@ -2044,8 +2064,8 @@ int LdPreloadedPosix::ld_preloaded_posix_symlinkat (const char* target,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-symlinkat (" + std::string (target) + ", "
-            + std::to_string (newdirfd) + ", " + std::string (linkpath) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-symlinkat (" + std::string (target)
+            + ", " + std::to_string (newdirfd) + ", " + std::string (linkpath) + ")");
     }
 
     // validate function and library handle pointers
@@ -2088,7 +2108,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_readlink (const char* path, char* b
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-readlink (" + std::string (path) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-readlink (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -2133,8 +2153,8 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_readlinkat (int dirfd,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-readlinkat (" + std::to_string (dirfd) + ", "
-            + std::string (path) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-readlinkat (" + std::to_string (dirfd)
+            + ", " + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -2177,7 +2197,7 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_fopen (const char* pathname, const ch
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-fopen (" + std::string (pathname) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fopen (" + std::string (pathname) + ")");
     }
 
     // validate function and library handle pointers
@@ -2218,7 +2238,8 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_fopen64 (const char* pathname, const 
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-fopen64 (" + std::string (pathname) + ")");
+        this->m_logger_ptr->log_debug (
+            "ld_preloaded_posix-fopen64 (" + std::string (pathname) + ")");
     }
 
     // validate function and library handle pointers
@@ -2260,7 +2281,7 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_fdopen (int fd, const char* mode)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-fdopen (" + std::to_string (fd) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fdopen (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -2303,7 +2324,8 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_freopen (const char* pathname,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-freopen (" + std::string (pathname) + ")");
+        this->m_logger_ptr->log_debug (
+            "ld_preloaded_posix-freopen (" + std::string (pathname) + ")");
     }
 
     // validate function and library handle pointers
@@ -2347,7 +2369,8 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_freopen64 (const char* pathname,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-freopen64 (" + std::string (pathname) + ")");
+        this->m_logger_ptr->log_debug (
+            "ld_preloaded_posix-freopen64 (" + std::string (pathname) + ")");
     }
 
     // validate function and library handle pointers
@@ -2390,7 +2413,7 @@ int LdPreloadedPosix::ld_preloaded_posix_fclose (FILE* stream)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-fclose");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fclose");
     }
 
     // validate function and library handle pointers
@@ -2431,7 +2454,7 @@ int LdPreloadedPosix::ld_preloaded_posix_fflush (FILE* stream)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-fflush");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fflush");
     }
 
     // validate function and library handle pointers
@@ -2472,7 +2495,7 @@ int LdPreloadedPosix::ld_preloaded_posix_access (const char* path, int mode)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-access");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-access");
     }
 
     // validate function and library handle pointers
@@ -2516,7 +2539,7 @@ int LdPreloadedPosix::ld_preloaded_posix_faccessat (int dirfd,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-faccessat");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-faccessat");
     }
 
     // validate function and library handle pointers
@@ -2559,7 +2582,7 @@ off_t LdPreloadedPosix::ld_preloaded_posix_lseek (int fd, off_t offset, int when
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-lseek");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-lseek");
     }
 
     // validate function and library handle pointers
@@ -2600,7 +2623,7 @@ int LdPreloadedPosix::ld_preloaded_posix_fseek (FILE* stream, long offset, int w
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-fseek");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fseek");
     }
 
     // validate function and library handle pointers
@@ -2641,7 +2664,7 @@ long LdPreloadedPosix::ld_preloaded_posix_ftell (FILE* stream)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-ftell");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-ftell");
     }
 
     // validate function and library handle pointers
@@ -2682,7 +2705,7 @@ off_t LdPreloadedPosix::ld_preloaded_posix_lseek64 (int fd, off_t offset, int wh
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-lseek64");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-lseek64");
     }
 
     // validate function and library handle pointers
@@ -2724,7 +2747,7 @@ int LdPreloadedPosix::ld_preloaded_posix_fseeko64 (FILE* stream, off_t offset, i
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-fseeko64");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fseeko64");
     }
 
     // validate function and library handle pointers
@@ -2766,7 +2789,7 @@ off_t LdPreloadedPosix::ld_preloaded_posix_ftello64 (FILE* stream)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-ftello64");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-ftello64");
     }
 
     // validate function and library handle pointers
@@ -2808,7 +2831,7 @@ int LdPreloadedPosix::ld_preloaded_posix_mkdir (const char* path, mode_t mode)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-mkdir (" + std::string (path) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-mkdir (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -2844,8 +2867,8 @@ int LdPreloadedPosix::ld_preloaded_posix_mkdirat (int dirfd, const char* path, m
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-mkdirat (" + std::to_string (dirfd) + ", "
-            + std::string (path) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-mkdirat (" + std::to_string (dirfd)
+            + ", " + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -2885,7 +2908,7 @@ struct dirent* LdPreloadedPosix::ld_preloaded_posix_readdir (DIR* dirp)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-readdir");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-readdir");
     }
 
     // validate function and library handle pointers
@@ -2925,7 +2948,7 @@ struct dirent64* LdPreloadedPosix::ld_preloaded_posix_readdir64 (DIR* dirp)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-readdir64");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-readdir64");
     }
 
     // validate function and library handle pointers
@@ -2968,7 +2991,7 @@ DIR* LdPreloadedPosix::ld_preloaded_posix_opendir (const char* path)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-opendir (" + std::string (path) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-opendir (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -3008,7 +3031,8 @@ DIR* LdPreloadedPosix::ld_preloaded_posix_fdopendir (int fd)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-fdopendir (" + std::to_string (fd) + ")");
+        this->m_logger_ptr->log_debug (
+            "ld_preloaded_posix-fdopendir (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -3051,7 +3075,7 @@ int LdPreloadedPosix::ld_preloaded_posix_closedir (DIR* dirp)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-closedir");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-closedir");
     }
 
     // validate function and library handle pointers
@@ -3091,7 +3115,7 @@ int LdPreloadedPosix::ld_preloaded_posix_rmdir (const char* path)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-rmdir");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-rmdir");
     }
 
     // validate function and library handle pointers
@@ -3127,7 +3151,7 @@ int LdPreloadedPosix::ld_preloaded_posix_dirfd (DIR* dirp)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-dirfd");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-dirfd");
     }
 
     // validate function and library handle pointers
@@ -3166,7 +3190,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_getxattr (const char* path,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug (
+        this->m_logger_ptr->log_debug (
             "ld_preloaded_posix-getxattr (" + std::string (path) + ", " + std::string (name) + ")");
     }
 
@@ -3211,7 +3235,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_lgetxattr (const char* path,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-lgetxattr (" + std::string (path) + ", "
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-lgetxattr (" + std::string (path) + ", "
             + std::string (name) + ")");
     }
 
@@ -3255,7 +3279,7 @@ LdPreloadedPosix::ld_preloaded_posix_fgetxattr (int fd, const char* name, void* 
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-fgetxattr (" + std::to_string (fd) + ", "
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fgetxattr (" + std::to_string (fd) + ", "
             + std::string (name) + ")");
     }
 
@@ -3302,7 +3326,7 @@ int LdPreloadedPosix::ld_preloaded_posix_setxattr (const char* path,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug (
+        this->m_logger_ptr->log_debug (
             "ld_preloaded_posix-setxattr (" + std::string (path) + ", " + std::string (name) + ")");
     }
 
@@ -3348,7 +3372,7 @@ int LdPreloadedPosix::ld_preloaded_posix_lsetxattr (const char* path,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-lsetxattr (" + std::string (path) + ", "
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-lsetxattr (" + std::string (path) + ", "
             + std::string (name) + ")");
     }
 
@@ -3395,7 +3419,7 @@ int LdPreloadedPosix::ld_preloaded_posix_fsetxattr (int fd,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-fsetxattr (" + std::to_string (fd) + ", "
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fsetxattr (" + std::to_string (fd) + ", "
             + std::string (name) + ")");
     }
 
@@ -3438,7 +3462,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_listxattr (const char* path, char* 
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-listxattr (" + std::string (path) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-listxattr (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -3480,7 +3504,8 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_llistxattr (const char* path, char*
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-llistxattr (" + std::string (path) + ")");
+        this->m_logger_ptr->log_debug (
+            "ld_preloaded_posix-llistxattr (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -3525,7 +3550,8 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_flistxattr (int fd, char* list, siz
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-flistxattr (" + std::to_string (fd) + ")");
+        this->m_logger_ptr->log_debug (
+            "ld_preloaded_posix-flistxattr (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -3570,8 +3596,8 @@ int LdPreloadedPosix::ld_preloaded_posix_removexattr (const char* path, const ch
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-removexattr (" + std::string (path) + ", "
-            + std::string (name) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-removexattr (" + std::string (path)
+            + ", " + std::string (name) + ")");
     }
 
     // validate function and library handle pointers
@@ -3616,8 +3642,8 @@ int LdPreloadedPosix::ld_preloaded_posix_lremovexattr (const char* path, const c
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-lremovexattr (" + std::string (path) + ", "
-            + std::string (name) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-lremovexattr (" + std::string (path)
+            + ", " + std::string (name) + ")");
     }
 
     // validate function and library handle pointers
@@ -3662,8 +3688,8 @@ int LdPreloadedPosix::ld_preloaded_posix_fremovexattr (int fd, const char* name)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-fremovexattr (" + std::to_string (fd) + ", "
-            + std::string (name) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fremovexattr (" + std::to_string (fd)
+            + ", " + std::string (name) + ")");
     }
 
     // validate function and library handle pointers
@@ -3708,7 +3734,7 @@ int LdPreloadedPosix::ld_preloaded_posix_chmod (const char* path, mode_t mode)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-chmod (" + std::string (path) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-chmod (" + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -3749,7 +3775,7 @@ int LdPreloadedPosix::ld_preloaded_posix_fchmod (int fd, mode_t mode)
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-fchmod (" + std::to_string (fd) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fchmod (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -3793,8 +3819,8 @@ int LdPreloadedPosix::ld_preloaded_posix_fchmodat (int dirfd,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-fchmodat (" + std::to_string (dirfd) + ", "
-            + std::string (path) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fchmodat (" + std::to_string (dirfd)
+            + ", " + std::string (path) + ")");
     }
 
     // validate function and library handle pointers
@@ -3836,7 +3862,7 @@ int LdPreloadedPosix::ld_preloaded_posix_chown (const char* pathname, uid_t owne
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-chown (" + std::string (pathname) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-chown (" + std::string (pathname) + ")");
     }
 
     // validate function and library handle pointers
@@ -3877,7 +3903,8 @@ int LdPreloadedPosix::ld_preloaded_posix_lchown (const char* pathname, uid_t own
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-lchown (" + std::string (pathname) + ")");
+        this->m_logger_ptr->log_debug (
+            "ld_preloaded_posix-lchown (" + std::string (pathname) + ")");
     }
 
     // validate function and library handle pointers
@@ -3918,7 +3945,7 @@ int LdPreloadedPosix::ld_preloaded_posix_fchown (int fd, uid_t owner, gid_t grou
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-fchown (" + std::to_string (fd) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fchown (" + std::to_string (fd) + ")");
     }
 
     // validate function and library handle pointers
@@ -3963,8 +3990,8 @@ int LdPreloadedPosix::ld_preloaded_posix_fchownat (int dirfd,
 {
     // logging message
     if (option_default_detailed_logging) {
-        Logging::log_debug ("ld_preloaded_posix-fchownat (" + std::to_string (dirfd) + ", "
-            + std::string (pathname) + ")");
+        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fchownat (" + std::to_string (dirfd)
+            + ", " + std::string (pathname) + ")");
     }
 
     // validate function and library handle pointers

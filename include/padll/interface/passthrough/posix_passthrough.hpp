@@ -19,6 +19,7 @@ private:
     std::mutex m_lock;
     std::string m_lib_name { "libc.so.6" };
     void* m_lib_handle { nullptr };
+    std::shared_ptr<Logging> m_logger_ptr { nullptr };
 
     /**
      * initialize:
@@ -38,10 +39,15 @@ public:
     PosixPassthrough ();
 
     /**
-     * PosixPassthrough (explicit) parameterized constructor.
+     * PosixPassthrough explicit constructor.
+     */
+    explicit PosixPassthrough (std::shared_ptr<Logging> log_ptr);
+
+    /**
+     * PosixPassthrough parameterized constructor.
      * @param lib
      */
-    explicit PosixPassthrough (const std::string& lib);
+    PosixPassthrough (const std::string& lib, std::shared_ptr<Logging> log_ptr);
 
     /**
      * PosixPassthrough default destructor.

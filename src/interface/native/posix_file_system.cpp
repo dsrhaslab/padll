@@ -74,575 +74,576 @@ size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stream)
 }
 //
 //// open call. (...)
-//int open (const char* path, int flags, ...)
+// int open (const char* path, int flags, ...)
 //{
-//    if (flags & O_CREAT) {
-//        va_list args;
+//     if (flags & O_CREAT) {
+//         va_list args;
 //
-//        va_start (args, flags);
-//        mode_t mode = va_arg (args, int);
-//        va_end (args);
+//         va_start (args, flags);
+//         mode_t mode = va_arg (args, int);
+//         va_end (args);
 //
-//        return m_ld_preloaded_posix.ld_preloaded_posix_open (path, flags, mode);
-//    } else {
-//        return m_ld_preloaded_posix.ld_preloaded_posix_open (path, flags);
-//    }
-//}
+//         return m_ld_preloaded_posix.ld_preloaded_posix_open (path, flags, mode);
+//     } else {
+//         return m_ld_preloaded_posix.ld_preloaded_posix_open (path, flags);
+//     }
+// }
 //
 //// creat call. (...)
-//int creat (const char* path, mode_t mode)
+// int creat (const char* path, mode_t mode)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_creat (path, mode);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_creat (path, mode);
+// }
 //
 //// creat64 call. (...)
-//int creat64 (const char* path, mode_t mode)
+// int creat64 (const char* path, mode_t mode)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_creat64 (path, mode);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_creat64 (path, mode);
+// }
 //
 //// openat call. (...)
-//int openat (int dirfd, const char* path, int flags, ...)
+// int openat (int dirfd, const char* path, int flags, ...)
 //{
-//    if (flags & O_CREAT) {
-//        va_list args;
+//     if (flags & O_CREAT) {
+//         va_list args;
 //
-//        va_start (args, flags);
-//        mode_t mode = va_arg (args, int);
-//        va_end (args);
+//         va_start (args, flags);
+//         mode_t mode = va_arg (args, int);
+//         va_end (args);
 //
-//        return m_ld_preloaded_posix.ld_preloaded_posix_openat (dirfd, path, flags, mode);
-//    } else {
-//        return m_ld_preloaded_posix.ld_preloaded_posix_openat (dirfd, path, flags);
-//    }
-//}
+//         return m_ld_preloaded_posix.ld_preloaded_posix_openat (dirfd, path, flags, mode);
+//     } else {
+//         return m_ld_preloaded_posix.ld_preloaded_posix_openat (dirfd, path, flags);
+//     }
+// }
 //
 //// open64 call. (...)
-//int open64 (const char* path, int flags, ...)
+// int open64 (const char* path, int flags, ...)
 //{
-//    if (flags & O_CREAT) {
-//        va_list args;
+//     if (flags & O_CREAT) {
+//         va_list args;
 //
-//        va_start (args, flags);
-//        mode_t mode = va_arg (args, int);
-//        va_end (args);
+//         va_start (args, flags);
+//         mode_t mode = va_arg (args, int);
+//         va_end (args);
 //
-//        return m_ld_preloaded_posix.ld_preloaded_posix_open64 (path, flags, mode);
-//    } else {
-//        return m_ld_preloaded_posix.ld_preloaded_posix_open64 (path, flags);
-//    }
-//}
+//         return m_ld_preloaded_posix.ld_preloaded_posix_open64 (path, flags, mode);
+//     } else {
+//         return m_ld_preloaded_posix.ld_preloaded_posix_open64 (path, flags);
+//     }
+// }
 //
 //// close call. (...)
-//int close (int fd)
+// int close (int fd)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_close (fd);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_close (fd);
+// }
 //
 //// fsync call. (...)
-//int fsync (int fd)
+// int fsync (int fd)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_fsync (fd);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_fsync (fd);
+// }
 //
 //// fdatasync call. (...)
-//int fdatasync (int fd)
+// int fdatasync (int fd)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_fdatasync (fd);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_fdatasync (fd);
+// }
 //
 //// sync call. (...)
-//void sync ()
+// void sync ()
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_sync ();
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_sync ();
+// }
 //
 //// syncfs call. (...)
-//int syncfs (int fd)
+// int syncfs (int fd)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_syncfs (fd);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_syncfs (fd);
+// }
 //
 //// truncate call. (...)
-//int truncate (const char* path, off_t length)
+// int truncate (const char* path, off_t length)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_truncate (path, length);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_truncate (path, length);
+// }
 //
 //// ftruncate call. (...)
-//int ftruncate (int fd, off_t length)
+// int ftruncate (int fd, off_t length)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_ftruncate (fd, length);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_ftruncate (fd, length);
+// }
 //
 //// truncate64 call. (...)
-//int truncate64 (const char* path, off_t length)
+// int truncate64 (const char* path, off_t length)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_truncate64 (path, length);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_truncate64 (path, length);
+// }
 //
 //// ftruncate64 call. (...)
-//int ftruncate64 (int fd, off_t length)
+// int ftruncate64 (int fd, off_t length)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_ftruncate64 (fd, length);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_ftruncate64 (fd, length);
+// }
 //
 //// __xstat call. (...)
-//int __xstat (int version, const char* path, struct stat* statbuf)
+// int __xstat (int version, const char* path, struct stat* statbuf)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_xstat (version, path, statbuf);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_xstat (version, path, statbuf);
+// }
 //
 //// __lxstat call. (...)
-//int __lxstat (int version, const char* path, struct stat* statbuf)
+// int __lxstat (int version, const char* path, struct stat* statbuf)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_lxstat (version, path, statbuf);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_lxstat (version, path, statbuf);
+// }
 //
 //// __fxstat call. (...)
-//int __fxstat (int version, int fd, struct stat* statbuf)
+// int __fxstat (int version, int fd, struct stat* statbuf)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_fxstat (version, fd, statbuf);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_fxstat (version, fd, statbuf);
+// }
 //
 //// __fxstatat call. (...)
-//int __fxstatat (int version, int dirfd, const char* path, struct stat* statbuf, int flags)
+// int __fxstatat (int version, int dirfd, const char* path, struct stat* statbuf, int flags)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_fxstatat (version, dirfd, path, statbuf, flags);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_fxstatat (version, dirfd, path, statbuf,
+//     flags);
+// }
 //
 //// __xstat64 call. (...)
-//int __xstat64 (int version, const char* path, struct stat64* statbuf)
+// int __xstat64 (int version, const char* path, struct stat64* statbuf)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_xstat64 (version, path, statbuf);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_xstat64 (version, path, statbuf);
+// }
 //
 //// __lxstat64 call. (...)
-//int __lxstat64 (int version, const char* path, struct stat64* statbuf)
+// int __lxstat64 (int version, const char* path, struct stat64* statbuf)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_lxstat64 (version, path, statbuf);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_lxstat64 (version, path, statbuf);
+// }
 //
 //// __fxstat64 call. (...)
-//int __fxstat64 (int version, int fd, struct stat64* statbuf)
+// int __fxstat64 (int version, int fd, struct stat64* statbuf)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_fxstat64 (version, fd, statbuf);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_fxstat64 (version, fd, statbuf);
+// }
 //
 //// __fxstatat64 call. (...)
-//int __fxstatat64 (int version, int dirfd, const char* path, struct stat64* statbuf, int flags)
+// int __fxstatat64 (int version, int dirfd, const char* path, struct stat64* statbuf, int flags)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_fxstatat64 (version,
-//        dirfd,
-//        path,
-//        statbuf,
-//        flags);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_fxstatat64 (version,
+//         dirfd,
+//         path,
+//         statbuf,
+//         flags);
+// }
 //
 //// statfs call. (...)
-//int statfs (const char* path, struct statfs* buf)
+// int statfs (const char* path, struct statfs* buf)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_statfs (path, buf);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_statfs (path, buf);
+// }
 //
 //// fstatfs call. (...)
-//int fstatfs (int fd, struct statfs* buf)
+// int fstatfs (int fd, struct statfs* buf)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_fstatfs (fd, buf);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_fstatfs (fd, buf);
+// }
 //
 //// statfs64 call. (...)
-//int statfs64 (const char* path, struct statfs64* buf)
+// int statfs64 (const char* path, struct statfs64* buf)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_statfs64 (path, buf);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_statfs64 (path, buf);
+// }
 //
 //// fstatfs64 call. (...)
-//int fstatfs64 (int fd, struct statfs64* buf)
+// int fstatfs64 (int fd, struct statfs64* buf)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_fstatfs64 (fd, buf);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_fstatfs64 (fd, buf);
+// }
 //
 //// link call. (...)
-//int link (const char* old_path, const char* new_path)
+// int link (const char* old_path, const char* new_path)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_link (old_path, new_path);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_link (old_path, new_path);
+// }
 //
 //// unlink call. (...)
-//int unlink (const char* path)
+// int unlink (const char* path)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_unlink (path);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_unlink (path);
+// }
 //
 //// linkat call. (...)
-//int linkat (int olddirfd, const char* old_path, int newdirfd, const char* new_path, int flags)
+// int linkat (int olddirfd, const char* old_path, int newdirfd, const char* new_path, int flags)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_linkat (olddirfd,
-//        old_path,
-//        newdirfd,
-//        new_path,
-//        flags);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_linkat (olddirfd,
+//         old_path,
+//         newdirfd,
+//         new_path,
+//         flags);
+// }
 //
 //// unlinkat call. (...)
-//int unlinkat (int dirfd, const char* pathname, int flags)
+// int unlinkat (int dirfd, const char* pathname, int flags)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_unlinkat (dirfd, pathname, flags);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_unlinkat (dirfd, pathname, flags);
+// }
 //
 //// rename call. (...)
-//int rename (const char* old_path, const char* new_path)
+// int rename (const char* old_path, const char* new_path)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_rename (old_path, new_path);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_rename (old_path, new_path);
+// }
 //
 //// renameat call. (...)
-//int renameat (int olddirfd, const char* old_path, int newdirfd, const char* new_path)
+// int renameat (int olddirfd, const char* old_path, int newdirfd, const char* new_path)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_renameat (olddirfd,
-//        old_path,
-//        newdirfd,
-//        new_path);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_renameat (olddirfd,
+//         old_path,
+//         newdirfd,
+//         new_path);
+// }
 //
 //// symlink call. (...)
-//int symlink (const char* target, const char* linkpath)
+// int symlink (const char* target, const char* linkpath)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_symlink (target, linkpath);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_symlink (target, linkpath);
+// }
 //
 //// symlinkat call. (...)
-//int symlinkat (const char* target, int newdirfd, const char* linkpath)
+// int symlinkat (const char* target, int newdirfd, const char* linkpath)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_symlinkat (target, newdirfd, linkpath);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_symlinkat (target, newdirfd, linkpath);
+// }
 //
 //// readlink call. (...)
-//ssize_t readlink (const char* path, char* buf, size_t bufsize)
+// ssize_t readlink (const char* path, char* buf, size_t bufsize)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_readlink (path, buf, bufsize);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_readlink (path, buf, bufsize);
+// }
 //
 //// readlinkat call. (...)
-//ssize_t readlinkat (int dirfd, const char* path, char* buf, size_t bufsize)
+// ssize_t readlinkat (int dirfd, const char* path, char* buf, size_t bufsize)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_readlinkat (dirfd, path, buf, bufsize);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_readlinkat (dirfd, path, buf, bufsize);
+// }
 //
 //// fopen call. (...)
-//FILE* fopen (const char* pathname, const char* mode)
+// FILE* fopen (const char* pathname, const char* mode)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_fopen (pathname, mode);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_fopen (pathname, mode);
+// }
 //
 //// fopen64 call. (...)
-//FILE* fopen64 (const char* pathname, const char* mode)
+// FILE* fopen64 (const char* pathname, const char* mode)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_fopen64 (pathname, mode);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_fopen64 (pathname, mode);
+// }
 //
 //// fdopen call. (...)
-//FILE* fdopen (int fd, const char* mode)
+// FILE* fdopen (int fd, const char* mode)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_fdopen (fd, mode);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_fdopen (fd, mode);
+// }
 //
 //// freopen call. (...)
-//FILE* freopen (const char* pathname, const char* mode, FILE* stream)
+// FILE* freopen (const char* pathname, const char* mode, FILE* stream)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_freopen (pathname, mode, stream);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_freopen (pathname, mode, stream);
+// }
 //
 //// freopen64 call. (...)
-//FILE* freopen64 (const char* pathname, const char* mode, FILE* stream)
+// FILE* freopen64 (const char* pathname, const char* mode, FILE* stream)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_freopen64 (pathname, mode, stream);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_freopen64 (pathname, mode, stream);
+// }
 //
 //// fclose call. (...)
-//int fclose (FILE* stream)
+// int fclose (FILE* stream)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_fclose (stream);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_fclose (stream);
+// }
 //
 //// fflush call. (...)
-//int fflush (FILE* stream)
+// int fflush (FILE* stream)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_fflush (stream);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_fflush (stream);
+// }
 //
 //// access call. (...)
-//int access (const char* path, int mode)
+// int access (const char* path, int mode)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_access (path, mode);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_access (path, mode);
+// }
 //
 //// faccessat call. (...)
-//int faccessat (int dirfd, const char* path, int mode, int flags)
+// int faccessat (int dirfd, const char* path, int mode, int flags)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_faccessat (dirfd, path, mode, flags);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_faccessat (dirfd, path, mode, flags);
+// }
 //
 //// lseek call. (...)
-//off_t lseek (int fd, off_t offset, int whence)
+// off_t lseek (int fd, off_t offset, int whence)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_lseek (fd, offset, whence);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_lseek (fd, offset, whence);
+// }
 //
 //// fseek call. (...)
-//int fseek (FILE* stream, long offset, int whence)
+// int fseek (FILE* stream, long offset, int whence)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_fseek (stream, offset, whence);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_fseek (stream, offset, whence);
+// }
 //
 //// ftell call. (...)
-//long ftell (FILE* stream)
+// long ftell (FILE* stream)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_ftell (stream);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_ftell (stream);
+// }
 //
 //// lseek64 call. (...)
-//off_t lseek64 (int fd, off_t offset, int whence)
+// off_t lseek64 (int fd, off_t offset, int whence)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_lseek64 (fd, offset, whence);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_lseek64 (fd, offset, whence);
+// }
 //
 //// fseeko64 call. (...)
-//int fseeko64 (FILE* stream, off_t offset, int whence)
+// int fseeko64 (FILE* stream, off_t offset, int whence)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_fseeko64 (stream, offset, whence);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_fseeko64 (stream, offset, whence);
+// }
 //
 //// ftello64 call. (...)
-//off_t ftello64 (FILE* stream)
+// off_t ftello64 (FILE* stream)
 //{
-//    return m_ld_preloaded_posix.ld_preloaded_posix_ftello64 (stream);
-//}
+//     return m_ld_preloaded_posix.ld_preloaded_posix_ftello64 (stream);
+// }
 //
 //// mkdir call. (...)
-//int mkdir (const char* path, mode_t mode)
+// int mkdir (const char* path, mode_t mode)
 //{
-//    return (posix_directory_calls.padll_intercept_mkdir)
-//        ? m_ld_preloaded_posix.ld_preloaded_posix_mkdir (path, mode)
-//        : m_posix_passthrough.passthrough_posix_mkdir (path, mode);
-//}
+//     return (posix_directory_calls.padll_intercept_mkdir)
+//         ? m_ld_preloaded_posix.ld_preloaded_posix_mkdir (path, mode)
+//         : m_posix_passthrough.passthrough_posix_mkdir (path, mode);
+// }
 //
 //// mkdirat call. (...)
-//int mkdirat (int dirfd, const char* path, mode_t mode)
+// int mkdirat (int dirfd, const char* path, mode_t mode)
 //{
-//    return (posix_directory_calls.padll_intercept_mkdirat)
-//        ? m_ld_preloaded_posix.ld_preloaded_posix_mkdirat (dirfd, path, mode)
-//        : m_posix_passthrough.passthrough_posix_mkdirat (dirfd, path, mode);
-//}
+//     return (posix_directory_calls.padll_intercept_mkdirat)
+//         ? m_ld_preloaded_posix.ld_preloaded_posix_mkdirat (dirfd, path, mode)
+//         : m_posix_passthrough.passthrough_posix_mkdirat (dirfd, path, mode);
+// }
 //
 //// readdir call. (...)
-//struct dirent* readdir (DIR* dirp)
+// struct dirent* readdir (DIR* dirp)
 //{
-//    return (posix_directory_calls.padll_intercept_readdir)
-//        ? m_ld_preloaded_posix.ld_preloaded_posix_readdir (dirp)
-//        : m_posix_passthrough.passthrough_posix_readdir (dirp);
-//}
+//     return (posix_directory_calls.padll_intercept_readdir)
+//         ? m_ld_preloaded_posix.ld_preloaded_posix_readdir (dirp)
+//         : m_posix_passthrough.passthrough_posix_readdir (dirp);
+// }
 //
 //// readdir64 call. (...)
-//struct dirent64* readdir64 (DIR* dirp)
+// struct dirent64* readdir64 (DIR* dirp)
 //{
 //#if defined(__unix__) || defined(__linux)
-//    return (posix_directory_calls.padll_intercept_readdir64)
-//        ? m_ld_preloaded_posix.ld_preloaded_posix_readdir64 (dirp)
-//        : m_posix_passthrough.passthrough_posix_readdir64 (dirp);
+//     return (posix_directory_calls.padll_intercept_readdir64)
+//         ? m_ld_preloaded_posix.ld_preloaded_posix_readdir64 (dirp)
+//         : m_posix_passthrough.passthrough_posix_readdir64 (dirp);
 //#endif
-//    return nullptr;
-//}
+//     return nullptr;
+// }
 //
 //// opendir call. (...)
-//DIR* opendir (const char* path)
+// DIR* opendir (const char* path)
 //{
-//    return (posix_directory_calls.padll_intercept_opendir)
-//        ? m_ld_preloaded_posix.ld_preloaded_posix_opendir (path)
-//        : m_posix_passthrough.passthrough_posix_opendir (path);
-//}
+//     return (posix_directory_calls.padll_intercept_opendir)
+//         ? m_ld_preloaded_posix.ld_preloaded_posix_opendir (path)
+//         : m_posix_passthrough.passthrough_posix_opendir (path);
+// }
 //
 //// fdopendir call. (...)
-//DIR* fdopendir (int fd)
+// DIR* fdopendir (int fd)
 //{
-//    return (posix_directory_calls.padll_intercept_fdopendir)
-//        ? m_ld_preloaded_posix.ld_preloaded_posix_fdopendir (fd)
-//        : m_posix_passthrough.passthrough_posix_fdopendir (fd);
-//}
+//     return (posix_directory_calls.padll_intercept_fdopendir)
+//         ? m_ld_preloaded_posix.ld_preloaded_posix_fdopendir (fd)
+//         : m_posix_passthrough.passthrough_posix_fdopendir (fd);
+// }
 //
 //// closedir call. (...)
-//int closedir (DIR* dirp)
+// int closedir (DIR* dirp)
 //{
-//    return (posix_directory_calls.padll_intercept_closedir)
-//        ? m_ld_preloaded_posix.ld_preloaded_posix_closedir (dirp)
-//        : m_posix_passthrough.passthrough_posix_closedir (dirp);
-//}
+//     return (posix_directory_calls.padll_intercept_closedir)
+//         ? m_ld_preloaded_posix.ld_preloaded_posix_closedir (dirp)
+//         : m_posix_passthrough.passthrough_posix_closedir (dirp);
+// }
 //
 //// rmdir call. (...)
-//int rmdir (const char* path)
+// int rmdir (const char* path)
 //{
-//    return (posix_directory_calls.padll_intercept_rmdir)
-//        ? m_ld_preloaded_posix.ld_preloaded_posix_rmdir (path)
-//        : m_posix_passthrough.passthrough_posix_rmdir (path);
-//}
+//     return (posix_directory_calls.padll_intercept_rmdir)
+//         ? m_ld_preloaded_posix.ld_preloaded_posix_rmdir (path)
+//         : m_posix_passthrough.passthrough_posix_rmdir (path);
+// }
 //
 //// dirfd call. (...)
-//int dirfd (DIR* dirp)
+// int dirfd (DIR* dirp)
 //{
-//    return (posix_directory_calls.padll_intercept_dirfd)
-//        ? m_ld_preloaded_posix.ld_preloaded_posix_dirfd (dirp)
-//        : m_posix_passthrough.passthrough_posix_dirfd (dirp);
-//}
+//     return (posix_directory_calls.padll_intercept_dirfd)
+//         ? m_ld_preloaded_posix.ld_preloaded_posix_dirfd (dirp)
+//         : m_posix_passthrough.passthrough_posix_dirfd (dirp);
+// }
 //
 //// getxattr call. (...)
-//ssize_t getxattr (const char* path, const char* name, void* value, size_t size)
+// ssize_t getxattr (const char* path, const char* name, void* value, size_t size)
 //{
-//    return (posix_extended_attributes_calls.padll_intercept_getxattr)
-//        ? m_ld_preloaded_posix.ld_preloaded_posix_getxattr (path, name, value, size)
-//        : m_posix_passthrough.passthrough_posix_getxattr (path, name, value, size);
-//}
+//     return (posix_extended_attributes_calls.padll_intercept_getxattr)
+//         ? m_ld_preloaded_posix.ld_preloaded_posix_getxattr (path, name, value, size)
+//         : m_posix_passthrough.passthrough_posix_getxattr (path, name, value, size);
+// }
 //
 //// lgetxattr call. (...)
-//ssize_t lgetxattr (const char* path, const char* name, void* value, size_t size)
+// ssize_t lgetxattr (const char* path, const char* name, void* value, size_t size)
 //{
-//    return (posix_extended_attributes_calls.padll_intercept_lgetxattr)
-//        ? m_ld_preloaded_posix.ld_preloaded_posix_lgetxattr (path, name, value, size)
-//        : m_posix_passthrough.passthrough_posix_lgetxattr (path, name, value, size);
-//}
+//     return (posix_extended_attributes_calls.padll_intercept_lgetxattr)
+//         ? m_ld_preloaded_posix.ld_preloaded_posix_lgetxattr (path, name, value, size)
+//         : m_posix_passthrough.passthrough_posix_lgetxattr (path, name, value, size);
+// }
 //
 //// fgetxattr call. (...)
-//ssize_t fgetxattr (int fd, const char* name, void* value, size_t size)
+// ssize_t fgetxattr (int fd, const char* name, void* value, size_t size)
 //{
-//    return (posix_extended_attributes_calls.padll_intercept_fgetxattr)
-//        ? m_ld_preloaded_posix.ld_preloaded_posix_fgetxattr (fd, name, value, size)
-//        : m_posix_passthrough.passthrough_posix_fgetxattr (fd, name, value, size);
-//}
+//     return (posix_extended_attributes_calls.padll_intercept_fgetxattr)
+//         ? m_ld_preloaded_posix.ld_preloaded_posix_fgetxattr (fd, name, value, size)
+//         : m_posix_passthrough.passthrough_posix_fgetxattr (fd, name, value, size);
+// }
 //
 //// setxattr call. (...)
-//int setxattr (const char* path, const char* name, const void* value, size_t size, int flags)
+// int setxattr (const char* path, const char* name, const void* value, size_t size, int flags)
 //{
-//    return (posix_extended_attributes_calls.padll_intercept_setxattr)
-//        ? m_ld_preloaded_posix.ld_preloaded_posix_setxattr (path, name, value, size, flags)
-//        : m_posix_passthrough.passthrough_posix_setxattr (path, name, value, size, flags);
-//}
+//     return (posix_extended_attributes_calls.padll_intercept_setxattr)
+//         ? m_ld_preloaded_posix.ld_preloaded_posix_setxattr (path, name, value, size, flags)
+//         : m_posix_passthrough.passthrough_posix_setxattr (path, name, value, size, flags);
+// }
 //
 //// lsetxattr call. (...)
-//int lsetxattr (const char* path, const char* name, const void* value, size_t size, int flags)
+// int lsetxattr (const char* path, const char* name, const void* value, size_t size, int flags)
 //{
-//    return (posix_extended_attributes_calls.padll_intercept_lsetxattr)
-//        ? m_ld_preloaded_posix.ld_preloaded_posix_lsetxattr (path, name, value, size, flags)
-//        : m_posix_passthrough.passthrough_posix_lsetxattr (path, name, value, size, flags);
-//}
+//     return (posix_extended_attributes_calls.padll_intercept_lsetxattr)
+//         ? m_ld_preloaded_posix.ld_preloaded_posix_lsetxattr (path, name, value, size, flags)
+//         : m_posix_passthrough.passthrough_posix_lsetxattr (path, name, value, size, flags);
+// }
 //
 //// fsetxaatr call. (...)
-//int fsetxattr (int fd, const char* name, const void* value, size_t size, int flags)
+// int fsetxattr (int fd, const char* name, const void* value, size_t size, int flags)
 //{
-//    return (posix_extended_attributes_calls.padll_intercept_fsetxattr)
-//        ? m_ld_preloaded_posix.ld_preloaded_posix_fsetxattr (fd, name, value, size, flags)
-//        : m_posix_passthrough.passthrough_posix_fsetxattr (fd, name, value, size, flags);
-//}
+//     return (posix_extended_attributes_calls.padll_intercept_fsetxattr)
+//         ? m_ld_preloaded_posix.ld_preloaded_posix_fsetxattr (fd, name, value, size, flags)
+//         : m_posix_passthrough.passthrough_posix_fsetxattr (fd, name, value, size, flags);
+// }
 //
 //// listxattr call. (...)
-//ssize_t listxattr (const char* path, char* list, size_t size)
+// ssize_t listxattr (const char* path, char* list, size_t size)
 //{
-//    return (posix_extended_attributes_calls.padll_intercept_listxattr)
-//        ? m_ld_preloaded_posix.ld_preloaded_posix_listxattr (path, list, size)
-//        : m_posix_passthrough.passthrough_posix_listxattr (path, list, size);
-//}
+//     return (posix_extended_attributes_calls.padll_intercept_listxattr)
+//         ? m_ld_preloaded_posix.ld_preloaded_posix_listxattr (path, list, size)
+//         : m_posix_passthrough.passthrough_posix_listxattr (path, list, size);
+// }
 //
 //// llistxattr call. (...)
-//ssize_t llistxattr (const char* path, char* list, size_t size)
+// ssize_t llistxattr (const char* path, char* list, size_t size)
 //{
-//    return (posix_extended_attributes_calls.padll_intercept_llistxattr)
-//        ? m_ld_preloaded_posix.ld_preloaded_posix_llistxattr (path, list, size)
-//        : m_posix_passthrough.passthrough_posix_llistxattr (path, list, size);
-//}
+//     return (posix_extended_attributes_calls.padll_intercept_llistxattr)
+//         ? m_ld_preloaded_posix.ld_preloaded_posix_llistxattr (path, list, size)
+//         : m_posix_passthrough.passthrough_posix_llistxattr (path, list, size);
+// }
 //
 //// flistxattr call. (...)
-//ssize_t flistxattr (int fd, char* list, size_t size)
+// ssize_t flistxattr (int fd, char* list, size_t size)
 //{
-//    return (posix_extended_attributes_calls.padll_intercept_flistxattr)
-//        ? m_ld_preloaded_posix.ld_preloaded_posix_flistxattr (fd, list, size)
-//        : m_posix_passthrough.passthrough_posix_flistxattr (fd, list, size);
-//}
+//     return (posix_extended_attributes_calls.padll_intercept_flistxattr)
+//         ? m_ld_preloaded_posix.ld_preloaded_posix_flistxattr (fd, list, size)
+//         : m_posix_passthrough.passthrough_posix_flistxattr (fd, list, size);
+// }
 //
 //// removexattr call. (...)
-//int removexattr (const char* path, const char* name)
+// int removexattr (const char* path, const char* name)
 //{
-//    return (posix_extended_attributes_calls.padll_intercept_removexattr)
-//        ? m_ld_preloaded_posix.ld_preloaded_posix_removexattr (path, name)
-//        : m_posix_passthrough.passthrough_posix_removexattr (path, name);
-//}
+//     return (posix_extended_attributes_calls.padll_intercept_removexattr)
+//         ? m_ld_preloaded_posix.ld_preloaded_posix_removexattr (path, name)
+//         : m_posix_passthrough.passthrough_posix_removexattr (path, name);
+// }
 //
 //// lremovexattr call. (...)
-//int lremovexattr (const char* path, const char* name)
+// int lremovexattr (const char* path, const char* name)
 //{
-//    return (posix_extended_attributes_calls.padll_intercept_lremovexattr)
-//        ? m_ld_preloaded_posix.ld_preloaded_posix_lremovexattr (path, name)
-//        : m_posix_passthrough.passthrough_posix_lremovexattr (path, name);
-//}
+//     return (posix_extended_attributes_calls.padll_intercept_lremovexattr)
+//         ? m_ld_preloaded_posix.ld_preloaded_posix_lremovexattr (path, name)
+//         : m_posix_passthrough.passthrough_posix_lremovexattr (path, name);
+// }
 //
 //// fremovexattr call. (...)
-//int fremovexattr (int fd, const char* name)
+// int fremovexattr (int fd, const char* name)
 //{
-//    return (posix_extended_attributes_calls.padll_intercept_fremovexattr)
-//        ? m_ld_preloaded_posix.ld_preloaded_posix_fremovexattr (fd, name)
-//        : m_posix_passthrough.passthrough_posix_fremovexattr (fd, name);
-//}
+//     return (posix_extended_attributes_calls.padll_intercept_fremovexattr)
+//         ? m_ld_preloaded_posix.ld_preloaded_posix_fremovexattr (fd, name)
+//         : m_posix_passthrough.passthrough_posix_fremovexattr (fd, name);
+// }
 //
 //// chmod call. (...)
-//int chmod (const char* pathname, mode_t mode)
+// int chmod (const char* pathname, mode_t mode)
 //{
-//    return (posix_file_modes_calls.padll_intercept_chmod)
-//        ? m_ld_preloaded_posix.ld_preloaded_posix_chmod (pathname, mode)
-//        : m_posix_passthrough.passthrough_posix_chmod (pathname, mode);
-//}
+//     return (posix_file_modes_calls.padll_intercept_chmod)
+//         ? m_ld_preloaded_posix.ld_preloaded_posix_chmod (pathname, mode)
+//         : m_posix_passthrough.passthrough_posix_chmod (pathname, mode);
+// }
 //
 //// fchmod call. (...)
-//int fchmod (int fd, mode_t mode)
+// int fchmod (int fd, mode_t mode)
 //{
-//    return (posix_file_modes_calls.padll_intercept_fchmod)
-//        ? m_ld_preloaded_posix.ld_preloaded_posix_fchmod (fd, mode)
-//        : m_posix_passthrough.passthrough_posix_fchmod (fd, mode);
-//}
+//     return (posix_file_modes_calls.padll_intercept_fchmod)
+//         ? m_ld_preloaded_posix.ld_preloaded_posix_fchmod (fd, mode)
+//         : m_posix_passthrough.passthrough_posix_fchmod (fd, mode);
+// }
 //
 //// fchmodat call. (...)
-//int fchmodat (int dirfd, const char* pathname, mode_t mode, int flags)
+// int fchmodat (int dirfd, const char* pathname, mode_t mode, int flags)
 //{
-//    return (posix_file_modes_calls.padll_intercept_fchmod)
-//        ? m_ld_preloaded_posix.ld_preloaded_posix_fchmodat (dirfd, pathname, mode, flags)
-//        : m_posix_passthrough.passthrough_posix_fchmodat (dirfd, pathname, mode, flags);
-//}
+//     return (posix_file_modes_calls.padll_intercept_fchmod)
+//         ? m_ld_preloaded_posix.ld_preloaded_posix_fchmodat (dirfd, pathname, mode, flags)
+//         : m_posix_passthrough.passthrough_posix_fchmodat (dirfd, pathname, mode, flags);
+// }
 //
 //// chown call. (...)
-//int chown (const char* pathname, uid_t owner, gid_t group)
+// int chown (const char* pathname, uid_t owner, gid_t group)
 //{
-//    return (posix_file_modes_calls.padll_intercept_chown)
-//        ? m_ld_preloaded_posix.ld_preloaded_posix_chown (pathname, owner, group)
-//        : m_posix_passthrough.passthrough_posix_chown (pathname, owner, group);
-//}
+//     return (posix_file_modes_calls.padll_intercept_chown)
+//         ? m_ld_preloaded_posix.ld_preloaded_posix_chown (pathname, owner, group)
+//         : m_posix_passthrough.passthrough_posix_chown (pathname, owner, group);
+// }
 //
 //// lchown call. (...)
-//int lchown (const char* pathname, uid_t owner, gid_t group)
+// int lchown (const char* pathname, uid_t owner, gid_t group)
 //{
-//    return (posix_file_modes_calls.padll_intercept_chown)
-//        ? m_ld_preloaded_posix.ld_preloaded_posix_lchown (pathname, owner, group)
-//        : m_posix_passthrough.passthrough_posix_lchown (pathname, owner, group);
-//}
+//     return (posix_file_modes_calls.padll_intercept_chown)
+//         ? m_ld_preloaded_posix.ld_preloaded_posix_lchown (pathname, owner, group)
+//         : m_posix_passthrough.passthrough_posix_lchown (pathname, owner, group);
+// }
 //
 //// fchown call. (...)
-//int fchown (int fd, uid_t owner, gid_t group)
+// int fchown (int fd, uid_t owner, gid_t group)
 //{
-//    return (posix_file_modes_calls.padll_intercept_fchown)
-//        ? m_ld_preloaded_posix.ld_preloaded_posix_fchown (fd, owner, group)
-//        : m_posix_passthrough.passthrough_posix_fchown (fd, owner, group);
-//}
+//     return (posix_file_modes_calls.padll_intercept_fchown)
+//         ? m_ld_preloaded_posix.ld_preloaded_posix_fchown (fd, owner, group)
+//         : m_posix_passthrough.passthrough_posix_fchown (fd, owner, group);
+// }
 //
 //// fchownat call. (...)
-//int fchownat (int dirfd, const char* pathname, uid_t owner, gid_t group, int flags)
+// int fchownat (int dirfd, const char* pathname, uid_t owner, gid_t group, int flags)
 //{
-//    return (posix_file_modes_calls.padll_intercept_fchownat)
-//        ? m_ld_preloaded_posix.ld_preloaded_posix_fchownat (dirfd, pathname, owner, group, flags)
-//        : m_posix_passthrough.passthrough_posix_fchownat (dirfd, pathname, owner, group, flags);
-//}
+//     return (posix_file_modes_calls.padll_intercept_fchownat)
+//         ? m_ld_preloaded_posix.ld_preloaded_posix_fchownat (dirfd, pathname, owner, group, flags)
+//         : m_posix_passthrough.passthrough_posix_fchownat (dirfd, pathname, owner, group, flags);
+// }

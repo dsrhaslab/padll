@@ -40,6 +40,7 @@ private:
     Statistics m_dir_stats { "directory", OperationType::directory_calls };
     Statistics m_ext_attr_stats { "ext-attr", OperationType::ext_attr_calls };
     Statistics m_file_mode_stats { "file-mode", OperationType::file_mode_calls };
+    std::shared_ptr<Logging> m_logger_ptr { nullptr };
 
     // data plane stage configurations
     std::atomic<bool> m_stage_initialized { false };
@@ -58,12 +59,10 @@ private:
      */
     bool dlopen_library_handle ();
 
-
     /**
      * initialize_stage:
      */
     void initialize_stage ();
-
 
     /**
      * enforce_request:
@@ -84,11 +83,18 @@ public:
     LdPreloadedPosix ();
 
     /**
+     * LdPreloadedPosix default constructor.
+     */
+    explicit LdPreloadedPosix (std::shared_ptr<Logging> log_ptr);
+
+    /**
      * LdPreloadedPosix parameterized constructor.
      * @param lib String that respects to the library that will be intercepted.
      * @param stat_collection Boolean that defines if statistic collection is enabled or disabled.
      */
-    LdPreloadedPosix (const std::string& lib, bool stat_collection);
+    LdPreloadedPosix (const std::string& lib,
+        const bool& stat_collection,
+        std::shared_ptr<Logging> log_ptr);
 
     /**
      * LdPreloadedPosix default destructor.
