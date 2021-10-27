@@ -414,19 +414,11 @@ int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags, mode
             "ld_preloaded_posix-open-variadic (" + std::string (path) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_open_var && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_open_var
-            = (libc_open_variadic_t)dlsym (this->m_lib_handle, "open")
-            : m_metadata_operations.m_open_var = (libc_open_variadic_t)dlsym (RTLD_NEXT, "open");
+    // hook POSIX open operation to m_metadata_operations.m_open_var
+    this->m_dlsym_hook.hook_posix_open_var (m_metadata_operations.m_open_var);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_open_var) {
-        m_metadata_operations.m_open_var = (libc_open_variadic_t)dlsym (this->m_lib_handle, "open");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX open operation
     int result = m_metadata_operations.m_open_var (path, flags, mode);
@@ -455,18 +447,11 @@ int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags)
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-open (" + std::string (path) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_open && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_open = (libc_open_t)dlsym (this->m_lib_handle, "open")
-            : m_metadata_operations.m_open = (libc_open_t)dlsym (RTLD_NEXT, "open");
+    // hook POSIX open operation to m_metadata_operations.m_open
+    this->m_dlsym_hook.hook_posix_open (m_metadata_operations.m_open);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_open) {
-        m_metadata_operations.m_open = (libc_open_t)dlsym (this->m_lib_handle, "open");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX open operation
     int result = m_metadata_operations.m_open (path, flags);
@@ -494,18 +479,11 @@ int LdPreloadedPosix::ld_preloaded_posix_creat (const char* path, mode_t mode)
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-creat (" + std::string (path) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_creat && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_creat = (libc_creat_t)dlsym (this->m_lib_handle, "creat")
-            : m_metadata_operations.m_creat = (libc_creat_t)dlsym (RTLD_NEXT, "creat");
+    // hook POSIX creat operation to m_metadata_operations.m_creat
+    this->m_dlsym_hook.hook_posix_creat (m_metadata_operations.m_creat);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_creat) {
-        m_metadata_operations.m_creat = (libc_creat_t)dlsym (this->m_lib_handle, "creat");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX creat operation
     int result = m_metadata_operations.m_creat (path, mode);
@@ -535,19 +513,11 @@ int LdPreloadedPosix::ld_preloaded_posix_creat64 (const char* path, mode_t mode)
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-creat64 (" + std::string (path) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_creat64 && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_creat64
-            = (libc_creat64_t)dlsym (this->m_lib_handle, "creat64")
-            : m_metadata_operations.m_creat64 = (libc_creat64_t)dlsym (RTLD_NEXT, "creat64");
+    // hook POSIX creat64 operation to m_metadata_operations.m_creat64
+    this->m_dlsym_hook.hook_posix_creat64 (m_metadata_operations.m_creat64);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_creat64) {
-        m_metadata_operations.m_creat64 = (libc_creat64_t)dlsym (this->m_lib_handle, "creat64");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX creat64 operation
     int result = m_metadata_operations.m_creat64 (path, mode);
@@ -581,20 +551,11 @@ int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd,
             + std::to_string (dirfd) + ", " + std::string (path) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_openat_var && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ()) ? m_metadata_operations.m_openat_var
-            = (libc_openat_variadic_t)dlsym (this->m_lib_handle, "openat")
-                                         : m_metadata_operations.m_openat_var
-            = (libc_openat_variadic_t)dlsym (RTLD_NEXT, "openat");
+    // hook POSIX openat variadic operation to m_metadata_operations.m_openat_var
+    this->m_dlsym_hook.hook_posix_openat_var (m_metadata_operations.m_openat_var);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_openat_var) {
-        m_metadata_operations.m_openat_var
-            = (libc_openat_variadic_t)dlsym (this->m_lib_handle, "openat");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX openat operation
     int result = m_metadata_operations.m_openat_var (dirfd, path, flags, mode);
@@ -624,18 +585,11 @@ int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd, const char* path, in
             + std::string (path) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_openat && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_openat = (libc_openat_t)dlsym (this->m_lib_handle, "openat")
-            : m_metadata_operations.m_openat = (libc_openat_t)dlsym (RTLD_NEXT, "openat");
+    // hook POSIX openat operation to m_metadata_operations.m_openat
+    this->m_dlsym_hook.hook_posix_openat (m_metadata_operations.m_openat);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_openat) {
-        m_metadata_operations.m_openat = (libc_openat_t)dlsym (this->m_lib_handle, "openat");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX openat operation
     int result = m_metadata_operations.m_openat (dirfd, path, flags);
@@ -666,20 +620,11 @@ int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags, mo
             "ld_preloaded_posix-open64-variadic (" + std::string (path) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_open64_var && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ()) ? m_metadata_operations.m_open64_var
-            = (libc_open64_variadic_t)dlsym (this->m_lib_handle, "open64")
-                                         : m_metadata_operations.m_open64_var
-            = (libc_open64_variadic_t)dlsym (RTLD_NEXT, "open64");
+    // hook POSIX open64_var operation to m_metadata_operations.m_open64_var
+    this->m_dlsym_hook.hook_posix_open64_variadic (m_metadata_operations.m_open64_var);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_open64_var) {
-        m_metadata_operations.m_open64_var
-            = (libc_open64_variadic_t)dlsym (this->m_lib_handle, "open64");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX open64 operation
     int result = m_metadata_operations.m_open64_var (path, flags, mode);
@@ -708,18 +653,11 @@ int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags)
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-open64 (" + std::string (path) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_open64 && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_open64 = (libc_open64_t)dlsym (this->m_lib_handle, "open64")
-            : m_metadata_operations.m_open64 = (libc_open64_t)dlsym (RTLD_NEXT, "open64");
+    // hook POSIX open64 operation to m_metadata_operations.m_open64
+    this->m_dlsym_hook.hook_posix_open64 (m_metadata_operations.m_open64);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_open64) {
-        m_metadata_operations.m_open64 = (libc_open64_t)dlsym (this->m_lib_handle, "open64");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX open64 operation
     int result = m_metadata_operations.m_open64 (path, flags);
@@ -749,18 +687,11 @@ int LdPreloadedPosix::ld_preloaded_posix_close (int fd)
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-close (" + std::to_string (fd) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_close && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_close = (libc_close_t)dlsym (this->m_lib_handle, "close")
-            : m_metadata_operations.m_close = (libc_close_t)dlsym (RTLD_NEXT, "close");
+    // hook POSIX close operation to m_metadata_operations.m_close
+    this->m_dlsym_hook.hook_posix_close (m_metadata_operations.m_close);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_close) {
-        m_metadata_operations.m_close = (libc_close_t)dlsym (this->m_lib_handle, "close");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX close operation
     int result = m_metadata_operations.m_close (fd);
@@ -790,18 +721,11 @@ int LdPreloadedPosix::ld_preloaded_posix_fsync (int fd)
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-fsync (" + std::to_string (fd) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_fsync && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_fsync = (libc_fsync_t)dlsym (this->m_lib_handle, "fsync")
-            : m_metadata_operations.m_fsync = (libc_fsync_t)dlsym (RTLD_NEXT, "fsync");
+    // hook POSIX fsync operation to m_metadata_operations.m_fsync
+    this->m_dlsym_hook.hook_posix_fsync (m_metadata_operations.m_fsync);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_fsync) {
-        m_metadata_operations.m_fsync = (libc_fsync_t)dlsym (this->m_lib_handle, "fsync");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX fsync operation
     int result = m_metadata_operations.m_fsync (fd);
@@ -832,20 +756,11 @@ int LdPreloadedPosix::ld_preloaded_posix_fdatasync (int fd)
             "ld_preloaded_posix-fdatasync (" + std::to_string (fd) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_fdatasync && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_fdatasync
-            = (libc_fdatasync_t)dlsym (this->m_lib_handle, "fdatasync")
-            : m_metadata_operations.m_fdatasync = (libc_fdatasync_t)dlsym (RTLD_NEXT, "fdatasync");
+    // hook POSIX fdatasync operation to m_metadata_operations.m_fdatasync
+    this->m_dlsym_hook.hook_posix_fdatasync (m_metadata_operations.m_fdatasync);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_fdatasync) {
-        m_metadata_operations.m_fdatasync
-            = (libc_fdatasync_t)dlsym (this->m_lib_handle, "fdatasync");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX fdatasync operation
     int result = m_metadata_operations.m_fdatasync (fd);
@@ -875,18 +790,11 @@ void LdPreloadedPosix::ld_preloaded_posix_sync ()
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-sync");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_sync && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_sync = (libc_sync_t)dlsym (this->m_lib_handle, "sync")
-            : m_metadata_operations.m_sync = (libc_sync_t)dlsym (RTLD_NEXT, "sync");
+    // hook POSIX sync operation to m_metadata_operations.m_sync
+    this->m_dlsym_hook.hook_posix_sync (m_metadata_operations.m_sync);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_sync) {
-        m_metadata_operations.m_sync = (libc_sync_t)dlsym (this->m_lib_handle, "sync");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX sync operation
     m_metadata_operations.m_sync ();
@@ -905,18 +813,11 @@ int LdPreloadedPosix::ld_preloaded_posix_syncfs (int fd)
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-syncfs (" + std::to_string (fd) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_syncfs && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_syncfs = (libc_syncfs_t)dlsym (this->m_lib_handle, "syncfs")
-            : m_metadata_operations.m_syncfs = (libc_syncfs_t)dlsym (RTLD_NEXT, "syncfs");
+    // hook POSIX syncfs operation to m_metadata_operations.m_syncfs
+    this->m_dlsym_hook.hook_posix_syncfs (m_metadata_operations.m_syncfs);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_syncfs) {
-        m_metadata_operations.m_syncfs = (libc_syncfs_t)dlsym (this->m_lib_handle, "syncfs");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX syncfs operation
     int result = m_metadata_operations.m_syncfs (fd);
@@ -946,19 +847,11 @@ int LdPreloadedPosix::ld_preloaded_posix_truncate (const char* path, off_t lengt
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-truncate (" + std::string (path) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_truncate && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_truncate
-            = (libc_truncate_t)dlsym (this->m_lib_handle, "truncate")
-            : m_metadata_operations.m_truncate = (libc_truncate_t)dlsym (RTLD_NEXT, "truncate");
+    // hook POSIX truncate operation to m_metadata_operations.m_truncate
+    this->m_dlsym_hook.hook_posix_truncate (m_metadata_operations.m_truncate);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_truncate) {
-        m_metadata_operations.m_truncate = (libc_truncate_t)dlsym (this->m_lib_handle, "truncate");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX truncate operation
     int result = m_metadata_operations.m_truncate (path, length);
@@ -989,20 +882,11 @@ int LdPreloadedPosix::ld_preloaded_posix_ftruncate (int fd, off_t length)
             "ld_preloaded_posix-ftruncate (" + std::to_string (fd) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_ftruncate && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_ftruncate
-            = (libc_ftruncate_t)dlsym (this->m_lib_handle, "ftruncate")
-            : m_metadata_operations.m_ftruncate = (libc_ftruncate_t)dlsym (RTLD_NEXT, "ftruncate");
+    // hook POSIX ftruncate operation to m_metadata_operations.m_ftruncate
+    this->m_dlsym_hook.hook_posix_ftruncate (m_metadata_operations.m_ftruncate);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_ftruncate) {
-        m_metadata_operations.m_ftruncate
-            = (libc_ftruncate_t)dlsym (this->m_lib_handle, "ftruncate");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX ftruncate operation
     int result = m_metadata_operations.m_ftruncate (fd, length);
@@ -1033,20 +917,11 @@ int LdPreloadedPosix::ld_preloaded_posix_truncate64 (const char* path, off_t len
             "ld_preloaded_posix-truncate64 (" + std::string (path) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_truncate64 && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ()) ? m_metadata_operations.m_truncate64
-            = (libc_truncate64_t)dlsym (this->m_lib_handle, "truncate64")
-                                         : m_metadata_operations.m_truncate64
-            = (libc_truncate64_t)dlsym (RTLD_NEXT, "truncate64");
+    // hook POSIX truncate64 operation to m_metadata_operations.m_truncate64
+    this->m_dlsym_hook.hook_posix_truncate64 (m_metadata_operations.m_truncate64);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_truncate64) {
-        m_metadata_operations.m_truncate64
-            = (libc_truncate64_t)dlsym (this->m_lib_handle, "truncate64");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX truncate64 operation
     int result = m_metadata_operations.m_truncate64 (path, length);
@@ -1077,20 +952,11 @@ int LdPreloadedPosix::ld_preloaded_posix_ftruncate64 (int fd, off_t length)
             "ld_preloaded_posix-ftruncate64 (" + std::to_string (fd) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_ftruncate64 && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ()) ? m_metadata_operations.m_ftruncate64
-            = (libc_ftruncate64_t)dlsym (this->m_lib_handle, "ftruncate64")
-                                         : m_metadata_operations.m_ftruncate64
-            = (libc_ftruncate64_t)dlsym (RTLD_NEXT, "ftruncate64");
+    // hook POSIX ftruncate64 operation to m_metadata_operations.m_ftruncate64
+    this->m_dlsym_hook.hook_posix_ftruncate64 (m_metadata_operations.m_ftruncate64);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_ftruncate64) {
-        m_metadata_operations.m_ftruncate64
-            = (libc_ftruncate64_t)dlsym (this->m_lib_handle, "ftruncate64");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX ftruncate64 operation
     int result = m_metadata_operations.m_ftruncate64 (fd, length);
@@ -1120,21 +986,13 @@ int LdPreloadedPosix::ld_preloaded_posix_xstat (int version, const char* path, s
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-xstat (" + std::string (path) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_xstat && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_xstat = (libc_xstat_t)dlsym (this->m_lib_handle, "__xstat")
-            : m_metadata_operations.m_xstat = (libc_xstat_t)dlsym (RTLD_NEXT, "__xstat");
+    // hook POSIX __xstat operation to m_metadata_operations.m_xstat
+    this->m_dlsym_hook.hook_posix_xstat (m_metadata_operations.m_xstat);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_xstat) {
-        m_metadata_operations.m_xstat = (libc_xstat_t)dlsym (this->m_lib_handle, "__xstat");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX __xstat (stat) operation
-    // int result = ((libc_xstat_t)dlsym (this->m_lib_handle, "__xstat")) (version, path, statbuf);
     int result = m_metadata_operations.m_xstat (version, path, statbuf);
 
     // update statistic entry
@@ -1162,22 +1020,13 @@ int LdPreloadedPosix::ld_preloaded_posix_lxstat (int version,
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-lxstat (" + std::string (path) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_lxstat && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_lxstat = (libc_lxstat_t)dlsym (this->m_lib_handle, "__lxstat")
-            : m_metadata_operations.m_lxstat = (libc_lxstat_t)dlsym (RTLD_NEXT, "__lxstat");
+    // hook POSIX __lxstat operation to m_metadata_operations.m_lxstat
+    this->m_dlsym_hook.hook_posix_lxstat (m_metadata_operations.m_lxstat);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_lxstat) {
-        m_metadata_operations.m_lxstat = (libc_lxstat_t)dlsym (this->m_lib_handle, "__lxstat");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX __lxstat (lstat) operation
-    // int result = ((libc_lxstat_t)dlsym (this->m_lib_handle, "__lxstat")) (version, path,
-    // statbuf);
     int result = m_metadata_operations.m_lxstat (version, path, statbuf);
 
     // update statistic entry
@@ -1205,21 +1054,13 @@ int LdPreloadedPosix::ld_preloaded_posix_fxstat (int version, int fd, struct sta
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-fxstat (" + std::to_string (fd) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_fxstat && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_fxstat = (libc_fxstat_t)dlsym (this->m_lib_handle, "__fxstat")
-            : m_metadata_operations.m_fxstat = (libc_fxstat_t)dlsym (RTLD_NEXT, "__fxstat");
+    // hook POSIX __fxstat operation to m_metadata_operations.m_fxstat
+    this->m_dlsym_hook.hook_posix_fxstat (m_metadata_operations.m_fxstat);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_fxstat) {
-        m_metadata_operations.m_fxstat = (libc_fxstat_t)dlsym (this->m_lib_handle, "__fxstat");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX __fxstat (fstat) operation
-    // int result = ((libc_fxstat_t)dlsym (this->m_lib_handle, "__fxstat")) (version, fd, statbuf);
     int result = m_metadata_operations.m_fxstat (version, fd, statbuf);
 
     // update statistic entry
@@ -1252,24 +1093,13 @@ int LdPreloadedPosix::ld_preloaded_posix_fxstatat (int version,
             + ", " + std::string (path) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_fxstatat && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_fxstatat
-            = (libc_fxstatat_t)dlsym (this->m_lib_handle, "__fxstatat")
-            : m_metadata_operations.m_fxstatat = (libc_fxstatat_t)dlsym (RTLD_NEXT, "__fxstatat");
+    // hook POSIX __fxstatat operation to m_metadata_operations.m_fxstatat
+    this->m_dlsym_hook.hook_posix_fxstatat (m_metadata_operations.m_fxstatat);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_fxstatat) {
-        m_metadata_operations.m_fxstatat
-            = (libc_fxstatat_t)dlsym (this->m_lib_handle, "__fxstatat");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX __fxstatat (fstatat) operation
-    // int result = ((libc_fxstatat_t)dlsym (this->m_lib_handle,
-    //     "__fxstatat")) (version, dirfd, path, statbuf, flags);
     int result = m_metadata_operations.m_fxstatat (version, dirfd, path, statbuf, flags);
 
     // update statistic entry
@@ -1299,23 +1129,13 @@ int LdPreloadedPosix::ld_preloaded_posix_xstat64 (int version,
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-xstat64 (" + std::string (path) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_xstat64 && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_xstat64
-            = (libc_xstat64_t)dlsym (this->m_lib_handle, "__xstat64")
-            : m_metadata_operations.m_xstat64 = (libc_xstat64_t)dlsym (RTLD_NEXT, "__xstat64");
+    // hook POSIX __xstat64 operation to m_metadata_operations.m_xstat64
+    this->m_dlsym_hook.hook_posix_xstat64 (m_metadata_operations.m_xstat64);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_xstat64) {
-        m_metadata_operations.m_xstat64 = (libc_xstat64_t)dlsym (this->m_lib_handle, "__xstat64");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX __xstat64 (stat) operation
-    // int result = ((libc_xstat64_t)dlsym (this->m_lib_handle, "__xstat64")) (version, path,
-    // statbuf);
     int result = m_metadata_operations.m_xstat64 (version, path, statbuf);
 
     // update statistic entry
@@ -1345,24 +1165,13 @@ int LdPreloadedPosix::ld_preloaded_posix_lxstat64 (int version,
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-lxstat64 (" + std::string (path) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_lxstat64 && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_lxstat64
-            = (libc_lxstat64_t)dlsym (this->m_lib_handle, "__lxstat64")
-            : m_metadata_operations.m_lxstat64 = (libc_lxstat64_t)dlsym (RTLD_NEXT, "__lxstat64");
+    // hook POSIX __lxstat64 operation to m_metadata_operations.m_lxstat64
+    this->m_dlsym_hook.hook_posix_lxstat64 (m_metadata_operations.m_lxstat64);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_lxstat64) {
-        m_metadata_operations.m_lxstat64
-            = (libc_lxstat64_t)dlsym (this->m_lib_handle, "__lxstat64");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX __lxstat64 (lstat64) operation
-    // int result = ((libc_lxstat64_t)dlsym (this->m_lib_handle, "__lxstat64")) (version, path,
-    // statbuf);
     int result = m_metadata_operations.m_lxstat64 (version, path, statbuf);
 
     // update statistic entry
@@ -1390,24 +1199,13 @@ int LdPreloadedPosix::ld_preloaded_posix_fxstat64 (int version, int fd, struct s
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-fxstat64 (" + std::to_string (fd) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_fxstat64 && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_fxstat64
-            = (libc_fxstat64_t)dlsym (this->m_lib_handle, "__fxstat64")
-            : m_metadata_operations.m_fxstat64 = (libc_fxstat64_t)dlsym (RTLD_NEXT, "__fxstat64");
+    // hook POSIX __fxstat64 operation to m_metadata_operations.m_fxstat64
+    this->m_dlsym_hook.hook_posix_fxstat64 (m_metadata_operations.m_fxstat64);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_fxstat64) {
-        m_metadata_operations.m_fxstat64
-            = (libc_fxstat64_t)dlsym (this->m_lib_handle, "__fxstat64");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX __fxstat64 (fxstat64) operation
-    // int result = ((libc_fxstat64_t)dlsym (this->m_lib_handle, "__fxstat64")) (version, fd,
-    // statbuf);
     int result = m_metadata_operations.m_fxstat64 (version, fd, statbuf);
 
     // update statistic entry
@@ -1440,24 +1238,13 @@ int LdPreloadedPosix::ld_preloaded_posix_fxstatat64 (int version,
             + ", " + std::string (path) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_fxstatat64 && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ()) ? m_metadata_operations.m_fxstatat64
-            = (libc_fxstatat64_t)dlsym (this->m_lib_handle, "__fxstatat64")
-                                         : m_metadata_operations.m_fxstatat64
-            = (libc_fxstatat64_t)dlsym (RTLD_NEXT, "__fxstatat64");
+    // hook POSIX __fxstatat64 operation to m_metadata_operations.m_fxstatat64
+    this->m_dlsym_hook.hook_posix_fxstatat64 (m_metadata_operations.m_fxstatat64);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_fxstatat64) {
-        m_metadata_operations.m_fxstatat64
-            = (libc_fxstatat64_t)dlsym (this->m_lib_handle, "__fxstatat64");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX __fxstatat64 (fxstatat64) operation
-    // int result = ((libc_fxstatat_t)dlsym (this->m_lib_handle,
-    //     "__fxstatat64")) (version, dirfd, path, statbuf, flags);
     int result = m_metadata_operations.m_fxstatat64 (version, dirfd, path, statbuf, flags);
 
     // update statistic entry
@@ -1485,18 +1272,11 @@ int LdPreloadedPosix::ld_preloaded_posix_statfs (const char* path, struct statfs
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-statfs (" + std::string (path) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_statfs && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_statfs = (libc_statfs_t)dlsym (this->m_lib_handle, "statfs")
-            : m_metadata_operations.m_statfs = (libc_statfs_t)dlsym (RTLD_NEXT, "statfs");
+    // hook POSIX statfs operation to m_metadata_operations.m_statfs
+    this->m_dlsym_hook.hook_posix_statfs (m_metadata_operations.m_statfs);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_statfs) {
-        m_metadata_operations.m_statfs = (libc_statfs_t)dlsym (this->m_lib_handle, "statfs");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX statfs operation
     int result = m_metadata_operations.m_statfs (path, buf);
@@ -1526,19 +1306,11 @@ int LdPreloadedPosix::ld_preloaded_posix_fstatfs (int fd, struct statfs* buf)
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-fstatfs (" + std::to_string (fd) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_fstatfs && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_fstatfs
-            = (libc_fstatfs_t)dlsym (this->m_lib_handle, "fstatfs")
-            : m_metadata_operations.m_fstatfs = (libc_fstatfs_t)dlsym (RTLD_NEXT, "fstatfs");
+    // hook POSIX fstatfs operation to m_metadata_operations.m_fstatfs
+    this->m_dlsym_hook.hook_posix_fstatfs (m_metadata_operations.m_fstatfs);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_fstatfs) {
-        m_metadata_operations.m_fstatfs = (libc_fstatfs_t)dlsym (this->m_lib_handle, "fstatfs");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX fstatfs operation
     int result = m_metadata_operations.m_fstatfs (fd, buf);
@@ -1568,19 +1340,11 @@ int LdPreloadedPosix::ld_preloaded_posix_statfs64 (const char* path, struct stat
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-statfs64 (" + std::string (path) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_statfs64 && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_statfs64
-            = (libc_statfs64_t)dlsym (this->m_lib_handle, "statfs64")
-            : m_metadata_operations.m_statfs64 = (libc_statfs64_t)dlsym (RTLD_NEXT, "statfs64");
+    // hook POSIX statfs64 operation to m_metadata_operations.m_statfs64
+    this->m_dlsym_hook.hook_posix_statfs64 (m_metadata_operations.m_statfs64);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_statfs64) {
-        m_metadata_operations.m_statfs64 = (libc_statfs64_t)dlsym (this->m_lib_handle, "statfs64");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX statfs64 operation
     int result = m_metadata_operations.m_statfs64 (path, buf);
@@ -1611,20 +1375,11 @@ int LdPreloadedPosix::ld_preloaded_posix_fstatfs64 (int fd, struct statfs64* buf
             "ld_preloaded_posix-fstatfs64 (" + std::to_string (fd) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_fstatfs64 && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_fstatfs64
-            = (libc_fstatfs64_t)dlsym (this->m_lib_handle, "fstatfs64")
-            : m_metadata_operations.m_fstatfs64 = (libc_fstatfs64_t)dlsym (RTLD_NEXT, "fstatfs64");
+    // hook POSIX fstatfs64 operation to m_metadata_operations.m_fstatfs64
+    this->m_dlsym_hook.hook_posix_fstatfs64 (m_metadata_operations.m_fstatfs64);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_fstatfs64) {
-        m_metadata_operations.m_fstatfs64
-            = (libc_fstatfs64_t)dlsym (this->m_lib_handle, "fstatfs64");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX fstatfs64 operation
     int result = m_metadata_operations.m_fstatfs64 (fd, buf);

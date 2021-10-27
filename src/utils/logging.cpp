@@ -44,8 +44,8 @@ void Logging::initialize ()
     if (this->m_is_ld_preloaded) {
         if (!this->m_log_file_path.empty ()) {
             // open file using dlsym'ed close
-            this->m_fd =
-                    ((libc_open_variadic_t)dlsym (RTLD_NEXT, "open")) (m_log_file_path.c_str (), O_CREAT | O_WRONLY | O_APPEND, 0666);
+            this->m_fd = ((libc_open_variadic_t)dlsym (RTLD_NEXT,
+                "open")) (m_log_file_path.c_str (), O_CREAT | O_WRONLY | O_APPEND, 0666);
 
             // verify file descriptor result
             if (this->m_fd == -1) {
