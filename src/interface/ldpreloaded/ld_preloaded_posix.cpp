@@ -11,8 +11,9 @@ namespace padll {
 LdPreloadedPosix::LdPreloadedPosix () : m_logger_ptr { std::make_shared<Logging> () }
 {
     std::printf ("LdPreloadedPosix default constructor.\n");
+    // FIXME: remove this block as it is implemented in DlsymHookLibc's constructor.
     // initialize library handle pointer
-    this->initialize ();
+    // this->initialize ();
 }
 
 // LdPreloadedPosix explicit constructor.
@@ -20,9 +21,9 @@ LdPreloadedPosix::LdPreloadedPosix (std::shared_ptr<Logging> logging_ptr) :
     m_logger_ptr { logging_ptr }
 {
     std::printf ("LdPreloadedPosix explicit constructor.\n");
-
+    // FIXME: remove this block as it is implemented in DlsymHookLibc's constructor.
     // initialize library handle pointer
-    this->initialize ();
+    // this->initialize ();
 }
 
 // LdPreloadedPosix parameterized constructor.
@@ -34,14 +35,15 @@ LdPreloadedPosix::LdPreloadedPosix (const std::string& lib,
     m_logger_ptr { logging_ptr }
 {
     std::printf ("LdPreloadedPosix parameterized constructor.\n");
-    // validate if 'lib' is valid
-    if (lib.empty ()) {
-        this->m_logger_ptr->log_error ("Library not valid.");
-        return;
-    }
-
-    // initialize library handle pointer
-    this->initialize ();
+    // FIXME: remove this block as it is implemented in DlsymHookLibc's constructor.
+//    // validate if 'lib' is valid
+//    if (lib.empty ()) {
+//        this->m_logger_ptr->log_error ("Library not valid.");
+//        return;
+//    }
+//
+//    // initialize library handle pointer
+//    this->initialize ();
 }
 
 // LdPreloadedPosix default destructor.
@@ -50,21 +52,22 @@ LdPreloadedPosix::~LdPreloadedPosix ()
     std::printf ("LdPreloadedPosix default destructor.\n");
     this->m_logger_ptr->log_info ("LdPreloadedPosix default destructor.");
 
-    // validate if library handle is valid and close dynamic linking
-    if (this->m_lib_handle != nullptr) {
-        // close dynamic linking to intercepted library.
-        // It decrements the reference count on the dynamically loaded shared object, referred to
-        // by handle m_lib_handle. If the reference count drops to zero, then the object is
-        // unloaded. All shared objects that were automatically loaded when dlopen () was invoked
-        // on the object referred to by handle are recursively closed in the same manner.
-        int dlclose_result = ::dlclose (this->m_lib_handle);
-
-        // validate result from dlclose
-        if (dlclose_result != 0) {
-            this->m_logger_ptr->log_error (
-                "Error while closing dynamic link (" + std::to_string (dlclose_result) + ").");
-        }
-    }
+    // FIXME: remove this block as it is implemented in DlsymHookLibc's destructor
+//    // validate if library handle is valid and close dynamic linking
+//    if (this->m_lib_handle != nullptr) {
+//        // close dynamic linking to intercepted library.
+//        // It decrements the reference count on the dynamically loaded shared object, referred to
+//        // by handle m_lib_handle. If the reference count drops to zero, then the object is
+//        // unloaded. All shared objects that were automatically loaded when dlopen () was invoked
+//        // on the object referred to by handle are recursively closed in the same manner.
+//        int dlclose_result = ::dlclose (this->m_lib_handle);
+//
+//        // validate result from dlclose
+//        if (dlclose_result != 0) {
+//            this->m_logger_ptr->log_error (
+//                "Error while closing dynamic link (" + std::to_string (dlclose_result) + ").");
+//        }
+//    }
 
     if (option_default_table_format) {
         // print to stdout metadata-based statistics in tabular format
@@ -219,7 +222,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_read (int fd, void* buf, size_t cou
 //        m_data_operations.m_read = (libc_read_t)dlsym (this->m_lib_handle, "read");
 //    }
 
-    this->m_dlsym_hook.hook_posix_read (m_data_operations.m_read, this->m_lib_handle, this->m_lib_name);
+    this->m_dlsym_hook.hook_posix_read (m_data_operations.m_read);
 
     // TODO: add here call to the paio-stage
 

@@ -33,8 +33,8 @@ private:
     libc_directory m_directory_operations {};
     libc_extattr m_extattr_operations {};
     libc_file_modes m_filemodes_operations {};
-    std::string m_lib_name { "libc.so.6" };
-    void* m_lib_handle { nullptr };
+    std::string m_lib_name { "libc.so.6" }; // TODO: move all dlsym logic to dlsym_hook
+    void* m_lib_handle { nullptr }; // TODO: move all dlsym logic to dlsym_hook
     std::atomic<bool> m_collect { option_default_statistic_collection };
     Statistics m_metadata_stats { "metadata", OperationType::metadata_calls };
     Statistics m_data_stats { "data", OperationType::data_calls };
@@ -42,7 +42,7 @@ private:
     Statistics m_ext_attr_stats { "ext-attr", OperationType::ext_attr_calls };
     Statistics m_file_mode_stats { "file-mode", OperationType::file_mode_calls };
     std::shared_ptr<Logging> m_logger_ptr { nullptr };
-    LibcDlsymHook m_dlsym_hook {};
+    DlsymHookLibc m_dlsym_hook {};
 
     // data plane stage configurations
     std::atomic<bool> m_stage_initialized { false };
