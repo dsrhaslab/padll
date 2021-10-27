@@ -9,7 +9,7 @@
 #define _GNU_SOURCE 1
 
 #include <iostream>
-#include <padll/interface/ldpreloaded/libc_dlsym_hook.hpp>
+#include <padll/interface/ldpreloaded/dlsym_hook_libc.hpp>
 #include <padll/libraries/libc_enums.hpp>
 #include <padll/libraries/libc_headers.hpp>
 #include <padll/statistics/statistics.hpp>
@@ -49,11 +49,6 @@ private:
     std::shared_ptr<paio::PaioStage> m_stage { nullptr };
     std::unique_ptr<paio::PosixLayer> m_posix_instance { nullptr };
     const long m_workflow_id { 1000 };
-
-    /**
-     * initialize:
-     */
-    void initialize ();
 
     /**
      * dlopen_library_handle:

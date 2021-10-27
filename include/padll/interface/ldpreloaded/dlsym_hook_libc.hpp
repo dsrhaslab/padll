@@ -3,8 +3,8 @@
 *   Copyright (c) 2021 INESC TEC.
 **/
 
-#ifndef PADLL_LIBC_DLSYM_HOOK_HPP
-#define PADLL_LIBC_DLSYM_HOOK_HPP
+#ifndef PADLL_DLSYM_HOOK_LIBC_HPP
+#define PADLL_DLSYM_HOOK_LIBC_HPP
 
 #include <padll/libraries/libc_headers.hpp>
 #include <padll/utils/logging.hpp>
@@ -111,8 +111,10 @@ public:
      * @param lib_name
      */
     void hook_posix_read (libc_read_t& read_ptr) {
+        std::printf ("Passei pelo hook read ...\n");
         // validate function and library handle pointers
         if (!read_ptr && !this->m_lib_handle) {
+            std::printf ("Passei pelo hook read dlopen_library_handle ...\n");
             // open library handle, and assign the operation pointer through m_lib_handle if the
             // open was successful, or through the next operation link.
             (this->dlopen_library_handle ())
@@ -121,7 +123,28 @@ public:
 
             // in case the library handle pointer is valid, assign the operation pointer
         } else if (!read_ptr) {
+            std::printf ("Passei pelo hook dlsym ...\n");
             read_ptr = (libc_read_t) dlsym (this->m_lib_handle, "read");
+        }
+    }
+
+    /**
+     * hook_posix_write:
+     * @param write_ptr
+     */
+    void hook_posix_write (libc_write_t& write_ptr)
+    {
+        // validate function and library handle pointers
+        if (!write_ptr && !this->m_lib_handle) {
+            // open library handle, and assign the operation pointer through m_lib_handle if the open
+            // was successful, or through the next operation link.
+            (this->dlopen_library_handle ())
+            ? write_ptr = (libc_write_t)dlsym (this->m_lib_handle, "write")
+            : write_ptr = (libc_write_t)dlsym (RTLD_NEXT, "write");
+
+            // in case the library handle pointer is valid, assign the operation pointer
+        } else if (!write_ptr) {
+            write_ptr = (libc_write_t)dlsym (this->m_lib_handle, "write");
         }
 
     }
@@ -129,4 +152,4 @@ public:
 
 }
 
-#endif //PADLL_LIBC_DLSYM_HOOK_HPP
+#endif //PADLL_DLSYM_HOOK_LIBC_HPP

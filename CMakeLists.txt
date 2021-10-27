@@ -59,7 +59,7 @@ target_sources(
     PUBLIC
     ${PROJECT_SOURCE_DIR}/include/padll/configurations/libc_calls.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/interface/ldpreloaded/ld_preloaded_posix.hpp
-    ${PROJECT_SOURCE_DIR}/include/padll/interface/ldpreloaded/libc_dlsym_hook.hpp
+        ${PROJECT_SOURCE_DIR}/include/padll/interface/ldpreloaded/dlsym_hook_libc.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/interface/native/posix_file_system.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/interface/passthrough/posix_passthrough.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/statistics/statistic_entry.hpp

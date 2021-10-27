@@ -255,7 +255,7 @@ void Statistics::tabulate ()
     }
 
     // print to stdout
-    std::cout << table_stats << std::endl;
+    std::cout << table_stats << "\n" << std::endl;
 }
 
 } // namespace padll
