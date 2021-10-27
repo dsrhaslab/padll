@@ -13,6 +13,7 @@
 int main (int argc, char* argv[])
 {
     ssize_t read_bytes = 0;
+    ssize_t total_read_bytes = 0;
     ssize_t written_bytes = 0;
     int read_ops = 0;
     int write_ops = 0;
@@ -23,14 +24,14 @@ int main (int argc, char* argv[])
 
     while ((read_bytes = ::read (fd_read, buffer, BUFFER_SIZE)) > 0) {
         written_bytes += ::write (fd_write, buffer, read_bytes);
-        read_ops++;
-        write_ops++;
+        total_read_bytes += read_bytes;
+        read_ops++; write_ops++;
     }
 
     ::close (fd_write);
     delete (buffer);
 
-    std::printf ("Read: %d ops; %ld bytes\n", read_ops, read_bytes);
+    std::printf ("Read: %d ops; %ld bytes\n", read_ops, total_read_bytes);
     std::printf ("Write: %d ops; %ld bytes\n", write_ops, written_bytes);
 
     return 0;

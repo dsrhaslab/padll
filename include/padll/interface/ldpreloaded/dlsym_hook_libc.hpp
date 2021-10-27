@@ -111,10 +111,8 @@ public:
      * @param lib_name
      */
     void hook_posix_read (libc_read_t& read_ptr) {
-        std::printf ("Passei pelo hook read ...\n");
         // validate function and library handle pointers
         if (!read_ptr && !this->m_lib_handle) {
-            std::printf ("Passei pelo hook read dlopen_library_handle ...\n");
             // open library handle, and assign the operation pointer through m_lib_handle if the
             // open was successful, or through the next operation link.
             (this->dlopen_library_handle ())
@@ -123,7 +121,6 @@ public:
 
             // in case the library handle pointer is valid, assign the operation pointer
         } else if (!read_ptr) {
-            std::printf ("Passei pelo hook dlsym ...\n");
             read_ptr = (libc_read_t) dlsym (this->m_lib_handle, "read");
         }
     }
@@ -146,8 +143,132 @@ public:
         } else if (!write_ptr) {
             write_ptr = (libc_write_t)dlsym (this->m_lib_handle, "write");
         }
-
     }
+
+    /**
+     * hook_posix_pread:
+     * @param pread_ptr
+     */
+    void hook_posix_pread (libc_pread_t& pread_ptr)
+    {
+        // validate function and library handle pointers
+        if (!pread_ptr && !this->m_lib_handle) {
+            // open library handle, and assign the operation pointer through m_lib_handle if the open
+            // was successful, or through the next operation link.
+            (this->dlopen_library_handle ())
+            ? pread_ptr = (libc_pread_t)dlsym (this->m_lib_handle, "pread")
+            : pread_ptr = (libc_pread_t)dlsym (RTLD_NEXT, "pread");
+
+            // in case the library handle pointer is valid, assign the operation pointer
+        } else if (!pread_ptr) {
+            pread_ptr = (libc_pread_t)dlsym (this->m_lib_handle, "pread");
+        }
+    }
+
+    /**
+     * hook_posix_pwrite:
+     * @param pwrite_ptr
+     */
+    void hook_posix_pwrite (libc_pwrite_t& pwrite_ptr)
+    {
+        // validate function and library handle pointers
+        if (!pwrite_ptr && !this->m_lib_handle) {
+            // open library handle, and assign the operation pointer through m_lib_handle if the open
+            // was successful, or through the next operation link.
+            (this->dlopen_library_handle ())
+            ? pwrite_ptr = (libc_pwrite_t)dlsym (this->m_lib_handle, "pwrite")
+            : pwrite_ptr = (libc_pwrite_t)dlsym (RTLD_NEXT, "pwrite");
+
+            // in case the library handle pointer is valid, assign the operation pointer
+        } else if (!pwrite_ptr) {
+            pwrite_ptr = (libc_pwrite_t)dlsym (this->m_lib_handle, "pwrite");
+        }
+    }
+
+    /**
+     * hook_posix_pread64:
+     * @param pread64_ptr
+     */
+    #if defined(__USE_LARGEFILE64)
+    void hook_posix_pread64 (libc_pread64_t& pread64_ptr)
+    {
+        // validate function and library handle pointers
+        if (!pread64_ptr && !this->m_lib_handle) {
+            // open library handle, and assign the operation pointer through m_lib_handle if the open
+            // was successful, or through the next operation link.
+            (this->dlopen_library_handle ())
+            ? pread64_ptr = (libc_pread64_t)dlsym (this->m_lib_handle, "pread64")
+            : pread64_ptr = (libc_pread64_t)dlsym (RTLD_NEXT, "pread64");
+
+            // in case the library handle pointer is valid, assign the operation pointer
+        } else if (!pread64_ptr) {
+            pread64_ptr = (libc_pread64_t)dlsym (this->m_lib_handle, "pread64");
+        }
+    }
+    #endif
+
+    /**
+     * hook_posix_pwrite64:
+     * @param pwrite64_ptr
+     */
+    #if defined(__USE_LARGEFILE64)
+    void hook_posix_pwrite64 (libc_pwrite64_t& pwrite64_ptr)
+    {
+        // validate function and library handle pointers
+        if (!pwrite64_ptr && !this->m_lib_handle) {
+            // open library handle, and assign the operation pointer through m_lib_handle if the open
+            // was successful, or through the next operation link.
+            (this->dlopen_library_handle ())
+            ? pwrite64_ptr = (libc_pwrite64_t)dlsym (this->m_lib_handle, "pwrite64")
+            : pwrite64_ptr = (libc_pwrite64_t)dlsym (RTLD_NEXT, "pwrite64");
+
+            // in case the library handle pointer is valid, assign the operation pointer
+        } else if (!pwrite64_ptr) {
+            pwrite64_ptr = (libc_pwrite64_t)dlsym (this->m_lib_handle, "pwrite64");
+        }
+    }
+    #endif
+
+    /**
+     * hook_posix_fread:
+     * @param fread_ptr
+     */
+    void hook_posix_fread (libc_fread_t& fread_ptr)
+    {
+        // validate function and library handle pointers
+        if (!fread_ptr && !this->m_lib_handle) {
+            // open library handle, and assign the operation pointer through m_lib_handle if the open
+            // was successful, or through the next operation link.
+            (this->dlopen_library_handle ())
+            ? fread_ptr = (libc_fread_t)dlsym (this->m_lib_handle, "fread")
+            : fread_ptr = (libc_fread_t)dlsym (RTLD_NEXT, "fread");
+
+            // in case the library handle pointer is valid, assign the operation pointer
+        } else if (!fread_ptr) {
+            fread_ptr = (libc_fread_t)dlsym (this->m_lib_handle, "fread");
+        }
+    }
+
+    /**
+     * hook_posix_fwrite:
+     * @param fwrite_ptr
+     */
+    void hook_posix_fwrite (libc_fwrite_t& fwrite_ptr)
+    {
+        // validate function and library handle pointers
+        if (!fwrite_ptr && !this->m_lib_handle) {
+            // open library handle, and assign the operation pointer through m_lib_handle if the open
+            // was successful, or through the next operation link.
+            (this->dlopen_library_handle ())
+            ? fwrite_ptr = (libc_fwrite_t)dlsym (this->m_lib_handle, "fwrite")
+            : fwrite_ptr = (libc_fwrite_t)dlsym (RTLD_NEXT, "fwrite");
+
+            // in case the library handle pointer is valid, assign the operation pointer
+        } else if (!fwrite_ptr) {
+            fwrite_ptr = (libc_fwrite_t)dlsym (this->m_lib_handle, "fwrite");
+        }
+    }
+
 };
 
 }

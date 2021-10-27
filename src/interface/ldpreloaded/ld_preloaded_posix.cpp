@@ -13,6 +13,7 @@ LdPreloadedPosix::LdPreloadedPosix () : m_logger_ptr { std::make_shared<Logging>
     std::printf ("LdPreloadedPosix default constructor.\n");
 }
 
+// TODO: check move operation within LdPreloadPosix, but not on PosixFileSystem
 // LdPreloadedPosix explicit constructor.
 LdPreloadedPosix::LdPreloadedPosix (std::shared_ptr<Logging> logging_ptr) :
     m_logger_ptr { logging_ptr }
@@ -158,6 +159,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_read (int fd, void* buf, size_t cou
     this->m_dlsym_hook.hook_posix_read (m_data_operations.m_read);
 
     // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX read operation
     ssize_t result = m_data_operations.m_read (fd, buf, counter);
@@ -185,6 +187,9 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_write (int fd, const void* buf, siz
     // hook POSIX write operation to m_data_operations.m_write
     this->m_dlsym_hook.hook_posix_write (m_data_operations.m_write);
 
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
+
     // perform original POSIX write operation
     ssize_t result = m_data_operations.m_write (fd, buf, counter);
 
@@ -208,28 +213,22 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_pread (int fd, void* buf, size_t co
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-pread (" + std::to_string (fd) + ")");
     }
 
-    if (m_stage_initialized.load () == false) {
-        this->initialize_stage ();
-        std::cout << this->m_stage->get_stage_info ().to_string () << "\n";
-    } else {
-        this->enforce_request (this->m_workflow_id,
-            static_cast<int> (paio::POSIX::read),
-            static_cast<int> (paio::POSIX::no_op),
-            counter);
-    }
+    // FIXME: adjust this in step 4 (integrate with PAIO - simplified)
+    // if (m_stage_initialized.load () == false) {
+    //     this->initialize_stage ();
+    //     std::cout << this->m_stage->get_stage_info ().to_string () << "\n";
+    // } else {
+    //     this->enforce_request (this->m_workflow_id,
+    //         static_cast<int> (paio::POSIX::read),
+    //         static_cast<int> (paio::POSIX::no_op),
+    //         counter);
+    // }
 
-    // validate function and library handle pointers
-    if (!m_data_operations.m_pread && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_data_operations.m_pread = (libc_pread_t)dlsym (this->m_lib_handle, "pread")
-            : m_data_operations.m_pread = (libc_pread_t)dlsym (RTLD_NEXT, "pread");
+    // hook POSIX pread operation to m_data_operations.m_pread
+    this->m_dlsym_hook.hook_posix_pread (m_data_operations.m_pread);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_data_operations.m_pread) {
-        m_data_operations.m_pread = (libc_pread_t)dlsym (this->m_lib_handle, "pread");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX pread operation
     ssize_t result = m_data_operations.m_pread (fd, buf, counter, offset);
@@ -255,18 +254,11 @@ LdPreloadedPosix::ld_preloaded_posix_pwrite (int fd, const void* buf, size_t cou
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-pwrite (" + std::to_string (fd) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_data_operations.m_pwrite && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_data_operations.m_pwrite = (libc_pwrite_t)dlsym (this->m_lib_handle, "pwrite")
-            : m_data_operations.m_pwrite = (libc_pwrite_t)dlsym (RTLD_NEXT, "pwrite");
+    // hook POSIX pwrite operation to m_data_operations.m_pwrite
+    this->m_dlsym_hook.hook_posix_pwrite (m_data_operations.m_pwrite);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_data_operations.m_pwrite) {
-        m_data_operations.m_pwrite = (libc_pwrite_t)dlsym (this->m_lib_handle, "pwrite");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX pwrite operation
     ssize_t result = m_data_operations.m_pwrite (fd, buf, counter, offset);
@@ -293,18 +285,11 @@ LdPreloadedPosix::ld_preloaded_posix_pread64 (int fd, void* buf, size_t counter,
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-pread64 (" + std::to_string (fd) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_data_operations.m_pread64 && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_data_operations.m_pread64 = (libc_pread64_t)dlsym (this->m_lib_handle, "pread64")
-            : m_data_operations.m_pread64 = (libc_pread64_t)dlsym (RTLD_NEXT, "pread64");
+    // hook POSIX pread64 operation to m_data_operations.m_pread64
+    this->m_dlsym_hook.hook_posix_pread64 (m_data_operations.m_pread64);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_data_operations.m_pread64) {
-        m_data_operations.m_pread64 = (libc_pread64_t)dlsym (this->m_lib_handle, "pread64");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX pread64 operation
     ssize_t result = m_data_operations.m_pread64 (fd, buf, counter, offset);
@@ -334,18 +319,11 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_pwrite64 (int fd,
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-pwrite64 (" + std::to_string (fd) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_data_operations.m_pwrite64 && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_data_operations.m_pwrite64 = (libc_pwrite64_t)dlsym (this->m_lib_handle, "pwrite64")
-            : m_data_operations.m_pwrite64 = (libc_pwrite64_t)dlsym (RTLD_NEXT, "pwrite64");
+    // hook POSIX pwrite64 operation to m_data_operations.m_pwrite64
+    this->m_dlsym_hook.hook_posix_pwrite64 (m_data_operations.m_pwrite64);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_data_operations.m_pwrite64) {
-        m_data_operations.m_pwrite64 = (libc_pwrite64_t)dlsym (this->m_lib_handle, "pwrite64");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX pwrite64 operation
     ssize_t result = m_data_operations.m_pwrite64 (fd, buf, counter, offset);
@@ -374,21 +352,14 @@ LdPreloadedPosix::ld_preloaded_posix_fread (void* ptr, size_t size, size_t nmemb
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-fpread");
     }
 
-    // validate function and library handle pointers
-    if (!m_data_operations.m_fread && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_data_operations.m_fread = (libc_fread_t)dlsym (this->m_lib_handle, "fread")
-            : m_data_operations.m_fread = (libc_fread_t)dlsym (RTLD_NEXT, "fread");
+    // hook POSIX fread operation to m_data_operations.m_fread
+    this->m_dlsym_hook.hook_posix_fread (m_data_operations.m_fread);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_data_operations.m_fread) {
-        m_data_operations.m_fread = (libc_fread_t)dlsym (this->m_lib_handle, "fread");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX fread operation
-    ssize_t result = m_data_operations.m_fread (ptr, size, nmemb, stream);
+    size_t result = m_data_operations.m_fread (ptr, size, nmemb, stream);
 
     // update statistic entry
     if (this->m_collect) {
@@ -413,21 +384,14 @@ size_t LdPreloadedPosix::ld_preloaded_posix_fwrite (const void* ptr,
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-fwrite");
     }
 
-    // validate function and library handle pointers
-    if (!m_data_operations.m_fwrite && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_data_operations.m_fwrite = (libc_fwrite_t)dlsym (this->m_lib_handle, "fwrite")
-            : m_data_operations.m_fwrite = (libc_fwrite_t)dlsym (RTLD_NEXT, "fwrite");
+    // hook POSIX fwrite operation to m_data_operations.m_fwrite
+    this->m_dlsym_hook.hook_posix_fwrite (m_data_operations.m_fwrite);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_data_operations.m_fwrite) {
-        m_data_operations.m_fwrite = (libc_fwrite_t)dlsym (this->m_lib_handle, "fwrite");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX fwrite operation
-    ssize_t result = m_data_operations.m_fwrite (ptr, size, nmemb, stream);
+    size_t result = m_data_operations.m_fwrite (ptr, size, nmemb, stream);
 
     // update statistic entry
     if (this->m_collect) {
