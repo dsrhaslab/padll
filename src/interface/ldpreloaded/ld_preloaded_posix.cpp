@@ -1875,19 +1875,11 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_freopen (const char* pathname,
             "ld_preloaded_posix-freopen (" + std::string (pathname) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_freopen && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_freopen
-            = (libc_freopen_t)dlsym (this->m_lib_handle, "freopen")
-            : m_metadata_operations.m_freopen = (libc_freopen_t)dlsym (RTLD_NEXT, "freopen");
+    // hook POSIX freopen operation to m_metadata_operations.m_freopen
+    this->m_dlsym_hook.hook_posix_freopen (m_metadata_operations.m_freopen);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_freopen) {
-        m_metadata_operations.m_freopen = (libc_freopen_t)dlsym (this->m_lib_handle, "freopen");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX freopen operation
     FILE* result = m_metadata_operations.m_freopen (pathname, mode, stream);
@@ -1920,20 +1912,11 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_freopen64 (const char* pathname,
             "ld_preloaded_posix-freopen64 (" + std::string (pathname) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_freopen64 && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_freopen64
-            = (libc_freopen64_t)dlsym (this->m_lib_handle, "freopen64")
-            : m_metadata_operations.m_freopen64 = (libc_freopen64_t)dlsym (RTLD_NEXT, "freopen64");
+    // hook POSIX freopen64 operation to m_metadata_operations.m_freopen64
+    this->m_dlsym_hook.hook_posix_freopen64 (m_metadata_operations.m_freopen64);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_freopen64) {
-        m_metadata_operations.m_freopen64
-            = (libc_freopen64_t)dlsym (this->m_lib_handle, "freopen64");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX freopen64 operation
     FILE* result = m_metadata_operations.m_freopen64 (pathname, mode, stream);
@@ -1963,18 +1946,11 @@ int LdPreloadedPosix::ld_preloaded_posix_fclose (FILE* stream)
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-fclose");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_fclose && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_fclose = (libc_fclose_t)dlsym (this->m_lib_handle, "fclose")
-            : m_metadata_operations.m_fclose = (libc_fclose_t)dlsym (RTLD_NEXT, "fclose");
+    // hook POSIX fclose operation to m_metadata_operations.m_fclose
+    this->m_dlsym_hook.hook_posix_fclose (m_metadata_operations.m_fclose);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_fclose) {
-        m_metadata_operations.m_fclose = (libc_fclose_t)dlsym (this->m_lib_handle, "fclose");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX fclose operation
     int result = m_metadata_operations.m_fclose (stream);
@@ -2004,18 +1980,11 @@ int LdPreloadedPosix::ld_preloaded_posix_fflush (FILE* stream)
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-fflush");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_fflush && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_fflush = (libc_fflush_t)dlsym (this->m_lib_handle, "fflush")
-            : m_metadata_operations.m_fflush = (libc_fflush_t)dlsym (RTLD_NEXT, "fflush");
+    // hook POSIX fflush operation to m_metadata_operations.m_fflush
+    this->m_dlsym_hook.hook_posix_fflush (m_metadata_operations.m_fflush);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_fflush) {
-        m_metadata_operations.m_fflush = (libc_fflush_t)dlsym (this->m_lib_handle, "fflush");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX fflush operation
     int result = m_metadata_operations.m_fflush (stream);
@@ -2045,18 +2014,11 @@ int LdPreloadedPosix::ld_preloaded_posix_access (const char* path, int mode)
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-access");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_access && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_access = (libc_access_t)dlsym (this->m_lib_handle, "access")
-            : m_metadata_operations.m_access = (libc_access_t)dlsym (RTLD_NEXT, "access");
+    // hook POSIX access operation to m_metadata_operations.m_access
+    this->m_dlsym_hook.hook_posix_access (m_metadata_operations.m_access);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_access) {
-        m_metadata_operations.m_access = (libc_access_t)dlsym (this->m_lib_handle, "access");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX access operation
     int result = m_metadata_operations.m_access (path, mode);
@@ -2089,20 +2051,11 @@ int LdPreloadedPosix::ld_preloaded_posix_faccessat (int dirfd,
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-faccessat");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_faccessat && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_faccessat
-            = (libc_faccessat_t)dlsym (this->m_lib_handle, "faccessat")
-            : m_metadata_operations.m_faccessat = (libc_faccessat_t)dlsym (RTLD_NEXT, "faccessat");
+    // hook POSIX faccessat operation to m_metadata_operations.m_faccessat
+    this->m_dlsym_hook.hook_posix_faccessat (m_metadata_operations.m_faccessat);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_faccessat) {
-        m_metadata_operations.m_faccessat
-            = (libc_faccessat_t)dlsym (this->m_lib_handle, "faccessat");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX faccessat operation
     int result = m_metadata_operations.m_faccessat (dirfd, path, mode, flags);
@@ -2132,18 +2085,11 @@ off_t LdPreloadedPosix::ld_preloaded_posix_lseek (int fd, off_t offset, int when
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-lseek");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_lseek && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_lseek = (libc_lseek_t)dlsym (this->m_lib_handle, "lseek")
-            : m_metadata_operations.m_lseek = (libc_lseek_t)dlsym (RTLD_NEXT, "lseek");
+    // hook POSIX lseek operation to m_metadata_operations.m_lseek
+    this->m_dlsym_hook.hook_posix_lseek (m_metadata_operations.m_lseek);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_lseek) {
-        m_metadata_operations.m_lseek = (libc_lseek_t)dlsym (this->m_lib_handle, "lseek");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX lseek operation
     off_t result = m_metadata_operations.m_lseek (fd, offset, whence);
@@ -2173,18 +2119,11 @@ int LdPreloadedPosix::ld_preloaded_posix_fseek (FILE* stream, long offset, int w
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-fseek");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_fseek && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_fseek = (libc_fseek_t)dlsym (this->m_lib_handle, "fseek")
-            : m_metadata_operations.m_fseek = (libc_fseek_t)dlsym (RTLD_NEXT, "fseek");
+    // hook POSIX fseek operation to m_metadata_operations.m_fseek
+    this->m_dlsym_hook.hook_posix_fseek (m_metadata_operations.m_fseek);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_fseek) {
-        m_metadata_operations.m_fseek = (libc_fseek_t)dlsym (this->m_lib_handle, "fseek");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX fseek operation
     int result = m_metadata_operations.m_fseek (stream, offset, whence);
@@ -2214,18 +2153,11 @@ long LdPreloadedPosix::ld_preloaded_posix_ftell (FILE* stream)
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-ftell");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_ftell && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_ftell = (libc_ftell_t)dlsym (this->m_lib_handle, "ftell")
-            : m_metadata_operations.m_ftell = (libc_ftell_t)dlsym (RTLD_NEXT, "ftell");
+    // hook POSIX ftell operation to m_metadata_operations.m_ftell
+    this->m_dlsym_hook.hook_posix_ftell (m_metadata_operations.m_ftell);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_ftell) {
-        m_metadata_operations.m_ftell = (libc_ftell_t)dlsym (this->m_lib_handle, "ftell");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX ftell operation
     long result = m_metadata_operations.m_ftell (stream);
@@ -2255,19 +2187,11 @@ off_t LdPreloadedPosix::ld_preloaded_posix_lseek64 (int fd, off_t offset, int wh
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-lseek64");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_lseek64 && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_lseek64
-            = (libc_lseek64_t)dlsym (this->m_lib_handle, "lseek64")
-            : m_metadata_operations.m_lseek64 = (libc_lseek64_t)dlsym (RTLD_NEXT, "lseek64");
+    // hook POSIX lseek64 operation to m_metadata_operations.m_lseek64
+    this->m_dlsym_hook.hook_posix_lseek64 (m_metadata_operations.m_lseek64);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_lseek64) {
-        m_metadata_operations.m_lseek64 = (libc_lseek64_t)dlsym (this->m_lib_handle, "lseek64");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX lseek64 operation
     off_t result = m_metadata_operations.m_lseek64 (fd, offset, whence);
@@ -2297,19 +2221,11 @@ int LdPreloadedPosix::ld_preloaded_posix_fseeko64 (FILE* stream, off_t offset, i
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-fseeko64");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_fseeko64 && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_fseeko64
-            = (libc_fseeko64_t)dlsym (this->m_lib_handle, "fseeko64")
-            : m_metadata_operations.m_fseeko64 = (libc_fseeko64_t)dlsym (RTLD_NEXT, "fseeko64");
+    // hook POSIX fseeko64 operation to m_metadata_operations.m_fseeko64
+    this->m_dlsym_hook.hook_posix_fseeko64 (m_metadata_operations.m_fseeko64);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_fseeko64) {
-        m_metadata_operations.m_fseeko64 = (libc_fseeko64_t)dlsym (this->m_lib_handle, "fseeko64");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX fseeko64 operation
     int result = m_metadata_operations.m_fseeko64 (stream, offset, whence);
@@ -2339,19 +2255,11 @@ off_t LdPreloadedPosix::ld_preloaded_posix_ftello64 (FILE* stream)
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-ftello64");
     }
 
-    // validate function and library handle pointers
-    if (!m_metadata_operations.m_ftello64 && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_metadata_operations.m_ftello64
-            = (libc_ftello64_t)dlsym (this->m_lib_handle, "ftello64")
-            : m_metadata_operations.m_ftello64 = (libc_ftello64_t)dlsym (RTLD_NEXT, "ftello64");
+    // hook POSIX ftello64 operation to m_metadata_operations.m_ftello64
+    this->m_dlsym_hook.hook_posix_ftello64 (m_metadata_operations.m_ftello64);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_metadata_operations.m_ftello64) {
-        m_metadata_operations.m_ftello64 = (libc_ftello64_t)dlsym (this->m_lib_handle, "ftello64");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX ftello64 operation
     long result = m_metadata_operations.m_ftello64 (stream);
@@ -2381,18 +2289,11 @@ int LdPreloadedPosix::ld_preloaded_posix_mkdir (const char* path, mode_t mode)
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-mkdir (" + std::string (path) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_directory_operations.m_mkdir && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_directory_operations.m_mkdir = (libc_mkdir_t)dlsym (this->m_lib_handle, "mkdir")
-            : m_directory_operations.m_mkdir = (libc_mkdir_t)dlsym (RTLD_NEXT, "mkdir");
+    // hook POSIX mkdir operation to m_directory_operations.m_mkdir
+    this->m_dlsym_hook.hook_posix_mkdir (m_directory_operations.m_mkdir);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_directory_operations.m_mkdir) {
-        m_directory_operations.m_mkdir = (libc_mkdir_t)dlsym (this->m_lib_handle, "mkdir");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX mkdir operation
     int result = m_directory_operations.m_mkdir (path, mode);
@@ -2418,19 +2319,11 @@ int LdPreloadedPosix::ld_preloaded_posix_mkdirat (int dirfd, const char* path, m
             + ", " + std::string (path) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_directory_operations.m_mkdirat && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_directory_operations.m_mkdirat
-            = (libc_mkdirat_t)dlsym (this->m_lib_handle, "mkdirat")
-            : m_directory_operations.m_mkdirat = (libc_mkdirat_t)dlsym (RTLD_NEXT, "mkdirat");
+    // hook POSIX mkdirat operation to m_directory_operations.m_mkdirat
+    this->m_dlsym_hook.hook_posix_mkdirat (m_directory_operations.m_mkdirat);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_directory_operations.m_mkdirat) {
-        m_directory_operations.m_mkdirat = (libc_mkdirat_t)dlsym (this->m_lib_handle, "mkdirat");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX mkdirat operation
     int result = m_directory_operations.m_mkdirat (dirfd, path, mode);
@@ -2458,19 +2351,11 @@ struct dirent* LdPreloadedPosix::ld_preloaded_posix_readdir (DIR* dirp)
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-readdir");
     }
 
-    // validate function and library handle pointers
-    if (!m_directory_operations.m_readdir && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_directory_operations.m_readdir
-            = (libc_readdir_t)dlsym (this->m_lib_handle, "readdir")
-            : m_directory_operations.m_readdir = (libc_readdir_t)dlsym (RTLD_NEXT, "readdir");
+    // hook POSIX readdir operation to m_directory_operations.m_readdir
+    this->m_dlsym_hook.hook_posix_readdir (m_directory_operations.m_readdir);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_directory_operations.m_readdir) {
-        m_directory_operations.m_readdir = (libc_readdir_t)dlsym (this->m_lib_handle, "readdir");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX readdir operation
     struct dirent* entry = m_directory_operations.m_readdir (dirp);
@@ -2498,20 +2383,11 @@ struct dirent64* LdPreloadedPosix::ld_preloaded_posix_readdir64 (DIR* dirp)
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-readdir64");
     }
 
-    // validate function and library handle pointers
-    if (!m_directory_operations.m_readdir64 && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_directory_operations.m_readdir64
-            = (libc_readdir64_t)dlsym (this->m_lib_handle, "readdir64")
-            : m_directory_operations.m_readdir64 = (libc_readdir64_t)dlsym (RTLD_NEXT, "readdir64");
+    // hook POSIX readdir64 operation to m_directory_operations.m_readdir64
+    this->m_dlsym_hook.hook_posix_readdir64 (m_directory_operations.m_readdir64);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_directory_operations.m_readdir64) {
-        m_directory_operations.m_readdir64
-            = (libc_readdir64_t)dlsym (this->m_lib_handle, "readdir64");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX readdir64 operation
     struct dirent64* entry = m_directory_operations.m_readdir64 (dirp);
@@ -2541,19 +2417,11 @@ DIR* LdPreloadedPosix::ld_preloaded_posix_opendir (const char* path)
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-opendir (" + std::string (path) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_directory_operations.m_opendir && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_directory_operations.m_opendir
-            = (libc_opendir_t)dlsym (this->m_lib_handle, "opendir")
-            : m_directory_operations.m_opendir = (libc_opendir_t)dlsym (RTLD_NEXT, "opendir");
+    // hook POSIX opendir operation to m_directory_operations.m_opendir
+    this->m_dlsym_hook.hook_posix_opendir (m_directory_operations.m_opendir);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_directory_operations.m_opendir) {
-        m_directory_operations.m_opendir = (libc_opendir_t)dlsym (this->m_lib_handle, "opendir");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX opendir operation
     DIR* folder = m_directory_operations.m_opendir (path);
@@ -2582,20 +2450,11 @@ DIR* LdPreloadedPosix::ld_preloaded_posix_fdopendir (int fd)
             "ld_preloaded_posix-fdopendir (" + std::to_string (fd) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_directory_operations.m_fdopendir && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_directory_operations.m_fdopendir
-            = (libc_fdopendir_t)dlsym (this->m_lib_handle, "fdopendir")
-            : m_directory_operations.m_fdopendir = (libc_fdopendir_t)dlsym (RTLD_NEXT, "fdopendir");
+    // hook POSIX fdopendir operation to m_directory_operations.m_fdopendir
+    this->m_dlsym_hook.hook_posix_fdopendir (m_directory_operations.m_fdopendir);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_directory_operations.m_fdopendir) {
-        m_directory_operations.m_fdopendir
-            = (libc_fdopendir_t)dlsym (this->m_lib_handle, "fdopendir");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX fopendir operation
     DIR* folder = m_directory_operations.m_fdopendir (fd);
@@ -2625,19 +2484,11 @@ int LdPreloadedPosix::ld_preloaded_posix_closedir (DIR* dirp)
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-closedir");
     }
 
-    // validate function and library handle pointers
-    if (!m_directory_operations.m_closedir && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_directory_operations.m_closedir
-            = (libc_closedir_t)dlsym (this->m_lib_handle, "closedir")
-            : m_directory_operations.m_closedir = (libc_closedir_t)dlsym (RTLD_NEXT, "closedir");
+    // hook POSIX closedir operation to m_directory_operations.m_closedir
+    this->m_dlsym_hook.hook_posix_closedir (m_directory_operations.m_closedir);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_directory_operations.m_closedir) {
-        m_directory_operations.m_closedir = (libc_closedir_t)dlsym (this->m_lib_handle, "closedir");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX closedir operation
     int result = m_directory_operations.m_closedir (dirp);
@@ -2665,18 +2516,11 @@ int LdPreloadedPosix::ld_preloaded_posix_rmdir (const char* path)
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-rmdir");
     }
 
-    // validate function and library handle pointers
-    if (!m_directory_operations.m_rmdir && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_directory_operations.m_rmdir = (libc_rmdir_t)dlsym (this->m_lib_handle, "rmdir")
-            : m_directory_operations.m_rmdir = (libc_rmdir_t)dlsym (RTLD_NEXT, "rmdir");
+    // hook POSIX rmdir operation to m_directory_operations.m_rmdir
+    this->m_dlsym_hook.hook_posix_rmdir (m_directory_operations.m_rmdir);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_directory_operations.m_rmdir) {
-        m_directory_operations.m_rmdir = (libc_rmdir_t)dlsym (this->m_lib_handle, "rmdir");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX rmdir operation
     int result = m_directory_operations.m_rmdir (path);
@@ -2701,18 +2545,11 @@ int LdPreloadedPosix::ld_preloaded_posix_dirfd (DIR* dirp)
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-dirfd");
     }
 
-    // validate function and library handle pointers
-    if (!m_directory_operations.m_dirfd && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_directory_operations.m_dirfd = (libc_dirfd_t)dlsym (this->m_lib_handle, "dirfd")
-            : m_directory_operations.m_dirfd = (libc_dirfd_t)dlsym (RTLD_NEXT, "dirfd");
+    // hook POSIX dirfd operation to m_directory_operations.m_dirfd
+    this->m_dlsym_hook.hook_posix_dirfd (m_directory_operations.m_dirfd);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_directory_operations.m_dirfd) {
-        m_directory_operations.m_dirfd = (libc_dirfd_t)dlsym (this->m_lib_handle, "dirfd");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX dirfd operation
     int result = m_directory_operations.m_dirfd (dirp);
