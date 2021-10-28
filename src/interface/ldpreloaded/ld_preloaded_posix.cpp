@@ -2578,7 +2578,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_getxattr (const char* path,
             "ld_preloaded_posix-getxattr (" + std::string (path) + ", " + std::string (name) + ")");
     }
 
-    // hook POSIX getxattr operation to m_directory_operations.m_getxattr
+    // hook POSIX getxattr operation to m_extattr_operations.m_getxattr
     this->m_dlsym_hook.hook_posix_getxattr (m_extattr_operations.m_getxattr);
 
     // TODO: add here call to the paio-stage
@@ -2615,7 +2615,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_lgetxattr (const char* path,
             + std::string (name) + ")");
     }
 
-    // hook POSIX lgetxattr operation to m_directory_operations.m_lgetxattr
+    // hook POSIX lgetxattr operation to m_extattr_operations.m_lgetxattr
     this->m_dlsym_hook.hook_posix_lgetxattr (m_extattr_operations.m_lgetxattr);
 
     // TODO: add here call to the paio-stage
@@ -2650,7 +2650,7 @@ LdPreloadedPosix::ld_preloaded_posix_fgetxattr (int fd, const char* name, void* 
             + std::string (name) + ")");
     }
 
-    // hook POSIX fgetxattr operation to m_directory_operations.m_fgetxattr
+    // hook POSIX fgetxattr operation to m_extattr_operations.m_fgetxattr
     this->m_dlsym_hook.hook_posix_fgetxattr (m_extattr_operations.m_fgetxattr);
 
     // TODO: add here call to the paio-stage
@@ -2688,7 +2688,7 @@ int LdPreloadedPosix::ld_preloaded_posix_setxattr (const char* path,
             "ld_preloaded_posix-setxattr (" + std::string (path) + ", " + std::string (name) + ")");
     }
 
-    // hook POSIX setxattr operation to m_directory_operations.m_setxattr
+    // hook POSIX setxattr operation to m_extattr_operations.m_setxattr
     this->m_dlsym_hook.hook_posix_setxattr (m_extattr_operations.m_setxattr);
 
     // TODO: add here call to the paio-stage
@@ -2726,7 +2726,7 @@ int LdPreloadedPosix::ld_preloaded_posix_lsetxattr (const char* path,
             + std::string (name) + ")");
     }
 
-    // hook POSIX lsetxattr operation to m_directory_operations.m_lsetxattr
+    // hook POSIX lsetxattr operation to m_extattr_operations.m_lsetxattr
     this->m_dlsym_hook.hook_posix_lsetxattr (m_extattr_operations.m_lsetxattr);
 
     // TODO: add here call to the paio-stage
@@ -2764,7 +2764,7 @@ int LdPreloadedPosix::ld_preloaded_posix_fsetxattr (int fd,
             + std::string (name) + ")");
     }
 
-    // hook POSIX fsetxattr operation to m_directory_operations.m_fsetxattr
+    // hook POSIX fsetxattr operation to m_extattr_operations.m_fsetxattr
     this->m_dlsym_hook.hook_posix_fsetxattr (m_extattr_operations.m_fsetxattr);
 
     // TODO: add here call to the paio-stage
@@ -2797,7 +2797,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_listxattr (const char* path, char* 
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-listxattr (" + std::string (path) + ")");
     }
 
-    // hook POSIX listxattr operation to m_directory_operations.m_listxattr
+    // hook POSIX listxattr operation to m_extattr_operations.m_listxattr
     this->m_dlsym_hook.hook_posix_listxattr (m_extattr_operations.m_listxattr);
 
     // TODO: add here call to the paio-stage
@@ -2831,7 +2831,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_llistxattr (const char* path, char*
             "ld_preloaded_posix-llistxattr (" + std::string (path) + ")");
     }
 
-    // hook POSIX llistxattr operation to m_directory_operations.m_llistxattr
+    // hook POSIX llistxattr operation to m_extattr_operations.m_llistxattr
     this->m_dlsym_hook.hook_posix_llistxattr (m_extattr_operations.m_llistxattr);
 
     // TODO: add here call to the paio-stage
@@ -2868,7 +2868,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_flistxattr (int fd, char* list, siz
             "ld_preloaded_posix-flistxattr (" + std::to_string (fd) + ")");
     }
 
-    // hook POSIX flistxattr operation to m_directory_operations.m_flistxattr
+    // hook POSIX flistxattr operation to m_extattr_operations.m_flistxattr
     this->m_dlsym_hook.hook_posix_flistxattr (m_extattr_operations.m_flistxattr);
 
     // TODO: add here call to the paio-stage
@@ -2905,7 +2905,7 @@ int LdPreloadedPosix::ld_preloaded_posix_removexattr (const char* path, const ch
             + ", " + std::string (name) + ")");
     }
 
-    // hook POSIX removexattr operation to m_directory_operations.m_removexattr
+    // hook POSIX removexattr operation to m_extattr_operations.m_removexattr
     this->m_dlsym_hook.hook_posix_removexattr (m_extattr_operations.m_removexattr);
 
     // TODO: add here call to the paio-stage
@@ -2942,7 +2942,7 @@ int LdPreloadedPosix::ld_preloaded_posix_lremovexattr (const char* path, const c
             + ", " + std::string (name) + ")");
     }
 
-    // hook POSIX lremovexattr operation to m_directory_operations.m_lremovexattr
+    // hook POSIX lremovexattr operation to m_extattr_operations.m_lremovexattr
     this->m_dlsym_hook.hook_posix_lremovexattr (m_extattr_operations.m_lremovexattr);
 
     // TODO: add here call to the paio-stage
@@ -2979,7 +2979,7 @@ int LdPreloadedPosix::ld_preloaded_posix_fremovexattr (int fd, const char* name)
             + ", " + std::string (name) + ")");
     }
 
-    // hook POSIX fremovexattr operation to m_directory_operations.m_fremovexattr
+    // hook POSIX fremovexattr operation to m_extattr_operations.m_fremovexattr
     this->m_dlsym_hook.hook_posix_fremovexattr (m_extattr_operations.m_fremovexattr);
 
     // TODO: add here call to the paio-stage
@@ -3015,18 +3015,11 @@ int LdPreloadedPosix::ld_preloaded_posix_chmod (const char* path, mode_t mode)
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-chmod (" + std::string (path) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_filemodes_operations.m_chmod && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_filemodes_operations.m_chmod = (libc_chmod_t)dlsym (this->m_lib_handle, "chmod")
-            : m_filemodes_operations.m_chmod = (libc_chmod_t)dlsym (RTLD_NEXT, "chmod");
+    // hook POSIX chmod operation to m_filemodes_operations.m_chmod
+    this->m_dlsym_hook.hook_posix_chmod (m_filemodes_operations.m_chmod);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_filemodes_operations.m_chmod) {
-        m_filemodes_operations.m_chmod = (libc_chmod_t)dlsym (this->m_lib_handle, "chmod");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX chmod operation
     int result = m_filemodes_operations.m_chmod (path, mode);
@@ -3056,18 +3049,11 @@ int LdPreloadedPosix::ld_preloaded_posix_fchmod (int fd, mode_t mode)
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-fchmod (" + std::to_string (fd) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_filemodes_operations.m_fchmod && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_filemodes_operations.m_fchmod = (libc_fchmod_t)dlsym (this->m_lib_handle, "fchmod")
-            : m_filemodes_operations.m_fchmod = (libc_fchmod_t)dlsym (RTLD_NEXT, "fchmod");
+    // hook POSIX fchmod operation to m_filemodes_operations.m_fchmod
+    this->m_dlsym_hook.hook_posix_fchmod (m_filemodes_operations.m_fchmod);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_filemodes_operations.m_fchmod) {
-        m_filemodes_operations.m_fchmod = (libc_fchmod_t)dlsym (this->m_lib_handle, "fchmod");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX fchmod operation
     int result = m_filemodes_operations.m_fchmod (fd, mode);
@@ -3101,19 +3087,11 @@ int LdPreloadedPosix::ld_preloaded_posix_fchmodat (int dirfd,
             + ", " + std::string (path) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_filemodes_operations.m_fchmodat && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_filemodes_operations.m_fchmodat
-            = (libc_fchmodat_t)dlsym (this->m_lib_handle, "fchmodat")
-            : m_filemodes_operations.m_fchmodat = (libc_fchmodat_t)dlsym (RTLD_NEXT, "fchmodat");
+    // hook POSIX fchmodat operation to m_filemodes_operations.m_fchmodat
+    this->m_dlsym_hook.hook_posix_fchmodat (m_filemodes_operations.m_fchmodat);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_filemodes_operations.m_fchmodat) {
-        m_filemodes_operations.m_fchmodat = (libc_fchmodat_t)dlsym (this->m_lib_handle, "fchmodat");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX fchmodat operation
     int result = m_filemodes_operations.m_fchmodat (dirfd, path, mode, flags);
@@ -3143,18 +3121,11 @@ int LdPreloadedPosix::ld_preloaded_posix_chown (const char* pathname, uid_t owne
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-chown (" + std::string (pathname) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_filemodes_operations.m_chown && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_filemodes_operations.m_chown = (libc_chown_t)dlsym (this->m_lib_handle, "chown")
-            : m_filemodes_operations.m_chown = (libc_chown_t)dlsym (RTLD_NEXT, "chown");
+    // hook POSIX chown operation to m_filemodes_operations.m_chown
+    this->m_dlsym_hook.hook_posix_chown (m_filemodes_operations.m_chown);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_filemodes_operations.m_chown) {
-        m_filemodes_operations.m_chown = (libc_chown_t)dlsym (this->m_lib_handle, "chown");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX chown operation
     int result = m_filemodes_operations.m_chown (pathname, owner, group);
@@ -3185,18 +3156,11 @@ int LdPreloadedPosix::ld_preloaded_posix_lchown (const char* pathname, uid_t own
             "ld_preloaded_posix-lchown (" + std::string (pathname) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_filemodes_operations.m_lchown && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_filemodes_operations.m_lchown = (libc_chown_t)dlsym (this->m_lib_handle, "lchown")
-            : m_filemodes_operations.m_lchown = (libc_chown_t)dlsym (RTLD_NEXT, "lchown");
+    // hook POSIX lchown operation to m_filemodes_operations.m_lchown
+    this->m_dlsym_hook.hook_posix_lchown (m_filemodes_operations.m_lchown);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_filemodes_operations.m_lchown) {
-        m_filemodes_operations.m_lchown = (libc_chown_t)dlsym (this->m_lib_handle, "lchown");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX lchown operation
     int result = m_filemodes_operations.m_lchown (pathname, owner, group);
@@ -3226,18 +3190,11 @@ int LdPreloadedPosix::ld_preloaded_posix_fchown (int fd, uid_t owner, gid_t grou
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-fchown (" + std::to_string (fd) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_filemodes_operations.m_fchown && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_filemodes_operations.m_fchown = (libc_fchown_t)dlsym (this->m_lib_handle, "fchown")
-            : m_filemodes_operations.m_fchown = (libc_fchown_t)dlsym (RTLD_NEXT, "fchown");
+    // hook POSIX fchown operation to m_filemodes_operations.m_fchown
+    this->m_dlsym_hook.hook_posix_fchown (m_filemodes_operations.m_fchown);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_filemodes_operations.m_fchown) {
-        m_filemodes_operations.m_fchown = (libc_fchown_t)dlsym (this->m_lib_handle, "fchown");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX fchown operation
     int result = m_filemodes_operations.m_fchown (fd, owner, group);
@@ -3272,19 +3229,11 @@ int LdPreloadedPosix::ld_preloaded_posix_fchownat (int dirfd,
             + ", " + std::string (pathname) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_filemodes_operations.m_fchownat && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_filemodes_operations.m_fchownat
-            = (libc_fchownat_t)dlsym (this->m_lib_handle, "fchownat")
-            : m_filemodes_operations.m_fchownat = (libc_fchownat_t)dlsym (RTLD_NEXT, "fchownat");
+    // hook POSIX fchownat operation to m_filemodes_operations.m_fchownat
+    this->m_dlsym_hook.hook_posix_fchownat (m_filemodes_operations.m_fchownat);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_filemodes_operations.m_fchownat) {
-        m_filemodes_operations.m_fchownat = (libc_fchownat_t)dlsym (this->m_lib_handle, "fchownat");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX fchownat operation
     int result = m_filemodes_operations.m_fchownat (dirfd, pathname, owner, group, flags);

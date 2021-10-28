@@ -1538,11 +1538,11 @@ public:
     {
         // validate function and library handle pointers
         if (!getxattr_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the open
-            // was successful, or through the next operation link.
+            // open library handle, and assign the operation pointer through m_lib_handle if the
+            // open was successful, or through the next operation link.
             (this->dlopen_library_handle ())
-            ? getxattr_ptr = (libc_getxattr_t)dlsym (this->m_lib_handle, "getxattr")
-            : getxattr_ptr = (libc_getxattr_t)dlsym (RTLD_NEXT, "getxattr");
+                ? getxattr_ptr = (libc_getxattr_t)dlsym (this->m_lib_handle, "getxattr")
+                : getxattr_ptr = (libc_getxattr_t)dlsym (RTLD_NEXT, "getxattr");
 
             // in case the library handle pointer is valid, assign the operation pointer
         } else if (!getxattr_ptr) {
@@ -1558,11 +1558,11 @@ public:
     {
         // validate function and library handle pointers
         if (!lgetxattr_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the open
-            // was successful, or through the next operation link.
+            // open library handle, and assign the operation pointer through m_lib_handle if the
+            // open was successful, or through the next operation link.
             (this->dlopen_library_handle ())
-            ? lgetxattr_ptr = (libc_lgetxattr_t)dlsym (this->m_lib_handle, "lgetxattr")
-            : lgetxattr_ptr = (libc_lgetxattr_t)dlsym (RTLD_NEXT, "lgetxattr");
+                ? lgetxattr_ptr = (libc_lgetxattr_t)dlsym (this->m_lib_handle, "lgetxattr")
+                : lgetxattr_ptr = (libc_lgetxattr_t)dlsym (RTLD_NEXT, "lgetxattr");
 
             // in case the library handle pointer is valid, assign the operation pointer
         } else if (!lgetxattr_ptr) {
@@ -1578,11 +1578,11 @@ public:
     {
         // validate function and library handle pointers
         if (!fgetxattr_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the open
-            // was successful, or through the next operation link.
+            // open library handle, and assign the operation pointer through m_lib_handle if the
+            // open was successful, or through the next operation link.
             (this->dlopen_library_handle ())
-            ? fgetxattr_ptr = (libc_fgetxattr_t)dlsym (this->m_lib_handle, "fgetxattr")
-            : fgetxattr_ptr = (libc_fgetxattr_t)dlsym (RTLD_NEXT, "fgetxattr");
+                ? fgetxattr_ptr = (libc_fgetxattr_t)dlsym (this->m_lib_handle, "fgetxattr")
+                : fgetxattr_ptr = (libc_fgetxattr_t)dlsym (RTLD_NEXT, "fgetxattr");
 
             // in case the library handle pointer is valid, assign the operation pointer
         } else if (!fgetxattr_ptr) {
@@ -1598,11 +1598,11 @@ public:
     {
         // validate function and library handle pointers
         if (!setxattr_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the open
-            // was successful, or through the next operation link.
+            // open library handle, and assign the operation pointer through m_lib_handle if the
+            // open was successful, or through the next operation link.
             (this->dlopen_library_handle ())
-            ? setxattr_ptr = (libc_setxattr_t)dlsym (this->m_lib_handle, "setxattr")
-            : setxattr_ptr = (libc_setxattr_t)dlsym (RTLD_NEXT, "setxattr");
+                ? setxattr_ptr = (libc_setxattr_t)dlsym (this->m_lib_handle, "setxattr")
+                : setxattr_ptr = (libc_setxattr_t)dlsym (RTLD_NEXT, "setxattr");
 
             // in case the library handle pointer is valid, assign the operation pointer
         } else if (!setxattr_ptr) {
@@ -1618,11 +1618,11 @@ public:
     {
         // validate function and library handle pointers
         if (!lsetxattr_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the open
-            // was successful, or through the next operation link.
+            // open library handle, and assign the operation pointer through m_lib_handle if the
+            // open was successful, or through the next operation link.
             (this->dlopen_library_handle ())
-            ? lsetxattr_ptr = (libc_lsetxattr_t)dlsym (this->m_lib_handle, "lsetxattr")
-            : lsetxattr_ptr = (libc_lsetxattr_t)dlsym (RTLD_NEXT, "lsetxattr");
+                ? lsetxattr_ptr = (libc_lsetxattr_t)dlsym (this->m_lib_handle, "lsetxattr")
+                : lsetxattr_ptr = (libc_lsetxattr_t)dlsym (RTLD_NEXT, "lsetxattr");
 
             // in case the library handle pointer is valid, assign the operation pointer
         } else if (!lsetxattr_ptr) {
@@ -1638,11 +1638,11 @@ public:
     {
         // validate function and library handle pointers
         if (!fsetxattr_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the open
-            // was successful, or through the next operation link.
+            // open library handle, and assign the operation pointer through m_lib_handle if the
+            // open was successful, or through the next operation link.
             (this->dlopen_library_handle ())
-            ? fsetxattr_ptr = (libc_fsetxattr_t)dlsym (this->m_lib_handle, "fsetxattr")
-            : fsetxattr_ptr = (libc_fsetxattr_t)dlsym (RTLD_NEXT, "fsetxattr");
+                ? fsetxattr_ptr = (libc_fsetxattr_t)dlsym (this->m_lib_handle, "fsetxattr")
+                : fsetxattr_ptr = (libc_fsetxattr_t)dlsym (RTLD_NEXT, "fsetxattr");
 
             // in case the library handle pointer is valid, assign the operation pointer
         } else if (!fsetxattr_ptr) {
@@ -1658,11 +1658,11 @@ public:
     {
         // validate function and library handle pointers
         if (!listxattr_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the open
-            // was successful, or through the next operation link.
+            // open library handle, and assign the operation pointer through m_lib_handle if the
+            // open was successful, or through the next operation link.
             (this->dlopen_library_handle ())
-            ? listxattr_ptr = (libc_listxattr_t)dlsym (this->m_lib_handle, "listxattr")
-            : listxattr_ptr = (libc_listxattr_t)dlsym (RTLD_NEXT, "listxattr");
+                ? listxattr_ptr = (libc_listxattr_t)dlsym (this->m_lib_handle, "listxattr")
+                : listxattr_ptr = (libc_listxattr_t)dlsym (RTLD_NEXT, "listxattr");
 
             // in case the library handle pointer is valid, assign the operation pointer
         } else if (!listxattr_ptr) {
@@ -1678,11 +1678,11 @@ public:
     {
         // validate function and library handle pointers
         if (!llistxattr_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the open
-            // was successful, or through the next operation link.
+            // open library handle, and assign the operation pointer through m_lib_handle if the
+            // open was successful, or through the next operation link.
             (this->dlopen_library_handle ())
-            ? llistxattr_ptr = (libc_llistxattr_t)dlsym (this->m_lib_handle, "llistxattr")
-            : llistxattr_ptr = (libc_llistxattr_t)dlsym (RTLD_NEXT, "llistxattr");
+                ? llistxattr_ptr = (libc_llistxattr_t)dlsym (this->m_lib_handle, "llistxattr")
+                : llistxattr_ptr = (libc_llistxattr_t)dlsym (RTLD_NEXT, "llistxattr");
 
             // in case the library handle pointer is valid, assign the operation pointer
         } else if (!llistxattr_ptr) {
@@ -1698,11 +1698,11 @@ public:
     {
         // validate function and library handle pointers
         if (!flistxattr_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the open
-            // was successful, or through the next operation link.
+            // open library handle, and assign the operation pointer through m_lib_handle if the
+            // open was successful, or through the next operation link.
             (this->dlopen_library_handle ())
-            ? flistxattr_ptr = (libc_flistxattr_t)dlsym (this->m_lib_handle, "flistxattr")
-            : flistxattr_ptr = (libc_flistxattr_t)dlsym (RTLD_NEXT, "flistxattr");
+                ? flistxattr_ptr = (libc_flistxattr_t)dlsym (this->m_lib_handle, "flistxattr")
+                : flistxattr_ptr = (libc_flistxattr_t)dlsym (RTLD_NEXT, "flistxattr");
 
             // in case the library handle pointer is valid, assign the operation pointer
         } else if (!flistxattr_ptr) {
@@ -1718,11 +1718,11 @@ public:
     {
         // validate function and library handle pointers
         if (!removexattr_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the open
-            // was successful, or through the next operation link.
+            // open library handle, and assign the operation pointer through m_lib_handle if the
+            // open was successful, or through the next operation link.
             (this->dlopen_library_handle ())
-            ? removexattr_ptr = (libc_removexattr_t)dlsym (this->m_lib_handle, "removexattr")
-            : removexattr_ptr = (libc_removexattr_t)dlsym (RTLD_NEXT, "removexattr");
+                ? removexattr_ptr = (libc_removexattr_t)dlsym (this->m_lib_handle, "removexattr")
+                : removexattr_ptr = (libc_removexattr_t)dlsym (RTLD_NEXT, "removexattr");
 
             // in case the library handle pointer is valid, assign the operation pointer
         } else if (!removexattr_ptr) {
@@ -1738,11 +1738,11 @@ public:
     {
         // validate function and library handle pointers
         if (!lremovexattr_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the open
-            // was successful, or through the next operation link.
+            // open library handle, and assign the operation pointer through m_lib_handle if the
+            // open was successful, or through the next operation link.
             (this->dlopen_library_handle ())
-            ? lremovexattr_ptr = (libc_lremovexattr_t)dlsym (this->m_lib_handle, "lremovexattr")
-            : lremovexattr_ptr = (libc_lremovexattr_t)dlsym (RTLD_NEXT, "lremovexattr");
+                ? lremovexattr_ptr = (libc_lremovexattr_t)dlsym (this->m_lib_handle, "lremovexattr")
+                : lremovexattr_ptr = (libc_lremovexattr_t)dlsym (RTLD_NEXT, "lremovexattr");
 
             // in case the library handle pointer is valid, assign the operation pointer
         } else if (!lremovexattr_ptr) {
@@ -1758,15 +1758,155 @@ public:
     {
         // validate function and library handle pointers
         if (!fremovexattr_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the open
-            // was successful, or through the next operation link.
+            // open library handle, and assign the operation pointer through m_lib_handle if the
+            // open was successful, or through the next operation link.
             (this->dlopen_library_handle ())
-            ? fremovexattr_ptr = (libc_fremovexattr_t)dlsym (this->m_lib_handle, "fremovexattr")
-            : fremovexattr_ptr = (libc_fremovexattr_t)dlsym (RTLD_NEXT, "fremovexattr");
+                ? fremovexattr_ptr = (libc_fremovexattr_t)dlsym (this->m_lib_handle, "fremovexattr")
+                : fremovexattr_ptr = (libc_fremovexattr_t)dlsym (RTLD_NEXT, "fremovexattr");
 
             // in case the library handle pointer is valid, assign the operation pointer
         } else if (!fremovexattr_ptr) {
             fremovexattr_ptr = (libc_fremovexattr_t)dlsym (this->m_lib_handle, "fremovexattr");
+        }
+    }
+
+    /**
+     * hook_posix_chmod:
+     * @param chmod_ptr
+     */
+    void hook_posix_chmod (libc_chmod_t& chmod_ptr)
+    {
+        // validate function and library handle pointers
+        if (!chmod_ptr && !this->m_lib_handle) {
+            // open library handle, and assign the operation pointer through m_lib_handle if the
+            // open was successful, or through the next operation link.
+            (this->dlopen_library_handle ())
+                ? chmod_ptr = (libc_chmod_t)dlsym (this->m_lib_handle, "chmod")
+                : chmod_ptr = (libc_chmod_t)dlsym (RTLD_NEXT, "chmod");
+
+            // in case the library handle pointer is valid, assign the operation pointer
+        } else if (!chmod_ptr) {
+            chmod_ptr = (libc_chmod_t)dlsym (this->m_lib_handle, "chmod");
+        }
+    }
+
+    /**
+     * hook_posix_fchmod:
+     * @param fchmod_ptr
+     */
+    void hook_posix_fchmod (libc_fchmod_t& fchmod_ptr)
+    {
+        // validate function and library handle pointers
+        if (!fchmod_ptr && !this->m_lib_handle) {
+            // open library handle, and assign the operation pointer through m_lib_handle if the
+            // open was successful, or through the next operation link.
+            (this->dlopen_library_handle ())
+                ? fchmod_ptr = (libc_fchmod_t)dlsym (this->m_lib_handle, "fchmod")
+                : fchmod_ptr = (libc_fchmod_t)dlsym (RTLD_NEXT, "fchmod");
+
+            // in case the library handle pointer is valid, assign the operation pointer
+        } else if (!fchmod_ptr) {
+            fchmod_ptr = (libc_fchmod_t)dlsym (this->m_lib_handle, "fchmod");
+        }
+    }
+
+    /**
+     * hook_posix_fchmodat:
+     * @param fchmodat_ptr
+     */
+    void hook_posix_fchmodat (libc_fchmodat_t& fchmodat_ptr)
+    {
+        // validate function and library handle pointers
+        if (!fchmodat_ptr && !this->m_lib_handle) {
+            // open library handle, and assign the operation pointer through m_lib_handle if the
+            // open was successful, or through the next operation link.
+            (this->dlopen_library_handle ())
+                ? fchmodat_ptr = (libc_fchmodat_t)dlsym (this->m_lib_handle, "fchmodat")
+                : fchmodat_ptr = (libc_fchmodat_t)dlsym (RTLD_NEXT, "fchmodat");
+
+            // in case the library handle pointer is valid, assign the operation pointer
+        } else if (!fchmodat_ptr) {
+            fchmodat_ptr = (libc_fchmodat_t)dlsym (this->m_lib_handle, "fchmodat");
+        }
+    }
+
+    /**
+     * hook_posix_chown:
+     * @param chown_ptr
+     */
+    void hook_posix_chown (libc_chown_t& chown_ptr)
+    {
+        // validate function and library handle pointers
+        if (!chown_ptr && !this->m_lib_handle) {
+            // open library handle, and assign the operation pointer through m_lib_handle if the
+            // open was successful, or through the next operation link.
+            (this->dlopen_library_handle ())
+                ? chown_ptr = (libc_chown_t)dlsym (this->m_lib_handle, "chown")
+                : chown_ptr = (libc_chown_t)dlsym (RTLD_NEXT, "chown");
+
+            // in case the library handle pointer is valid, assign the operation pointer
+        } else if (!chown_ptr) {
+            chown_ptr = (libc_chown_t)dlsym (this->m_lib_handle, "chown");
+        }
+    }
+
+    /**
+     * hook_posix_lchown:
+     * @param lchown_ptr
+     */
+    void hook_posix_lchown (libc_lchown_t& lchown_ptr)
+    {
+        // validate function and library handle pointers
+        if (!lchown_ptr && !this->m_lib_handle) {
+            // open library handle, and assign the operation pointer through m_lib_handle if the
+            // open was successful, or through the next operation link.
+            (this->dlopen_library_handle ())
+                ? lchown_ptr = (libc_chown_t)dlsym (this->m_lib_handle, "lchown")
+                : lchown_ptr = (libc_chown_t)dlsym (RTLD_NEXT, "lchown");
+
+            // in case the library handle pointer is valid, assign the operation pointer
+        } else if (!lchown_ptr) {
+            lchown_ptr = (libc_chown_t)dlsym (this->m_lib_handle, "lchown");
+        }
+    }
+
+    /**
+     * hook_posix_fchown:
+     * @param fchown_ptr
+     */
+    void hook_posix_fchown (libc_fchown_t& fchown_ptr)
+    {
+        // validate function and library handle pointers
+        if (!fchown_ptr && !this->m_lib_handle) {
+            // open library handle, and assign the operation pointer through m_lib_handle if the
+            // open was successful, or through the next operation link.
+            (this->dlopen_library_handle ())
+                ? fchown_ptr = (libc_fchown_t)dlsym (this->m_lib_handle, "fchown")
+                : fchown_ptr = (libc_fchown_t)dlsym (RTLD_NEXT, "fchown");
+
+            // in case the library handle pointer is valid, assign the operation pointer
+        } else if (!fchown_ptr) {
+            fchown_ptr = (libc_fchown_t)dlsym (this->m_lib_handle, "fchown");
+        }
+    }
+
+    /**
+     * hook_posix_fchownat:
+     * @param fchownat_ptr
+     */
+    void hook_posix_fchownat (libc_fchownat_t fchownat_ptr)
+    {
+        // validate function and library handle pointers
+        if (!fchownat_ptr && !this->m_lib_handle) {
+            // open library handle, and assign the operation pointer through m_lib_handle if the
+            // open was successful, or through the next operation link.
+            (this->dlopen_library_handle ())
+                ? fchownat_ptr = (libc_fchownat_t)dlsym (this->m_lib_handle, "fchownat")
+                : fchownat_ptr = (libc_fchownat_t)dlsym (RTLD_NEXT, "fchownat");
+
+            // in case the library handle pointer is valid, assign the operation pointer
+        } else if (!fchownat_ptr) {
+            fchownat_ptr = (libc_fchownat_t)dlsym (this->m_lib_handle, "fchownat");
         }
     }
 };
