@@ -2578,19 +2578,11 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_getxattr (const char* path,
             "ld_preloaded_posix-getxattr (" + std::string (path) + ", " + std::string (name) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_extattr_operations.m_getxattr && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_extattr_operations.m_getxattr
-            = (libc_getxattr_t)dlsym (this->m_lib_handle, "getxattr")
-            : m_extattr_operations.m_getxattr = (libc_getxattr_t)dlsym (RTLD_NEXT, "getxattr");
+    // hook POSIX getxattr operation to m_directory_operations.m_getxattr
+    this->m_dlsym_hook.hook_posix_getxattr (m_extattr_operations.m_getxattr);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_extattr_operations.m_getxattr) {
-        m_extattr_operations.m_getxattr = (libc_getxattr_t)dlsym (this->m_lib_handle, "getxattr");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX getxattr operation
     ssize_t result = m_extattr_operations.m_getxattr (path, name, value, size);
@@ -2623,20 +2615,11 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_lgetxattr (const char* path,
             + std::string (name) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_extattr_operations.m_lgetxattr && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_extattr_operations.m_lgetxattr
-            = (libc_lgetxattr_t)dlsym (this->m_lib_handle, "lgetxattr")
-            : m_extattr_operations.m_lgetxattr = (libc_lgetxattr_t)dlsym (RTLD_NEXT, "lgetxattr");
+    // hook POSIX lgetxattr operation to m_directory_operations.m_lgetxattr
+    this->m_dlsym_hook.hook_posix_lgetxattr (m_extattr_operations.m_lgetxattr);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_extattr_operations.m_lgetxattr) {
-        m_extattr_operations.m_lgetxattr
-            = (libc_lgetxattr_t)dlsym (this->m_lib_handle, "lgetxattr");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX lgetxattr operation
     ssize_t result = m_extattr_operations.m_lgetxattr (path, name, value, size);
@@ -2667,20 +2650,11 @@ LdPreloadedPosix::ld_preloaded_posix_fgetxattr (int fd, const char* name, void* 
             + std::string (name) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_extattr_operations.m_fgetxattr && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_extattr_operations.m_fgetxattr
-            = (libc_fgetxattr_t)dlsym (this->m_lib_handle, "fgetxattr")
-            : m_extattr_operations.m_fgetxattr = (libc_fgetxattr_t)dlsym (RTLD_NEXT, "fgetxattr");
+    // hook POSIX fgetxattr operation to m_directory_operations.m_fgetxattr
+    this->m_dlsym_hook.hook_posix_fgetxattr (m_extattr_operations.m_fgetxattr);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_extattr_operations.m_fgetxattr) {
-        m_extattr_operations.m_fgetxattr
-            = (libc_fgetxattr_t)dlsym (this->m_lib_handle, "fgetxattr");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX fgetxattr operation
     ssize_t result = m_extattr_operations.m_fgetxattr (fd, name, value, size);
@@ -2714,19 +2688,11 @@ int LdPreloadedPosix::ld_preloaded_posix_setxattr (const char* path,
             "ld_preloaded_posix-setxattr (" + std::string (path) + ", " + std::string (name) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_extattr_operations.m_setxattr && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_extattr_operations.m_setxattr
-            = (libc_setxattr_t)dlsym (this->m_lib_handle, "setxattr")
-            : m_extattr_operations.m_setxattr = (libc_setxattr_t)dlsym (RTLD_NEXT, "setxattr");
+    // hook POSIX setxattr operation to m_directory_operations.m_setxattr
+    this->m_dlsym_hook.hook_posix_setxattr (m_extattr_operations.m_setxattr);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_extattr_operations.m_setxattr) {
-        m_extattr_operations.m_setxattr = (libc_setxattr_t)dlsym (this->m_lib_handle, "setxattr");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX setxattr operation
     int result = m_extattr_operations.m_setxattr (path, name, value, size, flags);
@@ -2760,20 +2726,11 @@ int LdPreloadedPosix::ld_preloaded_posix_lsetxattr (const char* path,
             + std::string (name) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_extattr_operations.m_lsetxattr && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_extattr_operations.m_lsetxattr
-            = (libc_lsetxattr_t)dlsym (this->m_lib_handle, "lsetxattr")
-            : m_extattr_operations.m_lsetxattr = (libc_lsetxattr_t)dlsym (RTLD_NEXT, "lsetxattr");
+    // hook POSIX lsetxattr operation to m_directory_operations.m_lsetxattr
+    this->m_dlsym_hook.hook_posix_lsetxattr (m_extattr_operations.m_lsetxattr);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_extattr_operations.m_lsetxattr) {
-        m_extattr_operations.m_lsetxattr
-            = (libc_lsetxattr_t)dlsym (this->m_lib_handle, "lsetxattr");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX lsetxattr operation
     int result = m_extattr_operations.m_lsetxattr (path, name, value, size, flags);
@@ -2807,20 +2764,11 @@ int LdPreloadedPosix::ld_preloaded_posix_fsetxattr (int fd,
             + std::string (name) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_extattr_operations.m_fsetxattr && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_extattr_operations.m_fsetxattr
-            = (libc_fsetxattr_t)dlsym (this->m_lib_handle, "fsetxattr")
-            : m_extattr_operations.m_fsetxattr = (libc_fsetxattr_t)dlsym (RTLD_NEXT, "fsetxattr");
+    // hook POSIX fsetxattr operation to m_directory_operations.m_fsetxattr
+    this->m_dlsym_hook.hook_posix_fsetxattr (m_extattr_operations.m_fsetxattr);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_extattr_operations.m_fsetxattr) {
-        m_extattr_operations.m_fsetxattr
-            = (libc_fsetxattr_t)dlsym (this->m_lib_handle, "fsetxattr");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX fsetxattr operation
     int result = m_extattr_operations.m_fsetxattr (fd, name, value, size, flags);
@@ -2849,20 +2797,11 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_listxattr (const char* path, char* 
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-listxattr (" + std::string (path) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_extattr_operations.m_listxattr && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ())
-            ? m_extattr_operations.m_listxattr
-            = (libc_listxattr_t)dlsym (this->m_lib_handle, "listxattr")
-            : m_extattr_operations.m_listxattr = (libc_listxattr_t)dlsym (RTLD_NEXT, "listxattr");
+    // hook POSIX listxattr operation to m_directory_operations.m_listxattr
+    this->m_dlsym_hook.hook_posix_listxattr (m_extattr_operations.m_listxattr);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_extattr_operations.m_listxattr) {
-        m_extattr_operations.m_listxattr
-            = (libc_listxattr_t)dlsym (this->m_lib_handle, "listxattr");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX listxattr operation
     ssize_t result = m_extattr_operations.m_listxattr (path, list, size);
@@ -2892,20 +2831,11 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_llistxattr (const char* path, char*
             "ld_preloaded_posix-llistxattr (" + std::string (path) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_extattr_operations.m_llistxattr && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ()) ? m_extattr_operations.m_llistxattr
-            = (libc_llistxattr_t)dlsym (this->m_lib_handle, "llistxattr")
-                                         : m_extattr_operations.m_llistxattr
-            = (libc_llistxattr_t)dlsym (RTLD_NEXT, "llistxattr");
+    // hook POSIX llistxattr operation to m_directory_operations.m_llistxattr
+    this->m_dlsym_hook.hook_posix_llistxattr (m_extattr_operations.m_llistxattr);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_extattr_operations.m_llistxattr) {
-        m_extattr_operations.m_llistxattr
-            = (libc_llistxattr_t)dlsym (this->m_lib_handle, "llistxattr");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX llistxattr operation
     ssize_t result = m_extattr_operations.m_llistxattr (path, list, size);
@@ -2938,20 +2868,11 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_flistxattr (int fd, char* list, siz
             "ld_preloaded_posix-flistxattr (" + std::to_string (fd) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_extattr_operations.m_flistxattr && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ()) ? m_extattr_operations.m_flistxattr
-            = (libc_flistxattr_t)dlsym (this->m_lib_handle, "flistxattr")
-                                         : m_extattr_operations.m_flistxattr
-            = (libc_flistxattr_t)dlsym (RTLD_NEXT, "flistxattr");
+    // hook POSIX flistxattr operation to m_directory_operations.m_flistxattr
+    this->m_dlsym_hook.hook_posix_flistxattr (m_extattr_operations.m_flistxattr);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_extattr_operations.m_flistxattr) {
-        m_extattr_operations.m_flistxattr
-            = (libc_flistxattr_t)dlsym (this->m_lib_handle, "flistxattr");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX flistxattr operation
     ssize_t result = m_extattr_operations.m_flistxattr (fd, list, size);
@@ -2984,20 +2905,11 @@ int LdPreloadedPosix::ld_preloaded_posix_removexattr (const char* path, const ch
             + ", " + std::string (name) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_extattr_operations.m_removexattr && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ()) ? m_extattr_operations.m_removexattr
-            = (libc_removexattr_t)dlsym (this->m_lib_handle, "removexattr")
-                                         : m_extattr_operations.m_removexattr
-            = (libc_removexattr_t)dlsym (RTLD_NEXT, "removexattr");
+    // hook POSIX removexattr operation to m_directory_operations.m_removexattr
+    this->m_dlsym_hook.hook_posix_removexattr (m_extattr_operations.m_removexattr);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_extattr_operations.m_removexattr) {
-        m_extattr_operations.m_removexattr
-            = (libc_removexattr_t)dlsym (this->m_lib_handle, "removexattr");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX removexattr operation
     int result = m_extattr_operations.m_removexattr (path, name);
@@ -3030,20 +2942,11 @@ int LdPreloadedPosix::ld_preloaded_posix_lremovexattr (const char* path, const c
             + ", " + std::string (name) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_extattr_operations.m_lremovexattr && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ()) ? m_extattr_operations.m_lremovexattr
-            = (libc_lremovexattr_t)dlsym (this->m_lib_handle, "lremovexattr")
-                                         : m_extattr_operations.m_lremovexattr
-            = (libc_lremovexattr_t)dlsym (RTLD_NEXT, "lremovexattr");
+    // hook POSIX lremovexattr operation to m_directory_operations.m_lremovexattr
+    this->m_dlsym_hook.hook_posix_lremovexattr (m_extattr_operations.m_lremovexattr);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_extattr_operations.m_lremovexattr) {
-        m_extattr_operations.m_lremovexattr
-            = (libc_lremovexattr_t)dlsym (this->m_lib_handle, "lremovexattr");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX lremovexattr operation
     int result = m_extattr_operations.m_lremovexattr (path, name);
@@ -3076,20 +2979,11 @@ int LdPreloadedPosix::ld_preloaded_posix_fremovexattr (int fd, const char* name)
             + ", " + std::string (name) + ")");
     }
 
-    // validate function and library handle pointers
-    if (!m_extattr_operations.m_fremovexattr && !this->m_lib_handle) {
-        // open library handle, and assign the operation pointer through m_lib_handle if the open
-        // was successful, or through the next operation link.
-        (this->dlopen_library_handle ()) ? m_extattr_operations.m_fremovexattr
-            = (libc_fremovexattr_t)dlsym (this->m_lib_handle, "fremovexattr")
-                                         : m_extattr_operations.m_fremovexattr
-            = (libc_fremovexattr_t)dlsym (RTLD_NEXT, "fremovexattr");
+    // hook POSIX fremovexattr operation to m_directory_operations.m_fremovexattr
+    this->m_dlsym_hook.hook_posix_fremovexattr (m_extattr_operations.m_fremovexattr);
 
-        // in case the library handle pointer is valid, assign the operation pointer
-    } else if (!m_extattr_operations.m_fremovexattr) {
-        m_extattr_operations.m_fremovexattr
-            = (libc_fremovexattr_t)dlsym (this->m_lib_handle, "fremovexattr");
-    }
+    // TODO: add here call to the paio-stage
+    // this->enforce_request (...);
 
     // perform original POSIX fremovexattr operation
     int result = m_extattr_operations.m_fremovexattr (fd, name);
