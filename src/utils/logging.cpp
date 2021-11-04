@@ -19,7 +19,7 @@ Logging::Logging (const bool& enable_debug,
     const std::string& log_file) :
     m_debug_enabled { enable_debug },
     m_is_ld_preloaded { debug_with_ldpreload },
-    m_log_file_path { log_file }
+    m_log_file_path { this->create_file_name (log_file) }
 {
     this->initialize ();
 }
@@ -28,6 +28,16 @@ Logging::Logging (const bool& enable_debug,
 Logging::~Logging ()
 {
     this->cleanup ();
+}
+
+std::string Logging::create_file_name (const std::string& file_name)
+{
+    std::string name {};
+    if (!file_name.empty ()) {
+        name = file_name + "-" + std::to_string (::getpid());
+    }
+
+    return name;
 }
 
 // Logging initialize call.

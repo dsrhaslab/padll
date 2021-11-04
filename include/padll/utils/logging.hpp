@@ -36,6 +36,8 @@ private:
     int m_fd { STDOUT_FILENO };
     std::string m_log_file_path {};
 
+    std::string create_file_name (const std::string& file_name);
+
     /**
      * initialize:
      */
