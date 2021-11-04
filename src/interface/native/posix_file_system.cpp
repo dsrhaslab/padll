@@ -72,73 +72,73 @@ size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stream)
         ? m_ld_preloaded_posix.ld_preloaded_posix_fwrite (ptr, size, nmemb, stream)
         : m_posix_passthrough.passthrough_posix_fwrite (ptr, size, nmemb, stream);
 }
-//
-//// open call. (...)
-// int open (const char* path, int flags, ...)
-//{
-//     if (flags & O_CREAT) {
-//         va_list args;
-//
-//         va_start (args, flags);
-//         mode_t mode = va_arg (args, int);
-//         va_end (args);
-//
-//         return m_ld_preloaded_posix.ld_preloaded_posix_open (path, flags, mode);
-//     } else {
-//         return m_ld_preloaded_posix.ld_preloaded_posix_open (path, flags);
-//     }
-// }
-//
-//// creat call. (...)
-// int creat (const char* path, mode_t mode)
-//{
-//     return m_ld_preloaded_posix.ld_preloaded_posix_creat (path, mode);
-// }
-//
-//// creat64 call. (...)
-// int creat64 (const char* path, mode_t mode)
-//{
-//     return m_ld_preloaded_posix.ld_preloaded_posix_creat64 (path, mode);
-// }
-//
-//// openat call. (...)
-// int openat (int dirfd, const char* path, int flags, ...)
-//{
-//     if (flags & O_CREAT) {
-//         va_list args;
-//
-//         va_start (args, flags);
-//         mode_t mode = va_arg (args, int);
-//         va_end (args);
-//
-//         return m_ld_preloaded_posix.ld_preloaded_posix_openat (dirfd, path, flags, mode);
-//     } else {
-//         return m_ld_preloaded_posix.ld_preloaded_posix_openat (dirfd, path, flags);
-//     }
-// }
-//
-//// open64 call. (...)
-// int open64 (const char* path, int flags, ...)
-//{
-//     if (flags & O_CREAT) {
-//         va_list args;
-//
-//         va_start (args, flags);
-//         mode_t mode = va_arg (args, int);
-//         va_end (args);
-//
-//         return m_ld_preloaded_posix.ld_preloaded_posix_open64 (path, flags, mode);
-//     } else {
-//         return m_ld_preloaded_posix.ld_preloaded_posix_open64 (path, flags);
-//     }
-// }
-//
-//// close call. (...)
-// int close (int fd)
-//{
-//     return m_ld_preloaded_posix.ld_preloaded_posix_close (fd);
-// }
-//
+
+// open call. (...)
+ int open (const char* path, int flags, ...)
+{
+     if (flags & O_CREAT) {
+         va_list args;
+
+         va_start (args, flags);
+         mode_t mode = va_arg (args, int);
+         va_end (args);
+
+         return m_ld_preloaded_posix.ld_preloaded_posix_open (path, flags, mode);
+     } else {
+         return m_ld_preloaded_posix.ld_preloaded_posix_open (path, flags);
+     }
+ }
+
+// creat call. (...)
+ int creat (const char* path, mode_t mode)
+{
+     return m_ld_preloaded_posix.ld_preloaded_posix_creat (path, mode);
+ }
+
+// creat64 call. (...)
+ int creat64 (const char* path, mode_t mode)
+{
+     return m_ld_preloaded_posix.ld_preloaded_posix_creat64 (path, mode);
+ }
+
+// openat call. (...)
+ int openat (int dirfd, const char* path, int flags, ...)
+{
+     if (flags & O_CREAT) {
+         va_list args;
+
+         va_start (args, flags);
+         mode_t mode = va_arg (args, int);
+         va_end (args);
+
+         return m_ld_preloaded_posix.ld_preloaded_posix_openat (dirfd, path, flags, mode);
+     } else {
+         return m_ld_preloaded_posix.ld_preloaded_posix_openat (dirfd, path, flags);
+     }
+ }
+
+// open64 call. (...)
+ int open64 (const char* path, int flags, ...)
+{
+     if (flags & O_CREAT) {
+         va_list args;
+
+         va_start (args, flags);
+         mode_t mode = va_arg (args, int);
+         va_end (args);
+
+         return m_ld_preloaded_posix.ld_preloaded_posix_open64 (path, flags, mode);
+     } else {
+         return m_ld_preloaded_posix.ld_preloaded_posix_open64 (path, flags);
+     }
+ }
+
+// close call. (...)
+ int close (int fd)
+{
+     return m_ld_preloaded_posix.ld_preloaded_posix_close (fd);
+ }
+
 //// fsync call. (...)
 // int fsync (int fd)
 //{
