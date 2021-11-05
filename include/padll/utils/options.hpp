@@ -35,7 +35,7 @@ const std::string option_default_log_path { "/tmp/padll-info.log" };
 /**
  * option_default_detailed_logging:
  */
-const bool option_default_detailed_logging { false };
+const bool option_default_detailed_logging { true };
 
 /**
  * option_default_table_format:
