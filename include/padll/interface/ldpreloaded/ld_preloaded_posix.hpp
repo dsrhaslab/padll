@@ -33,8 +33,6 @@ private:
     libc_directory m_directory_operations {};
     libc_extattr m_extattr_operations {};
     libc_file_modes m_filemodes_operations {};
-    std::string m_lib_name { "libc.so.6" }; // TODO: move all dlsym logic to dlsym_hook
-    void* m_lib_handle { nullptr }; // TODO: move all dlsym logic to dlsym_hook
     std::atomic<bool> m_collect { option_default_statistic_collection };
     Statistics m_metadata_stats { "metadata", OperationType::metadata_calls };
     Statistics m_data_stats { "data", OperationType::data_calls };
@@ -49,12 +47,6 @@ private:
     std::shared_ptr<paio::PaioStage> m_stage { nullptr };
     std::unique_ptr<paio::PosixLayer> m_posix_instance { nullptr };
     const long m_workflow_id { 1000 };
-
-    /**
-     * dlopen_library_handle:
-     * @return
-     */
-    bool dlopen_library_handle ();
 
     /**
      * initialize_stage:

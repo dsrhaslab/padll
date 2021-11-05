@@ -78,10 +78,15 @@ std::string StatisticEntry::to_string ()
     std::unique_lock<std::mutex> unique_lock (this->m_lock);
     std::stringstream stream;
 
-    stream << "{" << this->m_entry_name << ": ";
-    stream << this->m_operation_counter << ", ";
-    stream << this->m_byte_counter << ", ";
-    stream << this->m_error_counter << "}";
+    stream << "\t" << this->m_entry_name << "\t";
+    stream << "\t" << this->m_operation_counter << "\t";
+    stream << "\t" << this->m_byte_counter << "\t";
+    stream << "\t" << this->m_error_counter;
+
+//    stream << "{" << this->m_entry_name << ": ";
+//    stream << this->m_operation_counter << ", ";
+//    stream << this->m_byte_counter << ", ";
+//    stream << this->m_error_counter << "}";
 
     return stream.str ();
 }

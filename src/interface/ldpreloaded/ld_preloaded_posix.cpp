@@ -25,7 +25,6 @@ LdPreloadedPosix::LdPreloadedPosix (std::shared_ptr<Logging> logging_ptr) :
 LdPreloadedPosix::LdPreloadedPosix (const std::string& lib,
     const bool& stat_collection,
     std::shared_ptr<Logging> logging_ptr) :
-    m_lib_name { lib },
     m_collect { stat_collection },
     m_logger_ptr { logging_ptr }
 {
@@ -52,19 +51,6 @@ LdPreloadedPosix::~LdPreloadedPosix ()
     } else {
         this->m_logger_ptr->log_debug (this->to_string ());
     }
-}
-
-// dlopen_library_handle call. (...)
-bool LdPreloadedPosix::dlopen_library_handle ()
-{
-    std::unique_lock<std::mutex> unique_lock (this->m_lock);
-    // Dynamic loading of the libc library (referred to as 'libc.so.6').
-    // loads the dynamic shared object (shared library) file named by the null-terminated string
-    // filename and returns an opaque "handle" for the loaded object.
-    this->m_lib_handle = ::dlopen (this->m_lib_name.data (), RTLD_LAZY);
-
-    // return true if the m_lib_handle is valid, and false otherwise.
-    return (this->m_lib_handle != nullptr);
 }
 
 void LdPreloadedPosix::initialize_stage ()
@@ -197,6 +183,8 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_write (int fd, const void* buf, siz
     if (this->m_collect) {
         if (result >= 0) {
             this->m_data_stats.update_statistic_entry (static_cast<int> (Data::write), 1, result);
+            this->m_logger_ptr->log_debug ("ld_preloaded_posix-counter-write (" +
+            std::to_string (this->m_data_stats.get_statistic_entry (static_cast<int> (Data::write)).get_operation_counter()) + ")");
         } else {
             this->m_data_stats.update_statistic_entry (static_cast<int> (Data::write), 1, 0, 1);
         }
