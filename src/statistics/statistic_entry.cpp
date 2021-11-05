@@ -76,19 +76,16 @@ void StatisticEntry::increment_error_counter (const uint64_t& count)
 std::string StatisticEntry::to_string ()
 {
     std::unique_lock<std::mutex> unique_lock (this->m_lock);
-    std::stringstream stream;
 
-    stream << "\t" << this->m_entry_name << "\t";
-    stream << "\t" << this->m_operation_counter << "\t";
-    stream << "\t" << this->m_byte_counter << "\t";
-    stream << "\t" << this->m_error_counter;
+    char stream[60];
+    std::sprintf (stream,
+        "%18s %10llu %12llu %10llu",
+        this->m_entry_name.c_str (),
+        this->m_operation_counter,
+        this->m_error_counter,
+        this->m_byte_counter);
 
-//    stream << "{" << this->m_entry_name << ": ";
-//    stream << this->m_operation_counter << ", ";
-//    stream << this->m_byte_counter << ", ";
-//    stream << this->m_error_counter << "}";
-
-    return stream.str ();
+    return { stream };
 }
 
 } // namespace padll

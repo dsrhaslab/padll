@@ -183,8 +183,11 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_write (int fd, const void* buf, siz
     if (this->m_collect) {
         if (result >= 0) {
             this->m_data_stats.update_statistic_entry (static_cast<int> (Data::write), 1, result);
-            this->m_logger_ptr->log_debug ("ld_preloaded_posix-counter-write (" +
-            std::to_string (this->m_data_stats.get_statistic_entry (static_cast<int> (Data::write)).get_operation_counter()) + ")");
+            this->m_logger_ptr->log_debug ("ld_preloaded_posix-counter-write ("
+                + std::to_string (
+                    this->m_data_stats.get_statistic_entry (static_cast<int> (Data::write))
+                        .get_operation_counter ())
+                + ")");
         } else {
             this->m_data_stats.update_statistic_entry (static_cast<int> (Data::write), 1, 0, 1);
         }

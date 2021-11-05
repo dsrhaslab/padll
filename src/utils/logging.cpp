@@ -34,7 +34,7 @@ std::string Logging::create_file_name (const std::string& file_name)
 {
     std::string name {};
     if (!file_name.empty ()) {
-        name = file_name + "-" + std::to_string (::getpid());
+        name = file_name + "-" + std::to_string (::getpid ());
     }
 
     return name;

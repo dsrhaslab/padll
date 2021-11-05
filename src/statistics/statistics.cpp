@@ -4,7 +4,6 @@
  **/
 
 #include <padll/statistics/statistics.hpp>
-#include <paio/utils/make_unique.hpp>
 
 namespace padll {
 
@@ -144,13 +143,18 @@ std::string Statistics::to_string ()
     std::vector<StatisticEntry> entries {};
 
     for (auto& elem : this->m_statistic_entries) {
-        if ((elem.get_operation_counter() + elem.get_error_counter ()) > 0) {
+        if ((elem.get_operation_counter () + elem.get_error_counter ()) > 0) {
             entries.push_back (elem);
         }
     }
 
-    stream << "syscall\tcalls\tbytes\terrors\n";
-    stream << "-------\t-----\t-----\t------\n";
+    char header[60];
+    std::sprintf (header, "%18s %10s %12s %10s", "syscall", "calls", "errors", "bytes");
+    stream << header << "\n";
+
+    std::sprintf (header, "%18s %10s %12s %10s", "-------", "-----", "------", "-----");
+    stream << header << "\n";
+
     for (auto& elem : entries) {
         stream << elem.to_string () << "\n";
     }
