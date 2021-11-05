@@ -77,9 +77,9 @@ std::string StatisticEntry::to_string ()
 {
     std::unique_lock<std::mutex> unique_lock (this->m_lock);
 
-    char stream[60];
+    char stream[65];
     std::sprintf (stream,
-        "%18s %10llu %12llu %10llu",
+        "%18s %10llu %12llu %15llu",
         this->m_entry_name.c_str (),
         this->m_operation_counter,
         this->m_error_counter,

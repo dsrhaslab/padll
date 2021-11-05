@@ -148,11 +148,11 @@ std::string Statistics::to_string ()
         }
     }
 
-    char header[60];
-    std::sprintf (header, "%18s %10s %12s %10s", "syscall", "calls", "errors", "bytes");
+    char header[65];
+    std::sprintf (header, "%18s %10s %12s %15s", "syscall", "calls", "errors", "bytes");
     stream << header << "\n";
 
-    std::sprintf (header, "%18s %10s %12s %10s", "-------", "-----", "------", "-----");
+    std::sprintf (header, "%18s %10s %12s %15s", "-------", "-----", "------", "-----");
     stream << header << "\n";
 
     for (auto& elem : entries) {

@@ -121,19 +121,28 @@ StatisticEntry LdPreloadedPosix::get_statistic_entry (const OperationType& opera
 // to_string call. (...)
 std::string LdPreloadedPosix::to_string ()
 {
-    pid_t pid = ::getpid ();
-    pid_t ppid = ::getppid ();
+    auto pid = ::getpid ();
+    auto ppid = ::getppid ();
     std::stringstream stream;
 
-    stream << "LdPreloadedPosix::Metadata statistics (" << pid << ", " << ppid << ")\n";
+    stream << "\nLdPreloadedPosix::Metadata statistics (" << pid << ", " << ppid << ")\n";
+    stream << "-----------------------------------------------------------\n";
     stream << this->m_metadata_stats.to_string () << "\n";
+
     stream << "LdPreloadedPosix::Data statistics (" << pid << ", " << ppid << ")\n";
+    stream << "-----------------------------------------------------------\n";
     stream << this->m_data_stats.to_string () << "\n";
+
     stream << "LdPreloadedPosix::Directory statistics (" << pid << ", " << ppid << ")\n";
+    stream << "-----------------------------------------------------------\n";
     stream << this->m_dir_stats.to_string () << "\n";
+
     stream << "LdPreloadedPosix::Extended attributes statistics (" << pid << ", " << ppid << ")\n";
+    stream << "-------------------------------------------------------------------\n";
     stream << this->m_ext_attr_stats.to_string () << "\n";
+
     stream << "LdPreloadedPosix::File mode statistics (" << pid << ", " << ppid << ")\n";
+    stream << "-----------------------------------------------------------\n";
     stream << this->m_file_mode_stats.to_string () << "\n";
 
     return stream.str ();
