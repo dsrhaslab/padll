@@ -6,6 +6,8 @@
 #ifndef PADDL_OPTIONS_HPP
 #define PADDL_OPTIONS_HPP
 
+#include <string>
+
 namespace padll {
 
 /**

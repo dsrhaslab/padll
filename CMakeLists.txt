@@ -59,14 +59,15 @@ target_sources(
     PUBLIC
     ${PROJECT_SOURCE_DIR}/include/padll/configurations/libc_calls.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/interface/ldpreloaded/ld_preloaded_posix.hpp
-        ${PROJECT_SOURCE_DIR}/include/padll/interface/ldpreloaded/dlsym_hook_libc.hpp
+    ${PROJECT_SOURCE_DIR}/include/padll/interface/ldpreloaded/dlsym_hook_libc.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/interface/native/posix_file_system.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/interface/passthrough/posix_passthrough.hpp
+    ${PROJECT_SOURCE_DIR}/include/padll/libraries/libc_enums.hpp
+    ${PROJECT_SOURCE_DIR}/include/padll/libraries/libc_headers.hpp
+    ${PROJECT_SOURCE_DIR}/include/padll/stage/data_plane_stage.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/statistics/statistic_entry.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/statistics/statistics.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/utils/logging.hpp
-    ${PROJECT_SOURCE_DIR}/include/padll/libraries/libc_enums.hpp
-    ${PROJECT_SOURCE_DIR}/include/padll/libraries/libc_headers.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/utils/options.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/thrid_party/enum.h
     ${PROJECT_SOURCE_DIR}/include/padll/thrid_party/tabulate.hpp
@@ -78,6 +79,7 @@ target_sources(
         src/interface/ldpreloaded/ld_preloaded_posix.cpp
         src/interface/native/posix_file_system.cpp
         src/interface/passthrough/posix_passthrough.cpp
+        src/stage/data_plane_stage.cpp
         src/statistics/statistic_entry.cpp
         src/statistics/statistics.cpp
         src/utils/logging.cpp

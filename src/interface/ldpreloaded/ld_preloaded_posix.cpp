@@ -53,40 +53,6 @@ LdPreloadedPosix::~LdPreloadedPosix ()
     }
 }
 
-void LdPreloadedPosix::initialize_stage ()
-{
-    std::unique_lock<std::mutex> lock (this->m_lock);
-
-    // initialize PAIO structures (stage and instance-interface)
-    this->m_stage = { std::make_shared<paio::PaioStage> (option_default_stage_channels,
-        option_default_stage_object_creation,
-        option_default_stage_name) };
-    this->m_posix_instance = paio::make_unique<paio::PosixLayer> (this->m_stage);
-
-    // temporary ...
-    std::this_thread::sleep_for (std::chrono::seconds (5));
-
-    // update initialization status
-    this->m_stage_initialized.store (true);
-}
-
-// enforce_request call. (...)
-void LdPreloadedPosix::enforce_request (const long& workflow_id,
-    const int& operation_type,
-    const int& operation_context,
-    const uint64_t& operation_size)
-{
-    // create Context object
-    auto context_obj = this->m_posix_instance->build_context_object (workflow_id,
-        operation_type,
-        operation_context,
-        operation_size,
-        1);
-
-    // submit request through posix_noop
-    this->m_posix_instance->posix_noop (nullptr, operation_size, context_obj);
-}
-
 // set_statistic_collection call. (...)
 void LdPreloadedPosix::set_statistic_collection (bool value)
 {
@@ -220,6 +186,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_pread (int fd, void* buf, size_t co
     }
 
     // FIXME: adjust this in step 4 (integrate with PAIO - simplified)
+    // if (!m_stage_initialized.load (std::memory_order_relaxed)) {
     // if (m_stage_initialized.load () == false) {
     //     this->initialize_stage ();
     //     std::cout << this->m_stage->get_stage_info ().to_string () << "\n";

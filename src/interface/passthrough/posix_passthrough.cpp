@@ -301,7 +301,8 @@ int PosixPassthrough::passthrough_posix_fxstatat64 (int version,
     struct stat64* statbuf,
     int flags)
 {
-    return ((libc_fxstatat64_t)dlsym (RTLD_NEXT, "fxstatat64")) (version, dirfd, path, statbuf, flags);
+    return (
+        (libc_fxstatat64_t)dlsym (RTLD_NEXT, "fxstatat64")) (version, dirfd, path, statbuf, flags);
 }
 
 // passthrough_posix_statfs call. (...)

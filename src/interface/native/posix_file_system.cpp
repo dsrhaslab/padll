@@ -337,8 +337,16 @@ int unlink (const char* path)
 int linkat (int olddirfd, const char* old_path, int newdirfd, const char* new_path, int flags)
 {
     return (posix_metadata_calls.paddl_intercept_linkat)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_linkat (olddirfd, old_path, newdirfd, new_path, flags)
-        : m_posix_passthrough.passthrough_posix_linkat (olddirfd, old_path, newdirfd, new_path, flags);
+        ? m_ld_preloaded_posix.ld_preloaded_posix_linkat (olddirfd,
+            old_path,
+            newdirfd,
+            new_path,
+            flags)
+        : m_posix_passthrough.passthrough_posix_linkat (olddirfd,
+            old_path,
+            newdirfd,
+            new_path,
+            flags);
 }
 
 // unlinkat call. (...)

@@ -12,10 +12,8 @@
 #include <padll/interface/ldpreloaded/dlsym_hook_libc.hpp>
 #include <padll/libraries/libc_enums.hpp>
 #include <padll/libraries/libc_headers.hpp>
+#include <padll/stage/data_plane_stage.hpp>
 #include <padll/statistics/statistics.hpp>
-#include <padll/utils/options.hpp>
-#include <paio/interface/posix_layer.hpp>
-#include <paio/stage/paio_stage.hpp>
 
 namespace padll {
 
@@ -43,27 +41,7 @@ private:
     DlsymHookLibc m_dlsym_hook {};
 
     // data plane stage configurations
-    std::atomic<bool> m_stage_initialized { false };
-    std::shared_ptr<paio::PaioStage> m_stage { nullptr };
-    std::unique_ptr<paio::PosixLayer> m_posix_instance { nullptr };
-    const long m_workflow_id { 1000 };
-
-    /**
-     * initialize_stage:
-     */
-    void initialize_stage ();
-
-    /**
-     * enforce_request:
-     * @param workflow_id
-     * @param operation_type
-     * @param operation_context
-     * @param operation_size
-     */
-    void enforce_request (const long& workflow_id,
-        const int& operation_type,
-        const int& operation_context,
-        const uint64_t& operation_size);
+    std::unique_ptr<DataPlaneStage> m_stage { nullptr };
 
 public:
     /**
