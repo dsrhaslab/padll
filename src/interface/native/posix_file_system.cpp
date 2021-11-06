@@ -83,22 +83,30 @@ int open (const char* path, int flags, ...)
         mode_t mode = va_arg (args, int);
         va_end (args);
 
-        return m_ld_preloaded_posix.ld_preloaded_posix_open (path, flags, mode);
+        return (posix_metadata_calls.paddl_intercept_open_var)
+            ? m_ld_preloaded_posix.ld_preloaded_posix_open (path, flags, mode)
+            : m_posix_passthrough.passthrough_posix_open (path, flags, mode);
     } else {
-        return m_ld_preloaded_posix.ld_preloaded_posix_open (path, flags);
+        return (posix_metadata_calls.paddl_intercept_open)
+            ? m_ld_preloaded_posix.ld_preloaded_posix_open (path, flags)
+            : m_posix_passthrough.passthrough_posix_open (path, flags);
     }
 }
 
 // creat call. (...)
 int creat (const char* path, mode_t mode)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_creat (path, mode);
+    return (posix_metadata_calls.paddl_intercept_creat)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_creat (path, mode)
+        : m_posix_passthrough.passthrough_posix_creat (path, mode);
 }
 
 // creat64 call. (...)
 int creat64 (const char* path, mode_t mode)
 {
-    return m_ld_preloaded_posix.ld_preloaded_posix_creat64 (path, mode);
+    return (posix_metadata_calls.paddl_intercept_creat64)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_creat64 (path, mode)
+        : m_posix_passthrough.passthrough_posix_creat64 (path, mode);
 }
 
 // openat call. (...)
