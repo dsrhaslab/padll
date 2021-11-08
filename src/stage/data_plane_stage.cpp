@@ -51,8 +51,8 @@ void DataPlaneStage::initialize_stage ()
 }
 
 // enforce_request call. (...)
-void DataPlaneStage::enforce_request (const long& workflow_id,
-    const int& operation_type,
+// TODO: removed workflow-id: this needs to be specified by a different mechanism (load balancer)
+void DataPlaneStage::enforce_request (const int& operation_type,
     const int& operation_context,
     const uint64_t& operation_size)
 {
@@ -64,7 +64,7 @@ void DataPlaneStage::enforce_request (const long& workflow_id,
     }
 
     // create Context object
-    auto context_obj = this->m_posix_instance->build_context_object (workflow_id,
+    auto context_obj = this->m_posix_instance->build_context_object (this->m_workflow_id,
         operation_type,
         operation_context,
         operation_size,

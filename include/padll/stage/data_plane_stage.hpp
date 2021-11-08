@@ -47,13 +47,11 @@ public:
 
     /**
      * enforce_request:
-     * @param workflow_id
      * @param operation_type
      * @param operation_context
      * @param operation_size
      */
-    void enforce_request (const long& workflow_id,
-        const int& operation_type,
+    void enforce_request (const int& operation_type,
         const int& operation_context,
         const uint64_t& operation_size);
 };
