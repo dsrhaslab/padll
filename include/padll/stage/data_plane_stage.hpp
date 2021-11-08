@@ -6,10 +6,10 @@
 #ifndef PADLL_DATA_PLANE_STAGE_H
 #define PADLL_DATA_PLANE_STAGE_H
 
+#include <padll/utils/logging.hpp>
 #include <padll/utils/options.hpp>
 #include <paio/interface/posix_layer.hpp>
 #include <paio/stage/paio_stage.hpp>
-#include <padll/utils/logging.hpp>
 
 namespace padll {
 

@@ -130,8 +130,8 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_read (int fd, void* buf, size_t cou
     this->m_dlsym_hook.hook_posix_read (m_data_operations.m_read);
 
     // enforce read request to PAIO data plane stage
-    this->m_stage->enforce_request (static_cast<int>(paio::POSIX::read),
-        static_cast<int>(paio::POSIX_META::data_op),
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::read),
+        static_cast<int> (paio::POSIX_META::data_op),
         counter);
 
     // perform original POSIX read operation
@@ -161,8 +161,8 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_write (int fd, const void* buf, siz
     this->m_dlsym_hook.hook_posix_write (m_data_operations.m_write);
 
     // enforce write request to PAIO data plane stage
-    this->m_stage->enforce_request (static_cast<int>(paio::POSIX::write),
-        static_cast<int>(paio::POSIX_META::data_op),
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::write),
+        static_cast<int> (paio::POSIX_META::data_op),
         counter);
 
     // perform original POSIX write operation
@@ -197,9 +197,9 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_pread (int fd, void* buf, size_t co
     this->m_dlsym_hook.hook_posix_pread (m_data_operations.m_pread);
 
     // enforce pread request to PAIO data plane stage
-    this->m_stage->enforce_request (static_cast<int>(paio::POSIX::pread),
-                                    static_cast<int>(paio::POSIX_META::data_op),
-                                    counter);
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::pread),
+        static_cast<int> (paio::POSIX_META::data_op),
+        counter);
 
     // perform original POSIX pread operation
     ssize_t result = m_data_operations.m_pread (fd, buf, counter, offset);
@@ -229,9 +229,9 @@ LdPreloadedPosix::ld_preloaded_posix_pwrite (int fd, const void* buf, size_t cou
     this->m_dlsym_hook.hook_posix_pwrite (m_data_operations.m_pwrite);
 
     // enforce pwrite request to PAIO data plane stage
-    this->m_stage->enforce_request (static_cast<int>(paio::POSIX::pwrite),
-                                    static_cast<int>(paio::POSIX_META::data_op),
-                                    counter);
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::pwrite),
+        static_cast<int> (paio::POSIX_META::data_op),
+        counter);
 
     // perform original POSIX pwrite operation
     ssize_t result = m_data_operations.m_pwrite (fd, buf, counter, offset);
@@ -262,8 +262,8 @@ LdPreloadedPosix::ld_preloaded_posix_pread64 (int fd, void* buf, size_t counter,
     this->m_dlsym_hook.hook_posix_pread64 (m_data_operations.m_pread64);
 
     // enforce pread64 request to PAIO data plane stage
-    this->m_stage->enforce_request (static_cast<int>(paio::POSIX::pread64),
-        static_cast<int>(paio::POSIX_META::data_op),
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::pread64),
+        static_cast<int> (paio::POSIX_META::data_op),
         counter);
 
     // perform original POSIX pread64 operation
@@ -298,10 +298,9 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_pwrite64 (int fd,
     this->m_dlsym_hook.hook_posix_pwrite64 (m_data_operations.m_pwrite64);
 
     // enforce pwrite64 request to PAIO data plane stage
-    this->m_stage->enforce_request (static_cast<int>(paio::POSIX::pwrite64),
-        static_cast<int>(paio::POSIX_META::data_op),
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::pwrite64),
+        static_cast<int> (paio::POSIX_META::data_op),
         counter);
-
 
     // perform original POSIX pwrite64 operation
     ssize_t result = m_data_operations.m_pwrite64 (fd, buf, counter, offset);
@@ -334,9 +333,9 @@ LdPreloadedPosix::ld_preloaded_posix_fread (void* ptr, size_t size, size_t nmemb
     this->m_dlsym_hook.hook_posix_fread (m_data_operations.m_fread);
 
     // enforce fread request to PAIO data plane stage
-    this->m_stage->enforce_request (static_cast<int>(paio::POSIX::fread),
-                                    static_cast<int>(paio::POSIX_META::data_op),
-                                    (size > 0 && nmemb > 0) ? size * nmemb : 1);
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::fread),
+        static_cast<int> (paio::POSIX_META::data_op),
+        (size > 0 && nmemb > 0) ? size * nmemb : 1);
 
     // perform original POSIX fread operation
     size_t result = m_data_operations.m_fread (ptr, size, nmemb, stream);
@@ -367,9 +366,9 @@ size_t LdPreloadedPosix::ld_preloaded_posix_fwrite (const void* ptr,
     // hook POSIX fwrite operation to m_data_operations.m_fwrite
     this->m_dlsym_hook.hook_posix_fwrite (m_data_operations.m_fwrite);
 
-    this->m_stage->enforce_request (static_cast<int>(paio::POSIX::fwrite),
-                                    static_cast<int>(paio::POSIX_META::data_op),
-                                    (size > 0 && nmemb > 0) ? size * nmemb : 1);
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::fwrite),
+        static_cast<int> (paio::POSIX_META::data_op),
+        (size > 0 && nmemb > 0) ? size * nmemb : 1);
 
     // perform original POSIX fwrite operation
     size_t result = m_data_operations.m_fwrite (ptr, size, nmemb, stream);
@@ -399,9 +398,9 @@ int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags, mode
     this->m_dlsym_hook.hook_posix_open_var (m_metadata_operations.m_open_var);
 
     // enforce open request to PAIO data plane stage
-    this->m_stage->enforce_request (static_cast<int>(paio::POSIX::open),
-                                    static_cast<int>(paio::POSIX_META::meta_op),
-                                    1);
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::open),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX open operation
     int result = m_metadata_operations.m_open_var (path, flags, mode);
@@ -434,9 +433,9 @@ int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags)
     this->m_dlsym_hook.hook_posix_open (m_metadata_operations.m_open);
 
     // enforce open request to PAIO data plane stage
-    this->m_stage->enforce_request (static_cast<int>(paio::POSIX::open),
-                                    static_cast<int>(paio::POSIX_META::meta_op),
-                                    1);
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::open),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX open operation
     int result = m_metadata_operations.m_open (path, flags);
@@ -468,9 +467,9 @@ int LdPreloadedPosix::ld_preloaded_posix_creat (const char* path, mode_t mode)
     this->m_dlsym_hook.hook_posix_creat (m_metadata_operations.m_creat);
 
     // enforce creat request to PAIO data plane stage
-    this->m_stage->enforce_request (static_cast<int>(paio::POSIX::creat),
-                                    static_cast<int>(paio::POSIX_META::meta_op),
-                                    1);
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::creat),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX creat operation
     int result = m_metadata_operations.m_creat (path, mode);
@@ -503,8 +502,10 @@ int LdPreloadedPosix::ld_preloaded_posix_creat64 (const char* path, mode_t mode)
     // hook POSIX creat64 operation to m_metadata_operations.m_creat64
     this->m_dlsym_hook.hook_posix_creat64 (m_metadata_operations.m_creat64);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce creat64 request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::creat64),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX creat64 operation
     int result = m_metadata_operations.m_creat64 (path, mode);
@@ -541,8 +542,10 @@ int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd,
     // hook POSIX openat variadic operation to m_metadata_operations.m_openat_var
     this->m_dlsym_hook.hook_posix_openat_var (m_metadata_operations.m_openat_var);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce openat request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::openat),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX openat operation
     int result = m_metadata_operations.m_openat_var (dirfd, path, flags, mode);
@@ -575,8 +578,10 @@ int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd, const char* path, in
     // hook POSIX openat operation to m_metadata_operations.m_openat
     this->m_dlsym_hook.hook_posix_openat (m_metadata_operations.m_openat);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce openat request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::openat),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX openat operation
     int result = m_metadata_operations.m_openat (dirfd, path, flags);
@@ -610,8 +615,10 @@ int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags, mo
     // hook POSIX open64_var operation to m_metadata_operations.m_open64_var
     this->m_dlsym_hook.hook_posix_open64_variadic (m_metadata_operations.m_open64_var);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce open64 request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::open64),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX open64 operation
     int result = m_metadata_operations.m_open64_var (path, flags, mode);
@@ -643,8 +650,10 @@ int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags)
     // hook POSIX open64 operation to m_metadata_operations.m_open64
     this->m_dlsym_hook.hook_posix_open64 (m_metadata_operations.m_open64);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce open64 request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::open64),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX open64 operation
     int result = m_metadata_operations.m_open64 (path, flags);
@@ -677,8 +686,10 @@ int LdPreloadedPosix::ld_preloaded_posix_close (int fd)
     // hook POSIX close operation to m_metadata_operations.m_close
     this->m_dlsym_hook.hook_posix_close (m_metadata_operations.m_close);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce close request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::close),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX close operation
     int result = m_metadata_operations.m_close (fd);
@@ -711,8 +722,10 @@ int LdPreloadedPosix::ld_preloaded_posix_fsync (int fd)
     // hook POSIX fsync operation to m_metadata_operations.m_fsync
     this->m_dlsym_hook.hook_posix_fsync (m_metadata_operations.m_fsync);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce fsync request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::fsync),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX fsync operation
     int result = m_metadata_operations.m_fsync (fd);
@@ -746,8 +759,10 @@ int LdPreloadedPosix::ld_preloaded_posix_fdatasync (int fd)
     // hook POSIX fdatasync operation to m_metadata_operations.m_fdatasync
     this->m_dlsym_hook.hook_posix_fdatasync (m_metadata_operations.m_fdatasync);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce fdatasync request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::fdatasync),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX fdatasync operation
     int result = m_metadata_operations.m_fdatasync (fd);
@@ -780,8 +795,10 @@ void LdPreloadedPosix::ld_preloaded_posix_sync ()
     // hook POSIX sync operation to m_metadata_operations.m_sync
     this->m_dlsym_hook.hook_posix_sync (m_metadata_operations.m_sync);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce sync request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::sync),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX sync operation
     m_metadata_operations.m_sync ();
@@ -803,8 +820,10 @@ int LdPreloadedPosix::ld_preloaded_posix_syncfs (int fd)
     // hook POSIX syncfs operation to m_metadata_operations.m_syncfs
     this->m_dlsym_hook.hook_posix_syncfs (m_metadata_operations.m_syncfs);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce syncfs request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::syncfs),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX syncfs operation
     int result = m_metadata_operations.m_syncfs (fd);
@@ -837,8 +856,11 @@ int LdPreloadedPosix::ld_preloaded_posix_truncate (const char* path, off_t lengt
     // hook POSIX truncate operation to m_metadata_operations.m_truncate
     this->m_dlsym_hook.hook_posix_truncate (m_metadata_operations.m_truncate);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // TODO: does truncate only cost one IOP?
+    // enforce truncate request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::truncate),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX truncate operation
     int result = m_metadata_operations.m_truncate (path, length);
@@ -872,8 +894,11 @@ int LdPreloadedPosix::ld_preloaded_posix_ftruncate (int fd, off_t length)
     // hook POSIX ftruncate operation to m_metadata_operations.m_ftruncate
     this->m_dlsym_hook.hook_posix_ftruncate (m_metadata_operations.m_ftruncate);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // TODO: does ftruncate only cost one IOP?
+    // enforce ftruncate request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::ftruncate),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX ftruncate operation
     int result = m_metadata_operations.m_ftruncate (fd, length);
@@ -907,8 +932,11 @@ int LdPreloadedPosix::ld_preloaded_posix_truncate64 (const char* path, off_t len
     // hook POSIX truncate64 operation to m_metadata_operations.m_truncate64
     this->m_dlsym_hook.hook_posix_truncate64 (m_metadata_operations.m_truncate64);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // TODO: does truncate64 only cost one IOP?
+    // enforce truncate64 request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::truncate64),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX truncate64 operation
     int result = m_metadata_operations.m_truncate64 (path, length);
@@ -942,8 +970,11 @@ int LdPreloadedPosix::ld_preloaded_posix_ftruncate64 (int fd, off_t length)
     // hook POSIX ftruncate64 operation to m_metadata_operations.m_ftruncate64
     this->m_dlsym_hook.hook_posix_ftruncate64 (m_metadata_operations.m_ftruncate64);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // TODO: does ftruncate64 only cost one IOP?
+    // enforce ftruncate64 request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::ftruncate64),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX ftruncate64 operation
     int result = m_metadata_operations.m_ftruncate64 (fd, length);
@@ -976,8 +1007,10 @@ int LdPreloadedPosix::ld_preloaded_posix_xstat (int version, const char* path, s
     // hook POSIX __xstat operation to m_metadata_operations.m_xstat
     this->m_dlsym_hook.hook_posix_xstat (m_metadata_operations.m_xstat);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce __xstat request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::xstat),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX __xstat (stat) operation
     int result = m_metadata_operations.m_xstat (version, path, statbuf);
@@ -1010,8 +1043,10 @@ int LdPreloadedPosix::ld_preloaded_posix_lxstat (int version,
     // hook POSIX __lxstat operation to m_metadata_operations.m_lxstat
     this->m_dlsym_hook.hook_posix_lxstat (m_metadata_operations.m_lxstat);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce __lxstat request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::lxstat),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX __lxstat (lstat) operation
     int result = m_metadata_operations.m_lxstat (version, path, statbuf);
@@ -1044,8 +1079,10 @@ int LdPreloadedPosix::ld_preloaded_posix_fxstat (int version, int fd, struct sta
     // hook POSIX __fxstat operation to m_metadata_operations.m_fxstat
     this->m_dlsym_hook.hook_posix_fxstat (m_metadata_operations.m_fxstat);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce __fxstat request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::fxstat),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX __fxstat (fstat) operation
     int result = m_metadata_operations.m_fxstat (version, fd, statbuf);
@@ -1083,8 +1120,10 @@ int LdPreloadedPosix::ld_preloaded_posix_fxstatat (int version,
     // hook POSIX __fxstatat operation to m_metadata_operations.m_fxstatat
     this->m_dlsym_hook.hook_posix_fxstatat (m_metadata_operations.m_fxstatat);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce __fxstatat request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::fxstatat),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX __fxstatat (fstatat) operation
     int result = m_metadata_operations.m_fxstatat (version, dirfd, path, statbuf, flags);
@@ -1119,8 +1158,10 @@ int LdPreloadedPosix::ld_preloaded_posix_xstat64 (int version,
     // hook POSIX __xstat64 operation to m_metadata_operations.m_xstat64
     this->m_dlsym_hook.hook_posix_xstat64 (m_metadata_operations.m_xstat64);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce __xstat64 request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::xstat64),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX __xstat64 (stat) operation
     int result = m_metadata_operations.m_xstat64 (version, path, statbuf);
@@ -1155,8 +1196,10 @@ int LdPreloadedPosix::ld_preloaded_posix_lxstat64 (int version,
     // hook POSIX __lxstat64 operation to m_metadata_operations.m_lxstat64
     this->m_dlsym_hook.hook_posix_lxstat64 (m_metadata_operations.m_lxstat64);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce __lxstat64 request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::lxstat64),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX __lxstat64 (lstat64) operation
     int result = m_metadata_operations.m_lxstat64 (version, path, statbuf);
@@ -1189,8 +1232,10 @@ int LdPreloadedPosix::ld_preloaded_posix_fxstat64 (int version, int fd, struct s
     // hook POSIX __fxstat64 operation to m_metadata_operations.m_fxstat64
     this->m_dlsym_hook.hook_posix_fxstat64 (m_metadata_operations.m_fxstat64);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce __fxstat64 request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::fxstat64),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX __fxstat64 (fxstat64) operation
     int result = m_metadata_operations.m_fxstat64 (version, fd, statbuf);
@@ -1228,8 +1273,10 @@ int LdPreloadedPosix::ld_preloaded_posix_fxstatat64 (int version,
     // hook POSIX __fxstatat64 operation to m_metadata_operations.m_fxstatat64
     this->m_dlsym_hook.hook_posix_fxstatat64 (m_metadata_operations.m_fxstatat64);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce __fxstatat64 request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::fxstatat64),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX __fxstatat64 (fxstatat64) operation
     int result = m_metadata_operations.m_fxstatat64 (version, dirfd, path, statbuf, flags);
@@ -1262,8 +1309,10 @@ int LdPreloadedPosix::ld_preloaded_posix_statfs (const char* path, struct statfs
     // hook POSIX statfs operation to m_metadata_operations.m_statfs
     this->m_dlsym_hook.hook_posix_statfs (m_metadata_operations.m_statfs);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce statfs request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::statfs),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX statfs operation
     int result = m_metadata_operations.m_statfs (path, buf);
@@ -1296,8 +1345,10 @@ int LdPreloadedPosix::ld_preloaded_posix_fstatfs (int fd, struct statfs* buf)
     // hook POSIX fstatfs operation to m_metadata_operations.m_fstatfs
     this->m_dlsym_hook.hook_posix_fstatfs (m_metadata_operations.m_fstatfs);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce fstatfs request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::fstatfs),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX fstatfs operation
     int result = m_metadata_operations.m_fstatfs (fd, buf);
@@ -1330,8 +1381,10 @@ int LdPreloadedPosix::ld_preloaded_posix_statfs64 (const char* path, struct stat
     // hook POSIX statfs64 operation to m_metadata_operations.m_statfs64
     this->m_dlsym_hook.hook_posix_statfs64 (m_metadata_operations.m_statfs64);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce statfs64 request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::statfs64),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX statfs64 operation
     int result = m_metadata_operations.m_statfs64 (path, buf);
@@ -1365,8 +1418,10 @@ int LdPreloadedPosix::ld_preloaded_posix_fstatfs64 (int fd, struct statfs64* buf
     // hook POSIX fstatfs64 operation to m_metadata_operations.m_fstatfs64
     this->m_dlsym_hook.hook_posix_fstatfs64 (m_metadata_operations.m_fstatfs64);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce fstatfs64 request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::fstatfs64),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX fstatfs64 operation
     int result = m_metadata_operations.m_fstatfs64 (fd, buf);
@@ -1400,8 +1455,10 @@ int LdPreloadedPosix::ld_preloaded_posix_link (const char* old_path, const char*
     // hook POSIX link operation to m_metadata_operations.m_link
     this->m_dlsym_hook.hook_posix_link (m_metadata_operations.m_link);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce link request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::link),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX link operation
     int result = m_metadata_operations.m_link (old_path, new_path);
@@ -1432,8 +1489,10 @@ int LdPreloadedPosix::ld_preloaded_posix_unlink (const char* path)
     // hook POSIX unlink operation to m_metadata_operations.m_unlink
     this->m_dlsym_hook.hook_posix_unlink (m_metadata_operations.m_unlink);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce unlink request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::unlink),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX unlink operation
     int result = m_metadata_operations.m_unlink (path);
@@ -1472,8 +1531,10 @@ int LdPreloadedPosix::ld_preloaded_posix_linkat (int olddirfd,
     // hook POSIX linkat operation to m_metadata_operations.m_linkat
     this->m_dlsym_hook.hook_posix_linkat (m_metadata_operations.m_linkat);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce linkat request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::linkat),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX linkat operation
     int result = m_metadata_operations.m_linkat (olddirfd, old_path, newdirfd, new_path, flags);
@@ -1507,8 +1568,10 @@ int LdPreloadedPosix::ld_preloaded_posix_unlinkat (int dirfd, const char* pathna
     // hook POSIX unlinkat operation to m_metadata_operations.m_unlinkat
     this->m_dlsym_hook.hook_posix_unlinkat (m_metadata_operations.m_unlinkat);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce unlinkat request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::unlinkat),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX unlinkat operation
     int result = m_metadata_operations.m_unlinkat (dirfd, pathname, flags);
@@ -1542,8 +1605,10 @@ int LdPreloadedPosix::ld_preloaded_posix_rename (const char* old_path, const cha
     // hook POSIX rename operation to m_metadata_operations.m_rename
     this->m_dlsym_hook.hook_posix_rename (m_metadata_operations.m_rename);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce rename request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::rename),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX rename operation
     int result = m_metadata_operations.m_rename (old_path, new_path);
@@ -1581,8 +1646,10 @@ int LdPreloadedPosix::ld_preloaded_posix_renameat (int olddirfd,
     // hook POSIX renameat operation to m_metadata_operations.m_renameat
     this->m_dlsym_hook.hook_posix_renameat (m_metadata_operations.m_renameat);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce renameat request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::renameat),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX renameat operation
     int result = m_metadata_operations.m_renameat (olddirfd, old_path, newdirfd, new_path);
@@ -1616,8 +1683,10 @@ int LdPreloadedPosix::ld_preloaded_posix_symlink (const char* target, const char
     // hook POSIX symlink operation to m_metadata_operations.m_symlink
     this->m_dlsym_hook.hook_posix_symlink (m_metadata_operations.m_symlink);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce symlink request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::symlink),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX symlink operation
     int result = m_metadata_operations.m_symlink (target, linkpath);
@@ -1653,8 +1722,10 @@ int LdPreloadedPosix::ld_preloaded_posix_symlinkat (const char* target,
     // hook POSIX symlinkat operation to m_metadata_operations.m_symlinkat
     this->m_dlsym_hook.hook_posix_symlinkat (m_metadata_operations.m_symlinkat);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce symlinkat request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::symlinkat),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX symlinkat operation
     int result = m_metadata_operations.m_symlinkat (target, newdirfd, linkpath);
@@ -1687,8 +1758,10 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_readlink (const char* path, char* b
     // hook POSIX readlink operation to m_metadata_operations.m_readlink
     this->m_dlsym_hook.hook_posix_readlink (m_metadata_operations.m_readlink);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce readlink request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::readlink),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX readlink operation
     ssize_t result = m_metadata_operations.m_readlink (path, buf, bufsize);
@@ -1725,8 +1798,10 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_readlinkat (int dirfd,
     // hook POSIX readlinkat operation to m_metadata_operations.m_readlinkat
     this->m_dlsym_hook.hook_posix_readlinkat (m_metadata_operations.m_readlinkat);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce readlinkat request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::readlinkat),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX readlinkat operation
     ssize_t result = m_metadata_operations.m_readlinkat (dirfd, path, buf, bufsize);
@@ -1759,8 +1834,10 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_fopen (const char* pathname, const ch
     // hook POSIX fopen operation to m_metadata_operations.m_fopen
     this->m_dlsym_hook.hook_posix_fopen (m_metadata_operations.m_fopen);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce fopen request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::fopen),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX fopen operation
     FILE* result = m_metadata_operations.m_fopen (pathname, mode);
@@ -1794,8 +1871,10 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_fopen64 (const char* pathname, const 
     // hook POSIX fopen64 operation to m_metadata_operations.m_fopen64
     this->m_dlsym_hook.hook_posix_fopen64 (m_metadata_operations.m_fopen64);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce fopen64 request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::fopen64),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX fopen64 operation
     FILE* result = m_metadata_operations.m_fopen64 (pathname, mode);
@@ -1828,8 +1907,10 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_fdopen (int fd, const char* mode)
     // hook POSIX fdopen operation to m_metadata_operations.m_fdopen
     this->m_dlsym_hook.hook_posix_fdopen (m_metadata_operations.m_fdopen);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce fdopen request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::fdopen),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX fdopen operation
     FILE* result = m_metadata_operations.m_fdopen (fd, mode);
@@ -1865,8 +1946,10 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_freopen (const char* pathname,
     // hook POSIX freopen operation to m_metadata_operations.m_freopen
     this->m_dlsym_hook.hook_posix_freopen (m_metadata_operations.m_freopen);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce freopen request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::freopen),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX freopen operation
     FILE* result = m_metadata_operations.m_freopen (pathname, mode, stream);
@@ -1902,8 +1985,10 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_freopen64 (const char* pathname,
     // hook POSIX freopen64 operation to m_metadata_operations.m_freopen64
     this->m_dlsym_hook.hook_posix_freopen64 (m_metadata_operations.m_freopen64);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce freopen64 request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::freopen64),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX freopen64 operation
     FILE* result = m_metadata_operations.m_freopen64 (pathname, mode, stream);
@@ -1936,8 +2021,10 @@ int LdPreloadedPosix::ld_preloaded_posix_fclose (FILE* stream)
     // hook POSIX fclose operation to m_metadata_operations.m_fclose
     this->m_dlsym_hook.hook_posix_fclose (m_metadata_operations.m_fclose);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce fclose request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::fclose),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX fclose operation
     int result = m_metadata_operations.m_fclose (stream);
@@ -1970,8 +2057,10 @@ int LdPreloadedPosix::ld_preloaded_posix_fflush (FILE* stream)
     // hook POSIX fflush operation to m_metadata_operations.m_fflush
     this->m_dlsym_hook.hook_posix_fflush (m_metadata_operations.m_fflush);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce fflush request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::fflush),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX fflush operation
     int result = m_metadata_operations.m_fflush (stream);
@@ -2004,8 +2093,10 @@ int LdPreloadedPosix::ld_preloaded_posix_access (const char* path, int mode)
     // hook POSIX access operation to m_metadata_operations.m_access
     this->m_dlsym_hook.hook_posix_access (m_metadata_operations.m_access);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce access request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::access),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX access operation
     int result = m_metadata_operations.m_access (path, mode);
@@ -2041,8 +2132,10 @@ int LdPreloadedPosix::ld_preloaded_posix_faccessat (int dirfd,
     // hook POSIX faccessat operation to m_metadata_operations.m_faccessat
     this->m_dlsym_hook.hook_posix_faccessat (m_metadata_operations.m_faccessat);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce faccessat request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::faccessat),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX faccessat operation
     int result = m_metadata_operations.m_faccessat (dirfd, path, mode, flags);
@@ -2075,8 +2168,10 @@ off_t LdPreloadedPosix::ld_preloaded_posix_lseek (int fd, off_t offset, int when
     // hook POSIX lseek operation to m_metadata_operations.m_lseek
     this->m_dlsym_hook.hook_posix_lseek (m_metadata_operations.m_lseek);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce lseek request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::lseek),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX lseek operation
     off_t result = m_metadata_operations.m_lseek (fd, offset, whence);
@@ -2109,8 +2204,10 @@ int LdPreloadedPosix::ld_preloaded_posix_fseek (FILE* stream, long offset, int w
     // hook POSIX fseek operation to m_metadata_operations.m_fseek
     this->m_dlsym_hook.hook_posix_fseek (m_metadata_operations.m_fseek);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce fseek request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::fseek),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX fseek operation
     int result = m_metadata_operations.m_fseek (stream, offset, whence);
@@ -2143,8 +2240,10 @@ long LdPreloadedPosix::ld_preloaded_posix_ftell (FILE* stream)
     // hook POSIX ftell operation to m_metadata_operations.m_ftell
     this->m_dlsym_hook.hook_posix_ftell (m_metadata_operations.m_ftell);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce ftell request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::ftell),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX ftell operation
     long result = m_metadata_operations.m_ftell (stream);
@@ -2177,8 +2276,10 @@ off_t LdPreloadedPosix::ld_preloaded_posix_lseek64 (int fd, off_t offset, int wh
     // hook POSIX lseek64 operation to m_metadata_operations.m_lseek64
     this->m_dlsym_hook.hook_posix_lseek64 (m_metadata_operations.m_lseek64);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce lseek64 request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::lseek64),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX lseek64 operation
     off_t result = m_metadata_operations.m_lseek64 (fd, offset, whence);
@@ -2211,8 +2312,10 @@ int LdPreloadedPosix::ld_preloaded_posix_fseeko64 (FILE* stream, off_t offset, i
     // hook POSIX fseeko64 operation to m_metadata_operations.m_fseeko64
     this->m_dlsym_hook.hook_posix_fseeko64 (m_metadata_operations.m_fseeko64);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce fseeko64 request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::fseeko64),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX fseeko64 operation
     int result = m_metadata_operations.m_fseeko64 (stream, offset, whence);
@@ -2245,8 +2348,10 @@ off_t LdPreloadedPosix::ld_preloaded_posix_ftello64 (FILE* stream)
     // hook POSIX ftello64 operation to m_metadata_operations.m_ftello64
     this->m_dlsym_hook.hook_posix_ftello64 (m_metadata_operations.m_ftello64);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce ftello64 request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::ftello64),
+        static_cast<int> (paio::POSIX_META::meta_op),
+        1);
 
     // perform original POSIX ftello64 operation
     long result = m_metadata_operations.m_ftello64 (stream);
@@ -2279,8 +2384,10 @@ int LdPreloadedPosix::ld_preloaded_posix_mkdir (const char* path, mode_t mode)
     // hook POSIX mkdir operation to m_directory_operations.m_mkdir
     this->m_dlsym_hook.hook_posix_mkdir (m_directory_operations.m_mkdir);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce mkdir request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::mkdir),
+        static_cast<int> (paio::POSIX_META::dir_op),
+        1);
 
     // perform original POSIX mkdir operation
     int result = m_directory_operations.m_mkdir (path, mode);
@@ -2309,8 +2416,10 @@ int LdPreloadedPosix::ld_preloaded_posix_mkdirat (int dirfd, const char* path, m
     // hook POSIX mkdirat operation to m_directory_operations.m_mkdirat
     this->m_dlsym_hook.hook_posix_mkdirat (m_directory_operations.m_mkdirat);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce mkdirat request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::mkdirat),
+        static_cast<int> (paio::POSIX_META::dir_op),
+        1);
 
     // perform original POSIX mkdirat operation
     int result = m_directory_operations.m_mkdirat (dirfd, path, mode);
@@ -2341,8 +2450,10 @@ struct dirent* LdPreloadedPosix::ld_preloaded_posix_readdir (DIR* dirp)
     // hook POSIX readdir operation to m_directory_operations.m_readdir
     this->m_dlsym_hook.hook_posix_readdir (m_directory_operations.m_readdir);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce readdir request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::readdir),
+        static_cast<int> (paio::POSIX_META::dir_op),
+        1);
 
     // perform original POSIX readdir operation
     struct dirent* entry = m_directory_operations.m_readdir (dirp);
@@ -2373,8 +2484,10 @@ struct dirent64* LdPreloadedPosix::ld_preloaded_posix_readdir64 (DIR* dirp)
     // hook POSIX readdir64 operation to m_directory_operations.m_readdir64
     this->m_dlsym_hook.hook_posix_readdir64 (m_directory_operations.m_readdir64);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce readdir64 request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::readdir64),
+        static_cast<int> (paio::POSIX_META::dir_op),
+        1);
 
     // perform original POSIX readdir64 operation
     struct dirent64* entry = m_directory_operations.m_readdir64 (dirp);
@@ -2407,8 +2520,10 @@ DIR* LdPreloadedPosix::ld_preloaded_posix_opendir (const char* path)
     // hook POSIX opendir operation to m_directory_operations.m_opendir
     this->m_dlsym_hook.hook_posix_opendir (m_directory_operations.m_opendir);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce opendir request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::opendir),
+        static_cast<int> (paio::POSIX_META::dir_op),
+        1);
 
     // perform original POSIX opendir operation
     DIR* folder = m_directory_operations.m_opendir (path);
@@ -2440,8 +2555,10 @@ DIR* LdPreloadedPosix::ld_preloaded_posix_fdopendir (int fd)
     // hook POSIX fdopendir operation to m_directory_operations.m_fdopendir
     this->m_dlsym_hook.hook_posix_fdopendir (m_directory_operations.m_fdopendir);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce fdopendir request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::fdopendir),
+        static_cast<int> (paio::POSIX_META::dir_op),
+        1);
 
     // perform original POSIX fopendir operation
     DIR* folder = m_directory_operations.m_fdopendir (fd);
@@ -2474,8 +2591,10 @@ int LdPreloadedPosix::ld_preloaded_posix_closedir (DIR* dirp)
     // hook POSIX closedir operation to m_directory_operations.m_closedir
     this->m_dlsym_hook.hook_posix_closedir (m_directory_operations.m_closedir);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce closedir request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::closedir),
+        static_cast<int> (paio::POSIX_META::dir_op),
+        1);
 
     // perform original POSIX closedir operation
     int result = m_directory_operations.m_closedir (dirp);
@@ -2506,8 +2625,10 @@ int LdPreloadedPosix::ld_preloaded_posix_rmdir (const char* path)
     // hook POSIX rmdir operation to m_directory_operations.m_rmdir
     this->m_dlsym_hook.hook_posix_rmdir (m_directory_operations.m_rmdir);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce rmdir request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::rmdir),
+        static_cast<int> (paio::POSIX_META::dir_op),
+        1);
 
     // perform original POSIX rmdir operation
     int result = m_directory_operations.m_rmdir (path);
@@ -2535,8 +2656,10 @@ int LdPreloadedPosix::ld_preloaded_posix_dirfd (DIR* dirp)
     // hook POSIX dirfd operation to m_directory_operations.m_dirfd
     this->m_dlsym_hook.hook_posix_dirfd (m_directory_operations.m_dirfd);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce dirfd request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::dirfd),
+        static_cast<int> (paio::POSIX_META::dir_op),
+        1);
 
     // perform original POSIX dirfd operation
     int result = m_directory_operations.m_dirfd (dirp);
@@ -2568,8 +2691,10 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_getxattr (const char* path,
     // hook POSIX getxattr operation to m_extattr_operations.m_getxattr
     this->m_dlsym_hook.hook_posix_getxattr (m_extattr_operations.m_getxattr);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce getxattr request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::getxattr),
+        static_cast<int> (paio::POSIX_META::ext_attr_op),
+        1);
 
     // perform original POSIX getxattr operation
     ssize_t result = m_extattr_operations.m_getxattr (path, name, value, size);
@@ -2605,8 +2730,10 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_lgetxattr (const char* path,
     // hook POSIX lgetxattr operation to m_extattr_operations.m_lgetxattr
     this->m_dlsym_hook.hook_posix_lgetxattr (m_extattr_operations.m_lgetxattr);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce lgetxattr request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::lgetxattr),
+        static_cast<int> (paio::POSIX_META::ext_attr_op),
+        1);
 
     // perform original POSIX lgetxattr operation
     ssize_t result = m_extattr_operations.m_lgetxattr (path, name, value, size);
@@ -2640,8 +2767,10 @@ LdPreloadedPosix::ld_preloaded_posix_fgetxattr (int fd, const char* name, void* 
     // hook POSIX fgetxattr operation to m_extattr_operations.m_fgetxattr
     this->m_dlsym_hook.hook_posix_fgetxattr (m_extattr_operations.m_fgetxattr);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce fgetxattr request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::fgetxattr),
+        static_cast<int> (paio::POSIX_META::ext_attr_op),
+        1);
 
     // perform original POSIX fgetxattr operation
     ssize_t result = m_extattr_operations.m_fgetxattr (fd, name, value, size);
@@ -2678,8 +2807,10 @@ int LdPreloadedPosix::ld_preloaded_posix_setxattr (const char* path,
     // hook POSIX setxattr operation to m_extattr_operations.m_setxattr
     this->m_dlsym_hook.hook_posix_setxattr (m_extattr_operations.m_setxattr);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce setxattr request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::setxattr),
+        static_cast<int> (paio::POSIX_META::ext_attr_op),
+        1);
 
     // perform original POSIX setxattr operation
     int result = m_extattr_operations.m_setxattr (path, name, value, size, flags);
@@ -2716,8 +2847,10 @@ int LdPreloadedPosix::ld_preloaded_posix_lsetxattr (const char* path,
     // hook POSIX lsetxattr operation to m_extattr_operations.m_lsetxattr
     this->m_dlsym_hook.hook_posix_lsetxattr (m_extattr_operations.m_lsetxattr);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce lsetxattr request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::lsetxattr),
+        static_cast<int> (paio::POSIX_META::ext_attr_op),
+        1);
 
     // perform original POSIX lsetxattr operation
     int result = m_extattr_operations.m_lsetxattr (path, name, value, size, flags);
@@ -2754,8 +2887,10 @@ int LdPreloadedPosix::ld_preloaded_posix_fsetxattr (int fd,
     // hook POSIX fsetxattr operation to m_extattr_operations.m_fsetxattr
     this->m_dlsym_hook.hook_posix_fsetxattr (m_extattr_operations.m_fsetxattr);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce fsetxattr request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::fsetxattr),
+        static_cast<int> (paio::POSIX_META::ext_attr_op),
+        1);
 
     // perform original POSIX fsetxattr operation
     int result = m_extattr_operations.m_fsetxattr (fd, name, value, size, flags);
@@ -2787,8 +2922,10 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_listxattr (const char* path, char* 
     // hook POSIX listxattr operation to m_extattr_operations.m_listxattr
     this->m_dlsym_hook.hook_posix_listxattr (m_extattr_operations.m_listxattr);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce listxattr request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::listxattr),
+        static_cast<int> (paio::POSIX_META::ext_attr_op),
+        1);
 
     // perform original POSIX listxattr operation
     ssize_t result = m_extattr_operations.m_listxattr (path, list, size);
@@ -2821,8 +2958,10 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_llistxattr (const char* path, char*
     // hook POSIX llistxattr operation to m_extattr_operations.m_llistxattr
     this->m_dlsym_hook.hook_posix_llistxattr (m_extattr_operations.m_llistxattr);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce llistxattr request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::llistxattr),
+        static_cast<int> (paio::POSIX_META::ext_attr_op),
+        1);
 
     // perform original POSIX llistxattr operation
     ssize_t result = m_extattr_operations.m_llistxattr (path, list, size);
@@ -2858,8 +2997,10 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_flistxattr (int fd, char* list, siz
     // hook POSIX flistxattr operation to m_extattr_operations.m_flistxattr
     this->m_dlsym_hook.hook_posix_flistxattr (m_extattr_operations.m_flistxattr);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce flistxattr request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::flistxattr),
+        static_cast<int> (paio::POSIX_META::ext_attr_op),
+        1);
 
     // perform original POSIX flistxattr operation
     ssize_t result = m_extattr_operations.m_flistxattr (fd, list, size);
@@ -2895,8 +3036,10 @@ int LdPreloadedPosix::ld_preloaded_posix_removexattr (const char* path, const ch
     // hook POSIX removexattr operation to m_extattr_operations.m_removexattr
     this->m_dlsym_hook.hook_posix_removexattr (m_extattr_operations.m_removexattr);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce removexattr request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::removexattr),
+        static_cast<int> (paio::POSIX_META::ext_attr_op),
+        1);
 
     // perform original POSIX removexattr operation
     int result = m_extattr_operations.m_removexattr (path, name);
@@ -2932,8 +3075,10 @@ int LdPreloadedPosix::ld_preloaded_posix_lremovexattr (const char* path, const c
     // hook POSIX lremovexattr operation to m_extattr_operations.m_lremovexattr
     this->m_dlsym_hook.hook_posix_lremovexattr (m_extattr_operations.m_lremovexattr);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce lremovexattr request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::lremovexattr),
+        static_cast<int> (paio::POSIX_META::ext_attr_op),
+        1);
 
     // perform original POSIX lremovexattr operation
     int result = m_extattr_operations.m_lremovexattr (path, name);
@@ -2969,8 +3114,10 @@ int LdPreloadedPosix::ld_preloaded_posix_fremovexattr (int fd, const char* name)
     // hook POSIX fremovexattr operation to m_extattr_operations.m_fremovexattr
     this->m_dlsym_hook.hook_posix_fremovexattr (m_extattr_operations.m_fremovexattr);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce fremovexattr request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::fremovexattr),
+        static_cast<int> (paio::POSIX_META::ext_attr_op),
+        1);
 
     // perform original POSIX fremovexattr operation
     int result = m_extattr_operations.m_fremovexattr (fd, name);
@@ -3005,8 +3152,10 @@ int LdPreloadedPosix::ld_preloaded_posix_chmod (const char* path, mode_t mode)
     // hook POSIX chmod operation to m_filemodes_operations.m_chmod
     this->m_dlsym_hook.hook_posix_chmod (m_filemodes_operations.m_chmod);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce chmod request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::chmod),
+        static_cast<int> (paio::POSIX_META::file_mod_op),
+        1);
 
     // perform original POSIX chmod operation
     int result = m_filemodes_operations.m_chmod (path, mode);
@@ -3039,8 +3188,10 @@ int LdPreloadedPosix::ld_preloaded_posix_fchmod (int fd, mode_t mode)
     // hook POSIX fchmod operation to m_filemodes_operations.m_fchmod
     this->m_dlsym_hook.hook_posix_fchmod (m_filemodes_operations.m_fchmod);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce fchmod request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::fchmod),
+        static_cast<int> (paio::POSIX_META::file_mod_op),
+        1);
 
     // perform original POSIX fchmod operation
     int result = m_filemodes_operations.m_fchmod (fd, mode);
@@ -3077,8 +3228,10 @@ int LdPreloadedPosix::ld_preloaded_posix_fchmodat (int dirfd,
     // hook POSIX fchmodat operation to m_filemodes_operations.m_fchmodat
     this->m_dlsym_hook.hook_posix_fchmodat (m_filemodes_operations.m_fchmodat);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce fchmodat request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::fchmodat),
+        static_cast<int> (paio::POSIX_META::file_mod_op),
+        1);
 
     // perform original POSIX fchmodat operation
     int result = m_filemodes_operations.m_fchmodat (dirfd, path, mode, flags);
@@ -3111,8 +3264,10 @@ int LdPreloadedPosix::ld_preloaded_posix_chown (const char* pathname, uid_t owne
     // hook POSIX chown operation to m_filemodes_operations.m_chown
     this->m_dlsym_hook.hook_posix_chown (m_filemodes_operations.m_chown);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce chown request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::chown),
+        static_cast<int> (paio::POSIX_META::file_mod_op),
+        1);
 
     // perform original POSIX chown operation
     int result = m_filemodes_operations.m_chown (pathname, owner, group);
@@ -3146,8 +3301,10 @@ int LdPreloadedPosix::ld_preloaded_posix_lchown (const char* pathname, uid_t own
     // hook POSIX lchown operation to m_filemodes_operations.m_lchown
     this->m_dlsym_hook.hook_posix_lchown (m_filemodes_operations.m_lchown);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce lchown request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::lchown),
+        static_cast<int> (paio::POSIX_META::file_mod_op),
+        1);
 
     // perform original POSIX lchown operation
     int result = m_filemodes_operations.m_lchown (pathname, owner, group);
@@ -3180,8 +3337,10 @@ int LdPreloadedPosix::ld_preloaded_posix_fchown (int fd, uid_t owner, gid_t grou
     // hook POSIX fchown operation to m_filemodes_operations.m_fchown
     this->m_dlsym_hook.hook_posix_fchown (m_filemodes_operations.m_fchown);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce fchown request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::fchown),
+        static_cast<int> (paio::POSIX_META::file_mod_op),
+        1);
 
     // perform original POSIX fchown operation
     int result = m_filemodes_operations.m_fchown (fd, owner, group);
@@ -3219,8 +3378,10 @@ int LdPreloadedPosix::ld_preloaded_posix_fchownat (int dirfd,
     // hook POSIX fchownat operation to m_filemodes_operations.m_fchownat
     this->m_dlsym_hook.hook_posix_fchownat (m_filemodes_operations.m_fchownat);
 
-    // TODO: add here call to the paio-stage
-    // this->enforce_request (...);
+    // enforce fchownat request to PAIO data plane stage
+    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::fchownat),
+        static_cast<int> (paio::POSIX_META::file_mod_op),
+        1);
 
     // perform original POSIX fchownat operation
     int result = m_filemodes_operations.m_fchownat (dirfd, pathname, owner, group, flags);
