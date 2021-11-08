@@ -8,10 +8,29 @@
 namespace padll {
 
 // TODO: Implement the DataPlaneStage constructor
-DataPlaneStage::DataPlaneStage () = default;
+DataPlaneStage::DataPlaneStage ()
+{
+    if (this->m_logging != nullptr) {
+        this->m_logging->log_debug ("DataPlaneStage default constructor.");
+    }
+}
+
+// DataPlaneStage (explicit) parameterized constructor.
+DataPlaneStage::DataPlaneStage (std::shared_ptr<Logging> logging) :
+    m_logging { logging }
+{
+    if (this->m_logging != nullptr) {
+        this->m_logging->log_debug ("DataPlaneStage explicit constructor.");
+    }
+}
 
 // TODO: Implement the DataPlaneStage destructor
-DataPlaneStage::~DataPlaneStage () = default;
+DataPlaneStage::~DataPlaneStage ()
+{
+    if (this->m_logging != nullptr) {
+        this->m_logging->log_debug ("DataPlaneStage destructor.");
+    }
+}
 
 // initialize_stage call. (...)
 void DataPlaneStage::initialize_stage ()
@@ -24,7 +43,7 @@ void DataPlaneStage::initialize_stage ()
         option_default_stage_name) };
     this->m_posix_instance = paio::make_unique<paio::PosixLayer> (this->m_stage);
 
-    // temporary ...
+    // fixme: remove; this is only temporary ...
     std::this_thread::sleep_for (std::chrono::seconds (5));
 
     // update initialization status
@@ -37,7 +56,12 @@ void DataPlaneStage::enforce_request (const long& workflow_id,
     const int& operation_context,
     const uint64_t& operation_size)
 {
-    // todo: implement logic of validating data plane stage initialization
+    // initialize data plane stage
+    if (!m_stage_initialized.load (std::memory_order_relaxed)) {
+        // if (m_stage_initialized.load () == false) {
+        this->initialize_stage ();
+        std::cout << this->m_stage->get_stage_info ().to_string () << "\n";
+    }
 
     // create Context object
     auto context_obj = this->m_posix_instance->build_context_object (workflow_id,

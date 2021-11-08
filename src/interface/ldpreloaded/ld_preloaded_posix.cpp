@@ -8,7 +8,9 @@
 namespace padll {
 
 // LdPreloadedPosix default constructor.
-LdPreloadedPosix::LdPreloadedPosix () : m_logger_ptr { std::make_shared<Logging> () }
+LdPreloadedPosix::LdPreloadedPosix () :
+    m_logger_ptr { std::make_shared<Logging> () },
+    m_stage { paio::make_unique<DataPlaneStage> (this->m_logger_ptr) }
 {
     std::printf ("LdPreloadedPosix default constructor.\n");
 }
@@ -16,7 +18,8 @@ LdPreloadedPosix::LdPreloadedPosix () : m_logger_ptr { std::make_shared<Logging>
 // TODO: check move operation within LdPreloadPosix, but not on PosixFileSystem
 // LdPreloadedPosix explicit constructor.
 LdPreloadedPosix::LdPreloadedPosix (std::shared_ptr<Logging> logging_ptr) :
-    m_logger_ptr { logging_ptr }
+    m_logger_ptr { logging_ptr },
+    m_stage { paio::make_unique<DataPlaneStage> (logging_ptr) }
 {
     std::printf ("LdPreloadedPosix explicit constructor.\n");
 }
@@ -26,7 +29,8 @@ LdPreloadedPosix::LdPreloadedPosix (const std::string& lib,
     const bool& stat_collection,
     std::shared_ptr<Logging> logging_ptr) :
     m_collect { stat_collection },
-    m_logger_ptr { logging_ptr }
+    m_logger_ptr { logging_ptr },
+    m_stage { paio::make_unique<DataPlaneStage> (logging_ptr) }
 {
     std::printf ("LdPreloadedPosix parameterized constructor.\n");
 }
@@ -184,18 +188,6 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_pread (int fd, void* buf, size_t co
     if (option_default_detailed_logging) {
         this->m_logger_ptr->log_debug ("ld_preloaded_posix-pread (" + std::to_string (fd) + ")");
     }
-
-    // FIXME: adjust this in step 4 (integrate with PAIO - simplified)
-    // if (!m_stage_initialized.load (std::memory_order_relaxed)) {
-    // if (m_stage_initialized.load () == false) {
-    //     this->initialize_stage ();
-    //     std::cout << this->m_stage->get_stage_info ().to_string () << "\n";
-    // } else {
-    //     this->enforce_request (this->m_workflow_id,
-    //         static_cast<int> (paio::POSIX::read),
-    //         static_cast<int> (paio::POSIX::no_op),
-    //         counter);
-    // }
 
     // hook POSIX pread operation to m_data_operations.m_pread
     this->m_dlsym_hook.hook_posix_pread (m_data_operations.m_pread);
