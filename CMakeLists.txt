@@ -77,6 +77,7 @@ target_sources(
         padll
         PRIVATE
         src/interface/ldpreloaded/ld_preloaded_posix.cpp
+        src/interface/native/posix_file_system.cpp
         src/interface/passthrough/posix_passthrough.cpp
         src/stage/data_plane_stage.cpp
         src/statistics/statistic_entry.cpp
