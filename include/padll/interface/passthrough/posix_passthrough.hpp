@@ -10,6 +10,7 @@
 #include <padll/libraries/libc_headers.hpp>
 #include <padll/utils/logging.hpp>
 #include <string>
+#include <padll/utils/options.hpp>
 
 namespace padll {
 
@@ -17,7 +18,7 @@ class PosixPassthrough {
 
 private:
     std::mutex m_lock;
-    std::string m_lib_name { "libc.so.6" };
+    std::string m_lib_name { option_library_name };
     void* m_lib_handle { nullptr };
     std::shared_ptr<Logging> m_logger_ptr { nullptr };
 

@@ -43,7 +43,7 @@ void DataPlaneStage::initialize_stage ()
     this->m_posix_instance = paio::make_unique<paio::PosixLayer> (this->m_stage);
 
     // fixme: remove; this is only temporary ...
-    std::this_thread::sleep_for (std::chrono::seconds (5));
+    std::this_thread::sleep_for (std::chrono::seconds (1));
 
     // update initialization status
     this->m_stage_initialized.store (true);

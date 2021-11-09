@@ -14,11 +14,22 @@
 #include <padll/utils/logging.hpp>
 #include <thread>
 
+/**
+ * Main logging object.
+ */
 std::shared_ptr<padll::Logging> m_logger_ptr { std::make_shared<padll::Logging> (
     padll::option_default_enable_debug_level,
     padll::option_default_enable_debug_with_ld_preload,
     padll::option_default_log_path) };
+
+/**
+ * LdPreloaded file system object.
+ */
 padll::LdPreloadedPosix m_ld_preloaded_posix { m_logger_ptr };
+
+/**
+ * PosixPassthrough file system object.
+ */
 padll::PosixPassthrough m_posix_passthrough { m_logger_ptr };
 
 /**
@@ -51,7 +62,13 @@ static __attribute__ ((destructor)) void destroy_method ()
  * @param size
  * @return
  */
-extern "C" ssize_t read (int fd, void* buf, size_t size);
+extern "C" ssize_t read (int fd, void* buf, size_t size)
+{
+    std::printf ("passei pelo read header\n");
+    return (posix_data_calls.padll_intercept_read)
+           ? m_ld_preloaded_posix.ld_preloaded_posix_read (fd, buf, size)
+           : m_posix_passthrough.passthrough_posix_read (fd, buf, size);
+}
 
 /**
  * write:
@@ -60,7 +77,13 @@ extern "C" ssize_t read (int fd, void* buf, size_t size);
  * @param size
  * @return
  */
-extern "C" ssize_t write (int fd, const void* buf, size_t size);
+extern "C" ssize_t write (int fd, const void* buf, size_t size)
+{
+    std::printf ("passei pelo write header\n");
+    return (posix_data_calls.padll_intercept_write)
+           ? m_ld_preloaded_posix.ld_preloaded_posix_write (fd, buf, size)
+           : m_posix_passthrough.passthrough_posix_write (fd, buf, size);
+}
 
 /**
  * pread:

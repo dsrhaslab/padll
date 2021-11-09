@@ -10,24 +10,30 @@
 
 namespace padll {
 
+/***************************************************************************************************
+ * PADLL default configurations
+ **************************************************************************************************/
+
+const std::string option_library_name { "libc.so.6" };
+
 /**
  * option_default_statistic_collection:
  */
-const bool option_default_statistic_collection { true };
+constexpr bool option_default_statistic_collection { true };
 
-// *************************************************************************************************
-//  Logging configuration
-// *************************************************************************************************
+/***************************************************************************************************
+ * Logging configuration
+ **************************************************************************************************/
 
 /**
  * option_default_enable_debug_level:
  */
-const bool option_default_enable_debug_level { true };
+constexpr bool option_default_enable_debug_level { true };
 
 /**
  * option_default_enable_debug_with_ld_preload:
  */
-const bool option_default_enable_debug_with_ld_preload { true };
+constexpr bool option_default_enable_debug_with_ld_preload { true };
 
 /**
  * option_default_log_path:
@@ -37,12 +43,12 @@ const std::string option_default_log_path { "/tmp/padll-info.log" };
 /**
  * option_default_detailed_logging:
  */
-const bool option_default_detailed_logging { true };
+constexpr bool option_default_detailed_logging { true };
 
 /**
  * option_default_table_format:
  */
-const bool option_default_table_format { false };
+constexpr bool option_default_table_format { false };
 
 // *************************************************************************************************
 //  Default PAIO data plane stage configuration
@@ -51,12 +57,12 @@ const bool option_default_table_format { false };
 /**
  * option_default_stage_channels:
  */
-const int option_default_stage_channels { 1 };
+constexpr int option_default_stage_channels { 1 };
 
 /**
  * option_default_stage_object_creation:
  */
-const bool option_default_stage_object_creation { true };
+constexpr bool option_default_stage_object_creation { true };
 
 /**
  * option_default_stage_name:

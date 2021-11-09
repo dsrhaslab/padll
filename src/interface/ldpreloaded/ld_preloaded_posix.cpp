@@ -130,9 +130,9 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_read (int fd, void* buf, size_t cou
     this->m_dlsym_hook.hook_posix_read (m_data_operations.m_read);
 
     // enforce read request to PAIO data plane stage
-    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::read),
-        static_cast<int> (paio::POSIX_META::data_op),
-        counter);
+//    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::read),
+//        static_cast<int> (paio::POSIX_META::data_op),
+//        counter);
 
     // perform original POSIX read operation
     ssize_t result = m_data_operations.m_read (fd, buf, counter);
@@ -161,9 +161,9 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_write (int fd, const void* buf, siz
     this->m_dlsym_hook.hook_posix_write (m_data_operations.m_write);
 
     // enforce write request to PAIO data plane stage
-    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::write),
-        static_cast<int> (paio::POSIX_META::data_op),
-        counter);
+//    this->m_stage->enforce_request (static_cast<int> (paio::POSIX::write),
+//        static_cast<int> (paio::POSIX_META::data_op),
+//        counter);
 
     // perform original POSIX write operation
     ssize_t result = m_data_operations.m_write (fd, buf, counter);

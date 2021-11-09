@@ -9,10 +9,10 @@
 struct PosixDataCalls {
     bool padll_intercept_read = true;
     bool padll_intercept_write = true;
-    bool padll_intercept_pread = true;
-    bool padll_intercept_pwrite = true;
-    bool padll_intercept_fread = true;
-    bool padll_intercept_fwrite = true;
+    bool padll_intercept_pread = false;
+    bool padll_intercept_pwrite = false;
+    bool padll_intercept_fread = false;
+    bool padll_intercept_fwrite = false;
 #if defined(__USE_LARGEFILE64)
     bool padll_intercept_pread64 = false;
     bool padll_intercept_pwrite64 = false;
