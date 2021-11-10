@@ -11,7 +11,7 @@
 
 namespace padll {
 
-class NamespaceEntry {
+class MountPointEntry {
 
 private:
     std::string m_path {};
@@ -21,21 +21,21 @@ private:
 public:
 
     /**
-     * NamespaceEntry default constructor.
+     * MountPointEntry default constructor.
      */
-    NamespaceEntry ();
+    MountPointEntry ();
 
     /**
-     * NamespaceEntry parameterized constructor.
+     * MountPointEntry parameterized constructor.
      * @param path
      * @param mountpoint
      */
-    NamespaceEntry (std::string path, std::string mount_point);
+    MountPointEntry (std::string path, std::string mount_point);
 
     /**
-     * NamespaceEntry default destructor.
+     * MountPointEntry default destructor.
      */
-    ~NamespaceEntry ();
+    ~MountPointEntry ();
 
     /**
      * get_path:

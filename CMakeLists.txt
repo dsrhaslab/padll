@@ -65,8 +65,8 @@ target_sources(
     ${PROJECT_SOURCE_DIR}/include/padll/libraries/libc_enums.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/libraries/libc_headers.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/stage/data_plane_stage.hpp
-    ${PROJECT_SOURCE_DIR}/include/padll/stage/namespace_entry.hpp
-    ${PROJECT_SOURCE_DIR}/include/padll/stage/namespace_differentiation.hpp
+    ${PROJECT_SOURCE_DIR}/include/padll/stage/mount_point_entry.hpp
+    ${PROJECT_SOURCE_DIR}/include/padll/stage/mount_point_differentiation.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/statistics/statistic_entry.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/statistics/statistics.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/utils/logging.hpp
@@ -82,8 +82,8 @@ target_sources(
         src/interface/native/posix_file_system.cpp
         src/interface/passthrough/posix_passthrough.cpp
         src/stage/data_plane_stage.cpp
-        src/stage/namespace_entry.cpp
-        src/stage/namespace_differentiation.cpp
+        src/stage/mount_point_entry.cpp
+        src/stage/mount_point_differentiation.cpp
         src/statistics/statistic_entry.cpp
         src/statistics/statistics.cpp
         src/utils/logging.cpp

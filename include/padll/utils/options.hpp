@@ -7,19 +7,50 @@
 #define PADDL_OPTIONS_HPP
 
 #include <string>
+#include <boost/filesystem.hpp>
+
+namespace fs = boost::filesystem;
 
 namespace padll {
+
+enum class MountPoint {
+  kNone = 0,
+  kLocal = 1,
+  kRemote = 2
+};
 
 /***************************************************************************************************
  * PADLL default configurations
  **************************************************************************************************/
 
+/**
+ * option_library_name:
+ */
 const std::string option_library_name { "libc.so.6" };
 
 /**
  * option_default_statistic_collection:
  */
 constexpr bool option_default_statistic_collection { true };
+
+/**
+ * option_mount_point_differentiation:
+ *  all operations are considered with the same set of workflow identifiers
+ */
+constexpr bool option_mount_point_differentiation { true };
+
+/**
+ * option_default_local_mount_point:
+ *  operations will pick from a selected set of workflow identifiers
+ */
+const fs::path option_default_local_mount_point { "/local" };
+
+/**
+ * option_default_remote_mount_point:
+ *  operations will pick from a selected set of workflow identifiers
+ */
+const fs::path option_default_remote_mount_point { "/home" };
+
 
 /***************************************************************************************************
  * Logging configuration
