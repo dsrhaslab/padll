@@ -6,18 +6,14 @@
 #ifndef PADDL_OPTIONS_HPP
 #define PADDL_OPTIONS_HPP
 
-#include <string>
 #include <boost/filesystem.hpp>
+#include <string>
 
 namespace fs = boost::filesystem;
 
 namespace padll {
 
-enum class MountPoint {
-  kNone = 0,
-  kLocal = 1,
-  kRemote = 2
-};
+enum class MountPoint { kNone = 0, kLocal = 1, kRemote = 2 };
 
 /***************************************************************************************************
  * PADLL default configurations
@@ -26,7 +22,7 @@ enum class MountPoint {
 /**
  * option_library_name:
  */
-const std::string option_library_name { "libc.so.6" };
+constexpr std::string_view option_library_name { "libc.so.6" };
 
 /**
  * option_default_statistic_collection:
@@ -40,10 +36,27 @@ constexpr bool option_default_statistic_collection { true };
 constexpr bool option_mount_point_differentiation { true };
 
 /**
+ * option_default_mount_point_workflows:
+ *  fixme: this needs to be adjusted (later); the controller should specify these ...
+ */
+const std::vector<uint32_t> option_default_mount_point_workflows { 1000,
+    2000,
+    3000,
+    4000,
+    5000,
+    6000 };
+
+/**
  * option_default_local_mount_point:
  *  operations will pick from a selected set of workflow identifiers
  */
 const fs::path option_default_local_mount_point { "/local" };
+
+/**
+ * option_default_local_mount_point_workflows:
+ *  fixme: this needs to be adjusted (later); the controller should specify these ...
+ */
+const std::vector<uint32_t> option_default_local_mount_point_workflows { 1000, 2000, 3000 };
 
 /**
  * option_default_remote_mount_point:
@@ -51,6 +64,11 @@ const fs::path option_default_local_mount_point { "/local" };
  */
 const fs::path option_default_remote_mount_point { "/home" };
 
+/**
+ * option_default_remote_mount_point_workflows:
+ *  fixme: this needs to be adjusted (later); the controller should specify these ...
+ */
+const std::vector<uint32_t> option_default_remote_mount_point_workflows { 4000, 5000, 6000 };
 
 /***************************************************************************************************
  * Logging configuration

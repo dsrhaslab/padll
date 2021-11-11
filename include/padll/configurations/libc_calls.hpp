@@ -17,6 +17,8 @@ struct PosixDataCalls {
     bool padll_intercept_pread64 = false;
     bool padll_intercept_pwrite64 = false;
 #endif
+    bool padll_intercept_mmap = false; // todo
+    bool padll_intercept_munmap = false; // todo
 };
 
 struct PosixDirectoryCalls {

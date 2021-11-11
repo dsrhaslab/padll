@@ -6,34 +6,40 @@
 #ifndef PADLL_MOUNT_POINT_DIFFERENTIATION_HPP
 #define PADLL_MOUNT_POINT_DIFFERENTIATION_HPP
 
-#include <shared_mutex>
-#include <unordered_map>
+#include <iostream>
 #include <map>
-#include <vector>
 #include <padll/stage/mount_point_entry.hpp>
 #include <padll/utils/options.hpp>
+#include <shared_mutex>
+#include <sstream>
+#include <unordered_map>
+#include <vector>
 
 namespace padll {
 
 class MountPointTable {
+    friend class MountPointDifferentiationTest;
 
 private:
     std::shared_timed_mutex m_fd_shared_lock;
     std::shared_timed_mutex m_fptr_shared_lock;
-    //Note: needs CC
     std::unordered_map<int, std::unique_ptr<MountPointEntry>> m_file_descriptors_table {};
     std::unordered_map<FILE*, std::unique_ptr<MountPointEntry>> m_file_ptr_table {};
     std::map<MountPoint, std::vector<uint32_t>> m_mount_point_workflows {};
 
-
-    void register_mount_point_type (const MountPoint& type, std::vector<uint32_t> workflows);
+    /**
+     * register_mount_point_type:
+     * @param type
+     * @param workflows
+     */
+    void register_mount_point_type (const MountPoint& type, const std::vector<uint32_t>& workflows);
 
     /**
-     * parse_path:
+     * extract_mount_point_from_path:
      * @param path
      * @return
      */
-    MountPoint parse_path (const std::string& path);
+    MountPoint extract_mount_point_from_path (const std::string& path);
 
     /**
      * pick_workflow_id:
@@ -47,10 +53,9 @@ private:
      * @param mount_point
      * @return
      */
-    uint32_t select_workflow_id (const MountPoint& mount_point) const;
+    [[nodiscard]] uint32_t select_workflow_id (const MountPoint& mount_point) const;
 
 public:
-
     /**
      * MountPointTable default constructor.
      */
@@ -68,7 +73,9 @@ public:
      * @param mount_point
      * @return
      */
-    bool create_mount_point_entry (const int& fd, std::string path, MountPoint mount_point);
+    bool create_mount_point_entry (const int& fd,
+        const std::string& path,
+        const MountPoint& mount_point);
 
     /**
      * create_mount_point_entry:
@@ -77,22 +84,23 @@ public:
      * @param mount_point
      * @return
      */
-    bool create_mount_point_entry (FILE* file_ptr, std::string path, MountPoint mount_point);
+    bool create_mount_point_entry (FILE* file_ptr,
+        const std::string& path,
+        const MountPoint& mount_point);
 
     /**
      * get_mount_point_fd_entry:
      * @param key
      * @return
      */
-    MountPointEntry* get_mount_point_entry (const int& key);
-
+    [[nodiscard]] const MountPointEntry* get_mount_point_entry (const int& key);
 
     /**
      * get_mount_point_entry:
      * @param key
      * @return
      */
-    MountPointEntry* get_mount_point_entry (FILE* key);
+    [[nodiscard]] const MountPointEntry* get_mount_point_entry (FILE* key);
 
     /**
      * remove_mount_point_entry:
@@ -107,8 +115,14 @@ public:
      * @return
      */
     bool remove_mount_point_entry (FILE* key);
+
+    /**
+     * to_string:
+     * @return
+     */
+    [[nodiscard]] std::string to_string () const;
 };
 
-}
+} // namespace padll
 
 #endif // PADLL_MOUNT_POINT_DIFFERENTIATION_HPP

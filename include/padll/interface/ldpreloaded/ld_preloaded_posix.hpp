@@ -41,7 +41,7 @@ private:
     DlsymHookLibc m_dlsym_hook {};
 
     // data plane stage configurations
-    std::unique_ptr<DataPlaneStage> m_stage { paio::make_unique<DataPlaneStage> () };
+    std::unique_ptr<DataPlaneStage> m_stage { std::make_unique<DataPlaneStage> () };
 
 public:
     /**

@@ -1,13 +1,14 @@
 /**
-*   Written by Ricardo Macedo.
-*   Copyright (c) 2021 INESC TEC.
-**/
+ *   Written by Ricardo Macedo.
+ *   Copyright (c) 2021 INESC TEC.
+ **/
 
 #ifndef PADLL_NAMESPACE_ENTRY_H
 #define PADLL_NAMESPACE_ENTRY_H
 
-#include <string>
 #include <mutex>
+#include <padll/utils/options.hpp>
+#include <string>
 
 namespace padll {
 
@@ -15,11 +16,10 @@ class MountPointEntry {
 
 private:
     std::string m_path {};
-    std::string m_mount_point {};
+    MountPoint m_mount_point {};
     std::mutex m_lock;
 
 public:
-
     /**
      * MountPointEntry default constructor.
      */
@@ -28,9 +28,9 @@ public:
     /**
      * MountPointEntry parameterized constructor.
      * @param path
-     * @param mountpoint
+     * @param mount_point
      */
-    MountPointEntry (std::string path, std::string mount_point);
+    MountPointEntry (const std::string& path, const MountPoint& mount_point);
 
     /**
      * MountPointEntry default destructor.
@@ -41,20 +41,20 @@ public:
      * get_path:
      * @return
      */
-    const std::string& get_path () const;
+    [[nodiscard]] const std::string& get_path () const;
 
     /**
      * get_mount_point:
      * @return
      */
-    const std::string& get_mount_point () const;
+    [[nodiscard]] const MountPoint& get_mount_point () const;
 
     /**
      * to_string:
      * @return
      */
-    std::string to_string () const;
+    [[nodiscard]] std::string to_string () const;
 };
 
-}
-#endif //PADLL_NAMESPACE_ENTRY_H
+} // namespace padll
+#endif // PADLL_NAMESPACE_ENTRY_H

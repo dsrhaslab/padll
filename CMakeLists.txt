@@ -5,7 +5,7 @@ include(FetchContent)
 
 project(padll VERSION 1.0.0 DESCRIPTION "padll: ...")
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -140,10 +140,10 @@ if (PADLL_BUILD_LIBC_TESTS)
         add_test(NAME "${test_target_name}" COMMAND "${test_target_name}")
     endfunction(padll_libc_test)
 
-    padll_libc_test("tests/padll_test.cpp" "padll_test")
-    padll_libc_test("tests/padll_hybrid_calls_test.cpp" "hybrid_test")
-    padll_libc_test("tests/padll_directory_calls_test.cpp" "dir_test")
-    padll_libc_test("tests/padll_extended_attributes_calls_test.cpp" "xattr_test")
+    padll_libc_test("tests/simple_test.cpp" "simple_test")
+    padll_libc_test("tests/hybrid_calls_test.cpp" "hybrid_test")
+    padll_libc_test("tests/directory_calls_test.cpp" "dir_test")
+    padll_libc_test("tests/extended_attributes_calls_test.cpp" "xattr_test")
 
 endif (PADLL_BUILD_LIBC_TESTS)
 
@@ -165,6 +165,7 @@ if (PADLL_BUILD_TESTS)
     endfunction(padll_test)
 
     padll_test("tests/padll_statistics_test.cpp")
+    padll_test("tests/padll_mount_point_differentiation_test.cpp")
 
 endif (PADLL_BUILD_TESTS)
 
