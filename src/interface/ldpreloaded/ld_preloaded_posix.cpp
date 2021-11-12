@@ -5,7 +5,7 @@
 
 #include <padll/interface/ldpreloaded/ld_preloaded_posix.hpp>
 
-namespace padll {
+namespace padll::interface::ldpreloaded {
 
 // LdPreloadedPosix default constructor.
 LdPreloadedPosix::LdPreloadedPosix () :
@@ -3538,4 +3538,4 @@ int LdPreloadedPosix::ld_preloaded_posix_fchownat (int dirfd,
     return result;
 }
 
-} // namespace padll
+} // namespace padll::interface::ldpreloaded

@@ -7,10 +7,12 @@
 #define PADLL_NAMESPACE_ENTRY_H
 
 #include <mutex>
-#include <padll/utils/options.hpp>
+#include <padll/options/options.hpp>
 #include <string>
 
-namespace padll {
+using namespace padll::options;
+
+namespace padll::stage {
 
 class MountPointEntry {
 
@@ -30,7 +32,7 @@ public:
      * @param path
      * @param mount_point
      */
-    MountPointEntry (const std::string& path, const MountPoint& mount_point);
+    MountPointEntry (std::string path, const MountPoint& mount_point);
 
     /**
      * MountPointEntry default destructor.
@@ -56,5 +58,5 @@ public:
     [[nodiscard]] std::string to_string () const;
 };
 
-} // namespace padll
+} // namespace padll::stage
 #endif // PADLL_NAMESPACE_ENTRY_H

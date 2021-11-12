@@ -9,9 +9,10 @@
 #include <boost/filesystem.hpp>
 #include <string>
 
+// todo: remove
 namespace fs = boost::filesystem;
 
-namespace padll {
+namespace padll::options {
 
 enum class MountPoint { kNone = 0, kLocal = 1, kRemote = 2 };
 
@@ -118,6 +119,6 @@ constexpr bool option_default_stage_object_creation { true };
  */
 const std::string option_default_stage_name { "tensorflow-" };
 
-} // namespace padll
+} // namespace padll::options
 
 #endif // PADDL_OPTIONS_HPP

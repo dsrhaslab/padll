@@ -6,12 +6,15 @@
 #ifndef PADLL_DATA_PLANE_STAGE_H
 #define PADLL_DATA_PLANE_STAGE_H
 
+#include <padll/options/options.hpp>
 #include <padll/utils/logging.hpp>
-#include <padll/utils/options.hpp>
 #include <paio/interface/posix_layer.hpp>
 #include <paio/stage/paio_stage.hpp>
 
-namespace padll {
+using namespace padll::options;
+using namespace padll::utils::logging;
+
+namespace padll::stage {
 
 class DataPlaneStage {
 
@@ -57,5 +60,5 @@ public:
         const int& operation_context,
         const uint64_t& operation_size);
 };
-} // namespace padll
+} // namespace padll::stage
 #endif // PADLL_DATA_PLANE_STAGE_H

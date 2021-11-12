@@ -9,7 +9,7 @@
  * Missing: passthrough_posix_open
  */
 
-namespace padll {
+namespace padll::interface::passthrough {
 
 // PosixPassthrough default constructor.
 PosixPassthrough::PosixPassthrough () : m_logger_ptr { std::make_shared<Logging> () }
@@ -691,4 +691,4 @@ int PosixPassthrough::passthrough_posix_fchownat (int dirfd,
     return ((libc_fchownat_t)dlsym (RTLD_NEXT, "fchownat")) (dirfd, pathname, owner, group, flags);
 }
 
-} // namespace padll
+} // namespace padll::interface::passthrough

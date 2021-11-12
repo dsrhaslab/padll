@@ -3,19 +3,19 @@
  *   Copyright (c) 2021 INESC TEC.
  **/
 
-#ifndef PADLL_MOUNT_POINT_DIFFERENTIATION_HPP
-#define PADLL_MOUNT_POINT_DIFFERENTIATION_HPP
+#ifndef PADLL_MOUNT_POINT_TABLE_HPP
+#define PADLL_MOUNT_POINT_TABLE_HPP
 
 #include <iostream>
 #include <map>
+#include <padll/options/options.hpp>
 #include <padll/stage/mount_point_entry.hpp>
-#include <padll/utils/options.hpp>
 #include <shared_mutex>
 #include <sstream>
 #include <unordered_map>
 #include <vector>
 
-namespace padll {
+namespace padll::stage {
 
 class MountPointTable {
     friend class MountPointDifferentiationTest;
@@ -137,6 +137,6 @@ public:
     [[nodiscard]] std::string to_string () const;
 };
 
-} // namespace padll
+} // namespace padll::stage
 
-#endif // PADLL_MOUNT_POINT_DIFFERENTIATION_HPP
+#endif // PADLL_MOUNT_POINT_TABLE_HPP

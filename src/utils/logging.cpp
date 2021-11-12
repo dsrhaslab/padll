@@ -5,7 +5,7 @@
 
 #include <padll/utils/logging.hpp>
 
-namespace padll {
+namespace padll::utils::logging {
 
 // Logging default constructor.
 Logging::Logging ()
@@ -174,4 +174,4 @@ void Logging::log_debug (const std::string& message)
     }
 }
 
-} // namespace padll
+} // namespace padll::utils::logging

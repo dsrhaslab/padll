@@ -62,15 +62,15 @@ target_sources(
     ${PROJECT_SOURCE_DIR}/include/padll/interface/ldpreloaded/dlsym_hook_libc.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/interface/native/posix_file_system.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/interface/passthrough/posix_passthrough.hpp
-    ${PROJECT_SOURCE_DIR}/include/padll/libraries/libc_enums.hpp
-    ${PROJECT_SOURCE_DIR}/include/padll/libraries/libc_headers.hpp
+    ${PROJECT_SOURCE_DIR}/include/padll/library_headers/libc_enums.hpp
+    ${PROJECT_SOURCE_DIR}/include/padll/library_headers/libc_headers.hpp
+    ${PROJECT_SOURCE_DIR}/include/padll/options/options.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/stage/data_plane_stage.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/stage/mount_point_entry.hpp
-    ${PROJECT_SOURCE_DIR}/include/padll/stage/mount_point_differentiation.hpp
+    ${PROJECT_SOURCE_DIR}/include/padll/stage/mount_point_table.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/statistics/statistic_entry.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/statistics/statistics.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/utils/logging.hpp
-    ${PROJECT_SOURCE_DIR}/include/padll/utils/options.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/thrid_party/enum.h
     ${PROJECT_SOURCE_DIR}/include/padll/thrid_party/tabulate.hpp
 )
@@ -83,7 +83,7 @@ target_sources(
         src/interface/passthrough/posix_passthrough.cpp
         src/stage/data_plane_stage.cpp
         src/stage/mount_point_entry.cpp
-        src/stage/mount_point_differentiation.cpp
+        src/stage/mount_point_table.cpp
         src/statistics/statistic_entry.cpp
         src/statistics/statistics.cpp
         src/utils/logging.cpp
@@ -140,10 +140,10 @@ if (PADLL_BUILD_LIBC_TESTS)
         add_test(NAME "${test_target_name}" COMMAND "${test_target_name}")
     endfunction(padll_libc_test)
 
-    padll_libc_test("tests/simple_test.cpp" "simple_test")
-    padll_libc_test("tests/hybrid_calls_test.cpp" "hybrid_test")
-    padll_libc_test("tests/directory_calls_test.cpp" "dir_test")
-    padll_libc_test("tests/extended_attributes_calls_test.cpp" "xattr_test")
+    padll_libc_test("tests/posix/simple_test.cpp" "simple_test")
+    padll_libc_test("tests/posix/hybrid_calls_test.cpp" "hybrid_test")
+    padll_libc_test("tests/posix/directory_calls_test.cpp" "dir_test")
+    padll_libc_test("tests/posix/extended_attributes_calls_test.cpp" "xattr_test")
 
 endif (PADLL_BUILD_LIBC_TESTS)
 

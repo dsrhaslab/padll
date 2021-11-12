@@ -10,13 +10,18 @@
 
 #include <iostream>
 #include <padll/interface/ldpreloaded/dlsym_hook_libc.hpp>
-#include <padll/libraries/libc_enums.hpp>
-#include <padll/libraries/libc_headers.hpp>
+#include <padll/library_headers/libc_enums.hpp>
+#include <padll/library_headers/libc_headers.hpp>
 #include <padll/stage/data_plane_stage.hpp>
-#include <padll/stage/mount_point_differentiation.hpp>
+#include <padll/stage/mount_point_table.hpp>
 #include <padll/statistics/statistics.hpp>
 
-namespace padll {
+using namespace padll::headers;
+using namespace padll::stage;
+using namespace padll::stats;
+using namespace padll::utils::logging;
+
+namespace padll::interface::ldpreloaded {
 
 /**
  * LdPreloadedPosix class.
@@ -1011,6 +1016,6 @@ public:
         gid_t group,
         int flags);
 };
-} // namespace padll
+} // namespace padll::interface::ldpreloaded
 
 #endif // PADDL_LD_PRELOADED_POSIX_HPP

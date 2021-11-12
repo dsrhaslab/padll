@@ -5,10 +5,12 @@
 
 #include <cstdio>
 #include <iostream>
-#include <padll/stage/mount_point_differentiation.hpp>
+#include <padll/stage/mount_point_table.hpp>
 #include <padll/utils/options.hpp>
 
-namespace padll {
+using namespace padll::stage;
+
+namespace padll::tests {
 
 class MountPointDifferentiationTest {
 
@@ -33,7 +35,9 @@ public:
      */
     ~MountPointDifferentiationTest () = default;
 };
-} // namespace padll
+} // namespace padll::tests
+
+namespace tests = padll::tests;
 
 int main (int argc, char** argv)
 {
@@ -49,11 +53,11 @@ int main (int argc, char** argv)
         }
     }
 
-    padll::MountPointDifferentiationTest test { fd };
-    padll::MountPointTable mount_point_table {};
+    tests::MountPointDifferentiationTest test { fd };
+    MountPointTable mount_point_table {};
 
     std::cout << "Workflows: ";
-    for (auto& elem : padll::option_default_local_mount_point_workflows) {
+    for (auto& elem : option_default_local_mount_point_workflows) {
         std::cout << elem << " ";
     }
     std::cout << std::endl;

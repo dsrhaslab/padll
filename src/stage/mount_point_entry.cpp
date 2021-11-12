@@ -4,15 +4,16 @@
  **/
 
 #include <padll/stage/mount_point_entry.hpp>
+#include <utility>
 
-namespace padll {
+namespace padll::stage {
 
 // MountPointEntry default constructor.
 MountPointEntry::MountPointEntry () = default;
 
 // MountPointEntry parameterized constructor.
-MountPointEntry::MountPointEntry (const std::string& path, const MountPoint& mount_point) :
-    m_path { path },
+MountPointEntry::MountPointEntry (std::string path, const MountPoint& mount_point) :
+    m_path { std::move (path) },
     m_mount_point { mount_point }
 { }
 
@@ -41,4 +42,4 @@ std::string MountPointEntry::to_string () const
         + "}";
 }
 
-} // namespace padll
+} // namespace padll::stage

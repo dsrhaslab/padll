@@ -5,7 +5,7 @@
 
 #include <padll/statistics/statistics.hpp>
 
-namespace padll {
+namespace padll::stats {
 
 // Statistics default constructor.
 Statistics::Statistics () = default;
@@ -271,4 +271,4 @@ void Statistics::tabulate ()
     std::cout << table_stats << "\n" << std::endl;
 }
 
-} // namespace padll
+} // namespace padll::stats

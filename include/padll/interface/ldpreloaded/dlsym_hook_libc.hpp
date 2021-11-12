@@ -6,12 +6,16 @@
 #ifndef PADLL_DLSYM_HOOK_LIBC_HPP
 #define PADLL_DLSYM_HOOK_LIBC_HPP
 
-#include <padll/libraries/libc_headers.hpp>
+#include <padll/library_headers/libc_headers.hpp>
+#include <padll/options/options.hpp>
 #include <padll/utils/logging.hpp>
-#include <padll/utils/options.hpp>
 #include <utility>
 
-namespace padll {
+using namespace padll::headers;
+using namespace padll::options;
+using namespace padll::utils::logging;
+
+namespace padll::interface::ldpreloaded {
 
 class DlsymHookLibc {
 
@@ -1912,6 +1916,6 @@ public:
     }
 };
 
-} // namespace padll
+} // namespace padll::interface::ldpreloaded
 
 #endif // PADLL_DLSYM_HOOK_LIBC_HPP

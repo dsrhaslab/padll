@@ -5,7 +5,7 @@
 
 #include <padll/statistics/statistic_entry.hpp>
 
-namespace padll {
+namespace padll::stats {
 
 // StatisticEntry default constructor.
 StatisticEntry::StatisticEntry () = default;
@@ -88,4 +88,4 @@ std::string StatisticEntry::to_string ()
     return { stream };
 }
 
-} // namespace padll
+} // namespace padll::stats

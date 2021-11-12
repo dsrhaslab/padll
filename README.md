@@ -11,8 +11,8 @@ Tutorial to install and test padll.
 1. <b>Set up padll</b>
 ```shell
 $ cd padll; mkdir build; cd build;
-$ cmake -DCMAKE_INSTALL_PREFIX:PATH=. ..
-$ make install -j
+$ cmake ..
+$ cmake --build .
 $ export PATH_PADLL=$PWD
 ```
 

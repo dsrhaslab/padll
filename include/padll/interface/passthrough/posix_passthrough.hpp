@@ -7,12 +7,16 @@
 #define PADLL_POSIX_PASSTHROUGH_H
 
 #include <mutex>
-#include <padll/libraries/libc_headers.hpp>
+#include <padll/library_headers/libc_headers.hpp>
+#include <padll/options/options.hpp>
 #include <padll/utils/logging.hpp>
-#include <padll/utils/options.hpp>
 #include <string>
 
-namespace padll {
+using namespace padll::headers;
+using namespace padll::options;
+using namespace padll::utils::logging;
+
+namespace padll::interface::passthrough {
 
 class PosixPassthrough {
 
@@ -974,5 +978,5 @@ public:
         gid_t group,
         int flags);
 };
-} // namespace padll
+} // namespace padll::interface::passthrough
 #endif // PADLL_POSIX_PASSTHROUGH_H

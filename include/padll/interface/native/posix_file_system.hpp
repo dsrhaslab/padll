@@ -14,23 +14,28 @@
 #include <padll/utils/logging.hpp>
 #include <thread>
 
+namespace ld = padll::interface::ldpreloaded;
+namespace pass = padll::interface::passthrough;
+namespace log = padll::utils::logging;
+namespace opt = padll::options;
+
 /**
  * Main logging object.
  */
-std::shared_ptr<padll::Logging> m_logger_ptr { std::make_shared<padll::Logging> (
-    padll::option_default_enable_debug_level,
-    padll::option_default_enable_debug_with_ld_preload,
-    padll::option_default_log_path) };
+std::shared_ptr<log::Logging> m_logger_ptr { std::make_shared<log::Logging> (
+    opt::option_default_enable_debug_level,
+    opt::option_default_enable_debug_with_ld_preload,
+    opt::option_default_log_path) };
 
 /**
  * LdPreloaded file system object.
  */
-padll::LdPreloadedPosix m_ld_preloaded_posix { m_logger_ptr };
+ld::LdPreloadedPosix m_ld_preloaded_posix { m_logger_ptr };
 
 /**
  * PosixPassthrough file system object.
  */
-padll::PosixPassthrough m_posix_passthrough { m_logger_ptr };
+pass::PosixPassthrough m_posix_passthrough { m_logger_ptr };
 
 /**
  * init_method: constructor of the PosixFileSystem.

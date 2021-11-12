@@ -3,9 +3,9 @@
  *   Copyright (c) 2021 INESC TEC.
  **/
 
-#include <padll/stage/mount_point_differentiation.hpp>
+#include <padll/stage/mount_point_table.hpp>
 
-namespace padll {
+namespace padll::stage {
 
 // MountPointTable default constructor.
 MountPointTable::MountPointTable ()
@@ -278,4 +278,4 @@ std::string MountPointTable::to_string () const
     return stream.str ();
 }
 
-} // namespace padll
+} // namespace padll::stage

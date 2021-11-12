@@ -6,7 +6,11 @@
 #include <padll/statistics/statistics.hpp>
 #include <random>
 
-namespace padll {
+using namespace padll::headers;
+using namespace padll::stats;
+using namespace padll::utils::logging;
+
+namespace padll::tests {
 
 class StatisticsTest {
 private:
@@ -72,14 +76,16 @@ public:
         std::cout << stats->to_string () << "\n";
     }
 };
-} // namespace padll
+} // namespace padll::tests
+
+namespace tests = padll::tests;
 
 int main (int argc, char** argv)
 {
-    padll::StatisticsTest test {};
-    padll::Statistics stats_obj {};
+    tests::StatisticsTest test {};
+    Statistics stats_obj {};
 
-    test.test_initialize_statistics (&stats_obj, padll::OperationType::metadata_calls);
+    test.test_initialize_statistics (&stats_obj, OperationType::metadata_calls);
     test.test_update_entries (&stats_obj, 1000);
     test.test_get_statistic_entry (&stats_obj, 1000);
 

@@ -8,7 +8,7 @@
 
 #include <padll/thrid_party/enum.h>
 
-namespace padll {
+namespace padll::headers {
 
 /**
  * OperationType class.
@@ -146,6 +146,6 @@ BETTER_ENUM (FileModes,
     fchown = 6,
     fchownat = 7);
 
-} // namespace padll
+} // namespace padll::headers
 
 #endif // PADLL_LIBC_ENUMS_HPP

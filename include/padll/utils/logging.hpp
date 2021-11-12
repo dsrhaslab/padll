@@ -10,14 +10,16 @@
 #include <fcntl.h>
 #include <iomanip>
 #include <iostream>
-#include <padll/libraries/libc_headers.hpp>
+#include <padll/library_headers/libc_headers.hpp>
 #include <spdlog/logger.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/spdlog.h>
 #include <sstream>
 #include <unistd.h>
 
-namespace padll {
+using namespace padll::headers;
+
+namespace padll::utils::logging {
 
 /**
  * Logging class.
@@ -123,6 +125,6 @@ public:
      */
     void log_debug (const std::string& message);
 };
-} // namespace padll
+} // namespace padll::utils::logging
 
 #endif // PADDL_LOGGING_HPP

@@ -11,7 +11,7 @@
 #include <sstream>
 #include <string>
 
-namespace padll {
+namespace padll::stats {
 
 /**
  * StatisticEntry class.
@@ -108,6 +108,6 @@ public:
      */
     std::string to_string ();
 };
-} // namespace padll
+} // namespace padll::stats
 
 #endif // PADLL_STATISTIC_ENTRY_H

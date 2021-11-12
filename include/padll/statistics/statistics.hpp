@@ -8,7 +8,7 @@
 
 #include <fcntl.h>
 #include <iostream>
-#include <padll/libraries/libc_enums.hpp>
+#include <padll/library_headers/libc_enums.hpp>
 #include <padll/statistics/statistic_entry.hpp>
 #include <padll/thrid_party/tabulate.hpp>
 #include <padll/utils/logging.hpp>
@@ -17,9 +17,10 @@
 #include <unistd.h>
 #include <vector>
 
+using namespace padll::headers;
 using namespace tabulate;
 
-namespace padll {
+namespace padll::stats {
 
 /**
  * Statistics class.
@@ -120,6 +121,6 @@ public:
      */
     void tabulate ();
 };
-} // namespace padll
+} // namespace padll::stats
 
 #endif // PADLL_STATISTICS_H

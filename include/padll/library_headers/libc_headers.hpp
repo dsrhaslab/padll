@@ -20,7 +20,7 @@
 #include <sys/mount.h>
 #endif
 
-namespace padll {
+namespace padll::headers {
 
 /**
  * Metadata calls.
@@ -260,6 +260,6 @@ struct libc_file_modes {
     libc_fchownat_t m_fchownat { nullptr };
 };
 
-} // namespace padll
+} // namespace padll::headers
 
 #endif // PADLL_LIBC_HEADERS_HPP

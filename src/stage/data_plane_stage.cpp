@@ -5,7 +5,7 @@
 
 #include <padll/stage/data_plane_stage.hpp>
 
-namespace padll {
+namespace padll::stage {
 
 // TODO: Implement the DataPlaneStage constructor
 DataPlaneStage::DataPlaneStage ()
@@ -74,4 +74,4 @@ void DataPlaneStage::enforce_request (const uint32_t& workflow_id,
     this->m_posix_instance->posix_noop (nullptr, operation_size, context_obj);
 }
 
-} // namespace padll
+} // namespace padll::stage
