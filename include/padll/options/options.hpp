@@ -6,11 +6,9 @@
 #ifndef PADDL_OPTIONS_HPP
 #define PADDL_OPTIONS_HPP
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <string>
-
-// todo: remove
-namespace fs = boost::filesystem;
+#include <vector>
 
 namespace padll::options {
 
@@ -51,7 +49,7 @@ const std::vector<uint32_t> option_default_mount_point_workflows { 1000,
  * option_default_local_mount_point:
  *  operations will pick from a selected set of workflow identifiers
  */
-const fs::path option_default_local_mount_point { "/local" };
+const std::filesystem::path option_default_local_mount_point { "/local" };
 
 /**
  * option_default_local_mount_point_workflows:
@@ -63,7 +61,7 @@ const std::vector<uint32_t> option_default_local_mount_point_workflows { 1000, 2
  * option_default_remote_mount_point:
  *  operations will pick from a selected set of workflow identifiers
  */
-const fs::path option_default_remote_mount_point { "/home" };
+const std::filesystem::path option_default_remote_mount_point { "/home" };
 
 /**
  * option_default_remote_mount_point_workflows:
