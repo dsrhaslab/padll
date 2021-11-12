@@ -20,7 +20,7 @@ private:
     std::atomic<bool> m_stage_initialized { false };
     std::shared_ptr<paio::PaioStage> m_stage { nullptr };
     std::unique_ptr<paio::PosixLayer> m_posix_instance { nullptr };
-    const long m_workflow_id { 1000 };
+    // const long m_workflow_id { 1000 };
     std::shared_ptr<Logging> m_logging { nullptr };
 
     /**
@@ -47,11 +47,13 @@ public:
 
     /**
      * enforce_request:
+     * @param workflow_id
      * @param operation_type
      * @param operation_context
      * @param operation_size
      */
-    void enforce_request (const int& operation_type,
+    void enforce_request (const uint32_t& workflow_id,
+        const int& operation_type,
         const int& operation_context,
         const uint64_t& operation_size);
 };

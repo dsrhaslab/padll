@@ -13,6 +13,7 @@
 #include <padll/libraries/libc_enums.hpp>
 #include <padll/libraries/libc_headers.hpp>
 #include <padll/stage/data_plane_stage.hpp>
+#include <padll/stage/mount_point_differentiation.hpp>
 #include <padll/statistics/statistics.hpp>
 
 namespace padll {
@@ -42,6 +43,7 @@ private:
 
     // data plane stage configurations
     std::unique_ptr<DataPlaneStage> m_stage { std::make_unique<DataPlaneStage> () };
+    MountPointTable m_mount_point_table {};
 
 public:
     /**

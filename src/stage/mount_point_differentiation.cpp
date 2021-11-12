@@ -180,7 +180,6 @@ void MountPointTable::register_mount_point_type (const MountPoint& type,
 // pick_workflow_id call. (...)
 uint32_t MountPointTable::pick_workflow_id (const std::string& path)
 {
-
     // get namespace type
     auto namespace_type = (!option_mount_point_differentiation)
         ? MountPoint::kNone
@@ -197,6 +196,38 @@ uint32_t MountPointTable::pick_workflow_id (const std::string& path)
     return workflow_id;
 }
 
+// pick_workflow_id call. (...)
+uint32_t MountPointTable::pick_workflow_id (const int& fd)
+{
+    auto mount_point = this->get_mount_point_entry (fd)->get_mount_point ();
+
+    // select  workflow identifier
+    auto workflow_id = this->select_workflow_id (mount_point);
+
+    // verify if the workflow identifier was not found
+    if (workflow_id == -1) {
+        std::printf ("Error while selecting workflow id.\n");
+    }
+
+    return workflow_id;
+}
+
+// pick_workflow_id call. (...)
+uint32_t MountPointTable::pick_workflow_id (FILE* file_ptr)
+{
+    auto mount_point = this->get_mount_point_entry (file_ptr)->get_mount_point ();
+
+    // select  workflow identifier
+    auto workflow_id = this->select_workflow_id (mount_point);
+
+    // verify if the workflow identifier was not found
+    if (workflow_id == -1) {
+        std::printf ("Error while selecting workflow id.\n");
+    }
+
+    return workflow_id;
+}
+
 // parse_path call. (...)
 MountPoint MountPointTable::extract_mount_point_from_path (const std::string& path)
 {
@@ -204,6 +235,7 @@ MountPoint MountPointTable::extract_mount_point_from_path (const std::string& pa
     // verify if path is valid
     // compare with local path
     // compare with remote path
+    return MountPoint::kNone;
 }
 
 // select_workflow_id call. (...)

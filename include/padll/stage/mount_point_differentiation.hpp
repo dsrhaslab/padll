@@ -42,13 +42,6 @@ private:
     MountPoint extract_mount_point_from_path (const std::string& path);
 
     /**
-     * pick_workflow_id:
-     * @param path
-     * @return
-     */
-    uint32_t pick_workflow_id (const std::string& path);
-
-    /**
      * select_workflow_id
      * @param mount_point
      * @return
@@ -87,6 +80,27 @@ public:
     bool create_mount_point_entry (FILE* file_ptr,
         const std::string& path,
         const MountPoint& mount_point);
+
+    /**
+     * pick_workflow_id:
+     * @param path
+     * @return
+     */
+    uint32_t pick_workflow_id (const std::string& path);
+
+    /**
+     * pick_workflow_id:
+     * @param fd
+     * @return
+     */
+    uint32_t pick_workflow_id (const int& fd);
+
+    /**
+     * pick_workflow_id
+     * @param file_ptr
+     * @return
+     */
+    uint32_t pick_workflow_id (FILE* file_ptr);
 
     /**
      * get_mount_point_fd_entry:

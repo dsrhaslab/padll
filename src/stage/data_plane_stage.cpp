@@ -50,20 +50,21 @@ void DataPlaneStage::initialize_stage ()
 }
 
 // enforce_request call. (...)
-// TODO: removed workflow-id: this needs to be specified by a different mechanism (load balancer)
-void DataPlaneStage::enforce_request (const int& operation_type,
+void DataPlaneStage::enforce_request (const uint32_t& workflow_id,
+    const int& operation_type,
     const int& operation_context,
     const uint64_t& operation_size)
 {
     // initialize data plane stage
     if (!m_stage_initialized.load (std::memory_order_relaxed)) {
-        // if (m_stage_initialized.load () == false) {
         this->initialize_stage ();
         std::cout << this->m_stage->get_stage_info ().to_string () << "\n";
     }
 
+    // missing: validate workflow-id ...
+
     // create Context object
-    auto context_obj = this->m_posix_instance->build_context_object (this->m_workflow_id,
+    auto context_obj = this->m_posix_instance->build_context_object (workflow_id,
         operation_type,
         operation_context,
         operation_size,
