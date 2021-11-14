@@ -17,7 +17,7 @@ LdPreloadedPosix::LdPreloadedPosix () :
 
 // TODO: check move operation within LdPreloadPosix, but not on PosixFileSystem
 // LdPreloadedPosix explicit constructor.
-LdPreloadedPosix::LdPreloadedPosix (std::shared_ptr<Logging> logging_ptr) :
+LdPreloadedPosix::LdPreloadedPosix (const std::shared_ptr<Logging>& logging_ptr) :
     m_logger_ptr { logging_ptr },
     m_stage { std::make_unique<DataPlaneStage> (logging_ptr) }
 {
@@ -27,7 +27,7 @@ LdPreloadedPosix::LdPreloadedPosix (std::shared_ptr<Logging> logging_ptr) :
 // LdPreloadedPosix parameterized constructor.
 LdPreloadedPosix::LdPreloadedPosix (const std::string& lib,
     const bool& stat_collection,
-    std::shared_ptr<Logging> logging_ptr) :
+    const std::shared_ptr<Logging>& logging_ptr) :
     m_collect { stat_collection },
     m_logger_ptr { logging_ptr },
     m_stage { std::make_unique<DataPlaneStage> (logging_ptr) }
@@ -129,11 +129,11 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_read (int fd, void* buf, size_t cou
     // hook POSIX read operation to m_data_operations.m_read
     this->m_dlsym_hook.hook_posix_read (m_data_operations.m_read);
 
-    // enforce read request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::POSIX::read),
-        static_cast<int> (paio::POSIX_META::data_op),
-        counter);
+//    // enforce read request to PAIO data plane stage
+//    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
+//        static_cast<int> (paio::POSIX::read),
+//        static_cast<int> (paio::POSIX_META::data_op),
+//        counter);
 
     // perform original POSIX read operation
     ssize_t result = m_data_operations.m_read (fd, buf, counter);
@@ -161,11 +161,11 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_write (int fd, const void* buf, siz
     // hook POSIX write operation to m_data_operations.m_write
     this->m_dlsym_hook.hook_posix_write (m_data_operations.m_write);
 
-    // enforce write request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::POSIX::write),
-        static_cast<int> (paio::POSIX_META::data_op),
-        counter);
+//    // enforce write request to PAIO data plane stage
+//    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
+//        static_cast<int> (paio::POSIX::write),
+//        static_cast<int> (paio::POSIX_META::data_op),
+//        counter);
 
     // perform original POSIX write operation
     ssize_t result = m_data_operations.m_write (fd, buf, counter);

@@ -4,6 +4,7 @@
  **/
 
 #include <padll/interface/passthrough/posix_passthrough.hpp>
+#include <utility>
 
 /**
  * Missing: passthrough_posix_open
@@ -19,16 +20,16 @@ PosixPassthrough::PosixPassthrough () : m_logger_ptr { std::make_shared<Logging>
 }
 
 // PosixPassthrough explicit parameterized constructor.
-PosixPassthrough::PosixPassthrough (std::shared_ptr<Logging> log_ptr) : m_logger_ptr { log_ptr }
+PosixPassthrough::PosixPassthrough (std::shared_ptr<Logging> log_ptr) : m_logger_ptr {std::move( log_ptr )}
 {
     // initialize library handle pointer.
     this->initialize ();
 }
 
 // PosixPassthrough explicit parameterized constructor.
-PosixPassthrough::PosixPassthrough (const std::string& lib_name, std::shared_ptr<Logging> log_ptr) :
-    m_lib_name { lib_name },
-    m_logger_ptr { log_ptr }
+PosixPassthrough::PosixPassthrough (std::string  lib_name, std::shared_ptr<Logging> log_ptr) :
+    m_lib_name {std::move( lib_name )},
+    m_logger_ptr {std::move( log_ptr )}
 {
     // initialize library handle pointer.
     this->initialize ();

@@ -59,7 +59,7 @@ public:
     /**
      * LdPreloadedPosix default constructor.
      */
-    explicit LdPreloadedPosix (std::shared_ptr<Logging> log_ptr);
+    explicit LdPreloadedPosix (const std::shared_ptr<Logging>& log_ptr);
 
     /**
      * LdPreloadedPosix parameterized constructor.
@@ -68,7 +68,7 @@ public:
      */
     LdPreloadedPosix (const std::string& lib,
         const bool& stat_collection,
-        std::shared_ptr<Logging> log_ptr);
+        const std::shared_ptr<Logging>& log_ptr);
 
     /**
      * LdPreloadedPosix default destructor.
