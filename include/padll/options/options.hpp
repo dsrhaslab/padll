@@ -10,6 +10,9 @@
 #include <string>
 #include <vector>
 
+/**
+ * TODO: create Options class and initialize as a shared_ptr; otherwise we can have initialization issues in MountPointTable::initialize()
+ */
 namespace padll::options {
 
 enum class MountPoint { kNone = 0, kLocal = 1, kRemote = 2 };
@@ -38,7 +41,7 @@ constexpr bool option_mount_point_differentiation { true };
  * option_default_mount_point_workflows:
  *  fixme: this needs to be adjusted (later); the controller should specify these ...
  */
-const std::vector<uint32_t> option_default_mount_point_workflows { 1000,
+static const std::vector<uint32_t> option_default_mount_point_workflows { 1000,
     2000,
     3000,
     4000,
@@ -49,7 +52,7 @@ const std::vector<uint32_t> option_default_mount_point_workflows { 1000,
  * option_default_local_mount_point:
  *  operations will pick from a selected set of workflow identifiers
  */
-const std::filesystem::path option_default_local_mount_point { "/local" };
+constexpr std::string_view option_default_local_mount_point { "/local" };
 
 /**
  * option_default_local_mount_point_workflows:
@@ -61,7 +64,7 @@ const std::vector<uint32_t> option_default_local_mount_point_workflows { 1000, 2
  * option_default_remote_mount_point:
  *  operations will pick from a selected set of workflow identifiers
  */
-const std::filesystem::path option_default_remote_mount_point { "/home" };
+constexpr std::string_view option_default_remote_mount_point { "/home" };
 
 /**
  * option_default_remote_mount_point_workflows:
@@ -86,7 +89,7 @@ constexpr bool option_default_enable_debug_with_ld_preload { true };
 /**
  * option_default_log_path:
  */
-const std::string option_default_log_path { "/tmp/padll-info.log" };
+constexpr std::string_view option_default_log_path { "/tmp/padll-info.log" };
 
 /**
  * option_default_detailed_logging:
@@ -115,7 +118,7 @@ constexpr bool option_default_stage_object_creation { true };
 /**
  * option_default_stage_name:
  */
-const std::string option_default_stage_name { "tensorflow-" };
+constexpr std::string_view option_default_stage_name { "tensorflow-" };
 
 } // namespace padll::options
 

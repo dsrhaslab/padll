@@ -27,6 +27,8 @@ private:
     std::unordered_map<FILE*, std::unique_ptr<MountPointEntry>> m_file_ptr_table {};
     std::map<MountPoint, std::vector<uint32_t>> m_mount_point_workflows {};
 
+    void initialize ();
+
     /**
      * register_mount_point_type:
      * @param type
@@ -53,6 +55,13 @@ public:
      * MountPointTable default constructor.
      */
     MountPointTable ();
+
+    /**
+     * MountPointTable parameterized constructor.
+     * @param value
+     * Fixme: temporary; only for debugging purposes.
+     */
+    explicit MountPointTable (const std::string& value);
 
     /**
      * MountPointTable default destructor.

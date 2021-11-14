@@ -39,7 +39,7 @@ void DataPlaneStage::initialize_stage ()
     // initialize PAIO structures (stage and instance-interface)
     this->m_stage = { std::make_shared<paio::PaioStage> (option_default_stage_channels,
         option_default_stage_object_creation,
-        option_default_stage_name) };
+        std::string(option_default_stage_name)) };
     this->m_posix_instance = std::make_unique<paio::PosixLayer> (this->m_stage);
 
     // fixme: remove; this is only temporary ...

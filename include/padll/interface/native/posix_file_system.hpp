@@ -25,7 +25,7 @@ namespace opt = padll::options;
 std::shared_ptr<log::Logging> m_logger_ptr { std::make_shared<log::Logging> (
     opt::option_default_enable_debug_level,
     opt::option_default_enable_debug_with_ld_preload,
-    opt::option_default_log_path) };
+    std::string (opt::option_default_log_path)) };
 
 /**
  * LdPreloaded file system object.

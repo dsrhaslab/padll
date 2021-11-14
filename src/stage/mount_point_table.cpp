@@ -10,20 +10,32 @@ namespace padll::stage {
 // MountPointTable default constructor.
 MountPointTable::MountPointTable ()
 {
-    if (option_mount_point_differentiation) {
-        this->register_mount_point_type (MountPoint::kLocal,
-            option_default_local_mount_point_workflows);
-        this->register_mount_point_type (MountPoint::kLocal,
-            option_default_remote_mount_point_workflows);
-    } else {
-        this->register_mount_point_type (MountPoint::kNone, option_default_mount_point_workflows);
-    }
+    std::cout << "MountPointTable default constructor." << std::endl;
+    this->initialize ();
+}
+
+// MountPointTable parameterized constructor.
+MountPointTable::MountPointTable (const std::string& value) {
+    std::cout << "MountPointTable: " << value << std::endl;
+    this->initialize ();
 }
 
 // MountPointTable default destructor.
 MountPointTable::~MountPointTable ()
 {
     std::cout << this->to_string () << std::endl;
+}
+
+void MountPointTable::initialize ()
+{
+    if (option_mount_point_differentiation) {
+        this->register_mount_point_type (MountPoint::kLocal,
+                                         option_default_local_mount_point_workflows);
+        this->register_mount_point_type (MountPoint::kLocal,
+                                         option_default_remote_mount_point_workflows);
+    } else {
+        this->register_mount_point_type (MountPoint::kNone, option_default_mount_point_workflows);
+    }
 }
 
 // create_mount_point_entry call. (...)
