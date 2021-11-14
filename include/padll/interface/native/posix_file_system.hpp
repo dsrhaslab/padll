@@ -16,13 +16,13 @@
 
 namespace ld = padll::interface::ldpreloaded;
 namespace pass = padll::interface::passthrough;
-namespace log = padll::utils::logging;
+namespace logn = padll::utils::logging;
 namespace opt = padll::options;
 
 /**
  * Main logging object.
  */
-std::shared_ptr<log::Logging> m_logger_ptr { std::make_shared<log::Logging> (
+std::shared_ptr<logn::Logging> m_logger_ptr { std::make_shared<logn::Logging> (
     opt::option_default_enable_debug_level,
     opt::option_default_enable_debug_with_ld_preload,
     std::string (opt::option_default_log_path)) };

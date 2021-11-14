@@ -6,7 +6,6 @@
 #include <cstdio>
 #include <iostream>
 #include <padll/stage/mount_point_table.hpp>
-#include <padll/utils/options.hpp>
 
 using namespace padll::stage;
 
