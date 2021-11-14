@@ -52,7 +52,7 @@ public:
      * PosixPassthrough parameterized constructor.
      * @param lib
      */
-    PosixPassthrough (std::string  lib, std::shared_ptr<Logging> log_ptr);
+    PosixPassthrough (std::string lib, std::shared_ptr<Logging> log_ptr);
 
     /**
      * PosixPassthrough default destructor.

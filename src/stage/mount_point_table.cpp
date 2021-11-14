@@ -15,7 +15,8 @@ MountPointTable::MountPointTable ()
 }
 
 // MountPointTable parameterized constructor.
-MountPointTable::MountPointTable (const std::string& value) {
+MountPointTable::MountPointTable (const std::string& value)
+{
     std::cout << "MountPointTable: " << value << std::endl;
     this->initialize ();
 }
@@ -26,15 +27,21 @@ MountPointTable::~MountPointTable ()
     std::cout << this->to_string () << std::endl;
 }
 
+// initialize call. (...)
 void MountPointTable::initialize ()
 {
+    // if mount point differentiation is enabled, register local and remote workflows
     if (option_mount_point_differentiation) {
+        // register local mount point workflows
         this->register_mount_point_type (MountPoint::kLocal,
-                                         option_default_local_mount_point_workflows);
-        this->register_mount_point_type (MountPoint::kLocal,
-                                         option_default_remote_mount_point_workflows);
+            this->m_default_workflows.default_local_mount_point_workflows);
+        // register remote mount point workflows
+        this->register_mount_point_type (MountPoint::kRemote,
+            this->m_default_workflows.default_remote_mount_point_workflows);
     } else {
-        this->register_mount_point_type (MountPoint::kNone, option_default_mount_point_workflows);
+        // register all mount point workflows
+        this->register_mount_point_type (MountPoint::kNone,
+            this->m_default_workflows.default_mount_point_workflows);
     }
 }
 
@@ -288,6 +295,12 @@ std::string MountPointTable::to_string () const
         stream << std::endl;
     }
     return stream.str ();
+}
+
+// get_default_workflows call. (...)
+const MountPointWorkflows& MountPointTable::get_default_workflows () const
+{
+    return this->m_default_workflows;
 }
 
 } // namespace padll::stage

@@ -17,12 +17,29 @@
 
 namespace padll::stage {
 
+/**
+ * MountPointWorkflows class.
+ * fixme: this needs to be adjusted (later); the controller should specify these ...
+ */
+class MountPointWorkflows {
+
+public:
+    const std::vector<uint32_t> default_mount_point_workflows { 1000,
+        2000,
+        3000,
+        4000,
+        5000,
+        6000 };
+    const std::vector<uint32_t> default_remote_mount_point_workflows { 4000, 5000, 6000 };
+    const std::vector<uint32_t> default_local_mount_point_workflows { 1000, 2000, 3000 };
+};
+
 class MountPointTable {
-    friend class MountPointDifferentiationTest;
 
 private:
     std::shared_timed_mutex m_fd_shared_lock;
     std::shared_timed_mutex m_fptr_shared_lock;
+    MountPointWorkflows m_default_workflows {};
     std::unordered_map<int, std::unique_ptr<MountPointEntry>> m_file_descriptors_table {};
     std::unordered_map<FILE*, std::unique_ptr<MountPointEntry>> m_file_ptr_table {};
     std::map<MountPoint, std::vector<uint32_t>> m_mount_point_workflows {};
@@ -144,6 +161,12 @@ public:
      * @return
      */
     [[nodiscard]] std::string to_string () const;
+
+    /**
+     * get_default_workflows:
+     * @return
+     */
+    [[nodiscard]] const MountPointWorkflows& get_default_workflows () const;
 };
 
 } // namespace padll::stage

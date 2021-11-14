@@ -11,7 +11,8 @@
 #include <vector>
 
 /**
- * TODO: create Options class and initialize as a shared_ptr; otherwise we can have initialization issues in MountPointTable::initialize()
+ * TODO: create Options class and initialize as a shared_ptr; otherwise we can have initialization
+ *  issues in MountPointTable::initialize()
  */
 namespace padll::options {
 
@@ -38,39 +39,16 @@ constexpr bool option_default_statistic_collection { true };
 constexpr bool option_mount_point_differentiation { true };
 
 /**
- * option_default_mount_point_workflows:
- *  fixme: this needs to be adjusted (later); the controller should specify these ...
- */
-static const std::vector<uint32_t> option_default_mount_point_workflows { 1000,
-    2000,
-    3000,
-    4000,
-    5000,
-    6000 };
-
-/**
  * option_default_local_mount_point:
  *  operations will pick from a selected set of workflow identifiers
  */
 constexpr std::string_view option_default_local_mount_point { "/local" };
 
 /**
- * option_default_local_mount_point_workflows:
- *  fixme: this needs to be adjusted (later); the controller should specify these ...
- */
-const std::vector<uint32_t> option_default_local_mount_point_workflows { 1000, 2000, 3000 };
-
-/**
  * option_default_remote_mount_point:
  *  operations will pick from a selected set of workflow identifiers
  */
 constexpr std::string_view option_default_remote_mount_point { "/home" };
-
-/**
- * option_default_remote_mount_point_workflows:
- *  fixme: this needs to be adjusted (later); the controller should specify these ...
- */
-const std::vector<uint32_t> option_default_remote_mount_point_workflows { 4000, 5000, 6000 };
 
 /***************************************************************************************************
  * Logging configuration
