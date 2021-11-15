@@ -48,7 +48,7 @@ private:
 
     // data plane stage configurations
     std::unique_ptr<DataPlaneStage> m_stage { std::make_unique<DataPlaneStage> () };
-    MountPointTable m_mount_point_table { "hello" };
+    MountPointTable m_mount_point_table {};
 
 public:
     /**

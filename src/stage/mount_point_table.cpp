@@ -8,16 +8,19 @@
 namespace padll::stage {
 
 // MountPointTable default constructor.
-MountPointTable::MountPointTable ()
+MountPointTable::MountPointTable () : m_logging { std::make_shared<Logging> () }
 {
-    std::cout << "MountPointTable default constructor." << std::endl;
+    std::printf ("MountPointTable default constructor.\n");
     this->initialize ();
 }
 
 // MountPointTable parameterized constructor.
-MountPointTable::MountPointTable (const std::string& value)
+MountPointTable::MountPointTable (std::shared_ptr<Logging> log_ptr, const std::string& value) :
+    m_logging { std::move (log_ptr) }
 {
-    std::cout << "MountPointTable: " << value << std::endl;
+    std::printf ("MountPointTable parameterized constructor: %s (%ld)\n",
+        value.c_str (),
+        this->m_logging.use_count ());
     this->initialize ();
 }
 
@@ -54,7 +57,11 @@ bool MountPointTable::create_mount_point_entry (const int& fd,
 
     auto iterator = this->m_file_descriptors_table.find (fd);
     if (iterator != this->m_file_descriptors_table.end ()) {
-        std::cerr << "ERROR: File descriptor " << fd << " already exists." << std::endl;
+        std::stringstream stream;
+        stream << "ERROR: File descriptor " << fd << " already exists.";
+        // submit error message to the logging facility
+        this->m_logging->log_error (stream.str ());
+
         return false;
     }
 
@@ -64,7 +71,11 @@ bool MountPointTable::create_mount_point_entry (const int& fd,
 
     // check if the insertion was successful
     if (!emplace_return_value.second) {
-        std::cerr << "ERROR: File descriptor " << fd << " could not be inserted." << std::endl;
+        std::stringstream stream;
+        stream << "ERROR: File descriptor " << fd << " could not be inserted.";
+        // submit error message to the logging facility
+        this->m_logging->log_error (stream.str ());
+
         return false;
     }
 
@@ -80,7 +91,11 @@ bool MountPointTable::create_mount_point_entry (FILE* file_ptr,
 
     auto iterator = this->m_file_ptr_table.find (file_ptr);
     if (iterator != this->m_file_ptr_table.end ()) {
-        std::cerr << "ERROR: File descriptor " << file_ptr << " already exists." << std::endl;
+        std::stringstream stream;
+        stream << "ERROR: File descriptor " << file_ptr << " already exists.";
+        // submit error message to the logging facility
+        this->m_logging->log_error (stream.str ());
+
         return false;
     }
 
@@ -90,7 +105,11 @@ bool MountPointTable::create_mount_point_entry (FILE* file_ptr,
 
     // check if the insertion was successful
     if (!emplace_return_value.second) {
-        std::cerr << "ERROR: File pointer " << file_ptr << " could not be inserted." << std::endl;
+        std::stringstream stream;
+        stream << "ERROR: File pointer " << file_ptr << " could not be inserted.";
+        // submit error message to the logging facility
+        this->m_logging->log_error (stream.str ());
+
         return false;
     }
 
@@ -106,6 +125,7 @@ const MountPointEntry* MountPointTable::get_mount_point_entry (const int& key)
     auto iterator = this->m_file_descriptors_table.find (key);
     // check if the entry exists
     if (iterator == this->m_file_descriptors_table.end ()) {
+        this->m_logging->log_error ("Mount point entry does not exist.");
         return nullptr;
     } else {
         // return pointer to entry's value
@@ -122,6 +142,7 @@ const MountPointEntry* MountPointTable::get_mount_point_entry (FILE* key)
     auto iterator = this->m_file_ptr_table.find (key);
     // check if the entry exists
     if (iterator == this->m_file_ptr_table.end ()) {
+        this->m_logging->log_error ("Mount point entry does not exist.");
         return nullptr;
     } else {
         // return pointer to entry's value
@@ -141,8 +162,11 @@ bool MountPointTable::remove_mount_point_entry (const int& key)
 
     // check if the removal was successful
     if (return_value) {
-        // fixme: change message to logging class
-        std::cerr << "ERROR: File descriptor " << key << " could not be removed." << std::endl;
+        std::stringstream stream;
+        stream << "ERROR: File descriptor " << key << " could not be removed.";
+        // submit error message to the logging facility
+        this->m_logging->log_error (stream.str ());
+
         return false;
     }
 
@@ -161,8 +185,11 @@ bool MountPointTable::remove_mount_point_entry (FILE* key)
 
     // check if the removal was successful
     if (return_value) {
-        // fixme: change message to logging class
-        std::cerr << "ERROR: File pointer " << key << " could not be removed." << std::endl;
+        std::stringstream stream;
+        stream << "ERROR: File pointer " << key << " could not be removed.";
+        // submit error message to the logging facility
+        this->m_logging->log_error (stream.str ());
+
         return false;
     }
 
@@ -209,7 +236,7 @@ uint32_t MountPointTable::pick_workflow_id (const std::string& path)
 
     // verify if the workflow identifier was not found
     if (workflow_id == -1) {
-        std::printf ("Error while selecting workflow id.\n");
+        this->m_logging->log_error ("Error while selecting workflow id.");
     }
 
     return workflow_id;
@@ -225,7 +252,7 @@ uint32_t MountPointTable::pick_workflow_id (const int& fd)
 
     // verify if the workflow identifier was not found
     if (workflow_id == -1) {
-        std::printf ("Error while selecting workflow id.\n");
+        this->m_logging->log_error ("Error while selecting workflow id.");
     }
 
     return workflow_id;
@@ -241,20 +268,60 @@ uint32_t MountPointTable::pick_workflow_id (FILE* file_ptr)
 
     // verify if the workflow identifier was not found
     if (workflow_id == -1) {
-        std::printf ("Error while selecting workflow id.\n");
+        this->m_logging->log_error ("Error while selecting workflow id.");
     }
 
     return workflow_id;
 }
 
-// parse_path call. (...)
-MountPoint MountPointTable::extract_mount_point_from_path (const std::string& path)
+// compare_first_with_local_mount_point call. (...)
+MountPoint compare_first_with_local_mount_point (const std::string_view& path)
 {
-    // TODO: implement this
-    // verify if path is valid
-    // compare with local path
-    // compare with remote path
-    return MountPoint::kNone;
+    auto return_value = MountPoint::kNone;
+
+    // check if the path is in local mount point
+    if (path.find (option_default_local_mount_point) != std::string::npos) {
+        return_value = MountPoint::kLocal;
+
+    } else if (path.find (option_default_remote_mount_point) != std::string::npos) {
+        return_value = MountPoint::kRemote;
+    }
+
+    return return_value;
+}
+
+// compare_first_with_remote_mount_point call. (...)
+MountPoint compare_first_with_remote_mount_point (const std::string_view& path)
+{
+    auto return_value = MountPoint::kNone;
+
+    // check if the path is in remote mount point
+    if (path.find (option_default_remote_mount_point) != std::string::npos) {
+        return_value = MountPoint::kRemote;
+    } else if (path.find (option_default_local_mount_point) != std::string::npos) {
+        return_value = MountPoint::kLocal;
+    }
+
+    return return_value;
+}
+
+// parse_path call. (...)
+MountPoint MountPointTable::extract_mount_point_from_path (const std::string_view& path)
+{
+    auto return_value = MountPoint::kNone;
+
+    if (option_mount_point_differentiation) {
+        return_value = (option_check_local_mount_point_first)
+            ? compare_first_with_local_mount_point (path)
+            : compare_first_with_remote_mount_point (path);
+
+        // if the mount point is not found, create debug message
+        if (return_value == MountPoint::kNone) {
+            this->m_logging->log_debug ("Extracted path does not belong no neither mount point.");
+        }
+    }
+
+    return return_value;
 }
 
 // select_workflow_id call. (...)

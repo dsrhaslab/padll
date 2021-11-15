@@ -19,7 +19,8 @@ LdPreloadedPosix::LdPreloadedPosix () :
 // LdPreloadedPosix explicit constructor.
 LdPreloadedPosix::LdPreloadedPosix (const std::shared_ptr<Logging>& logging_ptr) :
     m_logger_ptr { logging_ptr },
-    m_stage { std::make_unique<DataPlaneStage> (logging_ptr) }
+    m_stage { std::make_unique<DataPlaneStage> (logging_ptr) },
+    m_mount_point_table { logging_ptr, "ld-preloaded-posix" }
 {
     std::printf ("LdPreloadedPosix explicit constructor.\n");
 }
@@ -30,7 +31,8 @@ LdPreloadedPosix::LdPreloadedPosix (const std::string& lib,
     const std::shared_ptr<Logging>& logging_ptr) :
     m_collect { stat_collection },
     m_logger_ptr { logging_ptr },
-    m_stage { std::make_unique<DataPlaneStage> (logging_ptr) }
+    m_stage { std::make_unique<DataPlaneStage> (logging_ptr) },
+    m_mount_point_table { logging_ptr, "ld-preloaded-posix" }
 {
     std::printf ("LdPreloadedPosix parameterized constructor.\n");
 }

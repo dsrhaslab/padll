@@ -14,7 +14,7 @@ namespace padll::tests {
 class MountPointDifferentiationTest {
 
 private:
-    FILE* m_fd;
+    FILE* m_fd { stdout };
 
 public:
     /**
@@ -37,9 +37,9 @@ public:
     /*
      * test_extract_mount_point_from_path:
      */
-    void test_extract_mount_point_from_path ()
+    void test_pick_workflow_id (MountPointTable* table_ptr)
     {
-        std::fprintf (this->m_fd, "");
+        std::fprintf (this->m_fd, "test_pick_workflow_id:\n");
     }
 
     /*
@@ -152,7 +152,7 @@ int main (int argc, char** argv)
     }
 
     tests::MountPointDifferentiationTest test { fd };
-    MountPointTable mount_point_table { "test" };
+    // MountPointTable mount_point_table { "test" };
 
     return 0;
 }

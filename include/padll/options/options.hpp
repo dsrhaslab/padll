@@ -39,6 +39,13 @@ constexpr bool option_default_statistic_collection { true };
 constexpr bool option_mount_point_differentiation { true };
 
 /**
+ * option_check_local_mount_point_first:
+ *  if option_mount_point_differentiation = true, first check if the path to be extracted is in the
+ *  local mount point. If not, check if it is in the remote mount point.
+ */
+constexpr bool option_check_local_mount_point_first { true };
+
+/**
  * option_default_local_mount_point:
  *  operations will pick from a selected set of workflow identifiers
  */
