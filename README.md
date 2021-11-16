@@ -18,15 +18,15 @@ $ export PATH_PADLL=$PWD
 
 2. <b>Setup microbenchmark</b>
 ```shell
-$ cd padll/tests
-$ g++ libc_calls_experiment.cpp -o libc_calls_test
+$ cd padll/tests/posix
+$ g++ simple_test.cpp -o simple_test
 $ cd ..
 ```
 
 3. <b>Run microbenchmark</b>
 ```shell
 $ cd padll
-$ LD_PRELOAD=$PATH_PADLL/libpadll.so ./tests/libc_calls_test
+$ LD_PRELOAD=$PATH_PADLL/libpadll.so ./tests/posix/simple_test
 ```
 
 ## Features
@@ -39,6 +39,10 @@ $ LD_PRELOAD=$PATH_PADLL/libpadll.so ./tests/libc_calls_test
 ...
 
 ## Dependencies
+* `C++17`
+* `g++ 9.3.0`
+* `cmake 3.19.0-rc1`
+* library dependencies are handled in `CMakeLists.txt`
 
 ...
 
