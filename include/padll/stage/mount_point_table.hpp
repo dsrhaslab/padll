@@ -65,7 +65,7 @@ private:
      * @param path
      * @return
      */
-    MountPoint extract_mount_point_from_path (const std::string_view& path);
+    [[nodiscard]] MountPoint extract_mount_point_from_path (const std::string_view& path) const;
 
     /**
      * select_workflow_id
@@ -115,11 +115,18 @@ public:
         const MountPoint& mount_point);
 
     /**
+     * extract_mount_point:
+     * @param path
+     * @return
+     */
+    MountPoint extract_mount_point (const std::string_view& path) const;
+
+    /**
      * pick_workflow_id:
      * @param path
      * @return
      */
-    uint32_t pick_workflow_id (const std::string& path);
+    uint32_t pick_workflow_id (const std::string_view& path);
 
     /**
      * pick_workflow_id:
