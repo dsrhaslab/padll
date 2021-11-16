@@ -69,7 +69,6 @@ static __attribute__ ((destructor)) void destroy_method ()
  */
 extern "C" ssize_t read (int fd, void* buf, size_t size)
 {
-    std::printf ("passei pelo read header\n");
     return (posix_data_calls.padll_intercept_read)
         ? m_ld_preloaded_posix.ld_preloaded_posix_read (fd, buf, size)
         : m_posix_passthrough.passthrough_posix_read (fd, buf, size);
@@ -84,7 +83,6 @@ extern "C" ssize_t read (int fd, void* buf, size_t size)
  */
 extern "C" ssize_t write (int fd, const void* buf, size_t size)
 {
-    std::printf ("passei pelo write header\n");
     return (posix_data_calls.padll_intercept_write)
         ? m_ld_preloaded_posix.ld_preloaded_posix_write (fd, buf, size)
         : m_posix_passthrough.passthrough_posix_write (fd, buf, size);
