@@ -49,7 +49,8 @@ constexpr bool option_check_local_mount_point_first { true };
  * option_default_local_mount_point:
  *  operations will pick from a selected set of workflow identifiers
  */
-constexpr std::string_view option_default_local_mount_point { "/local" };
+// constexpr std::string_view option_default_local_mount_point { "/local" };
+constexpr std::string_view option_default_local_mount_point { "/tmp" };
 
 /**
  * option_default_remote_mount_point:

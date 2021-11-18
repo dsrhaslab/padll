@@ -366,6 +366,36 @@ std::string MountPointTable::to_string () const
     return stream.str ();
 }
 
+// file_descriptor_table_to_string call. (...)
+std::string MountPointTable::file_descriptor_table_to_string ()
+{
+    std::shared_lock<std::shared_timed_mutex> read_lock (this->m_fd_shared_lock);
+
+    std::stringstream stream;
+    stream << "FileDescriptorTable: " << std::endl;
+    for (auto const& entry : this->m_file_descriptors_table) {
+        stream << "  " << entry.first << ": ";
+        stream << entry.second->to_string () << std::endl;
+    }
+
+    return stream.str ();
+}
+
+// file_ptr_table_to_string call. (...)
+std::string MountPointTable::file_ptr_table_to_string ()
+{
+    std::shared_lock<std::shared_timed_mutex> read_lock (this->m_fd_shared_lock);
+
+    std::stringstream stream;
+    stream << "FilePtrTable: " << std::endl;
+    for (auto const& entry : this->m_file_ptr_table) {
+        stream << "  " << entry.first << ": ";
+        stream << entry.second->to_string () << std::endl;
+    }
+
+    return stream.str ();
+}
+
 // get_default_workflows call. (...)
 const MountPointWorkflows& MountPointTable::get_default_workflows () const
 {

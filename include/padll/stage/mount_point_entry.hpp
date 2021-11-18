@@ -8,6 +8,7 @@
 
 #include <mutex>
 #include <padll/options/options.hpp>
+#include <sstream>
 #include <string>
 
 using namespace padll::options;

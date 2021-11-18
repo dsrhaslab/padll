@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <iostream>
 #include <padll/stage/mount_point_table.hpp>
+#include <thread>
 
 using namespace padll::stage;
 
@@ -15,6 +16,76 @@ class MountPointDifferentiationTest {
 
 private:
     FILE* m_fd { stdout };
+
+    /**
+     * create_mount_point_entry:
+     */
+    void create_mount_point_entry (MountPointTable* table_ptr,
+        bool create_fd,
+        const std::string& path,
+        int num_files)
+    {
+        for (int i = 0; i < num_files; i++) {
+            auto rand_file = static_cast<int> (random () % num_files);
+            std::string path_to_file = path + std::to_string (rand_file);
+
+            // extract mount point from path
+            auto mount_point = table_ptr->extract_mount_point (path_to_file);
+            bool result = false;
+
+            // create mount point entry for file descriptor
+            if (create_fd) {
+                // open file and get file descriptor
+                auto return_value = ::open (path_to_file.c_str (), O_CREAT, 0666);
+                // check if file was created
+                if (return_value == -1) {
+                    std::fprintf (this->m_fd,
+                        "Error: %s - %s\n",
+                        strerror (errno),
+                        path_to_file.c_str ());
+                    return;
+                }
+
+                // create mount point entry for file descriptor
+                result
+                    = table_ptr->create_mount_point_entry (return_value, path_to_file, mount_point);
+            } else {
+                // open file and get file descriptor
+                auto return_value = ::fopen (path_to_file.c_str (), "w");
+                // check if file was created
+                if (return_value == nullptr) {
+                    std::fprintf (this->m_fd,
+                        "Error: %s - %s\n",
+                        strerror (errno),
+                        path_to_file.c_str ());
+                    return;
+                }
+
+                // create mount point entry for file pointer
+                result
+                    = table_ptr->create_mount_point_entry (return_value, path_to_file, mount_point);
+            }
+
+            // check if entry was created
+            (!result) ? std::fprintf (this->m_fd,
+                "Error: %s - %s\n",
+                strerror (errno),
+                path_to_file.c_str ())
+                      : std::fprintf (this->m_fd, "Success: %s\n", path_to_file.c_str ());
+        }
+
+        if (create_fd) {
+            // print file descriptor table
+            std::fprintf (this->m_fd,
+                "%s\n",
+                table_ptr->file_descriptor_table_to_string ().c_str ());
+        } else {
+            // print file pointer table
+            std::fprintf (this->m_fd, "%s\n", table_ptr->file_ptr_table_to_string ().c_str ());
+        }
+
+        std::fprintf (this->m_fd, "------------------\n");
+    }
 
 public:
     /**
@@ -45,7 +116,7 @@ public:
         std::vector<std::string_view> file_paths { "/home/user/file1",
             "/local/file2",
             "/remote/path/to/file3",
-            "/local/path/to/file4" };
+            "/tmp/path/to/file4" };
 
         for (auto& elem : file_paths) {
             auto mount_point = table_ptr->extract_mount_point (elem);
@@ -105,28 +176,40 @@ public:
     }
 
     /**
-     * test_sequential_create_mount_point_entry:
+     * test_create_mount_point_entry:
+     * @param table_ptr
+     * @param num_threads
+     * @param create_fd
+     * @param path
+     * @param num_files
      */
-    void test_sequential_create_mount_point_entry (MountPointTable* table_ptr,
+    void test_create_mount_point_entry (MountPointTable* table_ptr,
+        int num_threads,
         bool create_fd,
         const std::string& path,
         int num_files)
     {
         std::fprintf (this->m_fd, "------------------\n");
-        std::fprintf (this->m_fd, "test_pick_workflow_id:\n");
+        std::fprintf (this->m_fd, "test_create_mount_point_entry:\n");
 
-        if (create_fd) {
-            for (int i = 0; i < num_files; i++) {
+        auto func = [this] (MountPointTable* table_ptr,
+                        bool create_fd,
+                        const std::string& path,
+                        int num_files) {
+            std::stringstream stream;
+            stream << "\t" << std::this_thread::get_id () << ": test_create_mount_point_entry"
+                   << std::endl;
+            std::fprintf (this->m_fd, "%s", stream.str ().c_str ());
+            this->create_mount_point_entry (table_ptr, create_fd, path, num_files);
+        };
 
-                // todo: finish me ...
-                auto return_value = ::open ((path + std::to_string (i)).c_str (), O_CREAT, 0666);
-                if (return_value == -1) {
-                    std::fprintf (this->m_fd, "Error: %s\n", strerror (errno));
-                    return;
-                }
+        std::thread threads[num_threads];
+        for (int i = 0; i < num_threads; i++) {
+            threads[i] = std::thread (func, table_ptr, create_fd, path, num_files);
+        }
 
-                // table_ptr->create_mount_point_entry (return_value, path + std::to_string (i));
-            }
+        for (int i = 0; i < num_threads; i++) {
+            threads[i].join ();
         }
 
         std::fprintf (this->m_fd, "------------------\n");
@@ -144,14 +227,6 @@ public:
      * test_sequential_remove_mount_point_entry:
      */
     void test_sequential_remove_mount_point_entry ()
-    {
-        std::fprintf (this->m_fd, "");
-    }
-
-    /**
-     * test_concurrent_create_mount_point_entry:
-     */
-    void test_concurrent_create_mount_point_entry ()
     {
         std::fprintf (this->m_fd, "");
     }
@@ -192,9 +267,13 @@ int main (int argc, char** argv)
 
     tests::MountPointDifferentiationTest test { fd };
     MountPointTable mount_point_table { std::make_shared<Logging> (), "test" };
+    int num_threads = 5;
 
     test.test_register_mount_point_type (&mount_point_table);
     test.test_extract_mount_point (&mount_point_table);
+
+    // test.test_create_mount_point_entry (&mount_point_table, num_threads, true, "/tmp/file-fd-", 10);
+    // test.test_create_mount_point_entry (&mount_point_table, num_threads, false, "/tmp/file-ptr-", 10);
 
     return 0;
 }

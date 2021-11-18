@@ -119,28 +119,28 @@ public:
      * @param path
      * @return
      */
-    MountPoint extract_mount_point (const std::string_view& path) const;
+    [[nodiscard]] MountPoint extract_mount_point (const std::string_view& path) const;
 
     /**
      * pick_workflow_id:
      * @param path
      * @return
      */
-    uint32_t pick_workflow_id (const std::string_view& path);
+    [[nodiscard]] uint32_t pick_workflow_id (const std::string_view& path);
 
     /**
      * pick_workflow_id:
      * @param fd
      * @return
      */
-    uint32_t pick_workflow_id (const int& fd);
+    [[nodiscard]] uint32_t pick_workflow_id (const int& fd);
 
     /**
      * pick_workflow_id
      * @param file_ptr
      * @return
      */
-    uint32_t pick_workflow_id (FILE* file_ptr);
+    [[nodiscard]] uint32_t pick_workflow_id (FILE* file_ptr);
 
     /**
      * get_mount_point_fd_entry:
@@ -175,6 +175,18 @@ public:
      * @return
      */
     [[nodiscard]] std::string to_string () const;
+
+    /**
+     * file_descriptor_table_to_string:
+     * @return
+     */
+    [[nodiscard]] std::string file_descriptor_table_to_string ();
+
+    /**
+     * file_ptr_table_to_string:
+     * @return
+     */
+    [[nodiscard]] std::string file_ptr_table_to_string ();
 
     /**
      * get_default_workflows:
