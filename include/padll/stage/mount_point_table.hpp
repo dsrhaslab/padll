@@ -177,16 +177,16 @@ public:
     [[nodiscard]] std::string to_string () const;
 
     /**
-     * file_descriptor_table_to_string:
+     * fd_table_to_string:
      * @return
      */
-    [[nodiscard]] std::string file_descriptor_table_to_string ();
+    [[nodiscard]] std::string fd_table_to_string ();
 
     /**
-     * file_ptr_table_to_string:
+     * fp_table_to_string:
      * @return
      */
-    [[nodiscard]] std::string file_ptr_table_to_string ();
+    [[nodiscard]] std::string fp_table_to_string ();
 
     /**
      * get_default_workflows:

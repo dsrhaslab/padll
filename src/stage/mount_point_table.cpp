@@ -31,7 +31,7 @@ MountPointTable::MountPointTable (std::shared_ptr<Logging> log_ptr, const std::s
 MountPointTable::~MountPointTable ()
 {
     // logging message
-    this->m_logging->log_debug (this->to_string ());
+    this->m_logging->log_debug ("MountPointTable destructor.");
 }
 
 // initialize call. (...)
@@ -366,8 +366,8 @@ std::string MountPointTable::to_string () const
     return stream.str ();
 }
 
-// file_descriptor_table_to_string call. (...)
-std::string MountPointTable::file_descriptor_table_to_string ()
+// fd_table_to_string call. (...)
+std::string MountPointTable::fd_table_to_string ()
 {
     std::shared_lock<std::shared_timed_mutex> read_lock (this->m_fd_shared_lock);
 
@@ -381,8 +381,8 @@ std::string MountPointTable::file_descriptor_table_to_string ()
     return stream.str ();
 }
 
-// file_ptr_table_to_string call. (...)
-std::string MountPointTable::file_ptr_table_to_string ()
+// fp_table_to_string call. (...)
+std::string MountPointTable::fp_table_to_string ()
 {
     std::shared_lock<std::shared_timed_mutex> read_lock (this->m_fd_shared_lock);
 

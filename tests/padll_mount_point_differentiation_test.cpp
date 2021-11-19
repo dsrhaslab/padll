@@ -7,8 +7,10 @@
 #include <iostream>
 #include <padll/stage/mount_point_table.hpp>
 #include <thread>
+#include <variant>
 
 using namespace padll::stage;
+using namespace std::this_thread;
 
 namespace padll::tests {
 
@@ -19,11 +21,16 @@ private:
 
     /**
      * create_mount_point_entry:
+     * @param table_ptr
+     * @param path
+     * @param num_files
+     * @param file_descriptors
      */
     void create_mount_point_entry (MountPointTable* table_ptr,
-        bool create_fd,
+        const bool& create_fd,
         const std::string& path,
-        int num_files)
+        const int& num_files,
+        std::vector<std::variant<int,FILE*>>* file_identifiers)
     {
         for (int i = 0; i < num_files; i++) {
             auto rand_file = static_cast<int> (random () % num_files);
@@ -31,59 +38,50 @@ private:
 
             // extract mount point from path
             auto mount_point = table_ptr->extract_mount_point (path_to_file);
-            bool result = false;
+            bool result;
 
-            // create mount point entry for file descriptor
             if (create_fd) {
                 // open file and get file descriptor
-                auto return_value = ::open (path_to_file.c_str (), O_CREAT, 0666);
+                auto fd = ::open(path_to_file.c_str(), O_CREAT, 0666);
                 // check if file was created
-                if (return_value == -1) {
-                    std::fprintf (this->m_fd,
-                        "Error: %s - %s\n",
-                        strerror (errno),
-                        path_to_file.c_str ());
+                if (fd == -1) {
+                    std::fprintf(this->m_fd,
+                                 "Error: %s - %s\n",
+                                 strerror(errno),
+                                 path_to_file.c_str());
                     return;
                 }
 
                 // create mount point entry for file descriptor
-                result
-                    = table_ptr->create_mount_point_entry (return_value, path_to_file, mount_point);
+                result = table_ptr->create_mount_point_entry(fd, path_to_file, mount_point);
+
+                // add file descriptor to vector
+                file_identifiers->emplace_back(fd);
             } else {
-                // open file and get file descriptor
-                auto return_value = ::fopen (path_to_file.c_str (), "w");
+                // open file and get file pointer
+                auto f_ptr = ::fopen (path_to_file.c_str (), "w");
                 // check if file was created
-                if (return_value == nullptr) {
-                    std::fprintf (this->m_fd,
-                        "Error: %s - %s\n",
-                        strerror (errno),
-                        path_to_file.c_str ());
+                if (f_ptr == nullptr) {
+                    std::fprintf (this->m_fd, "Error: %s\n", strerror (errno));
                     return;
                 }
 
                 // create mount point entry for file pointer
-                result
-                    = table_ptr->create_mount_point_entry (return_value, path_to_file, mount_point);
+                result = table_ptr->create_mount_point_entry (f_ptr, path_to_file, mount_point);
+
+                // add file pointer to vector
+                file_identifiers->emplace_back (f_ptr);
             }
 
             // check if entry was created
-            (!result) ? std::fprintf (this->m_fd,
-                "Error: %s - %s\n",
-                strerror (errno),
-                path_to_file.c_str ())
-                      : std::fprintf (this->m_fd, "Success: %s\n", path_to_file.c_str ());
+            if (!result) {
+                std::fprintf(this->m_fd, "Error: %s\n", strerror(errno));
+            }
         }
 
-        if (create_fd) {
-            // print file descriptor table
-            std::fprintf (this->m_fd,
-                "%s\n",
-                table_ptr->file_descriptor_table_to_string ().c_str ());
-        } else {
-            // print file pointer table
-            std::fprintf (this->m_fd, "%s\n", table_ptr->file_ptr_table_to_string ().c_str ());
-        }
-
+        (create_fd)
+            ? std::fprintf (this->m_fd, "%s\n", table_ptr->fd_table_to_string ().c_str ())
+            : std::fprintf (this->m_fd, "%s\n", table_ptr->fp_table_to_string ().c_str ());
         std::fprintf (this->m_fd, "------------------\n");
     }
 
@@ -179,35 +177,40 @@ public:
      * test_create_mount_point_entry:
      * @param table_ptr
      * @param num_threads
-     * @param create_fd
      * @param path
      * @param num_files
+     * @param file_ptrs
      */
     void test_create_mount_point_entry (MountPointTable* table_ptr,
-        int num_threads,
-        bool create_fd,
+        const bool& create_fd,
+        const int& num_threads,
         const std::string& path,
-        int num_files)
+        const int& num_files,
+        std::vector<std::variant<int,FILE*>>* file_ptrs)
     {
         std::fprintf (this->m_fd, "------------------\n");
         std::fprintf (this->m_fd, "test_create_mount_point_entry:\n");
 
+        // create lambda function for each thread to execute
         auto func = [this] (MountPointTable* table_ptr,
-                        bool create_fd,
-                        const std::string& path,
-                        int num_files) {
+                const bool& create_fd,
+                const std::string& path,
+                const int& num_files,
+                std::vector<std::variant<int,FILE*>>* file_ptrs)
+            {
             std::stringstream stream;
-            stream << "\t" << std::this_thread::get_id () << ": test_create_mount_point_entry"
-                   << std::endl;
+            stream << "\t" << get_id () << ": test_create_mount_point_entry" << std::endl;
             std::fprintf (this->m_fd, "%s", stream.str ().c_str ());
-            this->create_mount_point_entry (table_ptr, create_fd, path, num_files);
+            this->create_mount_point_entry (table_ptr, create_fd, path, num_files, file_ptrs);
         };
 
         std::thread threads[num_threads];
+        // create threads
         for (int i = 0; i < num_threads; i++) {
-            threads[i] = std::thread (func, table_ptr, create_fd, path, num_files);
+            threads[i] = std::thread (func, table_ptr, create_fd, path, num_files, file_ptrs);
         }
 
+        // join threads
         for (int i = 0; i < num_threads; i++) {
             threads[i].join ();
         }
@@ -251,6 +254,25 @@ public:
 
 namespace tests = padll::tests;
 
+/**
+ * print_file_identifiers_list:
+ * @param file_identifiers_list
+ */
+void print_file_identifiers_list (std::vector<std::variant<int,FILE*>>* file_identifiers_list)
+{
+    std::stringstream stream;
+    stream << "File identifiers: ";
+    for (auto& elem : *file_identifiers_list) {
+        if (std::holds_alternative<int> (elem)) {
+            stream << std::get<int> (elem) << " ";
+        } else {
+            stream << std::get<FILE*> (elem) << " ";
+        }
+    }
+    stream << std::endl;
+    std::fprintf (stdout, "%s", stream.str ().c_str ());
+}
+
 int main (int argc, char** argv)
 {
     // check argv for the file to be placed the result
@@ -268,12 +290,21 @@ int main (int argc, char** argv)
     tests::MountPointDifferentiationTest test { fd };
     MountPointTable mount_point_table { std::make_shared<Logging> (), "test" };
     int num_threads = 5;
+    int num_files = 10;
+    bool use_fd = true;
 
-    test.test_register_mount_point_type (&mount_point_table);
-    test.test_extract_mount_point (&mount_point_table);
+    // test.test_register_mount_point_type (&mount_point_table);
+    // test.test_extract_mount_point (&mount_point_table);
 
-    // test.test_create_mount_point_entry (&mount_point_table, num_threads, true, "/tmp/file-fd-", 10);
-    // test.test_create_mount_point_entry (&mount_point_table, num_threads, false, "/tmp/file-ptr-", 10);
+    std::vector<std::variant<int,FILE*>> file_identifiers_list {};
+    file_identifiers_list.reserve(num_threads * num_files);
+
+
+    (use_fd)
+        ? test.test_create_mount_point_entry (&mount_point_table, use_fd, num_threads, "/tmp/file-fd-", num_files, &file_identifiers_list)
+        : test.test_create_mount_point_entry (&mount_point_table, use_fd, num_threads, "/tmp/file-ptr-", 10, &file_identifiers_list);
+
+    print_file_identifiers_list (&file_identifiers_list);
 
     return 0;
 }
