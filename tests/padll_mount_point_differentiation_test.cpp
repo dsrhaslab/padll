@@ -21,11 +21,11 @@ private:
 
     void performance_report (const std::string& header, const int& operations, const long& elapsed_time) {
         std::fprintf (this->m_fd, "\n------------------------------------------------------------------\n");
-        std::fprintf (this->m_fd, "\n%s\n", header.c_str());
-        std::fprintf (this->m_fd, "\n------------------------------------------------------------------\n");
+        std::fprintf (this->m_fd, "%s\n", header.c_str());
+        std::fprintf (this->m_fd, "------------------------------------------------------------------\n");
 
         std::fprintf (this->m_fd, "Ops:\t%d\t\tDuration:%ld ms\n", operations, (elapsed_time/1000/1000));
-        std::fprintf (this->m_fd, "------------------------------------------------------------------\n");
+        std::fprintf (this->m_fd, "------------------------------------------------------------------\n\n");
     }
     /**
      * create_mount_point_entry:
@@ -99,6 +99,7 @@ private:
         const std::vector<std::variant<int,FILE*>>& file_identifiers,
         const bool& print_debug_info)
     {
+        long successful_ops = 0;
         for (int i = 0; i < file_identifiers.size(); i++) {
             auto index = static_cast<int>(random() % file_identifiers.size());
 
@@ -115,10 +116,13 @@ private:
                 if (print_debug_info) {
                     std::fprintf(this->m_fd, "%d (%d): %s\n", i, index, entry->to_string().c_str());
                 }
+                successful_ops++;
             } else {
                 std::fprintf (this->m_fd, "Error: %s\n", strerror (errno));
             }
         }
+        
+        std::cout << get_id() << ": successful ops: " << successful_ops << std::endl;
     }
 
     void delete_mount_point_entry (MountPointTable* table_ptr,
@@ -285,9 +289,6 @@ public:
                                                 const std::vector<std::variant<int,FILE*>>& file_ptrs,
                                      const bool& print_debug_info)
     {
-        std::fprintf (this->m_fd, "------------------\n");
-        std::fprintf (this->m_fd, "test_get_mount_point_entry:\n");
-
         // create lambda function for each thread to execute
         auto func = [this] (MountPointTable* table_ptr,
                             const bool& use_fd,
@@ -341,11 +342,11 @@ namespace tests = padll::tests;
  * print_file_identifiers_list:
  * @param file_identifiers_list
  */
-void print_file_identifiers_list (std::vector<std::variant<int,FILE*>>* file_identifiers_list)
+void print_file_identifiers_list (const std::vector<std::variant<int,FILE*>>& file_identifiers_list)
 {
     std::stringstream stream;
-    stream << "File identifiers: " << file_identifiers_list->size () << std::endl;
-    for (auto& elem : *file_identifiers_list) {
+    stream << "File identifiers: " << file_identifiers_list.size () << std::endl;
+    for (auto& elem : file_identifiers_list) {
         if (std::holds_alternative<int> (elem)) {
             stream << std::get<int> (elem) << " ";
         } else {
@@ -388,12 +389,12 @@ int main (int argc, char** argv)
         test.test_create_mount_point_entry (&mount_point_table, use_fd, num_threads, "/tmp/file-fd-", num_files, &file_identifiers_list, print_debug_info);
         test.test_get_mount_point_entry (&mount_point_table, use_fd, num_threads, file_identifiers_list, print_debug_info);
     } else {
-        test.test_create_mount_point_entry (&mount_point_table, use_fd, num_threads, "/tmp/file-ptr-", 10, &file_identifiers_list, print_debug_info);
+        test.test_create_mount_point_entry (&mount_point_table, use_fd, num_threads, "/tmp/file-ptr-", num_files, &file_identifiers_list, print_debug_info);
         test.test_get_mount_point_entry (&mount_point_table, use_fd, num_threads, file_identifiers_list, print_debug_info);
     }
 
     if (print_debug_info) {
-        print_file_identifiers_list(&file_identifiers_list);
+        print_file_identifiers_list(file_identifiers_list);
     }
 
     return 0;
