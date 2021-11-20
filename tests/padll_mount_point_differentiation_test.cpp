@@ -96,7 +96,8 @@ private:
      */
     void get_mount_point_entry (MountPointTable* table_ptr,
         const bool& use_file_descriptor,
-        const std::vector<std::variant<int,FILE*>>& file_identifiers)
+        const std::vector<std::variant<int,FILE*>>& file_identifiers,
+        const bool& print_debug_info)
     {
         for (int i = 0; i < file_identifiers.size(); i++) {
             auto index = static_cast<int>(random() % file_identifiers.size());
@@ -111,7 +112,9 @@ private:
             }
 
             if (entry != nullptr) {
-                std::fprintf (this->m_fd, "%d (%d): %s\n", i, index, entry->to_string().c_str());
+                if (print_debug_info) {
+                    std::fprintf(this->m_fd, "%d (%d): %s\n", i, index, entry->to_string().c_str());
+                }
             } else {
                 std::fprintf (this->m_fd, "Error: %s\n", strerror (errno));
             }
@@ -279,7 +282,8 @@ public:
     void test_get_mount_point_entry (MountPointTable* table_ptr,
                                                 const bool& use_fd,
                                                 const int& num_threads,
-                                                const std::vector<std::variant<int,FILE*>>& file_ptrs)
+                                                const std::vector<std::variant<int,FILE*>>& file_ptrs,
+                                     const bool& print_debug_info)
     {
         std::fprintf (this->m_fd, "------------------\n");
         std::fprintf (this->m_fd, "test_get_mount_point_entry:\n");
@@ -287,12 +291,13 @@ public:
         // create lambda function for each thread to execute
         auto func = [this] (MountPointTable* table_ptr,
                             const bool& use_fd,
-                            const std::vector<std::variant<int,FILE*>>& file_ptrs)
+                            const std::vector<std::variant<int,FILE*>>& file_ptrs,
+                            const bool& print_debug_info)
         {
             std::stringstream stream;
             stream << "\t" << get_id () << ": test_get_mount_point_entry" << std::endl;
             std::fprintf (this->m_fd, "%s", stream.str ().c_str ());
-            this->get_mount_point_entry (table_ptr, use_fd, file_ptrs);
+            this->get_mount_point_entry (table_ptr, use_fd, file_ptrs, print_debug_info);
         };
 
         std::thread threads[num_threads];
@@ -300,7 +305,7 @@ public:
         auto start = std::chrono::high_resolution_clock::now ();
         // create threads
         for (int i = 0; i < num_threads; i++) {
-            threads[i] = std::thread (func, table_ptr, use_fd, file_ptrs);
+            threads[i] = std::thread (func, table_ptr, use_fd, file_ptrs, print_debug_info);
         }
 
         // join threads
@@ -381,14 +386,15 @@ int main (int argc, char** argv)
 
     if (use_fd) {
         test.test_create_mount_point_entry (&mount_point_table, use_fd, num_threads, "/tmp/file-fd-", num_files, &file_identifiers_list, print_debug_info);
-        test.test_get_mount_point_entry (&mount_point_table, use_fd, num_threads, file_identifiers_list);
+        test.test_get_mount_point_entry (&mount_point_table, use_fd, num_threads, file_identifiers_list, print_debug_info);
     } else {
         test.test_create_mount_point_entry (&mount_point_table, use_fd, num_threads, "/tmp/file-ptr-", 10, &file_identifiers_list, print_debug_info);
-        test.test_get_mount_point_entry (&mount_point_table, use_fd, num_threads, file_identifiers_list);
+        test.test_get_mount_point_entry (&mount_point_table, use_fd, num_threads, file_identifiers_list, print_debug_info);
     }
 
-
-    print_file_identifiers_list (&file_identifiers_list);
+    if (print_debug_info) {
+        print_file_identifiers_list(&file_identifiers_list);
+    }
 
     return 0;
 }
