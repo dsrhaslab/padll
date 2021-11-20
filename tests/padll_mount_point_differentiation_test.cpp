@@ -19,6 +19,14 @@ class MountPointDifferentiationTest {
 private:
     FILE* m_fd { stdout };
 
+    void performance_report (const std::string& header, const int& operations, const long& elapsed_time) {
+        std::fprintf (this->m_fd, "\n------------------------------------------------------------------\n");
+        std::fprintf (this->m_fd, "\n%s\n", header.c_str());
+        std::fprintf (this->m_fd, "\n------------------------------------------------------------------\n");
+
+        std::fprintf (this->m_fd, "Ops:\t%d\t\tDuration:%ld ms\n", operations, (elapsed_time/1000/1000));
+        std::fprintf (this->m_fd, "------------------------------------------------------------------\n");
+    }
     /**
      * create_mount_point_entry:
      * @param table_ptr
@@ -84,6 +92,40 @@ private:
             : std::fprintf (this->m_fd, "%s\n", table_ptr->fp_table_to_string ().c_str ());
         std::fprintf (this->m_fd, "------------------\n");
     }
+
+    void get_mount_point_entry (MountPointTable* table_ptr,
+        const bool& use_file_descriptor,
+        const std::vector<std::variant<int,FILE*>>& file_identifiers)
+    {
+        for (int i = 0; i < file_identifiers.size(); i++) {
+            auto index = static_cast<int>(random() % file_identifiers.size());
+
+            const MountPointEntry* entry;
+            if (use_file_descriptor) {
+                auto fd = std::get<int>(file_identifiers[index]);
+                entry = table_ptr->get_mount_point_entry (fd);
+            } else {
+                auto f_ptr = std::get<FILE*>(file_identifiers[index]);
+                entry = table_ptr->get_mount_point_entry (f_ptr);
+            }
+
+            if (entry != nullptr) {
+                std::fprintf (this->m_fd, "%d (%d): %s\n", i, index, entry->to_string().c_str());
+            } else {
+                std::fprintf (this->m_fd, "Error: %s\n", strerror (errno));
+            }
+
+        }
+        std::fprintf (this->m_fd, "------------------\n");
+    }
+
+    void delete_mount_point_entry (MountPointTable* table_ptr,
+        const bool& create_fd,
+        const std::string& path,
+        const int& num_files,
+        const std::vector<std::variant<int,FILE*>>& file_identifiers)
+    {}
+
 
 public:
     /**
@@ -188,9 +230,6 @@ public:
         const int& num_files,
         std::vector<std::variant<int,FILE*>>* file_ptrs)
     {
-        std::fprintf (this->m_fd, "------------------\n");
-        std::fprintf (this->m_fd, "test_create_mount_point_entry:\n");
-
         // create lambda function for each thread to execute
         auto func = [this] (MountPointTable* table_ptr,
                 const bool& create_fd,
@@ -205,6 +244,7 @@ public:
         };
 
         std::thread threads[num_threads];
+        auto start = std::chrono::high_resolution_clock::now ();
         // create threads
         for (int i = 0; i < num_threads; i++) {
             threads[i] = std::thread (func, table_ptr, create_fd, path, num_files, file_ptrs);
@@ -215,15 +255,49 @@ public:
             threads[i].join ();
         }
 
-        std::fprintf (this->m_fd, "------------------\n");
+        // calculate elapsed time
+        auto end = std::chrono::high_resolution_clock::now ();
+        std::chrono::duration<double> elapsed_time = end - start;
+
+        this->performance_report ("test_create_mount_point_entry",
+        num_threads*num_files,
+        std::chrono::duration_cast<std::chrono::nanoseconds>(elapsed_time).count());
     }
 
     /**
      * test_sequential_get_mount_point_entry:
      */
-    void test_sequential_get_mount_point_entry ()
+    void test_get_mount_point_entry (MountPointTable* table_ptr,
+                                                const bool& use_fd,
+                                                const int& num_threads,
+                                                const std::vector<std::variant<int,FILE*>>& file_ptrs)
     {
-        std::fprintf (this->m_fd, "");
+        std::fprintf (this->m_fd, "------------------\n");
+        std::fprintf (this->m_fd, "test_get_mount_point_entry:\n");
+
+        // create lambda function for each thread to execute
+        auto func = [this] (MountPointTable* table_ptr,
+                            const bool& use_fd,
+                            const std::vector<std::variant<int,FILE*>>& file_ptrs)
+        {
+            std::stringstream stream;
+            stream << "\t" << get_id () << ": test_get_mount_point_entry" << std::endl;
+            std::fprintf (this->m_fd, "%s", stream.str ().c_str ());
+            this->get_mount_point_entry (table_ptr, use_fd, file_ptrs);
+        };
+
+        std::thread threads[num_threads];
+        // create threads
+        for (int i = 0; i < num_threads; i++) {
+            threads[i] = std::thread (func, table_ptr, use_fd, file_ptrs);
+        }
+
+        // join threads
+        for (int i = 0; i < num_threads; i++) {
+            threads[i].join ();
+        }
+
+        std::fprintf (this->m_fd, "------------------\n");
     }
 
     /**
@@ -261,7 +335,7 @@ namespace tests = padll::tests;
 void print_file_identifiers_list (std::vector<std::variant<int,FILE*>>* file_identifiers_list)
 {
     std::stringstream stream;
-    stream << "File identifiers: ";
+    stream << "File identifiers: " << file_identifiers_list->size () << std::endl;
     for (auto& elem : *file_identifiers_list) {
         if (std::holds_alternative<int> (elem)) {
             stream << std::get<int> (elem) << " ";
@@ -289,8 +363,8 @@ int main (int argc, char** argv)
 
     tests::MountPointDifferentiationTest test { fd };
     MountPointTable mount_point_table { std::make_shared<Logging> (), "test" };
-    int num_threads = 5;
-    int num_files = 10;
+    int num_threads = 1;
+    int num_files = 100;
     bool use_fd = true;
 
     // test.test_register_mount_point_type (&mount_point_table);
@@ -300,9 +374,14 @@ int main (int argc, char** argv)
     file_identifiers_list.reserve(num_threads * num_files);
 
 
-    (use_fd)
-        ? test.test_create_mount_point_entry (&mount_point_table, use_fd, num_threads, "/tmp/file-fd-", num_files, &file_identifiers_list)
-        : test.test_create_mount_point_entry (&mount_point_table, use_fd, num_threads, "/tmp/file-ptr-", 10, &file_identifiers_list);
+    if (use_fd) {
+        test.test_create_mount_point_entry (&mount_point_table, use_fd, num_threads, "/tmp/file-fd-", num_files, &file_identifiers_list);
+        // test.test_get_mount_point_entry (&mount_point_table, use_fd, num_threads, file_identifiers_list);
+    } else {
+        test.test_create_mount_point_entry (&mount_point_table, use_fd, num_threads, "/tmp/file-ptr-", 10, &file_identifiers_list);
+        test.test_get_mount_point_entry (&mount_point_table, use_fd, num_threads, file_identifiers_list);
+    }
+
 
     print_file_identifiers_list (&file_identifiers_list);
 
