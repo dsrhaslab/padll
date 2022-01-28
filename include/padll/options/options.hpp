@@ -59,7 +59,7 @@ constexpr std::string_view option_default_local_mount_point { "/tmp" };
 constexpr std::string_view option_default_remote_mount_point { "/home" };
 
 /***************************************************************************************************
- * Logging configuration
+ * Log configuration
  **************************************************************************************************/
 
 /**
@@ -75,7 +75,7 @@ constexpr bool option_default_enable_debug_with_ld_preload { true };
 /**
  * option_default_log_path:
  */
-constexpr std::string_view option_default_log_path { "/tmp/padll-info.log" };
+constexpr std::string_view option_default_log_path { "/tmp/padll-info" };
 
 /**
  * option_default_detailed_logging:

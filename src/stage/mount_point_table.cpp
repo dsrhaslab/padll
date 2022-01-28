@@ -8,7 +8,7 @@
 namespace padll::stage {
 
 // MountPointTable default constructor.
-MountPointTable::MountPointTable () : m_logging { std::make_shared<Logging> () }
+MountPointTable::MountPointTable () : m_logging { std::make_shared<Log> () }
 {
     // logging message
     this->m_logging->log_info ("MountPointTable default constructor.\n");
@@ -17,7 +17,7 @@ MountPointTable::MountPointTable () : m_logging { std::make_shared<Logging> () }
 }
 
 // MountPointTable parameterized constructor.
-MountPointTable::MountPointTable (std::shared_ptr<Logging> log_ptr, const std::string& value) :
+MountPointTable::MountPointTable (std::shared_ptr<Log> log_ptr, const std::string& value) :
     m_logging { std::move (log_ptr) }
 {
     // logging message

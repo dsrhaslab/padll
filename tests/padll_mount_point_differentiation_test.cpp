@@ -25,8 +25,7 @@ private:
         std::fprintf (this->m_fd,
             "\n------------------------------------------------------------------\n");
         std::fprintf (this->m_fd, "%s\n", header.c_str ());
-        std::fprintf (this->m_fd,
-            "------------------------------------------------------------------\n");
+        std::fprintf (this->m_fd, "-----------------------------\n");
 
         std::fprintf (this->m_fd,
             "Ops:\t%d\t\tDuration:%ld ms\n",
@@ -140,12 +139,42 @@ private:
         std::fprintf (this->m_fd, "%s", stream.str ().c_str ());
     }
 
+    /**
+     * delete_mount_point_entry:
+     * @param table_ptr
+     * @param create_fd
+     * @param path
+     * @param num_files
+     * @param file_identifiers
+     */
     void delete_mount_point_entry (MountPointTable* table_ptr,
-        const bool& create_fd,
-        const std::string& path,
-        const int& num_files,
+        const bool& use_file_descriptor,
         const std::vector<std::variant<int, FILE*>>& file_identifiers)
-    { }
+    {
+        std::stringstream stream;
+        long successful_ops = 0;
+
+        for (int i = 0; i < file_identifiers.size(); i++){
+            auto index = static_cast<int> (random () % file_identifiers.size ());
+
+            bool return_value;
+            if (use_file_descriptor) {
+                auto fd = std::get<int> (file_identifiers[index]);
+                return_value = table_ptr->remove_mount_point_entry (fd);
+            } else {
+                auto f_ptr = std::get<FILE*> (file_identifiers[index]);
+                return_value = table_ptr->remove_mount_point_entry (f_ptr);
+            }
+
+            if (return_value) {
+                successful_ops++;
+                std::fprintf (this->m_fd, "Success\n" );
+            } else {
+                std::fprintf(this->m_fd, "Error: %s\n", strerror(errno));
+            }
+        }
+
+    }
 
 public:
     /**
@@ -328,9 +357,45 @@ public:
     /**
      * test_remove_mount_point_entry:
      */
-    void test_remove_mount_point_entry ()
+    void test_remove_mount_point_entry (MountPointTable* table_ptr,
+        const bool& create_fd,
+        const int& num_threads,
+        const std::vector<std::variant<int, FILE*>>& file_ptrs,
+        const bool& print_debug_info)
     {
-        std::fprintf (this->m_fd, "");
+        // create lambda function for each thread to execute
+        auto func = [this] (MountPointTable* table_ptr,
+                        const bool& create_fd,
+                        const std::vector<std::variant<int, FILE*>>& file_ptrs,
+                        const bool& print_debug_info) {
+            std::stringstream stream;
+            stream << "\t" << get_id () << ": test_remove_mount_point_entry" << std::endl;
+            std::fprintf (this->m_fd, "%s", stream.str ().c_str ());
+            this->delete_mount_point_entry (table_ptr, create_fd, file_ptrs);
+        };
+
+        std::thread threads[num_threads];
+
+        auto start = std::chrono::high_resolution_clock::now ();
+        // create threads
+        for (int i = 0; i < num_threads; i++) {
+            threads[i] = std::thread (func, table_ptr, create_fd, file_ptrs, print_debug_info);
+        }
+
+        // join threads
+        for (int i = 0; i < num_threads; i++) {
+            threads[i].join ();
+        }
+
+        // calculate elapsed time
+        auto end = std::chrono::high_resolution_clock::now ();
+        std::chrono::duration<double> elapsed_time = end - start;
+
+        // print performance report (number of operations and elapsed time)
+        this->performance_report ("test_remove_mount_point_entry",
+            num_threads * file_ptrs.size(),
+            std::chrono::duration_cast<std::chrono::nanoseconds> (elapsed_time).count ());
+
     }
 
     void test_pick_workflow_id ()
@@ -377,7 +442,7 @@ int main (int argc, char** argv)
     }
 
     tests::MountPointDifferentiationTest test { fd };
-    MountPointTable mount_point_table { std::make_shared<Logging> (), "test" };
+    MountPointTable mount_point_table { std::make_shared<Log> (), "test" };
     int num_threads = 1;
     int num_files = 100;
     bool use_fd = true;
@@ -397,11 +462,18 @@ int main (int argc, char** argv)
             num_files,
             &file_identifiers_list,
             print_debug_info);
+
         test.test_get_mount_point_entry (&mount_point_table,
             use_fd,
             num_threads,
             file_identifiers_list,
             print_debug_info);
+
+        test.test_remove_mount_point_entry (&mount_point_table,
+                                            use_fd,
+                                            num_threads,
+                                            file_identifiers_list,
+                                            print_debug_info);
     } else {
         test.test_create_mount_point_entry (&mount_point_table,
             use_fd,

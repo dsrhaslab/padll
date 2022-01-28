@@ -11,18 +11,18 @@
 #include <padll/configurations/libc_calls.hpp>
 #include <padll/interface/ldpreloaded/ld_preloaded_posix.hpp>
 #include <padll/interface/passthrough/posix_passthrough.hpp>
-#include <padll/utils/logging.hpp>
+#include <padll/utils/log.hpp>
 #include <thread>
 
 namespace ld = padll::interface::ldpreloaded;
 namespace pass = padll::interface::passthrough;
-namespace logn = padll::utils::logging;
+namespace logn = padll::utils::log;
 namespace opt = padll::options;
 
 /**
  * Main logging object.
  */
-std::shared_ptr<logn::Logging> m_logger_ptr { std::make_shared<logn::Logging> (
+std::shared_ptr<logn::Log> m_logger_ptr { std::make_shared<logn::Log> (
     opt::option_default_enable_debug_level,
     opt::option_default_enable_debug_with_ld_preload,
     std::string (opt::option_default_log_path)) };
@@ -170,7 +170,7 @@ extern "C" size_t fread (void* ptr, size_t size, size_t nmemb, FILE* stream)
 /**
  * fwrite:
  * Note: Attention: this method will (as well as fflush) will through a segmentation fault when
- *  using the Logging library (even in the initialization, constructors, ...).
+ *  using the Log library (even in the initialization, constructors, ...).
  * @param ptr
  * @param size
  * @param nmemb

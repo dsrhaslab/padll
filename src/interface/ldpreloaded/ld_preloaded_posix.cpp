@@ -9,7 +9,7 @@ namespace padll::interface::ldpreloaded {
 
 // LdPreloadedPosix default constructor.
 LdPreloadedPosix::LdPreloadedPosix () :
-    m_logger_ptr { std::make_shared<Logging> () },
+    m_logger_ptr { std::make_shared<Log> () },
     m_stage { std::make_unique<DataPlaneStage> (this->m_logger_ptr) }
 {
     std::printf ("LdPreloadedPosix default constructor.\n");
@@ -17,7 +17,7 @@ LdPreloadedPosix::LdPreloadedPosix () :
 
 // TODO: check move operation within LdPreloadPosix, but not on PosixFileSystem
 // LdPreloadedPosix explicit constructor.
-LdPreloadedPosix::LdPreloadedPosix (const std::shared_ptr<Logging>& logging_ptr) :
+LdPreloadedPosix::LdPreloadedPosix (const std::shared_ptr<Log>& logging_ptr) :
     m_logger_ptr { logging_ptr },
     m_stage { std::make_unique<DataPlaneStage> (logging_ptr) },
     m_mount_point_table { logging_ptr, "ld-preloaded-posix" }
@@ -28,7 +28,7 @@ LdPreloadedPosix::LdPreloadedPosix (const std::shared_ptr<Logging>& logging_ptr)
 // LdPreloadedPosix parameterized constructor.
 LdPreloadedPosix::LdPreloadedPosix (const std::string& lib,
     const bool& stat_collection,
-    const std::shared_ptr<Logging>& logging_ptr) :
+    const std::shared_ptr<Log>& logging_ptr) :
     m_collect { stat_collection },
     m_logger_ptr { logging_ptr },
     m_stage { std::make_unique<DataPlaneStage> (logging_ptr) },
@@ -133,8 +133,8 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_read (int fd, void* buf, size_t cou
 
     //    // enforce read request to PAIO data plane stage
     //    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-    //        static_cast<int> (paio::POSIX::read),
-    //        static_cast<int> (paio::POSIX_META::data_op),
+    //        static_cast<int> (paio::core::POSIX::read),
+    //        static_cast<int> (paio::core::POSIX_META::data_op),
     //        counter);
 
     // perform original POSIX read operation
@@ -165,8 +165,8 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_write (int fd, const void* buf, siz
 
     //    // enforce write request to PAIO data plane stage
     //    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-    //        static_cast<int> (paio::POSIX::write),
-    //        static_cast<int> (paio::POSIX_META::data_op),
+    //        static_cast<int> (paio::core::POSIX::write),
+    //        static_cast<int> (paio::core::POSIX_META::data_op),
     //        counter);
 
     // perform original POSIX write operation
@@ -202,8 +202,8 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_pread (int fd, void* buf, size_t co
 
     // enforce pread request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::POSIX::pread),
-        static_cast<int> (paio::POSIX_META::data_op),
+        static_cast<int> (paio::core::POSIX::pread),
+        static_cast<int> (paio::core::POSIX_META::data_op),
         counter);
 
     // perform original POSIX pread operation
@@ -235,8 +235,8 @@ LdPreloadedPosix::ld_preloaded_posix_pwrite (int fd, const void* buf, size_t cou
 
     // enforce pwrite request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::POSIX::pwrite),
-        static_cast<int> (paio::POSIX_META::data_op),
+        static_cast<int> (paio::core::POSIX::pwrite),
+        static_cast<int> (paio::core::POSIX_META::data_op),
         counter);
 
     // perform original POSIX pwrite operation
@@ -269,8 +269,8 @@ LdPreloadedPosix::ld_preloaded_posix_pread64 (int fd, void* buf, size_t counter,
 
     // enforce pread64 request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::POSIX::pread64),
-        static_cast<int> (paio::POSIX_META::data_op),
+        static_cast<int> (paio::core::POSIX::pread64),
+        static_cast<int> (paio::core::POSIX_META::data_op),
         counter);
 
     // perform original POSIX pread64 operation
@@ -306,8 +306,8 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_pwrite64 (int fd,
 
     // enforce pwrite64 request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::POSIX::pwrite64),
-        static_cast<int> (paio::POSIX_META::data_op),
+        static_cast<int> (paio::core::POSIX::pwrite64),
+        static_cast<int> (paio::core::POSIX_META::data_op),
         counter);
 
     // perform original POSIX pwrite64 operation
@@ -342,8 +342,8 @@ LdPreloadedPosix::ld_preloaded_posix_fread (void* ptr, size_t size, size_t nmemb
 
     // enforce fread request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (stream),
-        static_cast<int> (paio::POSIX::fread),
-        static_cast<int> (paio::POSIX_META::data_op),
+        static_cast<int> (paio::core::POSIX::fread),
+        static_cast<int> (paio::core::POSIX_META::data_op),
         (size > 0 && nmemb > 0) ? size * nmemb : 1);
 
     // perform original POSIX fread operation
@@ -376,8 +376,8 @@ size_t LdPreloadedPosix::ld_preloaded_posix_fwrite (const void* ptr,
     this->m_dlsym_hook.hook_posix_fwrite (m_data_operations.m_fwrite);
 
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (stream),
-        static_cast<int> (paio::POSIX::fwrite),
-        static_cast<int> (paio::POSIX_META::data_op),
+        static_cast<int> (paio::core::POSIX::fwrite),
+        static_cast<int> (paio::core::POSIX_META::data_op),
         (size > 0 && nmemb > 0) ? size * nmemb : 1);
 
     // perform original POSIX fwrite operation
@@ -409,8 +409,8 @@ int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags, mode
 
     // enforce open request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::open),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::open),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX open operation
@@ -447,8 +447,8 @@ int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags)
 
     // enforce open request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::open),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::open),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX open operation
@@ -484,8 +484,8 @@ int LdPreloadedPosix::ld_preloaded_posix_creat (const char* path, mode_t mode)
 
     // enforce creat request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::creat),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::creat),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX creat operation
@@ -523,8 +523,8 @@ int LdPreloadedPosix::ld_preloaded_posix_creat64 (const char* path, mode_t mode)
 
     // enforce creat64 request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::creat64),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::creat64),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX creat64 operation
@@ -566,8 +566,8 @@ int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd,
 
     // enforce openat request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::openat),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::openat),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX openat operation
@@ -605,8 +605,8 @@ int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd, const char* path, in
 
     // enforce openat request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::openat),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::openat),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX openat operation
@@ -645,8 +645,8 @@ int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags, mo
 
     // enforce open64 request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::open64),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::open64),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX open64 operation
@@ -683,8 +683,8 @@ int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags)
 
     // enforce open64 request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::open64),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::open64),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX open64 operation
@@ -722,8 +722,8 @@ int LdPreloadedPosix::ld_preloaded_posix_close (int fd)
 
     // enforce close request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::POSIX::close),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::close),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX close operation
@@ -761,8 +761,8 @@ int LdPreloadedPosix::ld_preloaded_posix_fsync (int fd)
 
     // enforce fsync request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::POSIX::fsync),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::fsync),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX fsync operation
@@ -799,8 +799,8 @@ int LdPreloadedPosix::ld_preloaded_posix_fdatasync (int fd)
 
     // enforce fdatasync request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::POSIX::fdatasync),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::fdatasync),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX fdatasync operation
@@ -837,8 +837,8 @@ void LdPreloadedPosix::ld_preloaded_posix_sync ()
     // enforce sync request to PAIO data plane stage
     // todo: don't really know what to do here
     // this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-    // static_cast<int> (paio::POSIX::sync),
-    //    static_cast<int> (paio::POSIX_META::meta_op),
+    // static_cast<int> (paio::core::POSIX::sync),
+    //    static_cast<int> (paio::core::POSIX_META::meta_op),
     //    1);
 
     // perform original POSIX sync operation
@@ -863,8 +863,8 @@ int LdPreloadedPosix::ld_preloaded_posix_syncfs (int fd)
 
     // enforce syncfs request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::POSIX::syncfs),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::syncfs),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX syncfs operation
@@ -901,8 +901,8 @@ int LdPreloadedPosix::ld_preloaded_posix_truncate (const char* path, off_t lengt
     // TODO: does truncate only cost one IOP?
     // enforce truncate request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::truncate),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::truncate),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX truncate operation
@@ -940,8 +940,8 @@ int LdPreloadedPosix::ld_preloaded_posix_ftruncate (int fd, off_t length)
     // TODO: does ftruncate only cost one IOP?
     // enforce ftruncate request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::POSIX::ftruncate),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::ftruncate),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX ftruncate operation
@@ -979,8 +979,8 @@ int LdPreloadedPosix::ld_preloaded_posix_truncate64 (const char* path, off_t len
     // TODO: does truncate64 only cost one IOP?
     // enforce truncate64 request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::truncate64),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::truncate64),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX truncate64 operation
@@ -1018,8 +1018,8 @@ int LdPreloadedPosix::ld_preloaded_posix_ftruncate64 (int fd, off_t length)
     // TODO: does ftruncate64 only cost one IOP?
     // enforce ftruncate64 request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::POSIX::ftruncate64),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::ftruncate64),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX ftruncate64 operation
@@ -1055,8 +1055,8 @@ int LdPreloadedPosix::ld_preloaded_posix_xstat (int version, const char* path, s
 
     // enforce __xstat request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::xstat),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::xstat),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX __xstat (stat) operation
@@ -1092,8 +1092,8 @@ int LdPreloadedPosix::ld_preloaded_posix_lxstat (int version,
 
     // enforce __lxstat request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::lxstat),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::lxstat),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX __lxstat (lstat) operation
@@ -1129,8 +1129,8 @@ int LdPreloadedPosix::ld_preloaded_posix_fxstat (int version, int fd, struct sta
 
     // enforce __fxstat request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::POSIX::fxstat),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::fxstat),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX __fxstat (fstat) operation
@@ -1171,8 +1171,8 @@ int LdPreloadedPosix::ld_preloaded_posix_fxstatat (int version,
 
     // enforce __fxstatat request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::fxstatat),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::fxstatat),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX __fxstatat (fstatat) operation
@@ -1210,8 +1210,8 @@ int LdPreloadedPosix::ld_preloaded_posix_xstat64 (int version,
 
     // enforce __xstat64 request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::xstat64),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::xstat64),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX __xstat64 (stat) operation
@@ -1249,8 +1249,8 @@ int LdPreloadedPosix::ld_preloaded_posix_lxstat64 (int version,
 
     // enforce __lxstat64 request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::lxstat64),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::lxstat64),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX __lxstat64 (lstat64) operation
@@ -1286,8 +1286,8 @@ int LdPreloadedPosix::ld_preloaded_posix_fxstat64 (int version, int fd, struct s
 
     // enforce __fxstat64 request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::POSIX::fxstat64),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::fxstat64),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX __fxstat64 (fxstat64) operation
@@ -1328,8 +1328,8 @@ int LdPreloadedPosix::ld_preloaded_posix_fxstatat64 (int version,
 
     // enforce __fxstatat64 request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::fxstatat64),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::fxstatat64),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX __fxstatat64 (fxstatat64) operation
@@ -1365,8 +1365,8 @@ int LdPreloadedPosix::ld_preloaded_posix_statfs (const char* path, struct statfs
 
     // enforce statfs request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::statfs),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::statfs),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX statfs operation
@@ -1402,8 +1402,8 @@ int LdPreloadedPosix::ld_preloaded_posix_fstatfs (int fd, struct statfs* buf)
 
     // enforce fstatfs request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::POSIX::fstatfs),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::fstatfs),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX fstatfs operation
@@ -1439,8 +1439,8 @@ int LdPreloadedPosix::ld_preloaded_posix_statfs64 (const char* path, struct stat
 
     // enforce statfs64 request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::statfs64),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::statfs64),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX statfs64 operation
@@ -1477,8 +1477,8 @@ int LdPreloadedPosix::ld_preloaded_posix_fstatfs64 (int fd, struct statfs64* buf
 
     // enforce fstatfs64 request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::POSIX::fstatfs64),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::fstatfs64),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX fstatfs64 operation
@@ -1515,8 +1515,8 @@ int LdPreloadedPosix::ld_preloaded_posix_link (const char* old_path, const char*
 
     // enforce link request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (new_path),
-        static_cast<int> (paio::POSIX::link),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::link),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX link operation
@@ -1550,8 +1550,8 @@ int LdPreloadedPosix::ld_preloaded_posix_unlink (const char* path)
 
     // enforce unlink request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::unlink),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::unlink),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX unlink operation
@@ -1595,8 +1595,8 @@ int LdPreloadedPosix::ld_preloaded_posix_linkat (int olddirfd,
 
     // enforce linkat request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (new_path),
-        static_cast<int> (paio::POSIX::linkat),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::linkat),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX linkat operation
@@ -1633,8 +1633,8 @@ int LdPreloadedPosix::ld_preloaded_posix_unlinkat (int dirfd, const char* pathna
 
     // enforce unlinkat request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (pathname),
-        static_cast<int> (paio::POSIX::unlinkat),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::unlinkat),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX unlinkat operation
@@ -1673,8 +1673,8 @@ int LdPreloadedPosix::ld_preloaded_posix_rename (const char* old_path, const cha
 
     // enforce rename request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (new_path),
-        static_cast<int> (paio::POSIX::rename),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::rename),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX rename operation
@@ -1718,8 +1718,8 @@ int LdPreloadedPosix::ld_preloaded_posix_renameat (int olddirfd,
 
     // enforce renameat request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (new_path),
-        static_cast<int> (paio::POSIX::renameat),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::renameat),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX renameat operation
@@ -1759,8 +1759,8 @@ int LdPreloadedPosix::ld_preloaded_posix_symlink (const char* target, const char
 
     // enforce symlink request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (linkpath),
-        static_cast<int> (paio::POSIX::symlink),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::symlink),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX symlink operation
@@ -1799,8 +1799,8 @@ int LdPreloadedPosix::ld_preloaded_posix_symlinkat (const char* target,
 
     // enforce symlinkat request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (linkpath),
-        static_cast<int> (paio::POSIX::symlinkat),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::symlinkat),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX symlinkat operation
@@ -1836,8 +1836,8 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_readlink (const char* path, char* b
 
     // enforce readlink request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::readlink),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::readlink),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX readlink operation
@@ -1877,8 +1877,8 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_readlinkat (int dirfd,
 
     // enforce readlinkat request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::readlinkat),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::readlinkat),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX readlinkat operation
@@ -1914,8 +1914,8 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_fopen (const char* pathname, const ch
 
     // enforce fopen request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (pathname),
-        static_cast<int> (paio::POSIX::fopen),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::fopen),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX fopen operation
@@ -1954,8 +1954,8 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_fopen64 (const char* pathname, const 
 
     // enforce fopen64 request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (pathname),
-        static_cast<int> (paio::POSIX::fopen64),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::fopen64),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX fopen64 operation
@@ -1993,8 +1993,8 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_fdopen (int fd, const char* mode)
 
     // enforce fdopen request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::POSIX::fdopen),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::fdopen),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX fdopen operation
@@ -2035,8 +2035,8 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_freopen (const char* pathname,
 
     // enforce freopen request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (pathname),
-        static_cast<int> (paio::POSIX::freopen),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::freopen),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX freopen operation
@@ -2077,8 +2077,8 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_freopen64 (const char* pathname,
 
     // enforce freopen64 request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (pathname),
-        static_cast<int> (paio::POSIX::freopen64),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::freopen64),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX freopen64 operation
@@ -2116,8 +2116,8 @@ int LdPreloadedPosix::ld_preloaded_posix_fclose (FILE* stream)
 
     // enforce fclose request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (stream),
-        static_cast<int> (paio::POSIX::fclose),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::fclose),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX fclose operation
@@ -2155,8 +2155,8 @@ int LdPreloadedPosix::ld_preloaded_posix_fflush (FILE* stream)
 
     // enforce fflush request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (stream),
-        static_cast<int> (paio::POSIX::fflush),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::fflush),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX fflush operation
@@ -2192,8 +2192,8 @@ int LdPreloadedPosix::ld_preloaded_posix_access (const char* path, int mode)
 
     // enforce access request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::access),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::access),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX access operation
@@ -2232,8 +2232,8 @@ int LdPreloadedPosix::ld_preloaded_posix_faccessat (int dirfd,
 
     // enforce faccessat request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::faccessat),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::faccessat),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX faccessat operation
@@ -2269,8 +2269,8 @@ off_t LdPreloadedPosix::ld_preloaded_posix_lseek (int fd, off_t offset, int when
 
     // enforce lseek request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::POSIX::lseek),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::lseek),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX lseek operation
@@ -2306,8 +2306,8 @@ int LdPreloadedPosix::ld_preloaded_posix_fseek (FILE* stream, long offset, int w
 
     // enforce fseek request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (stream),
-        static_cast<int> (paio::POSIX::fseek),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::fseek),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX fseek operation
@@ -2343,8 +2343,8 @@ long LdPreloadedPosix::ld_preloaded_posix_ftell (FILE* stream)
 
     // enforce ftell request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (stream),
-        static_cast<int> (paio::POSIX::ftell),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::ftell),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX ftell operation
@@ -2380,8 +2380,8 @@ off_t LdPreloadedPosix::ld_preloaded_posix_lseek64 (int fd, off_t offset, int wh
 
     // enforce lseek64 request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::POSIX::lseek64),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::lseek64),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX lseek64 operation
@@ -2417,8 +2417,8 @@ int LdPreloadedPosix::ld_preloaded_posix_fseeko64 (FILE* stream, off_t offset, i
 
     // enforce fseeko64 request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (stream),
-        static_cast<int> (paio::POSIX::fseeko64),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::fseeko64),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX fseeko64 operation
@@ -2454,8 +2454,8 @@ off_t LdPreloadedPosix::ld_preloaded_posix_ftello64 (FILE* stream)
 
     // enforce ftello64 request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (stream),
-        static_cast<int> (paio::POSIX::ftello64),
-        static_cast<int> (paio::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX::ftello64),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX ftello64 operation
@@ -2491,8 +2491,8 @@ int LdPreloadedPosix::ld_preloaded_posix_mkdir (const char* path, mode_t mode)
 
     // enforce mkdir request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::mkdir),
-        static_cast<int> (paio::POSIX_META::dir_op),
+        static_cast<int> (paio::core::POSIX::mkdir),
+        static_cast<int> (paio::core::POSIX_META::dir_op),
         1);
 
     // perform original POSIX mkdir operation
@@ -2524,8 +2524,8 @@ int LdPreloadedPosix::ld_preloaded_posix_mkdirat (int dirfd, const char* path, m
 
     // enforce mkdirat request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::mkdirat),
-        static_cast<int> (paio::POSIX_META::dir_op),
+        static_cast<int> (paio::core::POSIX::mkdirat),
+        static_cast<int> (paio::core::POSIX_META::dir_op),
         1);
 
     // perform original POSIX mkdirat operation
@@ -2560,8 +2560,8 @@ struct dirent* LdPreloadedPosix::ld_preloaded_posix_readdir (DIR* dirp)
     // enforce readdir request to PAIO data plane stage
     // fixme: not sure what to do here
     // this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-    //    static_cast<int> (paio::POSIX::readdir),
-    //    static_cast<int> (paio::POSIX_META::dir_op),
+    //    static_cast<int> (paio::core::POSIX::readdir),
+    //    static_cast<int> (paio::core::POSIX_META::dir_op),
     //    1);
 
     // perform original POSIX readdir operation
@@ -2596,8 +2596,8 @@ struct dirent64* LdPreloadedPosix::ld_preloaded_posix_readdir64 (DIR* dirp)
     // enforce readdir64 request to PAIO data plane stage
     // fixme: not sure what to do here
     // this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-    //     static_cast<int> (paio::POSIX::readdir64),
-    //     static_cast<int> (paio::POSIX_META::dir_op),
+    //     static_cast<int> (paio::core::POSIX::readdir64),
+    //     static_cast<int> (paio::core::POSIX_META::dir_op),
     //    1);
 
     // perform original POSIX readdir64 operation
@@ -2633,8 +2633,8 @@ DIR* LdPreloadedPosix::ld_preloaded_posix_opendir (const char* path)
 
     // enforce opendir request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::opendir),
-        static_cast<int> (paio::POSIX_META::dir_op),
+        static_cast<int> (paio::core::POSIX::opendir),
+        static_cast<int> (paio::core::POSIX_META::dir_op),
         1);
 
     // perform original POSIX opendir operation
@@ -2669,8 +2669,8 @@ DIR* LdPreloadedPosix::ld_preloaded_posix_fdopendir (int fd)
 
     // enforce fdopendir request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::POSIX::fdopendir),
-        static_cast<int> (paio::POSIX_META::dir_op),
+        static_cast<int> (paio::core::POSIX::fdopendir),
+        static_cast<int> (paio::core::POSIX_META::dir_op),
         1);
 
     // perform original POSIX fopendir operation
@@ -2707,8 +2707,8 @@ int LdPreloadedPosix::ld_preloaded_posix_closedir (DIR* dirp)
     // enforce closedir request to PAIO data plane stage
     // fixme: not sure what to do here
     // this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-    //     static_cast<int> (paio::POSIX::closedir),
-    //     static_cast<int> (paio::POSIX_META::dir_op),
+    //     static_cast<int> (paio::core::POSIX::closedir),
+    //     static_cast<int> (paio::core::POSIX_META::dir_op),
     //     1);
 
     // perform original POSIX closedir operation
@@ -2742,8 +2742,8 @@ int LdPreloadedPosix::ld_preloaded_posix_rmdir (const char* path)
 
     // enforce rmdir request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::rmdir),
-        static_cast<int> (paio::POSIX_META::dir_op),
+        static_cast<int> (paio::core::POSIX::rmdir),
+        static_cast<int> (paio::core::POSIX_META::dir_op),
         1);
 
     // perform original POSIX rmdir operation
@@ -2775,8 +2775,8 @@ int LdPreloadedPosix::ld_preloaded_posix_dirfd (DIR* dirp)
     // enforce dirfd request to PAIO data plane stage
     // fixme: not sure what to do here
     // this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-    //     static_cast<int> (paio::POSIX::dirfd),
-    //     static_cast<int> (paio::POSIX_META::dir_op),
+    //     static_cast<int> (paio::core::POSIX::dirfd),
+    //     static_cast<int> (paio::core::POSIX_META::dir_op),
     //     1);
 
     // perform original POSIX dirfd operation
@@ -2811,8 +2811,8 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_getxattr (const char* path,
 
     // enforce getxattr request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::getxattr),
-        static_cast<int> (paio::POSIX_META::ext_attr_op),
+        static_cast<int> (paio::core::POSIX::getxattr),
+        static_cast<int> (paio::core::POSIX_META::ext_attr_op),
         1);
 
     // perform original POSIX getxattr operation
@@ -2851,8 +2851,8 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_lgetxattr (const char* path,
 
     // enforce lgetxattr request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::lgetxattr),
-        static_cast<int> (paio::POSIX_META::ext_attr_op),
+        static_cast<int> (paio::core::POSIX::lgetxattr),
+        static_cast<int> (paio::core::POSIX_META::ext_attr_op),
         1);
 
     // perform original POSIX lgetxattr operation
@@ -2889,8 +2889,8 @@ LdPreloadedPosix::ld_preloaded_posix_fgetxattr (int fd, const char* name, void* 
 
     // enforce fgetxattr request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::POSIX::fgetxattr),
-        static_cast<int> (paio::POSIX_META::ext_attr_op),
+        static_cast<int> (paio::core::POSIX::fgetxattr),
+        static_cast<int> (paio::core::POSIX_META::ext_attr_op),
         1);
 
     // perform original POSIX fgetxattr operation
@@ -2930,8 +2930,8 @@ int LdPreloadedPosix::ld_preloaded_posix_setxattr (const char* path,
 
     // enforce setxattr request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::setxattr),
-        static_cast<int> (paio::POSIX_META::ext_attr_op),
+        static_cast<int> (paio::core::POSIX::setxattr),
+        static_cast<int> (paio::core::POSIX_META::ext_attr_op),
         1);
 
     // perform original POSIX setxattr operation
@@ -2971,8 +2971,8 @@ int LdPreloadedPosix::ld_preloaded_posix_lsetxattr (const char* path,
 
     // enforce lsetxattr request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::lsetxattr),
-        static_cast<int> (paio::POSIX_META::ext_attr_op),
+        static_cast<int> (paio::core::POSIX::lsetxattr),
+        static_cast<int> (paio::core::POSIX_META::ext_attr_op),
         1);
 
     // perform original POSIX lsetxattr operation
@@ -3012,8 +3012,8 @@ int LdPreloadedPosix::ld_preloaded_posix_fsetxattr (int fd,
 
     // enforce fsetxattr request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::POSIX::fsetxattr),
-        static_cast<int> (paio::POSIX_META::ext_attr_op),
+        static_cast<int> (paio::core::POSIX::fsetxattr),
+        static_cast<int> (paio::core::POSIX_META::ext_attr_op),
         1);
 
     // perform original POSIX fsetxattr operation
@@ -3048,8 +3048,8 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_listxattr (const char* path, char* 
 
     // enforce listxattr request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::listxattr),
-        static_cast<int> (paio::POSIX_META::ext_attr_op),
+        static_cast<int> (paio::core::POSIX::listxattr),
+        static_cast<int> (paio::core::POSIX_META::ext_attr_op),
         1);
 
     // perform original POSIX listxattr operation
@@ -3085,8 +3085,8 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_llistxattr (const char* path, char*
 
     // enforce llistxattr request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::llistxattr),
-        static_cast<int> (paio::POSIX_META::ext_attr_op),
+        static_cast<int> (paio::core::POSIX::llistxattr),
+        static_cast<int> (paio::core::POSIX_META::ext_attr_op),
         1);
 
     // perform original POSIX llistxattr operation
@@ -3125,8 +3125,8 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_flistxattr (int fd, char* list, siz
 
     // enforce flistxattr request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::POSIX::flistxattr),
-        static_cast<int> (paio::POSIX_META::ext_attr_op),
+        static_cast<int> (paio::core::POSIX::flistxattr),
+        static_cast<int> (paio::core::POSIX_META::ext_attr_op),
         1);
 
     // perform original POSIX flistxattr operation
@@ -3165,8 +3165,8 @@ int LdPreloadedPosix::ld_preloaded_posix_removexattr (const char* path, const ch
 
     // enforce removexattr request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::removexattr),
-        static_cast<int> (paio::POSIX_META::ext_attr_op),
+        static_cast<int> (paio::core::POSIX::removexattr),
+        static_cast<int> (paio::core::POSIX_META::ext_attr_op),
         1);
 
     // perform original POSIX removexattr operation
@@ -3205,8 +3205,8 @@ int LdPreloadedPosix::ld_preloaded_posix_lremovexattr (const char* path, const c
 
     // enforce lremovexattr request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::lremovexattr),
-        static_cast<int> (paio::POSIX_META::ext_attr_op),
+        static_cast<int> (paio::core::POSIX::lremovexattr),
+        static_cast<int> (paio::core::POSIX_META::ext_attr_op),
         1);
 
     // perform original POSIX lremovexattr operation
@@ -3245,8 +3245,8 @@ int LdPreloadedPosix::ld_preloaded_posix_fremovexattr (int fd, const char* name)
 
     // enforce fremovexattr request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::POSIX::fremovexattr),
-        static_cast<int> (paio::POSIX_META::ext_attr_op),
+        static_cast<int> (paio::core::POSIX::fremovexattr),
+        static_cast<int> (paio::core::POSIX_META::ext_attr_op),
         1);
 
     // perform original POSIX fremovexattr operation
@@ -3284,8 +3284,8 @@ int LdPreloadedPosix::ld_preloaded_posix_chmod (const char* path, mode_t mode)
 
     // enforce chmod request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::chmod),
-        static_cast<int> (paio::POSIX_META::file_mod_op),
+        static_cast<int> (paio::core::POSIX::chmod),
+        static_cast<int> (paio::core::POSIX_META::file_mod_op),
         1);
 
     // perform original POSIX chmod operation
@@ -3321,8 +3321,8 @@ int LdPreloadedPosix::ld_preloaded_posix_fchmod (int fd, mode_t mode)
 
     // enforce fchmod request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::POSIX::fchmod),
-        static_cast<int> (paio::POSIX_META::file_mod_op),
+        static_cast<int> (paio::core::POSIX::fchmod),
+        static_cast<int> (paio::core::POSIX_META::file_mod_op),
         1);
 
     // perform original POSIX fchmod operation
@@ -3362,8 +3362,8 @@ int LdPreloadedPosix::ld_preloaded_posix_fchmodat (int dirfd,
 
     // enforce fchmodat request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::POSIX::fchmodat),
-        static_cast<int> (paio::POSIX_META::file_mod_op),
+        static_cast<int> (paio::core::POSIX::fchmodat),
+        static_cast<int> (paio::core::POSIX_META::file_mod_op),
         1);
 
     // perform original POSIX fchmodat operation
@@ -3399,8 +3399,8 @@ int LdPreloadedPosix::ld_preloaded_posix_chown (const char* pathname, uid_t owne
 
     // enforce chown request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (pathname),
-        static_cast<int> (paio::POSIX::chown),
-        static_cast<int> (paio::POSIX_META::file_mod_op),
+        static_cast<int> (paio::core::POSIX::chown),
+        static_cast<int> (paio::core::POSIX_META::file_mod_op),
         1);
 
     // perform original POSIX chown operation
@@ -3437,8 +3437,8 @@ int LdPreloadedPosix::ld_preloaded_posix_lchown (const char* pathname, uid_t own
 
     // enforce lchown request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (pathname),
-        static_cast<int> (paio::POSIX::lchown),
-        static_cast<int> (paio::POSIX_META::file_mod_op),
+        static_cast<int> (paio::core::POSIX::lchown),
+        static_cast<int> (paio::core::POSIX_META::file_mod_op),
         1);
 
     // perform original POSIX lchown operation
@@ -3474,8 +3474,8 @@ int LdPreloadedPosix::ld_preloaded_posix_fchown (int fd, uid_t owner, gid_t grou
 
     // enforce fchown request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::POSIX::fchown),
-        static_cast<int> (paio::POSIX_META::file_mod_op),
+        static_cast<int> (paio::core::POSIX::fchown),
+        static_cast<int> (paio::core::POSIX_META::file_mod_op),
         1);
 
     // perform original POSIX fchown operation
@@ -3516,8 +3516,8 @@ int LdPreloadedPosix::ld_preloaded_posix_fchownat (int dirfd,
 
     // enforce fchownat request to PAIO data plane stage
     this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (pathname),
-        static_cast<int> (paio::POSIX::fchownat),
-        static_cast<int> (paio::POSIX_META::file_mod_op),
+        static_cast<int> (paio::core::POSIX::fchownat),
+        static_cast<int> (paio::core::POSIX_META::file_mod_op),
         1);
 
     // perform original POSIX fchownat operation

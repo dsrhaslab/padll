@@ -16,7 +16,7 @@ DataPlaneStage::DataPlaneStage ()
 }
 
 // DataPlaneStage (explicit) parameterized constructor.
-DataPlaneStage::DataPlaneStage (std::shared_ptr<Logging> logging) : m_logging { logging }
+DataPlaneStage::DataPlaneStage (std::shared_ptr<Log> logging) : m_logging { logging }
 {
     if (this->m_logging != nullptr) {
         this->m_logging->log_debug ("DataPlaneStage explicit constructor.");

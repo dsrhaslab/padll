@@ -3,18 +3,18 @@
  *   Copyright (c) 2021 INESC TEC.
  **/
 
-#include <padll/utils/logging.hpp>
+#include <padll/utils/log.hpp>
 
-namespace padll::utils::logging {
+namespace padll::utils::log {
 
-// Logging default constructor.
-Logging::Logging ()
+// Log default constructor.
+Log::Log ()
 {
     this->initialize ();
 }
 
-// Logging parameterized constructor.
-Logging::Logging (const bool& enable_debug,
+// Log parameterized constructor.
+Log::Log (const bool& enable_debug,
     const bool& debug_with_ldpreload,
     const std::string& log_file) :
     m_debug_enabled { enable_debug },
@@ -24,24 +24,24 @@ Logging::Logging (const bool& enable_debug,
     this->initialize ();
 }
 
-// Logging default destructor.
-Logging::~Logging ()
+// Log default destructor.
+Log::~Log ()
 {
     this->cleanup ();
 }
 
-std::string Logging::create_file_name (const std::string& file_name)
+std::string Log::create_file_name (const std::string& file_name)
 {
     std::string name {};
     if (!file_name.empty ()) {
-        name = file_name + "-" + std::to_string (::getpid ());
+        name = file_name + "-" + std::to_string (::getpid ()) + ".log";
     }
 
     return name;
 }
 
-// Logging initialize call.
-void Logging::initialize ()
+// Log initialize call.
+void Log::initialize ()
 {
     std::lock_guard<std::mutex> guard (this->m_lock);
 
@@ -59,15 +59,15 @@ void Logging::initialize ()
 
             // verify file descriptor result
             if (this->m_fd == -1) {
-                perror ("Error in Logging::initialize");
+                perror ("Error in Log::initialize");
                 this->m_fd = STDOUT_FILENO;
             }
         }
     }
 }
 
-// Logging cleanup call.
-void Logging::cleanup ()
+// Log cleanup call.
+void Log::cleanup ()
 {
     std::lock_guard<std::mutex> guard (this->m_lock);
     if (this->m_fd != STDOUT_FILENO) {
@@ -84,7 +84,7 @@ void Logging::cleanup ()
 }
 
 // create_formatted_message call.
-std::string Logging::create_formatted_message (const std::string& message, const std::string& level)
+std::string Log::create_formatted_message (const std::string& message, const std::string& level)
 {
     std::time_t current_time = std::time (nullptr);
     std::tm time_info = *std::localtime (&current_time);
@@ -97,31 +97,31 @@ std::string Logging::create_formatted_message (const std::string& message, const
 }
 
 // create_formatted_info_message call.
-std::string Logging::create_formatted_info_message (const std::string& message)
+std::string Log::create_formatted_info_message (const std::string& message)
 {
     return this->create_formatted_message (message, "[info] ");
 }
 
 // create_formatted_error_message call.
-std::string Logging::create_formatted_error_message (const std::string& message)
+std::string Log::create_formatted_error_message (const std::string& message)
 {
     return this->create_formatted_message (message, "[error] ");
 }
 
 // create_formatted_debug_message call.
-std::string Logging::create_formatted_debug_message (const std::string& message)
+std::string Log::create_formatted_debug_message (const std::string& message)
 {
     return this->create_formatted_message (message, "[debug] ");
 }
 
 // dlsym_write_message call.
-ssize_t Logging::dlsym_write_message (int fd, const std::string& message)
+ssize_t Log::dlsym_write_message (int fd, const std::string& message)
 {
     return ((libc_write_t)dlsym (RTLD_NEXT, "write")) (fd, message.c_str (), message.size ());
 }
 
 // log_info call. Log message with INFO qualifier.
-void Logging::log_info (const std::string& message)
+void Log::log_info (const std::string& message)
 {
     if (this->m_is_ld_preloaded) {
         // generate formatted info message
@@ -139,7 +139,7 @@ void Logging::log_info (const std::string& message)
 }
 
 // log_error call. Log message with ERROR qualifier.
-void Logging::log_error (const std::string& message)
+void Log::log_error (const std::string& message)
 {
     if (this->m_is_ld_preloaded) {
         // generate formatted error message
@@ -157,7 +157,7 @@ void Logging::log_error (const std::string& message)
 }
 
 // log_debug call. Log message with DEBUG qualifier.
-void Logging::log_debug (const std::string& message)
+void Log::log_debug (const std::string& message)
 {
     if (this->m_is_ld_preloaded) {
         // generate formatted debug message
@@ -174,4 +174,4 @@ void Logging::log_debug (const std::string& message)
     }
 }
 
-} // namespace padll::utils::logging
+} // namespace padll::utils::log

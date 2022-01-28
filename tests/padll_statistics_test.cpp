@@ -8,13 +8,13 @@
 
 using namespace padll::headers;
 using namespace padll::stats;
-using namespace padll::utils::logging;
+using namespace padll::utils::log;
 
 namespace padll::tests {
 
 class StatisticsTest {
 private:
-    Logging m_logger;
+    Log m_logger;
 
 public:
     StatisticsTest () : m_logger { true, true, "/tmp/padll-info.log" }

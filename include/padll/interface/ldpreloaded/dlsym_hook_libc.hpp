@@ -8,12 +8,12 @@
 
 #include <padll/library_headers/libc_headers.hpp>
 #include <padll/options/options.hpp>
-#include <padll/utils/logging.hpp>
+#include <padll/utils/log.hpp>
 #include <utility>
 
 using namespace padll::headers;
 using namespace padll::options;
-using namespace padll::utils::logging;
+using namespace padll::utils::log;
 
 namespace padll::interface::ldpreloaded {
 
@@ -23,7 +23,7 @@ private:
     std::mutex m_lock;
     std::string m_lib_name { option_library_name };
     void* m_lib_handle { nullptr };
-    std::shared_ptr<Logging> m_logger_ptr {};
+    std::shared_ptr<Log> m_logger_ptr {};
 
     /**
      *  initialize:
@@ -63,7 +63,7 @@ public:
     /**
      * DlsymHookLibc default constructor.
      */
-    DlsymHookLibc () : m_logger_ptr { std::make_shared<Logging> () }
+    DlsymHookLibc () : m_logger_ptr { std::make_shared<Log> () }
     {
         // initialize library handle pointer
         this->initialize ();
@@ -74,7 +74,7 @@ public:
      * @param library_path
      * TODO: validate move operation of the Log
      */
-    DlsymHookLibc (const std::string& library_path, std::shared_ptr<Logging> log_ptr) :
+    DlsymHookLibc (const std::string& library_path, std::shared_ptr<Log> log_ptr) :
         m_lib_name { library_path },
         m_logger_ptr { std::move (log_ptr) }
     {
