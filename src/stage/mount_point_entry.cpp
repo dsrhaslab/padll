@@ -4,7 +4,6 @@
  **/
 
 #include <padll/stage/mount_point_entry.hpp>
-#include <utility>
 
 namespace padll::stage {
 
@@ -35,11 +34,14 @@ const MountPoint& MountPointEntry::get_mount_point () const
 // to_string call. (...)
 std::string MountPointEntry::to_string () const
 {
-    return "MountPointEntry: {" + this->m_path + ", "
-        + ((this->m_mount_point == MountPoint::kLocal)         ? "local"
-                : (this->m_mount_point == MountPoint::kRemote) ? "remote"
-                                                               : "none")
-        + "}";
+    std::stringstream stream;
+    stream << "{" << this->m_path << ", ";
+    stream << ((this->m_mount_point == MountPoint::kLocal) ? "local"
+            : (this->m_mount_point == MountPoint::kRemote) ? "remote"
+                                                           : "none");
+    stream << "}";
+
+    return stream.str ();
 }
 
 } // namespace padll::stage

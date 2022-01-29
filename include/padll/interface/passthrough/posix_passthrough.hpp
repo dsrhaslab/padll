@@ -9,12 +9,12 @@
 #include <mutex>
 #include <padll/library_headers/libc_headers.hpp>
 #include <padll/options/options.hpp>
-#include <padll/utils/logging.hpp>
+#include <padll/utils/log.hpp>
 #include <string>
 
 using namespace padll::headers;
 using namespace padll::options;
-using namespace padll::utils::logging;
+using namespace padll::utils::log;
 
 namespace padll::interface::passthrough {
 
@@ -24,7 +24,7 @@ private:
     std::mutex m_lock;
     std::string m_lib_name { option_library_name };
     void* m_lib_handle { nullptr };
-    std::shared_ptr<Logging> m_logger_ptr { nullptr };
+    std::shared_ptr<Log> m_logger_ptr { nullptr };
 
     /**
      * initialize:
@@ -46,13 +46,13 @@ public:
     /**
      * PosixPassthrough explicit constructor.
      */
-    explicit PosixPassthrough (std::shared_ptr<Logging> log_ptr);
+    explicit PosixPassthrough (std::shared_ptr<Log> log_ptr);
 
     /**
      * PosixPassthrough parameterized constructor.
      * @param lib
      */
-    PosixPassthrough (std::string lib, std::shared_ptr<Logging> log_ptr);
+    PosixPassthrough (std::string lib, std::shared_ptr<Log> log_ptr);
 
     /**
      * PosixPassthrough default destructor.

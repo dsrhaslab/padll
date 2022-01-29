@@ -3,8 +3,8 @@
  *   Copyright (c) 2021 INESC TEC.
  **/
 
-#ifndef PADDL_LOGGING_HPP
-#define PADDL_LOGGING_HPP
+#ifndef PADDL_LOG_HPP
+#define PADDL_LOG_HPP
 
 #include <ctime>
 #include <fcntl.h>
@@ -19,7 +19,7 @@
 
 using namespace padll::headers;
 
-namespace padll::utils::logging {
+namespace padll::utils::log {
 
 /**
  * Logging class.
@@ -27,7 +27,7 @@ namespace padll::utils::logging {
  * the class supports log messages of INFO, ERROR, and DEBUG qualifiers. Log messages can also be
  * written to stdout or file.
  */
-class Logging {
+class Log {
 
 private:
     std::string m_logger_name { "basic_logger" };
@@ -89,23 +89,23 @@ private:
 
 public:
     /**
-     * Logging default constructor.
+     * Log default constructor.
      */
-    Logging ();
+    Log ();
 
     /**
-     * Logging parameterized constructor.
+     * Log parameterized constructor.
      * If @param debug is true, the logging mode is set to debug.
      * @param debug Boolean value that defines if the debug is enabled or disabled.
      */
-    Logging (const bool& enable_debug,
+    Log (const bool& enable_debug,
         const bool& debug_with_ldpreload,
         const std::string& log_file);
 
     /**
-     * Logging default destructor.
+     * Log default destructor.
      */
-    ~Logging ();
+    ~Log ();
 
     /**
      * log_info: Log a message with the INFO qualifier.
@@ -125,6 +125,6 @@ public:
      */
     void log_debug (const std::string& message);
 };
-} // namespace padll::utils::logging
+} // namespace padll::utils::log
 
-#endif // PADDL_LOGGING_HPP
+#endif // PADDL_LOG_HPP

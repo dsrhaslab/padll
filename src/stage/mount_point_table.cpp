@@ -8,7 +8,7 @@
 namespace padll::stage {
 
 // MountPointTable default constructor.
-MountPointTable::MountPointTable () : m_logging { std::make_shared<Logging> () }
+MountPointTable::MountPointTable () : m_logging { std::make_shared<Log> () }
 {
     // logging message
     this->m_logging->log_info ("MountPointTable default constructor.\n");
@@ -17,7 +17,7 @@ MountPointTable::MountPointTable () : m_logging { std::make_shared<Logging> () }
 }
 
 // MountPointTable parameterized constructor.
-MountPointTable::MountPointTable (std::shared_ptr<Logging> log_ptr, const std::string& value) :
+MountPointTable::MountPointTable (std::shared_ptr<Log> log_ptr, const std::string& value) :
     m_logging { std::move (log_ptr) }
 {
     // logging message
@@ -31,7 +31,7 @@ MountPointTable::MountPointTable (std::shared_ptr<Logging> log_ptr, const std::s
 MountPointTable::~MountPointTable ()
 {
     // logging message
-    this->m_logging->log_debug (this->to_string ());
+    this->m_logging->log_debug ("MountPointTable destructor.");
 }
 
 // initialize call. (...)
@@ -363,6 +363,36 @@ std::string MountPointTable::to_string () const
         }
         stream << std::endl;
     }
+    return stream.str ();
+}
+
+// fd_table_to_string call. (...)
+std::string MountPointTable::fd_table_to_string ()
+{
+    std::shared_lock<std::shared_timed_mutex> read_lock (this->m_fd_shared_lock);
+
+    std::stringstream stream;
+    stream << "FileDescriptorTable: " << std::endl;
+    for (auto const& entry : this->m_file_descriptors_table) {
+        stream << "  " << entry.first << ": ";
+        stream << entry.second->to_string () << std::endl;
+    }
+
+    return stream.str ();
+}
+
+// fp_table_to_string call. (...)
+std::string MountPointTable::fp_table_to_string ()
+{
+    std::shared_lock<std::shared_timed_mutex> read_lock (this->m_fd_shared_lock);
+
+    std::stringstream stream;
+    stream << "FilePtrTable: " << std::endl;
+    for (auto const& entry : this->m_file_ptr_table) {
+        stream << "  " << entry.first << ": ";
+        stream << entry.second->to_string () << std::endl;
+    }
+
     return stream.str ();
 }
 

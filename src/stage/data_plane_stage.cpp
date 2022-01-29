@@ -16,7 +16,7 @@ DataPlaneStage::DataPlaneStage ()
 }
 
 // DataPlaneStage (explicit) parameterized constructor.
-DataPlaneStage::DataPlaneStage (std::shared_ptr<Logging> logging) : m_logging { logging }
+DataPlaneStage::DataPlaneStage (std::shared_ptr<Log> logging) : m_logging { logging }
 {
     if (this->m_logging != nullptr) {
         this->m_logging->log_debug ("DataPlaneStage explicit constructor.");
@@ -58,7 +58,7 @@ void DataPlaneStage::enforce_request (const uint32_t& workflow_id,
     // initialize data plane stage
     if (!m_stage_initialized.load (std::memory_order_relaxed)) {
         this->initialize_stage ();
-        std::cout << this->m_stage->get_stage_info ().to_string () << "\n";
+        std::cout << this->m_stage->stage_info_to_string() << "\n";
     }
 
     // missing: validate workflow-id ...
