@@ -1049,12 +1049,14 @@ extern "C" int dirfd (DIR* dirp)
  * @param size
  * @return
  */
+#ifdef __linux__
 extern "C" ssize_t getxattr (const char* path, const char* name, void* value, size_t size)
 {
     return (posix_extended_attributes_calls.padll_intercept_getxattr)
         ? m_ld_preloaded_posix.ld_preloaded_posix_getxattr (path, name, value, size)
         : m_posix_passthrough.passthrough_posix_getxattr (path, name, value, size);
 }
+#endif
 
 /**
  * lgetxattr:
@@ -1079,12 +1081,14 @@ extern "C" ssize_t lgetxattr (const char* path, const char* name, void* value, s
  * @param size
  * @return
  */
+#ifdef __linux__
 extern "C" ssize_t fgetxattr (int fd, const char* name, void* value, size_t size)
 {
     return (posix_extended_attributes_calls.padll_intercept_fgetxattr)
         ? m_ld_preloaded_posix.ld_preloaded_posix_fgetxattr (fd, name, value, size)
         : m_posix_passthrough.passthrough_posix_fgetxattr (fd, name, value, size);
 }
+#endif
 
 /**
  * setxattr:
@@ -1095,6 +1099,7 @@ extern "C" ssize_t fgetxattr (int fd, const char* name, void* value, size_t size
  * @param flags
  * @return
  */
+#ifdef __linux__
 extern "C" int
 setxattr (const char* path, const char* name, const void* value, size_t size, int flags)
 {
@@ -1102,6 +1107,7 @@ setxattr (const char* path, const char* name, const void* value, size_t size, in
         ? m_ld_preloaded_posix.ld_preloaded_posix_setxattr (path, name, value, size, flags)
         : m_posix_passthrough.passthrough_posix_setxattr (path, name, value, size, flags);
 }
+#endif
 
 /**
  * lsetxattr:
@@ -1129,12 +1135,14 @@ lsetxattr (const char* path, const char* name, const void* value, size_t size, i
  * @param flags
  * @return
  */
+#ifdef __linux__
 extern "C" int fsetxattr (int fd, const char* name, const void* value, size_t size, int flags)
 {
     return (posix_extended_attributes_calls.padll_intercept_fsetxattr)
         ? m_ld_preloaded_posix.ld_preloaded_posix_fsetxattr (fd, name, value, size, flags)
         : m_posix_passthrough.passthrough_posix_fsetxattr (fd, name, value, size, flags);
 }
+#endif
 
 /**
  * listxattr:
@@ -1143,12 +1151,14 @@ extern "C" int fsetxattr (int fd, const char* name, const void* value, size_t si
  * @param size
  * @return
  */
+#ifdef __linux__
 extern "C" ssize_t listxattr (const char* path, char* list, size_t size)
 {
     return (posix_extended_attributes_calls.padll_intercept_listxattr)
         ? m_ld_preloaded_posix.ld_preloaded_posix_listxattr (path, list, size)
         : m_posix_passthrough.passthrough_posix_listxattr (path, list, size);
 }
+#endif
 
 /**
  * llistxattr:
@@ -1171,12 +1181,14 @@ extern "C" ssize_t llistxattr (const char* path, char* list, size_t size)
  * @param size
  * @return
  */
+#ifdef __linux__
 extern "C" ssize_t flistxattr (int fd, char* list, size_t size)
 {
     return (posix_extended_attributes_calls.padll_intercept_flistxattr)
         ? m_ld_preloaded_posix.ld_preloaded_posix_flistxattr (fd, list, size)
         : m_posix_passthrough.passthrough_posix_flistxattr (fd, list, size);
 }
+#endif
 
 /**
  * removexattr:
@@ -1184,12 +1196,14 @@ extern "C" ssize_t flistxattr (int fd, char* list, size_t size)
  * @param name
  * @return
  */
+#ifdef __linux__
 extern "C" int removexattr (const char* path, const char* name)
 {
     return (posix_extended_attributes_calls.padll_intercept_removexattr)
         ? m_ld_preloaded_posix.ld_preloaded_posix_removexattr (path, name)
         : m_posix_passthrough.passthrough_posix_removexattr (path, name);
 }
+#endif
 
 /**
  * lremovexattr:
@@ -1210,12 +1224,14 @@ extern "C" int lremovexattr (const char* path, const char* name)
  * @param name
  * @return
  */
+#ifdef __linux__
 extern "C" int fremovexattr (int fd, const char* name)
 {
     return (posix_extended_attributes_calls.padll_intercept_fremovexattr)
         ? m_ld_preloaded_posix.ld_preloaded_posix_fremovexattr (fd, name)
         : m_posix_passthrough.passthrough_posix_fremovexattr (fd, name);
 }
+#endif
 
 /**
  * chmod:
