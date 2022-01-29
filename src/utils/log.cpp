@@ -14,9 +14,7 @@ Log::Log ()
 }
 
 // Log parameterized constructor.
-Log::Log (const bool& enable_debug,
-    const bool& debug_with_ldpreload,
-    const std::string& log_file) :
+Log::Log (const bool& enable_debug, const bool& debug_with_ldpreload, const std::string& log_file) :
     m_debug_enabled { enable_debug },
     m_is_ld_preloaded { debug_with_ldpreload },
     m_log_file_path { this->create_file_name (log_file) }

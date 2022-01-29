@@ -18,8 +18,7 @@ BETTER_ENUM (OperationType,
     metadata_calls = 1,
     data_calls = 2,
     directory_calls = 3,
-    ext_attr_calls = 4,
-    file_mode_calls = 5);
+    ext_attr_calls = 4);
 
 /**
  * Metadata Definitions.
@@ -36,51 +35,26 @@ BETTER_ENUM (Metadata,
     openat = 7,
     openat_variadic = 8,
     close = 9,
-    fsync = 10,
-    fdatasync = 11,
-    sync = 12,
-    syncfs = 13,
-    truncate = 14,
-    ftruncate = 15,
-    truncate64 = 16,
-    ftruncate64 = 17,
-    stat = 18,
-    lstat = 19,
-    fstat = 20,
-    fstatat = 21,
-    stat64 = 22,
-    lstat64 = 23,
-    fstat64 = 24,
-    fstatat64 = 25,
-    statfs = 26,
-    fstatfs = 27,
-    statfs64 = 28,
-    fstatfs64 = 29,
-    link = 30,
-    unlink = 31,
-    linkat = 32,
-    unlinkat = 33,
-    rename = 34,
-    renameat = 35,
-    symlink = 36,
-    symlinkat = 37,
-    readlink = 38,
-    readlinkat = 39,
-    fopen = 40,
-    fopen64 = 41,
-    fdopen = 42,
-    freopen = 43,
-    freopen64 = 44,
-    fclose = 45,
-    fflush = 46,
-    access = 47,
-    faccessat = 48,
-    lseek = 49,
-    fseek = 50,
-    ftell = 51,
-    lseek64 = 52,
-    fseeko64 = 53,
-    ftello64 = 54);
+    sync = 10,
+    stat = 11,
+    lstat = 12,
+    fstat = 13,
+    fstatat = 14,
+    stat64 = 15,
+    lstat64 = 16,
+    fstat64 = 17,
+    fstatat64 = 18,
+    statfs = 19,
+    fstatfs = 29,
+    statfs64 = 21,
+    fstatfs64 = 22,
+    unlink = 23,
+    unlinkat = 24,
+    rename = 25,
+    renameat = 26,
+    fopen = 27,
+    fopen64 = 28,
+    fclose = 29);
 
 /**
  * Data Definitions.
@@ -93,25 +67,12 @@ BETTER_ENUM (Data,
     pread = 3,
     pwrite = 4,
     pread64 = 5,
-    pwrite64 = 6,
-    fread = 7,
-    fwrite = 8);
+    pwrite64 = 6);
 
 /**
  * Directory Definitions.
  */
-BETTER_ENUM (Directory,
-    int,
-    no_op = 0,
-    mkdir = 1,
-    mkdirat = 2,
-    readdir = 3,
-    readdir64 = 4,
-    opendir = 5,
-    fdopendir = 6,
-    closedir = 7,
-    rmdir = 8,
-    dirfd = 9);
+BETTER_ENUM (Directory, int, no_op = 0, mkdir = 1, mkdirat = 2, rmdir = 3);
 
 /**
  * ExtendedAttributes Definitions.
@@ -127,24 +88,7 @@ BETTER_ENUM (ExtendedAttributes,
     fsetxattr = 6,
     listxattr = 7,
     llistxattr = 8,
-    flistxattr = 9,
-    removexattr = 10,
-    lremovexattr = 11,
-    fremovexattr = 12);
-
-/**
- * FileModes definitions.
- */
-BETTER_ENUM (FileModes,
-    int,
-    no_op = 0,
-    chmod = 1,
-    fchmod = 2,
-    fchmodat = 3,
-    chown = 4,
-    lchown = 5,
-    fchown = 6,
-    fchownat = 7);
+    flistxattr = 9);
 
 } // namespace padll::headers
 

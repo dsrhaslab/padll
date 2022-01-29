@@ -153,38 +153,6 @@ extern "C" ssize_t pwrite64 (int fd, const void* buf, size_t size, off64_t offse
 #endif
 
 /**
- * fread:
- * @param ptr
- * @param size
- * @param nmemb
- * @param stream
- * @return
- */
-extern "C" size_t fread (void* ptr, size_t size, size_t nmemb, FILE* stream)
-{
-    return (posix_data_calls.padll_intercept_fread)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_fread (ptr, size, nmemb, stream)
-        : m_posix_passthrough.passthrough_posix_fread (ptr, size, nmemb, stream);
-}
-
-/**
- * fwrite:
- * Note: Attention: this method will (as well as fflush) will through a segmentation fault when
- *  using the Log library (even in the initialization, constructors, ...).
- * @param ptr
- * @param size
- * @param nmemb
- * @param stream
- * @return
- */
-extern "C" size_t fwrite (const void* ptr, size_t size, size_t nmemb, FILE* stream)
-{
-    return (posix_data_calls.padll_intercept_fwrite)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_fwrite (ptr, size, nmemb, stream)
-        : m_posix_passthrough.passthrough_posix_fwrite (ptr, size, nmemb, stream);
-}
-
-/**
  * open:
  * @param path
  * @param flags
@@ -302,30 +270,6 @@ extern "C" int close (int fd)
 }
 
 /**
- * fsync:
- * @param fd
- * @return
- */
-extern "C" int fsync (int fd)
-{
-    return (posix_metadata_calls.paddl_intercept_fsync)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_fsync (fd)
-        : m_posix_passthrough.passthrough_posix_fsync (fd);
-}
-
-/**
- * fdatasync:
- * @param fd
- * @return
- */
-extern "C" int fdatasync (int fd)
-{
-    return (posix_metadata_calls.paddl_intercept_fdatasync)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_fdatasync (fd)
-        : m_posix_passthrough.passthrough_posix_fdatasync (fd);
-}
-
-/**
  * sync:
  */
 extern "C" void sync ()
@@ -333,69 +277,6 @@ extern "C" void sync ()
     return (posix_metadata_calls.paddl_intercept_sync)
         ? m_ld_preloaded_posix.ld_preloaded_posix_sync ()
         : m_posix_passthrough.passthrough_posix_sync ();
-}
-
-/**
- * syncfs:
- * @param fd
- */
-extern "C" int syncfs (int fd)
-{
-    return (posix_metadata_calls.paddl_intercept_syncfs)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_syncfs (fd)
-        : m_posix_passthrough.passthrough_posix_syncfs (fd);
-}
-
-/**
- * truncate:
- * @param path
- * @param length
- * @return
- */
-extern "C" int truncate (const char* path, off_t length)
-{
-    return (posix_metadata_calls.paddl_intercept_truncate)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_truncate (path, length)
-        : m_posix_passthrough.passthrough_posix_truncate (path, length);
-}
-
-/**
- * ftruncate:
- * @param fd
- * @param length
- * @return
- */
-extern "C" int ftruncate (int fd, off_t length)
-{
-    return (posix_metadata_calls.paddl_intercept_ftruncate)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_ftruncate (fd, length)
-        : m_posix_passthrough.passthrough_posix_ftruncate (fd, length);
-}
-
-/**
- * truncate64:
- * @param path
- * @param length
- * @return
- */
-extern "C" int truncate64 (const char* path, off_t length)
-{
-    return (posix_metadata_calls.paddl_intercept_truncate64)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_truncate64 (path, length)
-        : m_posix_passthrough.passthrough_posix_truncate64 (path, length);
-}
-
-/**
- * ftruncate64:
- * @param fd
- * @param length
- * @return
- */
-extern "C" int ftruncate64 (int fd, off_t length)
-{
-    return (posix_metadata_calls.paddl_intercept_ftruncate64)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_ftruncate64 (fd, length)
-        : m_posix_passthrough.passthrough_posix_ftruncate64 (fd, length);
 }
 
 /**
@@ -577,19 +458,6 @@ extern "C" int fstatfs64 (int fd, struct statfs64* buf)
 }
 
 /**
- * link:
- * @param old_path
- * @param new_path
- * @return
- */
-extern "C" int link (const char* old_path, const char* new_path)
-{
-    return (posix_metadata_calls.paddl_intercept_link)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_link (old_path, new_path)
-        : m_posix_passthrough.passthrough_posix_link (old_path, new_path);
-}
-
-/**
  * unlink:
  * @param path
  * @return
@@ -599,31 +467,6 @@ extern "C" int unlink (const char* path)
     return (posix_metadata_calls.paddl_intercept_unlink)
         ? m_ld_preloaded_posix.ld_preloaded_posix_unlink (path)
         : m_posix_passthrough.passthrough_posix_unlink (path);
-}
-
-/**
- * linkat:
- * @param olddirfd
- * @param old_path
- * @param newdirfd
- * @param new_path
- * @param flags
- * @return
- */
-extern "C" int
-linkat (int olddirfd, const char* old_path, int newdirfd, const char* new_path, int flags)
-{
-    return (posix_metadata_calls.paddl_intercept_linkat)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_linkat (olddirfd,
-            old_path,
-            newdirfd,
-            new_path,
-            flags)
-        : m_posix_passthrough.passthrough_posix_linkat (olddirfd,
-            old_path,
-            newdirfd,
-            new_path,
-            flags);
 }
 
 /**
@@ -671,62 +514,6 @@ extern "C" int renameat (int olddirfd, const char* old_path, int newdirfd, const
 }
 
 /**
- * symlink:
- * @param target
- * @param linkpath
- * @return
- */
-extern "C" int symlink (const char* target, const char* linkpath)
-{
-    return (posix_metadata_calls.paddl_intercept_symlink)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_symlink (target, linkpath)
-        : m_posix_passthrough.passthrough_posix_symlink (target, linkpath);
-}
-
-/**
- * symlinkat:
- * @param target
- * @param newdirfd
- * @param linkpath
- * @return
- */
-extern "C" int symlinkat (const char* target, int newdirfd, const char* linkpath)
-{
-    return (posix_metadata_calls.paddl_intercept_symlinkat)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_symlinkat (target, newdirfd, linkpath)
-        : m_posix_passthrough.passthrough_posix_symlinkat (target, newdirfd, linkpath);
-}
-
-/**
- * readlink:
- * @param path
- * @param buf
- * @param bufsize
- * @return
- */
-extern "C" ssize_t readlink (const char* path, char* buf, size_t bufsize)
-{
-    return (posix_metadata_calls.paddl_intercept_readlink)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_readlink (path, buf, bufsize)
-        : m_posix_passthrough.passthrough_posix_readlink (path, buf, bufsize);
-}
-
-/**
- * readlinkat:
- * @param dirfd
- * @param path
- * @param buf
- * @param bufsize
- * @return
- */
-extern "C" ssize_t readlinkat (int dirfd, const char* path, char* buf, size_t bufsize)
-{
-    return (posix_metadata_calls.paddl_intercept_readlinkat)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_readlinkat (dirfd, path, buf, bufsize)
-        : m_posix_passthrough.passthrough_posix_readlinkat (dirfd, path, buf, bufsize);
-}
-
-/**
  * fopen:
  * @param pathname
  * @param mode
@@ -753,47 +540,6 @@ extern "C" FILE* fopen64 (const char* pathname, const char* mode)
 }
 
 /**
- * fdopen:
- * @param fd
- * @param mode
- * @return
- */
-extern "C" FILE* fdopen (int fd, const char* mode)
-{
-    return (posix_metadata_calls.paddl_intercept_fdopen)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_fdopen (fd, mode)
-        : m_posix_passthrough.passthrough_posix_fdopen (fd, mode);
-}
-
-/**
- * freopen:
- * @param pathname
- * @param mode
- * @param stream
- * @return
- */
-extern "C" FILE* freopen (const char* pathname, const char* mode, FILE* stream)
-{
-    return (posix_metadata_calls.paddl_intercept_freopen)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_freopen (pathname, mode, stream)
-        : m_posix_passthrough.passthrough_posix_freopen (pathname, mode, stream);
-}
-
-/**
- * freopen64:
- * @param pathname
- * @param mode
- * @param stream
- * @return
- */
-extern "C" FILE* freopen64 (const char* pathname, const char* mode, FILE* stream)
-{
-    return (posix_metadata_calls.paddl_intercept_freopen64)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_freopen64 (pathname, mode, stream)
-        : m_posix_passthrough.passthrough_posix_freopen64 (pathname, mode, stream);
-}
-
-/**
  * fclose:
  * @param stream
  * @return
@@ -803,128 +549,6 @@ extern "C" int fclose (FILE* stream)
     return (posix_metadata_calls.paddl_intercept_fclose)
         ? m_ld_preloaded_posix.ld_preloaded_posix_fclose (stream)
         : m_posix_passthrough.passthrough_posix_fclose (stream);
-}
-
-/**
- * fflush:
- * Note: Attention: this method will (as well as fwrite) will through a segmentation fault when
- *  using the Logging library (even in the initialization, constructors, ...).
- * @param stream
- * @return
- */
-extern "C" int fflush (FILE* stream)
-{
-    return (posix_metadata_calls.paddl_intercept_fflush)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_fflush (stream)
-        : m_posix_passthrough.passthrough_posix_fflush (stream);
-}
-
-/**
- * access:
- * @param path
- * @param mode
- * @return
- */
-extern "C" int access (const char* path, int mode)
-{
-    return (posix_metadata_calls.paddl_intercept_access)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_access (path, mode)
-        : m_posix_passthrough.passthrough_posix_access (path, mode);
-}
-
-/**
- * faccessat:
- * @param dirfd
- * @param path
- * @param mode
- * @param flags
- * @return
- */
-extern "C" int faccessat (int dirfd, const char* path, int mode, int flags)
-{
-    return (posix_metadata_calls.paddl_intercept_faccessat)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_faccessat (dirfd, path, mode, flags)
-        : m_posix_passthrough.passthrough_posix_faccessat (dirfd, path, mode, flags);
-}
-
-/**
- * lseek:
- * @param fd
- * @param offset
- * @param whence
- * @return
- */
-extern "C" off_t lseek (int fd, off_t offset, int whence)
-{
-    return (posix_metadata_calls.paddl_intercept_lseek)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_lseek (fd, offset, whence)
-        : m_posix_passthrough.passthrough_posix_lseek (fd, offset, whence);
-}
-
-/**
- * fseek:
- * @param stream
- * @param offset
- * @param whence
- * @return
- */
-extern "C" int fseek (FILE* stream, long offset, int whence)
-{
-    return (posix_metadata_calls.paddl_intercept_fseek)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_fseek (stream, offset, whence)
-        : m_posix_passthrough.passthrough_posix_fseek (stream, offset, whence);
-}
-
-/**
- * ftell:
- * @param stream
- * @return
- */
-extern "C" long ftell (FILE* stream)
-{
-    return (posix_metadata_calls.paddl_intercept_ftell)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_ftell (stream)
-        : m_posix_passthrough.passthrough_posix_ftell (stream);
-}
-
-/**
- * lseek64:
- * @param fd
- * @param offset
- * @param whence
- * @return
- */
-extern "C" off_t lseek64 (int fd, off_t offset, int whence)
-{
-    return (posix_metadata_calls.paddl_intercept_lseek64)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_lseek64 (fd, offset, whence)
-        : m_posix_passthrough.passthrough_posix_lseek64 (fd, offset, whence);
-}
-
-/**
- * fseeko64:
- * @param stream
- * @param offset
- * @param whence
- * @return
- */
-extern "C" int fseeko64 (FILE* stream, off_t offset, int whence)
-{
-    return (posix_metadata_calls.paddl_intercept_fseeko64)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_fseeko64 (stream, offset, whence)
-        : m_posix_passthrough.passthrough_posix_fseeko64 (stream, offset, whence);
-}
-
-/**
- * ftello64:
- * @param stream
- * @return
- */
-extern "C" off_t ftello64 (FILE* stream)
-{
-    return (posix_metadata_calls.paddl_intercept_ftello64)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_ftello64 (stream)
-        : m_posix_passthrough.passthrough_posix_ftello64 (stream);
 }
 
 /**
@@ -955,69 +579,6 @@ extern "C" int mkdirat (int dirfd, const char* path, mode_t mode)
 }
 
 /**
- * readdir:
- * @param dirp
- * @return
- */
-extern "C" struct dirent* readdir (DIR* dirp)
-{
-    return (posix_directory_calls.padll_intercept_readdir)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_readdir (dirp)
-        : m_posix_passthrough.passthrough_posix_readdir (dirp);
-}
-
-/**
- * readdir64:
- * @param dirp
- * @return
- */
-extern "C" struct dirent64* readdir64 (DIR* dirp)
-{
-#if defined(__unix__) || defined(__linux)
-    return (posix_directory_calls.padll_intercept_readdir64)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_readdir64 (dirp)
-        : m_posix_passthrough.passthrough_posix_readdir64 (dirp);
-#endif
-    return nullptr;
-}
-
-/**
- * opendir:
- * @param path
- * @return
- */
-extern "C" DIR* opendir (const char* path)
-{
-    return (posix_directory_calls.padll_intercept_opendir)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_opendir (path)
-        : m_posix_passthrough.passthrough_posix_opendir (path);
-}
-
-/**
- * fdopendir:
- * @param fd
- * @return
- */
-extern "C" DIR* fdopendir (int fd)
-{
-    return (posix_directory_calls.padll_intercept_fdopendir)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_fdopendir (fd)
-        : m_posix_passthrough.passthrough_posix_fdopendir (fd);
-}
-
-/**
- * closedir:
- * @param dirp
- * @return
- */
-extern "C" int closedir (DIR* dirp)
-{
-    return (posix_directory_calls.padll_intercept_closedir)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_closedir (dirp)
-        : m_posix_passthrough.passthrough_posix_closedir (dirp);
-}
-
-/**
  * rmdir:
  * @param path
  * @return
@@ -1027,18 +588,6 @@ extern "C" int rmdir (const char* path)
     return (posix_directory_calls.padll_intercept_rmdir)
         ? m_ld_preloaded_posix.ld_preloaded_posix_rmdir (path)
         : m_posix_passthrough.passthrough_posix_rmdir (path);
-}
-
-/**
- * dirfd:
- * @param dirp
- * @return
- */
-extern "C" int dirfd (DIR* dirp)
-{
-    return (posix_directory_calls.padll_intercept_dirfd)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_dirfd (dirp)
-        : m_posix_passthrough.passthrough_posix_dirfd (dirp);
 }
 
 /**
@@ -1189,147 +738,5 @@ extern "C" ssize_t flistxattr (int fd, char* list, size_t size)
         : m_posix_passthrough.passthrough_posix_flistxattr (fd, list, size);
 }
 #endif
-
-/**
- * removexattr:
- * @param path
- * @param name
- * @return
- */
-#ifdef __linux__
-extern "C" int removexattr (const char* path, const char* name)
-{
-    return (posix_extended_attributes_calls.padll_intercept_removexattr)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_removexattr (path, name)
-        : m_posix_passthrough.passthrough_posix_removexattr (path, name);
-}
-#endif
-
-/**
- * lremovexattr:
- * @param path
- * @param name
- * @return
- */
-extern "C" int lremovexattr (const char* path, const char* name)
-{
-    return (posix_extended_attributes_calls.padll_intercept_lremovexattr)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_lremovexattr (path, name)
-        : m_posix_passthrough.passthrough_posix_lremovexattr (path, name);
-}
-
-/**
- * fremovexattr:
- * @param fd
- * @param name
- * @return
- */
-#ifdef __linux__
-extern "C" int fremovexattr (int fd, const char* name)
-{
-    return (posix_extended_attributes_calls.padll_intercept_fremovexattr)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_fremovexattr (fd, name)
-        : m_posix_passthrough.passthrough_posix_fremovexattr (fd, name);
-}
-#endif
-
-/**
- * chmod:
- * @param pathname
- * @param mode
- * @return
- */
-extern "C" int chmod (const char* pathname, mode_t mode)
-{
-    return (posix_file_modes_calls.padll_intercept_chmod)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_chmod (pathname, mode)
-        : m_posix_passthrough.passthrough_posix_chmod (pathname, mode);
-}
-
-/**
- * fchmod:
- * @param fd
- * @param mode
- * @return
- */
-extern "C" int fchmod (int fd, mode_t mode)
-{
-    return (posix_file_modes_calls.padll_intercept_fchmod)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_fchmod (fd, mode)
-        : m_posix_passthrough.passthrough_posix_fchmod (fd, mode);
-}
-
-/**
- * fchmodat:
- * @param dirfd
- * @param pathname
- * @param mode
- * @param flags
- * @return
- */
-extern "C" int fchmodat (int dirfd, const char* pathname, mode_t mode, int flags)
-{
-    return (posix_file_modes_calls.padll_intercept_fchmodat)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_fchmodat (dirfd, pathname, mode, flags)
-        : m_posix_passthrough.passthrough_posix_fchmodat (dirfd, pathname, mode, flags);
-}
-
-/**
- * chown:
- * @param pathname
- * @param owner
- * @param group
- * @return
- */
-extern "C" int chown (const char* pathname, uid_t owner, gid_t group)
-{
-    return (posix_file_modes_calls.padll_intercept_chown)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_chown (pathname, owner, group)
-        : m_posix_passthrough.passthrough_posix_chown (pathname, owner, group);
-}
-
-/**
- * lchown:
- * @param pathname
- * @param owner
- * @param group
- * @return
- */
-extern "C" int lchown (const char* pathname, uid_t owner, gid_t group)
-{
-    return (posix_file_modes_calls.padll_intercept_lchown)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_lchown (pathname, owner, group)
-        : m_posix_passthrough.passthrough_posix_lchown (pathname, owner, group);
-}
-
-/**
- * fchown:
- * @param fd
- * @param owner
- * @param group
- * @return
- */
-extern "C" int fchown (int fd, uid_t owner, gid_t group)
-{
-    return (posix_file_modes_calls.padll_intercept_fchown)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_fchown (fd, owner, group)
-        : m_posix_passthrough.passthrough_posix_fchown (fd, owner, group);
-}
-
-/**
- * fchownat:
- * @param dirfd
- * @param pathname
- * @param owner
- * @param group
- * @param flags
- * @return
- */
-extern "C" int fchownat (int dirfd, const char* pathname, uid_t owner, gid_t group, int flags)
-{
-    return (posix_file_modes_calls.padll_intercept_fchownat)
-        ? m_ld_preloaded_posix.ld_preloaded_posix_fchownat (dirfd, pathname, owner, group, flags)
-        : m_posix_passthrough.passthrough_posix_fchownat (dirfd, pathname, owner, group, flags);
-}
 
 #endif // PADLL_POSIX_FILE_SYSTEM_H

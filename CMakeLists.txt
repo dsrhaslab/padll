@@ -164,8 +164,8 @@ if (PADLL_BUILD_TESTS)
         add_test(NAME "${test_target_name}" COMMAND "${test_target_name}")
     endfunction(padll_test)
 
-    padll_test("tests/padll_statistics_test.cpp")
-    padll_test("tests/padll_mount_point_differentiation_test.cpp")
+    padll_test("tests/padll_statistics_test.cpp" "statistics_test")
+    padll_test("tests/padll_mount_point_differentiation_test.cpp" "mountpoint_test")
 
 endif (PADLL_BUILD_TESTS)
 

@@ -98,9 +98,7 @@ public:
      * If @param debug is true, the logging mode is set to debug.
      * @param debug Boolean value that defines if the debug is enabled or disabled.
      */
-    Log (const bool& enable_debug,
-        const bool& debug_with_ldpreload,
-        const std::string& log_file);
+    Log (const bool& enable_debug, const bool& debug_with_ldpreload, const std::string& log_file);
 
     /**
      * Log default destructor.

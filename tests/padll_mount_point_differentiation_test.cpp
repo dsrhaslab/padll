@@ -154,7 +154,7 @@ private:
         std::stringstream stream;
         long successful_ops = 0;
 
-        for (int i = 0; i < file_identifiers.size(); i++){
+        for (int i = 0; i < file_identifiers.size (); i++) {
             auto index = static_cast<int> (random () % file_identifiers.size ());
 
             bool return_value;
@@ -168,12 +168,11 @@ private:
 
             if (return_value) {
                 successful_ops++;
-                std::fprintf (this->m_fd, "Success\n" );
+                std::fprintf (this->m_fd, "Success\n");
             } else {
-                std::fprintf(this->m_fd, "Error: %s\n", strerror(errno));
+                std::fprintf (this->m_fd, "Error: %s\n", strerror (errno));
             }
         }
-
     }
 
 public:
@@ -393,9 +392,8 @@ public:
 
         // print performance report (number of operations and elapsed time)
         this->performance_report ("test_remove_mount_point_entry",
-            num_threads * file_ptrs.size(),
+            num_threads * file_ptrs.size (),
             std::chrono::duration_cast<std::chrono::nanoseconds> (elapsed_time).count ());
-
     }
 
     void test_pick_workflow_id ()
@@ -470,10 +468,10 @@ int main (int argc, char** argv)
             print_debug_info);
 
         test.test_remove_mount_point_entry (&mount_point_table,
-                                            use_fd,
-                                            num_threads,
-                                            file_identifiers_list,
-                                            print_debug_info);
+            use_fd,
+            num_threads,
+            file_identifiers_list,
+            print_debug_info);
     } else {
         test.test_create_mount_point_entry (&mount_point_table,
             use_fd,
