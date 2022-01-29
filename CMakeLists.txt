@@ -18,14 +18,16 @@ option(ABCI_DEPLOYMENT "Install PADLL in ABCI supercomputer" OFF)
 # Setup the basic C++ Compiler flags
 if (APPLE)
     message(STATUS "Detecting Apple")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fPIC")
+    set(dep_opts -fPIC)
 endif (APPLE)
 
 if (UNIX AND NOT APPLE)
     message(STATUS "Detecting UNIX (!Apple)")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fPIC -Wl,--no-as-needed -ldl")
+    set(dep_opts -fPIC -Wl,--no-as-needed -ldl)
 endif ()
 
+# Warning flags
+set(warn_opts -Wall -Wextra -pedantic)
 
 # Test whether -Wthread-safety is available. See
 # https://clang.llvm.org/docs/ThreadSafetyAnalysis.html
@@ -36,6 +38,8 @@ check_cxx_compiler_flag(-Wthread-safety HAVE_CLANG_THREAD_SAFETY)
 # padll
 
 add_library(padll SHARED "")
+
+target_compile_options(padll PRIVATE ${dep_opts} ${warn_opts})
 
 set_target_properties(
         padll
@@ -135,6 +139,7 @@ if (PADLL_BUILD_LIBC_TESTS)
                 "${test_file}"
                 )
 
+        target_compile_options("${test_target_name}" PRIVATE ${dep_opts} ${warn_opts})
         target_link_libraries("${test_target_name}")
 
         add_test(NAME "${test_target_name}" COMMAND "${test_target_name}")
@@ -150,7 +155,7 @@ endif (PADLL_BUILD_LIBC_TESTS)
 if (PADLL_BUILD_TESTS)
     enable_testing()
 
-    function(padll_test test_file)
+    function(padll_test test_file executable_name)
         get_filename_component(test_target_name "${test_file}" NAME_WE)
 
         add_executable("${test_target_name}" "")
@@ -159,6 +164,7 @@ if (PADLL_BUILD_TESTS)
                 "${test_file}"
                 )
 
+        target_compile_options("${test_target_name}" PRIVATE ${dep_opts} ${warn_opts})
         target_link_libraries("${test_target_name}" padll)
 
         add_test(NAME "${test_target_name}" COMMAND "${test_target_name}")
