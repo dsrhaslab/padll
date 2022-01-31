@@ -4,6 +4,7 @@
  **/
 
 #include <cstring>
+#include <filesystem>
 #include <fcntl.h>
 #include <iostream>
 #include <sys/types.h>
@@ -15,6 +16,76 @@ class ExtendedAttributesCallsTest {
 private:
     FILE* m_fd { stdout };
     FILE* m_err { stderr };
+
+    /**
+     * create_file_pool:
+     * @param dir_path
+     * @param num_files
+     * @param initial_files
+     * @return
+     */
+    int create_file_pool (const char* dir_path, const int& num_files, const int& initial_files)
+    {
+        auto created_files = 0;
+        // validate path
+        std::filesystem::path dir_path_fs { dir_path };
+        if (!std::filesystem::exists (dir_path_fs)) {
+            std::fprintf (m_err, "Directory %s does not exist.\n", dir_path);
+            return -1;
+        }
+
+        for (int i = initial_files; i < (num_files + initial_files); i++) {
+            // generate file path
+            std::string file_path = std::string (dir_path) + "/file-" + std::to_string (i);
+
+            // create file
+            int fd = ::open (file_path.c_str(), O_CREAT | O_WRONLY, 0666);
+
+            // validate file descriptor
+            if (fd < 0) {
+                std::fprintf (m_err, "Error while creating file %s.\n", file_path.c_str());
+                return -1;
+            }
+
+            created_files++;
+        }
+        return created_files;
+    }
+
+    /**
+     * remove_file_pool:
+     * @param dir_path
+     * @param num_files
+     * @param initial_files
+     * @return
+     */
+    int remove_file_pool (const char* dir_path, const int& num_files, const int& initial_files)
+    {
+        auto deleted_files = 0;
+        // validate path
+        std::filesystem::path dir_path_fs { dir_path };
+        if (!std::filesystem::exists (dir_path_fs)) {
+            std::fprintf (m_err, "Directory %s does not exist.\n", dir_path);
+            return -1;
+        }
+
+        for (int i = initial_files; i < (num_files + initial_files); i++) {
+            // generate file path
+            std::string file_path = std::string (dir_path) + "/file-" + std::to_string (i);
+
+            // remove file
+            auto return_value = ::unlink (file_path.c_str());
+
+            // validate return value
+            if (return_value < 0) {
+                std::fprintf (m_err, "Error while removing file %s.\n", file_path.c_str());
+                return -1;
+            }
+
+            deleted_files++;
+        }
+        return 0;
+    }
 
 public:
     ExtendedAttributesCallsTest () = default;
@@ -30,28 +101,31 @@ public:
      * test_getxattr_call:
      * @param path
      * @param xattr
+     * @param debug
      * @return
      */
-    ssize_t test_getxattr_call (const char* path, const char* xattr)
+    ssize_t test_getxattr_call (const char* path, const char* xattr, const bool& debug)
     {
-        std::fprintf (this->m_fd, "Test getxattr call (%s, %s)\n", path, xattr);
+        if (debug) {
+            std::fprintf(this->m_fd, "Test getxattr call (%s, %s)\n", path, xattr);
+        }
 
-        ssize_t info_size;
+        ssize_t info_size = 200;
         // get size of extended attribute
         // verify if the test is running on an Apple device and use the respective xattr calls
-#if defined(__APPLE__)
-        info_size = ::getxattr (path, xattr, nullptr, 0, 0, 0);
-#else
-        info_size = ::getxattr (path, xattr, nullptr, 0);
-#endif
-
-        // validate info_size result after getxattr
-        if (info_size == -1) {
-            std::fprintf (this->m_err,
-                "Error while getting attribute: %s\n",
-                std::strerror (errno));
-            return -1;
-        }
+//#if defined(__APPLE__)
+//        info_size = ::getxattr (path, xattr, nullptr, 0, 0, 0);
+//#else
+//        info_size = ::getxattr (path, xattr, nullptr, 0);
+//#endif
+//
+//        // validate info_size result after getxattr
+//        if (info_size == -1) {
+//            std::fprintf (this->m_err,
+//                "Error while getting attribute: %s\n",
+//                std::strerror (errno));
+//            return -1;
+//        }
 
         // allocate size for
         char* info = new char[info_size];
@@ -65,10 +139,13 @@ public:
         return_value = ::getxattr (path, xattr, info, info_size);
 #endif
 
-        std::fprintf (this->m_fd, "getxattr::result {%ld, %ld", info_size, return_value);
+        if (debug) {
+            // validate return value after getxattr
+            std::fprintf (this->m_fd, "getxattr::result {%ld, %ld", info_size, return_value);
 
-        (info_size > -1) ? std::fprintf (this->m_fd, ", %s}\n", info)
-                         : std::fprintf (this->m_fd, "}\n");
+            (info_size > -1) ? std::fprintf (this->m_fd, ", %s}\n", info)
+                             : std::fprintf (this->m_fd, "}\n");
+        }
 
         delete[] info;
         return return_value;
@@ -518,7 +595,7 @@ public:
         return_value = test_listxattr (path.data ());
         std::cout << "listxattr (" << return_value << ")\n";
 
-        return_value = test_getxattr_call (path.data (), xattr.data ());
+        return_value = test_getxattr_call (path.data (), xattr.data (), true);
         std::cout << "getxattr (" << return_value << ")\n";
 
         return_value = test_removexattr (path.data (), xattr.data ());
