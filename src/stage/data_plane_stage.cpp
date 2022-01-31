@@ -55,23 +55,26 @@ void DataPlaneStage::enforce_request (const uint32_t& workflow_id,
     const int& operation_context,
     const uint64_t& operation_size)
 {
-    // initialize data plane stage
-    if (!m_stage_initialized.load (std::memory_order_relaxed)) {
-        this->initialize_stage ();
-        std::cout << this->m_stage->stage_info_to_string () << "\n";
+    // Note: temporary just to try out tests w/ and w/o data plane stage
+    if (this->m_enforce) {
+        // initialize data plane stage
+        if (!m_stage_initialized.load (std::memory_order_relaxed)) {
+            this->initialize_stage ();
+            std::cout << this->m_stage->stage_info_to_string () << "\n";
+        }
+
+        // missing: validate workflow-id ...
+
+        // create Context object
+        auto context_obj = this->m_posix_instance->build_context_object (workflow_id,
+            operation_type,
+            operation_context,
+            operation_size,
+            1);
+
+        // submit request through posix_noop
+        this->m_posix_instance->posix_noop (nullptr, operation_size, context_obj);
     }
-
-    // missing: validate workflow-id ...
-
-    // create Context object
-    auto context_obj = this->m_posix_instance->build_context_object (workflow_id,
-        operation_type,
-        operation_context,
-        operation_size,
-        1);
-
-    // submit request through posix_noop
-    this->m_posix_instance->posix_noop (nullptr, operation_size, context_obj);
 }
 
 } // namespace padll::stage

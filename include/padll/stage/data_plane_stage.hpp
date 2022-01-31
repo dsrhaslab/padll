@@ -25,6 +25,7 @@ private:
     std::unique_ptr<paio::PosixLayer> m_posix_instance { nullptr };
     // const long m_workflow_id { 1000 };
     std::shared_ptr<Log> m_logging { nullptr };
+    const bool m_enforce { false }; // todo: temporary
 
     /**
      * initialize_stage:
