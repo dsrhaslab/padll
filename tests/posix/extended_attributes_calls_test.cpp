@@ -1,6 +1,6 @@
 /**
  *   Written by Ricardo Macedo.
- *   Copyright (c) 2021 INESC TEC.
+ *   Copyright (c) 2021-2022 INESC TEC.
  **/
 
 #include <cstring>
@@ -590,6 +590,13 @@ void select_extended_attributes_test (int type,
     }
 }
 
+/**
+ * TODO:
+ *  - test independent function tests;
+ *  - create setxattr_getxattr_listxattr_test, lsetxattr_lgetxattr_llistxattr_test, and
+ *  fsetxattr_fgetxattr_flistxattr_test using a loop to control the amount of each operation, or
+ *  even all operations, using PAIO.
+ */
 int main (int argc, char** argv)
 {
     if (argc == 1) {

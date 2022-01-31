@@ -1,6 +1,6 @@
 /**
  *   Written by Ricardo Macedo.
- *   Copyright (c) 2021 INESC TEC.
+ *   Copyright (c) 2021-2022 INESC TEC.
  **/
 
 #include <cstdio>

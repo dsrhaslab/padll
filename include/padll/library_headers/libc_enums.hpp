@@ -1,6 +1,6 @@
 /**
  *   Written by Ricardo Macedo.
- *   Copyright (c) 2021 INESC TEC.
+ *   Copyright (c) 2021-2022 INESC TEC.
  **/
 
 #ifndef PADLL_LIBC_ENUMS_HPP
@@ -18,7 +18,7 @@ BETTER_ENUM (OperationType,
     metadata_calls = 1,
     data_calls = 2,
     directory_calls = 3,
-    ext_attr_calls = 4);
+    ext_attr_calls = 4)
 
 /**
  * Metadata Definitions.
@@ -54,7 +54,7 @@ BETTER_ENUM (Metadata,
     renameat = 26,
     fopen = 27,
     fopen64 = 28,
-    fclose = 29);
+    fclose = 29)
 
 /**
  * Data Definitions.
@@ -67,12 +67,12 @@ BETTER_ENUM (Data,
     pread = 3,
     pwrite = 4,
     pread64 = 5,
-    pwrite64 = 6);
+    pwrite64 = 6)
 
 /**
  * Directory Definitions.
  */
-BETTER_ENUM (Directory, int, no_op = 0, mkdir = 1, mkdirat = 2, rmdir = 3);
+BETTER_ENUM (Directory, int, no_op = 0, mkdir = 1, mkdirat = 2, rmdir = 3)
 
 /**
  * ExtendedAttributes Definitions.
@@ -88,7 +88,7 @@ BETTER_ENUM (ExtendedAttributes,
     fsetxattr = 6,
     listxattr = 7,
     llistxattr = 8,
-    flistxattr = 9);
+    flistxattr = 9)
 
 } // namespace padll::headers
 

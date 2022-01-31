@@ -1,6 +1,6 @@
 /**
  *   Written by Ricardo Macedo.
- *   Copyright (c) 2021 INESC TEC.
+ *   Copyright (c) 2021-2022 INESC TEC.
  **/
 
 #include <dirent.h>
@@ -171,6 +171,11 @@ void test_rmdir_call (const char* pathname)
     }
 }
 
+/**
+ * TODO:
+ *  - test independent function tests;
+ *  - create mkdir_rmdir_test with loop to control the amount of each or both operations using PAIO.
+ */
 int main (int argc, char** argv)
 {
     if (argc > 1) {
