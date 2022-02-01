@@ -4,8 +4,8 @@
  **/
 
 #include <cstring>
-#include <filesystem>
 #include <fcntl.h>
+#include <filesystem>
 #include <iostream>
 #include <sys/types.h>
 #include <sys/xattr.h>
@@ -39,11 +39,11 @@ private:
             std::string file_path = std::string (dir_path) + "/file-" + std::to_string (i);
 
             // create file
-            int fd = ::open (file_path.c_str(), O_CREAT | O_WRONLY, 0666);
+            int fd = ::open (file_path.c_str (), O_CREAT | O_WRONLY, 0666);
 
             // validate file descriptor
             if (fd < 0) {
-                std::fprintf (m_err, "Error while creating file %s.\n", file_path.c_str());
+                std::fprintf (m_err, "Error while creating file %s.\n", file_path.c_str ());
                 return -1;
             }
 
@@ -74,11 +74,11 @@ private:
             std::string file_path = std::string (dir_path) + "/file-" + std::to_string (i);
 
             // remove file
-            auto return_value = ::unlink (file_path.c_str());
+            auto return_value = ::unlink (file_path.c_str ());
 
             // validate return value
             if (return_value < 0) {
-                std::fprintf (m_err, "Error while removing file %s.\n", file_path.c_str());
+                std::fprintf (m_err, "Error while removing file %s.\n", file_path.c_str ());
                 return -1;
             }
 
@@ -87,26 +87,17 @@ private:
         return 0;
     }
 
-    void print_attribute_keys (char* buf, char* key, ssize_t& buflen, ssize_t& keylen) {
+    void print_attribute_keys (char* buf, char* key, ssize_t& buflen, ssize_t& keylen)
+    {
         key = buf;
         std::fprintf (this->m_fd, "Skipping over list elements ...\n");
         while (buflen > 0) {
             std::fprintf (this->m_fd, "\t%s\n", key);
-            keylen = static_cast<ssize_t>(std::strlen(key)) + 1;
+            keylen = static_cast<ssize_t> (std::strlen (key)) + 1;
             buflen -= keylen;
             key += keylen;
         }
     }
-
-public:
-    ExtendedAttributesCallsTest () = default;
-
-    /**
-     * ExtendedAttributesCallsTest explict constructor.
-     * @param fd Pointer to a file descriptor.
-     */
-    explicit ExtendedAttributesCallsTest (FILE* fd) : m_fd { fd }
-    { }
 
     /**
      * test_getxattr_call:
@@ -118,7 +109,7 @@ public:
     ssize_t test_getxattr_call (const char* path, const char* xattr, const bool& debug)
     {
         if (debug) {
-            std::fprintf(this->m_fd, "Test getxattr call (%s, %s)\n", path, xattr);
+            std::fprintf (this->m_fd, "Test getxattr call (%s, %s)\n", path, xattr);
         }
 
         // use static buffer size
@@ -167,7 +158,7 @@ public:
     ssize_t test_lgetxattr_call (const char* path, const char* xattr, const bool& debug)
     {
         if (debug) {
-            std::fprintf(this->m_fd, "Test lgetxattr call (%s, %s)\n", path, xattr);
+            std::fprintf (this->m_fd, "Test lgetxattr call (%s, %s)\n", path, xattr);
         }
 
         // use static buffer size
@@ -213,7 +204,7 @@ public:
     ssize_t test_fgetxattr_call (int fd, const char* xattr, const bool& debug)
     {
         if (debug) {
-            std::fprintf(this->m_fd, "Test fgetxattr call (%d, %s)\n", fd, xattr);
+            std::fprintf (this->m_fd, "Test fgetxattr call (%d, %s)\n", fd, xattr);
         }
 
         // use static buffer size
@@ -263,7 +254,8 @@ public:
      * @param debug
      * @return
      */
-    ssize_t test_setxattr_call (const char* path, const char* xattr, const char* value, const bool& debug)
+    ssize_t
+    test_setxattr_call (const char* path, const char* xattr, const char* value, const bool& debug)
     {
         if (debug) {
             std::fprintf (this->m_fd, "Test setxattr call (%s, %s, %s)\n", path, xattr, value);
@@ -280,7 +272,9 @@ public:
 
         // validate return_value
         if (return_value == -1) {
-            std::fprintf (this->m_err, "Error while setting attribute (%s)\n", std::strerror(errno));
+            std::fprintf (this->m_err,
+                "Error while setting attribute (%s)\n",
+                std::strerror (errno));
         }
 
         return return_value;
@@ -294,7 +288,8 @@ public:
      * @param debug
      * @return
      */
-    int test_lsetxattr_call (const char* path, const char* xattr, const char* value, const bool& debug)
+    int
+    test_lsetxattr_call (const char* path, const char* xattr, const char* value, const bool& debug)
     {
         if (debug) {
             std::fprintf (this->m_fd, "Test lsetxattr call (%s, %s, %s)\n", path, xattr, value);
@@ -308,7 +303,9 @@ public:
 
         // validate return_value
         if (return_value == -1) {
-            std::fprintf (this->m_err, "Error while setting attribute (%s)\n", std::strerror (errno));
+            std::fprintf (this->m_err,
+                "Error while setting attribute (%s)\n",
+                std::strerror (errno));
         }
 
         return return_value;
@@ -352,7 +349,7 @@ public:
     int test_listxattr (const char* path, const bool& debug)
     {
         if (debug) {
-            std::fprintf(this->m_fd, "Test listxattr call (%s)\n", path);
+            std::fprintf (this->m_fd, "Test listxattr call (%s)\n", path);
         }
 
         ssize_t buflen, keylen;
@@ -399,15 +396,8 @@ public:
         // loop over the list of zero terminated strings with the attribute keys
         if (debug) {
             this->print_attribute_keys (buf, key, buflen, keylen);
-//            key = buf;
-//            std::fprintf (this->m_fd, "Skipping over list elements ...\n");
-//            while (buflen > 0) {
-//                std::fprintf (this->m_fd, "\t%s\n", key);
-//                keylen = static_cast<ssize_t>(std::strlen(key)) + 1;
-//                buflen -= keylen;
-//                key += keylen;
-//            }
         }
+
         delete[] buf;
         return EXIT_SUCCESS;
     }
@@ -421,11 +411,11 @@ public:
     int test_llistxattr (const char* path, const bool& debug)
     {
         if (debug) {
-            std::fprintf(this->m_fd, "Test llistxattr call (%s)\n", path);
+            std::fprintf (this->m_fd, "Test llistxattr call (%s)\n", path);
         }
 
         ssize_t buflen = 0, keylen;
-        char *buf, *key;
+        char *buf, *key = nullptr;
 
         // determine the length of the buffer needed
 #if defined(__unix__) || defined(__linux__)
@@ -461,15 +451,9 @@ public:
 
         // loop over the list of zero terminated strings with the attribute keys
         if (debug) {
-            key = buf;
-            std::fprintf (this->m_fd, "Skipping over list elements ...\n");
-            while (buflen > 0) {
-                std::fprintf (this->m_fd, "\t%s\n", key);
-                keylen = static_cast<ssize_t>(std::strlen(key)) + 1;
-                buflen -= keylen;
-                key += keylen;
-            }
+            this->print_attribute_keys (buf, key, buflen, keylen);
         }
+
         delete[] buf;
         return EXIT_SUCCESS;
     }
@@ -483,11 +467,11 @@ public:
     int test_flistxattr (int fd, const bool& debug)
     {
         if (debug) {
-            std::fprintf(this->m_fd, "Test flistxattr call (%d)\n", fd);
+            std::fprintf (this->m_fd, "Test flistxattr call (%d)\n", fd);
         }
 
         ssize_t buflen, keylen;
-        char *buf, *key;
+        char *buf, *key = nullptr;
 
         // determine the length of the buffer needed
         // verify if the test is running on an Apple device and use the respective xattr calls
@@ -529,15 +513,9 @@ public:
 
         // loop over the list of zero terminated strings with the attribute keys
         if (debug) {
-            key = buf;
-            std::fprintf (this->m_fd, "Skipping over list elements ...\n");
-            while (buflen > 0) {
-                std::fprintf (this->m_fd, "\t%s\n", key);
-                keylen = static_cast<ssize_t>(std::strlen(key)) + 1;
-                buflen -= keylen;
-                key += keylen;
-            }
+            this->print_attribute_keys (buf, key, buflen, keylen);
         }
+
         delete[] buf;
         return EXIT_SUCCESS;
     }
@@ -548,9 +526,11 @@ public:
      * @param name
      * @return
      */
-    int test_removexattr (const char* path, const char* name)
+    int test_removexattr (const char* path, const char* name, const bool& debug)
     {
-        std::cout << "Test removexattr call (" << path << ", " << name << ")\n";
+        if (debug) {
+            std::fprintf (this->m_fd, "Test removexattr call (%s, %s)\n", path, name);
+        }
 
         int return_value;
         // remove extended attribute value to a given file
@@ -563,7 +543,9 @@ public:
 
         // validate return_value
         if (return_value != 0) {
-            std::cerr << "Error while removing attribute (" << errno << ")\n";
+            std::fprintf (this->m_err,
+                "Error while removing attribute (%s)\n",
+                std::strerror (errno));
         }
 
         return return_value;
@@ -575,9 +557,11 @@ public:
      * @param name
      * @return
      */
-    int test_lremovexattr (const char* path, const char* name)
+    int test_lremovexattr (const char* path, const char* name, const bool& debug)
     {
-        std::cout << "Test lremovexattr call (" << path << ", " << name << ")\n";
+        if (debug) {
+            std::fprintf (this->m_fd, "Test lremovexattr call (%s, %s)\n", path, name);
+        }
 
         int return_value = -1;
         // remove extended attribute value to a given file
@@ -588,7 +572,9 @@ public:
 
         // validate return_value
         if (return_value != 0) {
-            std::cerr << "Error while removing attribute (" << errno << ")\n";
+            std::fprintf (this->m_err,
+                "Error while removing attribute (%s)\n",
+                std::strerror (errno));
         }
 
         return return_value;
@@ -598,11 +584,14 @@ public:
      * test_fremovexattr:
      * @param path
      * @param name
+     * @param debug
      * @return
      */
-    int test_fremovexattr (int fd, const char* name)
+    int test_fremovexattr (int fd, const char* name, const bool& debug)
     {
-        std::cout << "Test fremovexattr call (" << fd << ", " << name << ")\n";
+        if (debug) {
+            std::fprintf (this->m_fd, "Test fremovexattr call (%d, %s)\n", fd, name);
+        }
 
         int return_value;
         // remove extended attribute value to a given file
@@ -615,67 +604,83 @@ public:
 
         // validate return_value
         if (return_value != 0) {
-            std::cerr << "Error while removing attribute (" << errno << ")\n";
+            std::fprintf (this->m_err,
+                "Error while removing attribute (%s)\n",
+                std::strerror (errno));
         }
 
         return return_value;
     }
 
+public:
+    ExtendedAttributesCallsTest () = default;
+
     /**
-     * test_ext_attributes:
+     * ExtendedAttributesCallsTest explict constructor.
+     * @param fd Pointer to a file descriptor.
+     */
+    explicit ExtendedAttributesCallsTest (FILE* fd) : m_fd { fd }
+    { }
+
+    /**
+     * simple_ext_attributes_test:
      * @param path
      * @param xattr
      * @param value
+     * @param debug
      */
-    void test_ext_attributes (const std::string& path,
+    void simple_ext_attributes_test (const std::string& path,
         const std::string& xattr,
         const std::string& value,
         const bool& debug)
     {
-        int return_value = test_setxattr_call (path.data (), xattr.data (), value.data (), debug);
-        std::cout << "setxattr (" << return_value << ")\n";
+        ssize_t return_value
+            = this->test_setxattr_call (path.data (), xattr.data (), value.data (), debug);
+        std::fprintf (this->m_fd, "setxattr (%ld)\n", return_value);
 
-        return_value = test_listxattr (path.data (), debug);
-        std::cout << "listxattr (" << return_value << ")\n";
+        return_value = this->test_listxattr (path.data (), debug);
+        std::fprintf (this->m_fd, "listxattr (%ld)\n", return_value);
 
-        return_value = test_getxattr_call (path.data (), xattr.data (), debug);
-        std::cout << "getxattr (" << return_value << ")\n";
+        return_value = this->test_getxattr_call (path.data (), xattr.data (), debug);
+        std::fprintf (this->m_fd, "getxattr (%ld)\n", return_value);
 
-        return_value = test_removexattr (path.data (), xattr.data ());
-        std::cout << "removexattr (" << return_value << ")\n";
+        return_value = this->test_removexattr (path.data (), xattr.data (), debug);
+        std::fprintf (this->m_fd, "removexattr (%ld)\n", return_value);
     }
 
     /**
-     * test_lext_attributes:
+     * simple_lext_attributes_test:
      * @param path
      * @param xattr
      * @param value
      */
-    void test_lext_attributes (const std::string& path,
+    void simple_lext_attributes_test (const std::string& path,
         const std::string& xattr,
         const std::string& value,
         const bool& debug)
     {
-        int return_value = test_lsetxattr_call (path.data (), xattr.data (), value.data (), debug);
-        std::cout << "lsetxattr (" << return_value << ")\n";
+        ssize_t return_value
+            = this->test_lsetxattr_call (path.data (), xattr.data (), value.data (), debug);
+        std::fprintf (this->m_fd, "lsetxattr (%ld)\n", return_value);
 
-        return_value = test_llistxattr (path.data (), debug);
-        std::cout << "llistxattr (" << return_value << ")\n";
+        return_value = this->test_llistxattr (path.data (), debug);
+        std::fprintf (this->m_fd, "llistxattr (%ld)\n", return_value);
 
-        return_value = test_lgetxattr_call (path.data (), xattr.data (), debug);
-        std::cout << "lgetxattr (" << return_value << ")\n";
+        return_value = this->test_lgetxattr_call (path.data (), xattr.data (), debug);
+        std::fprintf (this->m_fd, "lgetxattr (%ld)\n", return_value);
 
-        return_value = test_lremovexattr (path.data (), xattr.data ());
-        std::cout << "lremovexattr (" << return_value << ")\n";
+        return_value = this->test_lremovexattr (path.data (), xattr.data (), debug);
+        std::fprintf (this->m_fd, "lremovexattr (%ld)\n", return_value);
     }
 
     /**
-     * test_fext_attributes:
+     * simple_fext_attributes_test:
      * @param path
      * @param xattr
      * @param value
+     * @param debug
      */
-    void test_fext_attributes (const std::string& path,
+    void simple_fext_attributes_test (const std::string& path,
         const std::string& xattr,
         const std::string& value,
         const bool& debug)
@@ -686,17 +691,17 @@ public:
             return;
         }
 
-        int return_value = test_fsetxattr_call (fd, xattr.data (), value.data (), debug);
-        std::cout << "fsetxattr (" << return_value << ")\n";
+        ssize_t return_value = this->test_fsetxattr_call (fd, xattr.data (), value.data (), debug);
+        std::fprintf (this->m_fd, "fsetxattr (%ld)\n", return_value);
 
-        return_value = test_flistxattr (fd, debug);
-        std::cout << "flistxattr (" << return_value << ")\n";
+        return_value = this->test_flistxattr (fd, debug);
+        std::fprintf (this->m_fd, "flistxattr (%ld)\n", return_value);
 
-        return_value = test_fgetxattr_call (fd, xattr.data (), debug);
-        std::cout << "fgetxattr (" << return_value << ")\n";
+        return_value = this->test_fgetxattr_call (fd, xattr.data (), debug);
+        std::fprintf (this->m_fd, "fgetxattr (%ld)\n", return_value);
 
-        return_value = test_fremovexattr (fd, xattr.data ());
-        std::cout << "fremovexattr (" << return_value << ")\n";
+        return_value = this->test_fremovexattr (fd, xattr.data (), debug);
+        std::fprintf (this->m_fd, "fremovexattr (%ld)\n", return_value);
 
         ::close (fd);
     }
@@ -708,22 +713,23 @@ public:
      * @param xattr
      * @param value
      */
-    void select_extended_attributes_test (int type,
+    void simple_extended_attributes_test (int type,
         const std::string& path,
         const std::string& xattr,
-        const std::string& value, const bool& debug)
+        const std::string& value,
+        const bool& debug)
     {
         switch (type) {
             case 0:
-                test_ext_attributes (path, xattr, value, debug);
+                this->simple_ext_attributes_test (path, xattr, value, debug);
                 break;
 
             case 1:
-                test_lext_attributes (path, xattr, value, debug);
+                this->simple_lext_attributes_test (path, xattr, value, debug);
                 break;
 
             case 2:
-                test_fext_attributes (path, xattr, value, debug);
+                this->simple_fext_attributes_test (path, xattr, value, debug);
                 break;
 
             default:
@@ -751,8 +757,8 @@ int main (int argc, char** argv)
         std::string xattr = "user.tmp";
         std::string value = "xyz-value";
 
-        test.select_extended_attributes_test (type, path, xattr, value, debug_detailed_messages);
-    } else {
-        test.test_listxattr (argv[1], debug_detailed_messages);
+        test.simple_extended_attributes_test (type, path, xattr, value, debug_detailed_messages);
     }
+
+    return 0;
 }
