@@ -10,6 +10,8 @@
 #include <sys/types.h>
 #include <sys/xattr.h>
 #include <unistd.h>
+#include <vector>
+#include <thread>
 
 class ExtendedAttributesCallsTest {
 
@@ -87,6 +89,13 @@ private:
         return 0;
     }
 
+    /**
+     * print_attribute_keys:
+     * @param buf
+     * @param key
+     * @param buflen
+     * @param keylen
+     */
     void print_attribute_keys (char* buf, char* key, ssize_t& buflen, ssize_t& keylen)
     {
         key = buf;
@@ -736,6 +745,44 @@ public:
                 break;
         }
     }
+
+
+    void set_get_list_ext_attributes_test (const int workers, const int iterations, const char* dir_path, const int num_files, const int initial_file_index)
+    {
+        // create list of files
+        this->create_file_pool (dir_path, num_files, initial_file_index);
+
+        auto func = [this](int iterations, const char* dir_path, int num_files, int initial_file_index) {
+            // implement loop for setting, getting, and listing extended attributes of a file
+            for (int i = 0; i < iterations; i++) {
+                // pick random file
+                int file_index = static_cast<int>((random() % num_files)) + initial_file_index;
+                std::string file_path =
+                        std::string(dir_path) + "/file-" + std::to_string(file_index);
+
+                this->simple_extended_attributes_test(0, file_path, "user.test", "test", false);
+            }
+        };
+
+        // spawn N threads to perform this task
+        std::vector<std::thread> threads;
+        threads.reserve(workers);
+        for (int i = 0; i < workers; i++) {
+            threads.emplace_back(func, iterations, dir_path, num_files, initial_file_index);
+        }
+
+        // wait for all threads to finish
+        for (int i = 0; i < workers; i++) {
+            threads[i].join();
+        }
+        
+        // remove list of files
+        this->remove_file_pool (dir_path, num_files, initial_file_index);
+    }
+
+    void set_get_list_lext_attributes_test ();
+    void set_get_list_fext_attributes_test ();
+
 };
 
 /**
@@ -745,7 +792,7 @@ public:
  *  fsetxattr_fgetxattr_flistxattr_test using a loop to control the amount of each operation, or
  *  even all operations, using PAIO.
  */
-int main (int argc, char** argv)
+int main (int argc, [[maybe_unused]] char** argv)
 {
     ExtendedAttributesCallsTest test {};
 
