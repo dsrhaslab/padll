@@ -271,9 +271,9 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_pwrite64 (int fd,
     off64_t offset)
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-pwrite64 (" + std::to_string (fd) + ")");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-pwrite64 (" + std::to_string (fd) + ")");
+    // }
 
     // hook POSIX pwrite64 operation to m_data_operations.m_pwrite64
     this->m_dlsym_hook.hook_posix_pwrite64 (m_data_operations.m_pwrite64);

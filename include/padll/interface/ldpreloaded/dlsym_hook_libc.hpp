@@ -6,6 +6,7 @@
 #ifndef PADLL_DLSYM_HOOK_LIBC_HPP
 #define PADLL_DLSYM_HOOK_LIBC_HPP
 
+#include <mutex>
 #include <padll/library_headers/libc_headers.hpp>
 #include <padll/options/options.hpp>
 #include <utility>
