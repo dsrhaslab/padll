@@ -12,7 +12,7 @@ MountPointEntry::MountPointEntry () = default;
 
 // MountPointEntry parameterized constructor.
 MountPointEntry::MountPointEntry (std::string path, const MountPoint& mount_point) :
-    m_path { std::move (path) },
+    m_path { path },
     m_mount_point { mount_point }
 { }
 

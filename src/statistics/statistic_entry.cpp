@@ -11,7 +11,7 @@ namespace padll::stats {
 StatisticEntry::StatisticEntry () = default;
 
 // StatisticEntry parameterized constructor.
-StatisticEntry::StatisticEntry (std::string name) : m_entry_name { std::move (name) }
+StatisticEntry::StatisticEntry (std::string name) : m_entry_name { name }
 { }
 
 StatisticEntry::StatisticEntry (const StatisticEntry& entry) :

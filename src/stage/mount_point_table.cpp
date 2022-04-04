@@ -18,7 +18,7 @@ MountPointTable::MountPointTable () : m_logging { std::make_shared<Log> () }
 
 // MountPointTable parameterized constructor.
 MountPointTable::MountPointTable (std::shared_ptr<Log> log_ptr, const std::string& value) :
-    m_logging { std::move (log_ptr) }
+    m_logging { log_ptr }
 {
     // logging message
     this->m_logging->log_info ("MountPointTable parameterized constructor: " + value + " ("

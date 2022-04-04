@@ -76,7 +76,7 @@ public:
      */
     DlsymHookLibc (const std::string& library_path, std::shared_ptr<Log> log_ptr) :
         m_lib_name { library_path },
-        m_logger_ptr { std::move (log_ptr) }
+        m_logger_ptr { log_ptr }
     {
         // validate if 'lib' is valid
         if (library_path.empty ()) {

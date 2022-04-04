@@ -12,7 +12,7 @@ Statistics::Statistics () = default;
 
 // Statistics parameterized constructor.
 Statistics::Statistics (std::string identifier, const OperationType& operation_type) :
-    m_stats_identifier { std::move (identifier) }
+    m_stats_identifier { identifier }
 {
     this->initialize (operation_type);
 }
