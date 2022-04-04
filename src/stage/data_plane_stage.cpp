@@ -72,8 +72,8 @@ void DataPlaneStage::enforce_request (const uint32_t& workflow_id,
             operation_size,
             1);
 
-        // submit request through posix_noop
-        this->m_posix_instance->posix_noop (nullptr, operation_size, context_obj);
+        // submit request through posix_base
+        this->m_posix_instance->posix_base (nullptr, operation_size, context_obj);
     }
 }
 

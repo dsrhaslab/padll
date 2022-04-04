@@ -88,6 +88,9 @@ public:
         this->initialize ();
     }
 
+    /**
+     * DlsymHookLibc default destructor.
+     */
     ~DlsymHookLibc ()
     {
         std::unique_lock<std::mutex> lock (this->m_lock);
