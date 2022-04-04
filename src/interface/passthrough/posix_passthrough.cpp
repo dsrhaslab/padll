@@ -13,7 +13,7 @@
 namespace padll::interface::passthrough {
 
 // PosixPassthrough default constructor.
-PosixPassthrough::PosixPassthrough () : m_logger_ptr { std::make_shared<Log> () }
+PosixPassthrough::PosixPassthrough ()
 {
     std::printf ("PosixPassthrough default constructor.\n");
     // initialize library handle pointer.
@@ -21,18 +21,8 @@ PosixPassthrough::PosixPassthrough () : m_logger_ptr { std::make_shared<Log> () 
 }
 
 // PosixPassthrough explicit parameterized constructor.
-PosixPassthrough::PosixPassthrough (std::shared_ptr<Log> log_ptr) :
-    m_logger_ptr { log_ptr }
-{
-    std::printf ("PosixPassthrough explicit constructor.\n");
-    // initialize library handle pointer.
-    this->initialize ();
-}
-
-// PosixPassthrough explicit parameterized constructor.
-PosixPassthrough::PosixPassthrough (std::string lib_name, std::shared_ptr<Log> log_ptr) :
-    m_lib_name { lib_name },
-    m_logger_ptr { log_ptr }
+PosixPassthrough::PosixPassthrough (std::string lib_name) :
+    m_lib_name { lib_name }
 {
     std::printf ("PosixPassthrough parameterized constructor.\n");
     // initialize library handle pointer.
@@ -53,8 +43,7 @@ PosixPassthrough::~PosixPassthrough ()
 
         // validate result from dlclose
         if (dlclose_result != 0) {
-            this->m_logger_ptr->log_error ("PosixPassthrough::Error while closing dynamic link ("
-                + std::to_string (dlclose_result) + ").");
+            std::printf ("PosixPassthrough::Error while closing dynamic link (%d).\n", dlclose_result);
         }
     }
 
@@ -100,8 +89,7 @@ void PosixPassthrough::initialize ()
 
     // validate library pointer
     if (!open_lib_handle) {
-        this->m_logger_ptr->log_error (
-            "PosixPassthrough::Error while dlopen'ing " + this->m_lib_name + ".");
+        std::printf ("PosixPassthrough::Error while dlopen'ing %s.\n", this->m_lib_name.c_str());
         return;
     }
 

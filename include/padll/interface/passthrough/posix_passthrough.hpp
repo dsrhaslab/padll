@@ -10,14 +10,12 @@
 #include <padll/library_headers/libc_headers.hpp>
 #include <padll/options/options.hpp>
 #include <padll/statistics/statistics.hpp>
-#include <padll/utils/log.hpp>
 #include <string>
 #include <unistd.h>
 
 using namespace padll::headers;
 using namespace padll::options;
 using namespace padll::stats;
-using namespace padll::utils::log;
 
 namespace padll::interface::passthrough {
 
@@ -27,7 +25,6 @@ private:
     std::mutex m_lock;
     std::string m_lib_name { option_library_name };
     void* m_lib_handle { nullptr };
-    std::shared_ptr<Log> m_logger_ptr { nullptr };
     std::atomic<bool> m_collect { option_default_statistic_collection };
     // Statistics m_metadata_stats { "metadata", OperationType::metadata_calls };
     Statistics m_data_stats { "data", OperationType::data_calls };
@@ -74,15 +71,10 @@ public:
     PosixPassthrough ();
 
     /**
-     * PosixPassthrough explicit constructor.
-     */
-    explicit PosixPassthrough (std::shared_ptr<Log> log_ptr);
-
-    /**
      * PosixPassthrough parameterized constructor.
      * @param lib
      */
-    PosixPassthrough (std::string lib, std::shared_ptr<Log> log_ptr);
+    explicit PosixPassthrough (std::string lib);
 
     /**
      * PosixPassthrough default destructor.

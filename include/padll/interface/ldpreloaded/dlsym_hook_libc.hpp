@@ -8,12 +8,10 @@
 
 #include <padll/library_headers/libc_headers.hpp>
 #include <padll/options/options.hpp>
-#include <padll/utils/log.hpp>
 #include <utility>
 
 using namespace padll::headers;
 using namespace padll::options;
-using namespace padll::utils::log;
 
 namespace padll::interface::ldpreloaded {
 
@@ -23,7 +21,6 @@ private:
     std::mutex m_lock;
     std::string m_lib_name { option_library_name };
     void* m_lib_handle { nullptr };
-    std::shared_ptr<Log> m_logger_ptr {};
 
     /**
      *  initialize:
@@ -35,7 +32,7 @@ private:
 
         // validate library pointer
         if (!open_lib_handle) {
-            this->m_logger_ptr->log_error ("Error while dlopen'ing " + this->m_lib_name + ".");
+            std::printf ("Error while dlopen'ing %s.\n", this->m_lib_name.c_str());
             return;
         }
     }
@@ -63,7 +60,7 @@ public:
     /**
      * DlsymHookLibc default constructor.
      */
-    DlsymHookLibc () : m_logger_ptr { std::make_shared<Log> () }
+    DlsymHookLibc ()
     {
         // initialize library handle pointer
         this->initialize ();
@@ -74,13 +71,12 @@ public:
      * @param library_path
      * TODO: validate move operation of the Log
      */
-    DlsymHookLibc (const std::string& library_path, std::shared_ptr<Log> log_ptr) :
-        m_lib_name { library_path },
-        m_logger_ptr { log_ptr }
+    DlsymHookLibc (const std::string& library_path) :
+        m_lib_name { library_path }
     {
         // validate if 'lib' is valid
         if (library_path.empty ()) {
-            this->m_logger_ptr->log_error ("Library path not valid.");
+            std::printf ("Library path not valid.\n");
             return;
         }
 
@@ -106,8 +102,7 @@ public:
 
             // validate result from dlclose
             if (dlclose_result != 0) {
-                this->m_logger_ptr->log_error (
-                    "Error while closing dynamic link (" + std::to_string (dlclose_result) + ").");
+                std::printf ("Error while closing dynamic link (%d).\n", dlclose_result);
             }
         }
     }

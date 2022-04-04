@@ -7,12 +7,10 @@
 #define PADLL_DATA_PLANE_STAGE_H
 
 #include <padll/options/options.hpp>
-#include <padll/utils/log.hpp>
 #include <paio/interface/posix_layer.hpp>
 #include <paio/stage/paio_stage.hpp>
 
 using namespace padll::options;
-using namespace padll::utils::log;
 
 namespace padll::stage {
 
@@ -24,7 +22,6 @@ private:
     std::shared_ptr<paio::PaioStage> m_stage { nullptr };
     std::unique_ptr<paio::PosixLayer> m_posix_instance { nullptr };
     // const long m_workflow_id { 1000 };
-    std::shared_ptr<Log> m_logging { nullptr };
     const bool m_enforce { false }; // todo: temporary
 
     /**
@@ -37,12 +34,6 @@ public:
      * DataPlaneStage default constructor.
      */
     DataPlaneStage ();
-
-    /**
-     * DataPlaneStage (explicit) parameterized constructor.
-     * @param logging
-     */
-    explicit DataPlaneStage (std::shared_ptr<Log> logging);
 
     /**
      * DataPlaneStage default destructor.

@@ -4,6 +4,7 @@
  **/
 
 #include <cstdio>
+#include <fcntl.h>
 #include <iostream>
 #include <padll/stage/mount_point_table.hpp>
 #include <thread>
@@ -440,7 +441,7 @@ int main (int argc, char** argv)
     }
 
     tests::MountPointDifferentiationTest test { fd };
-    MountPointTable mount_point_table { std::make_shared<Log> (), "test" };
+    MountPointTable mount_point_table { "test" };
     int num_threads = 1;
     int num_files = 100;
     bool use_fd = true;

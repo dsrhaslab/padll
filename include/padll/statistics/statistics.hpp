@@ -11,7 +11,6 @@
 #include <padll/library_headers/libc_enums.hpp>
 #include <padll/statistics/statistic_entry.hpp>
 #include <padll/thrid_party/tabulate.hpp>
-#include <padll/utils/log.hpp>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>

@@ -8,16 +8,14 @@
 
 using namespace padll::headers;
 using namespace padll::stats;
-using namespace padll::utils::log;
 
 namespace padll::tests {
 
 class StatisticsTest {
-private:
-    Log m_logger;
+// private:
 
 public:
-    StatisticsTest () : m_logger { true, true, "/tmp/padll-info.log" }
+    StatisticsTest ()
     { }
 
     /**
@@ -26,10 +24,10 @@ public:
     void test_statistics_constructors ()
     {
         Statistics stats {};
-        this->m_logger.log_info (stats.to_string ());
+        std::printf ("%s\n", stats.to_string ().c_str ());
 
         Statistics stats_param { "stats-parameterized-test", OperationType::metadata_calls };
-        this->m_logger.log_info (stats_param.to_string ());
+        std::printf ("%s\n", stats_param.to_string ().c_str ());
     }
 
     /**

@@ -20,7 +20,6 @@
 using namespace padll::headers;
 using namespace padll::stage;
 using namespace padll::stats;
-using namespace padll::utils::log;
 
 namespace padll::interface::ldpreloaded {
 
@@ -42,7 +41,6 @@ private:
     Statistics m_data_stats { "data", OperationType::data_calls };
     Statistics m_dir_stats { "directory", OperationType::directory_calls };
     Statistics m_ext_attr_stats { "ext-attr", OperationType::ext_attr_calls };
-    std::shared_ptr<Log> m_logger_ptr { nullptr };
     DlsymHookLibc m_dlsym_hook {};
 
     // data plane stage configurations
@@ -56,18 +54,12 @@ public:
     LdPreloadedPosix ();
 
     /**
-     * LdPreloadedPosix default constructor.
-     */
-    explicit LdPreloadedPosix (const std::shared_ptr<Log>& log_ptr);
-
-    /**
      * LdPreloadedPosix parameterized constructor.
      * @param lib String that respects to the library that will be intercepted.
      * @param stat_collection Boolean that defines if statistic collection is enabled or disabled.
      */
     LdPreloadedPosix (const std::string& lib,
-        const bool& stat_collection,
-        const std::shared_ptr<Log>& log_ptr);
+        const bool& stat_collection);
 
     /**
      * LdPreloadedPosix default destructor.

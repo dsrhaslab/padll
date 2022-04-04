@@ -70,7 +70,7 @@ target_sources(
     ${PROJECT_SOURCE_DIR}/include/padll/stage/mount_point_table.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/statistics/statistic_entry.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/statistics/statistics.hpp
-    ${PROJECT_SOURCE_DIR}/include/padll/utils/log.hpp
+    # ${PROJECT_SOURCE_DIR}/include/padll/utils/log.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/thrid_party/enum.h
     ${PROJECT_SOURCE_DIR}/include/padll/thrid_party/tabulate.hpp
 )
@@ -86,7 +86,7 @@ target_sources(
         src/stage/mount_point_table.cpp
         src/statistics/statistic_entry.cpp
         src/statistics/statistics.cpp
-        src/utils/log.cpp
+        # src/utils/log.cpp
 )
 
 # ---------------------------------------------------------------------------- #

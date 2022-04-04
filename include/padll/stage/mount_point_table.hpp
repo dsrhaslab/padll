@@ -10,13 +10,10 @@
 #include <map>
 #include <padll/options/options.hpp>
 #include <padll/stage/mount_point_entry.hpp>
-#include <padll/utils/log.hpp>
 #include <shared_mutex>
 #include <sstream>
 #include <unordered_map>
 #include <vector>
-
-using namespace padll::utils::log;
 
 namespace padll::stage {
 
@@ -46,7 +43,7 @@ private:
     std::unordered_map<int, std::unique_ptr<MountPointEntry>> m_file_descriptors_table {};
     std::unordered_map<FILE*, std::unique_ptr<MountPointEntry>> m_file_ptr_table {};
     std::map<MountPoint, std::vector<uint32_t>> m_mount_point_workflows {};
-    std::shared_ptr<Log> m_logging {};
+
 
     /**
      * initialize:
@@ -85,7 +82,7 @@ public:
      * @param value
      * Fixme: remove value parameter; only for debugging purposes.
      */
-    [[maybe_unused]] MountPointTable (std::shared_ptr<Log> log_ptr, const std::string& value);
+    [[maybe_unused]] MountPointTable (const std::string& value);
 
     /**
      * MountPointTable default destructor.

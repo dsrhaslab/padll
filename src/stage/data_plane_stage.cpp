@@ -10,25 +10,13 @@ namespace padll::stage {
 // TODO: Implement the DataPlaneStage constructor
 DataPlaneStage::DataPlaneStage ()
 {
-    if (this->m_logging != nullptr) {
-        this->m_logging->log_debug ("DataPlaneStage default constructor.");
-    }
-}
-
-// DataPlaneStage (explicit) parameterized constructor.
-DataPlaneStage::DataPlaneStage (std::shared_ptr<Log> logging) : m_logging { logging }
-{
-    if (this->m_logging != nullptr) {
-        this->m_logging->log_debug ("DataPlaneStage explicit constructor.");
-    }
+    std::printf ("DataPlaneStage default constructor.\n");
 }
 
 // TODO: Implement the DataPlaneStage destructor
 DataPlaneStage::~DataPlaneStage ()
 {
-    if (this->m_logging != nullptr) {
-        this->m_logging->log_debug ("DataPlaneStage destructor.");
-    }
+    std::printf ("DataPlaneStage destructor.\n");
 }
 
 // initialize_stage call. (...)
