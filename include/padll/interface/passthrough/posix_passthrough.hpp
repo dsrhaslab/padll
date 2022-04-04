@@ -6,6 +6,7 @@
 #ifndef PADLL_POSIX_PASSTHROUGH_H
 #define PADLL_POSIX_PASSTHROUGH_H
 
+#include <atomic>
 #include <mutex>
 #include <padll/library_headers/libc_headers.hpp>
 #include <padll/options/options.hpp>

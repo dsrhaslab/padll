@@ -4,6 +4,7 @@
  **/
 
 #include <cstdio>
+#include <cstring>
 #include <fcntl.h>
 #include <iostream>
 #include <padll/stage/mount_point_table.hpp>
