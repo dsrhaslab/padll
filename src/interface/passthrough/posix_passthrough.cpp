@@ -54,6 +54,24 @@ PosixPassthrough::~PosixPassthrough ()
                 + std::to_string (dlclose_result) + ").");
         }
     }
+
+    // print debug messages
+    this->m_logger_ptr->log_info ("PosixPassthrough default destructor.");
+    this->m_logger_ptr->log_debug (this->to_string ());
+}
+
+// to_string call. (...)
+std::string PosixPassthrough::to_string ()
+{
+    auto pid = ::getpid ();
+    auto ppid = ::getppid ();
+    std::stringstream stream;
+
+    stream << "PosixPassthrough::Data statistics (" << pid << ", " << ppid << ")\n";
+    stream << "-----------------------------------------------------------\n";
+    stream << this->m_data_stats.to_string () << "\n";
+
+    return stream.str ();
 }
 
 // dlopen_library_handle call. (...)
@@ -84,29 +102,101 @@ void PosixPassthrough::initialize ()
     }
 }
 
+// set_statistic_collection call. (...)
+void PosixPassthrough::set_statistic_collection (bool value)
+{
+    this->m_collect.store (value);
+}
+
+// get_statistic_entry call.
+StatisticEntry PosixPassthrough::get_statistic_entry (const OperationType& operation_type,
+    const int& operation_entry)
+{
+    switch (operation_type) {
+            // case OperationType::metadata_calls:
+            //     return this->m_metadata_stats.get_statistic_entry (operation_entry);
+
+        case OperationType::data_calls:
+            return this->m_data_stats.get_statistic_entry (operation_entry);
+
+            // case OperationType::directory_calls:
+            //     return this->m_dir_stats.get_statistic_entry (operation_entry);
+
+            // case OperationType::ext_attr_calls:
+            //     return this->m_ext_attr_stats.get_statistic_entry (operation_entry);
+
+        default:
+            return StatisticEntry {};
+    }
+}
+
 // passthrough_posix_read call. (...)
 ssize_t PosixPassthrough::passthrough_posix_read (int fd, void* buf, size_t counter)
 {
-    return ((libc_read_t)dlsym (RTLD_NEXT, "read")) (fd, buf, counter);
+    ssize_t result = ((libc_read_t)dlsym (RTLD_NEXT, "read")) (fd, buf, counter);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result >= 0) {
+            this->m_data_stats.update_statistic_entry (static_cast<int> (Data::read), 1, result);
+        } else {
+            this->m_data_stats.update_statistic_entry (static_cast<int> (Data::read), 1, 0, 1);
+        }
+    }
+
+    return result;
 }
 
 // passthrough_posix_write call. (...)
 ssize_t PosixPassthrough::passthrough_posix_write (int fd, const void* buf, size_t counter)
 {
-    return ((libc_write_t)dlsym (RTLD_NEXT, "write")) (fd, buf, counter);
+    ssize_t result = ((libc_write_t)dlsym (RTLD_NEXT, "write")) (fd, buf, counter);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result >= 0) {
+            this->m_data_stats.update_statistic_entry (static_cast<int> (Data::write), 1, result);
+        } else {
+            this->m_data_stats.update_statistic_entry (static_cast<int> (Data::write), 1, 0, 1);
+        }
+    }
+
+    return result;
 }
 
 // passthrough_posix_pread call. (...)
 ssize_t PosixPassthrough::passthrough_posix_pread (int fd, void* buf, size_t counter, off_t offset)
 {
-    return ((libc_pread_t)dlsym (RTLD_NEXT, "pread")) (fd, buf, counter, offset);
+    ssize_t result = ((libc_pread_t)dlsym (RTLD_NEXT, "pread")) (fd, buf, counter, offset);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result >= 0) {
+            this->m_data_stats.update_statistic_entry (static_cast<int> (Data::pread), 1, result);
+        } else {
+            this->m_data_stats.update_statistic_entry (static_cast<int> (Data::pread), 1, 0, 1);
+        }
+    }
+
+    return result;
 }
 
 // passthrough_posix_pwrite call. (...)
 ssize_t
 PosixPassthrough::passthrough_posix_pwrite (int fd, const void* buf, size_t counter, off_t offset)
 {
-    return ((libc_pwrite_t)dlsym (RTLD_NEXT, "pwrite")) (fd, buf, counter, offset);
+    ssize_t result = ((libc_pwrite_t)dlsym (RTLD_NEXT, "pwrite")) (fd, buf, counter, offset);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result >= 0) {
+            this->m_data_stats.update_statistic_entry (static_cast<int> (Data::pwrite), 1, result);
+        } else {
+            this->m_data_stats.update_statistic_entry (static_cast<int> (Data::pwrite), 1, 0, 1);
+        }
+    }
+
+    return result;
 }
 
 // passthrough_posix_pread64 call. (...)
@@ -114,7 +204,18 @@ PosixPassthrough::passthrough_posix_pwrite (int fd, const void* buf, size_t coun
 ssize_t
 PosixPassthrough::passthrough_posix_pread64 (int fd, void* buf, size_t counter, off64_t offset)
 {
-    return ((libc_pread64_t)dlsym (RTLD_NEXT, "pread64")) (fd, buf, counter, offset);
+    ssize_t result = ((libc_pread64_t)dlsym (RTLD_NEXT, "pread64")) (fd, buf, counter, offset);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result >= 0) {
+            this->m_data_stats.update_statistic_entry (static_cast<int> (Data::pread64), 1, result);
+        } else {
+            this->m_data_stats.update_statistic_entry (static_cast<int> (Data::pread64), 1, 0, 1);
+        }
+    }
+
+    return result;
 }
 #endif
 
@@ -125,7 +226,20 @@ ssize_t PosixPassthrough::passthrough_posix_pwrite64 (int fd,
     size_t counter,
     off64_t offset)
 {
-    return ((libc_pwrite64_t)dlsym (RTLD_NEXT, "pwrite64")) (fd, buf, counter, offset);
+    ssize_t result = ((libc_pwrite64_t)dlsym (RTLD_NEXT, "pwrite64")) (fd, buf, counter, offset);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result >= 0) {
+            this->m_data_stats.update_statistic_entry (static_cast<int> (Data::pwrite64),
+                1,
+                result);
+        } else {
+            this->m_data_stats.update_statistic_entry (static_cast<int> (Data::pwrite64), 1, 0, 1);
+        }
+    }
+
+    return result;
 }
 #endif
 

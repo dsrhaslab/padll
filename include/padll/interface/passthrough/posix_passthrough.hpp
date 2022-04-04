@@ -9,11 +9,14 @@
 #include <mutex>
 #include <padll/library_headers/libc_headers.hpp>
 #include <padll/options/options.hpp>
+#include <padll/statistics/statistics.hpp>
 #include <padll/utils/log.hpp>
 #include <string>
+#include <unistd.h>
 
 using namespace padll::headers;
 using namespace padll::options;
+using namespace padll::stats;
 using namespace padll::utils::log;
 
 namespace padll::interface::passthrough {
@@ -25,6 +28,11 @@ private:
     std::string m_lib_name { option_library_name };
     void* m_lib_handle { nullptr };
     std::shared_ptr<Log> m_logger_ptr { nullptr };
+    std::atomic<bool> m_collect { option_default_statistic_collection };
+    // Statistics m_metadata_stats { "metadata", OperationType::metadata_calls };
+    Statistics m_data_stats { "data", OperationType::data_calls };
+    // Statistics m_dir_stats { "directory", OperationType::directory_calls };
+    // Statistics m_ext_attr_stats { "ext-attr", OperationType::ext_attr_calls };
 
     /**
      * initialize:
@@ -36,6 +44,28 @@ private:
      * @return
      */
     bool dlopen_library_handle ();
+
+    /**
+     * get_statistic_entry:
+     * @param operation_type
+     * @param operation_entry
+     * @return
+     */
+    StatisticEntry get_statistic_entry (const OperationType& operation_type,
+        const int& operation_entry);
+
+    /**
+     * set_statistic_collection:
+     * @param value
+     * @return
+     */
+    void set_statistic_collection (bool value);
+
+    /**
+     * to_string:
+     * @return std::string
+     */
+    std::string to_string ();
 
 public:
     /**

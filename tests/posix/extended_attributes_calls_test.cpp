@@ -9,9 +9,9 @@
 #include <iostream>
 #include <sys/types.h>
 #include <sys/xattr.h>
+#include <thread>
 #include <unistd.h>
 #include <vector>
-#include <thread>
 
 class ExtendedAttributesCallsTest {
 
@@ -746,19 +746,27 @@ public:
         }
     }
 
-
-    void set_get_list_ext_attributes_test (const int type, const int workers, const int iterations, const char* dir_path, const int num_files, const int initial_file_index)
+    void set_get_list_ext_attributes_test (const int type,
+        const int workers,
+        const int iterations,
+        const char* dir_path,
+        const int num_files,
+        const int initial_file_index)
     {
         // create list of files
         this->create_file_pool (dir_path, num_files, initial_file_index);
 
-        auto func = [this](int type, int iterations, const char* dir_path, int num_files, int initial_file_index) {
+        auto func = [this] (int type,
+                        int iterations,
+                        const char* dir_path,
+                        int num_files,
+                        int initial_file_index) {
             // implement loop for setting, getting, and listing extended attributes of a file
             for (int i = 0; i < iterations; i++) {
                 // pick random file
-                int file_index = static_cast<int>((random() % num_files)) + initial_file_index;
-                std::string file_path =
-                        std::string(dir_path) + "/file-" + std::to_string(file_index);
+                int file_index = static_cast<int> ((random () % num_files)) + initial_file_index;
+                std::string file_path
+                    = std::string (dir_path) + "/file-" + std::to_string (file_index);
 
                 this->simple_extended_attributes_test (type, file_path, "user.test", "test", false);
             }
@@ -766,20 +774,19 @@ public:
 
         // spawn N threads to perform this task
         std::vector<std::thread> threads;
-        threads.reserve(workers);
+        threads.reserve (workers);
         for (int i = 0; i < workers; i++) {
-            threads.emplace_back(func, type, iterations, dir_path, num_files, initial_file_index);
+            threads.emplace_back (func, type, iterations, dir_path, num_files, initial_file_index);
         }
 
         // wait for all threads to finish
         for (int i = 0; i < workers; i++) {
-            threads[i].join();
+            threads[i].join ();
         }
 
         // remove list of files
         this->remove_file_pool (dir_path, num_files, initial_file_index);
     }
-
 };
 
 /**
@@ -808,7 +815,12 @@ int main (int argc, [[maybe_unused]] char** argv)
         int num_files = 10;
         int files_index = 0;
 
-        test.set_get_list_ext_attributes_test (0, workers, iterations, "/tmp/", num_files, files_index);
+        test.set_get_list_ext_attributes_test (0,
+            workers,
+            iterations,
+            "/tmp/",
+            num_files,
+            files_index);
     }
 
     return 0;

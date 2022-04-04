@@ -612,11 +612,11 @@ namespace variants {
                 return TX<T> ();
             }
 
-            inline TX<T> operator! () const
+            inline TX<T> operator!() const
             {
                 return TX<T> ();
             }
-            inline TX<T> operator~ () const
+            inline TX<T> operator~() const
             {
                 return TX<T> ();
             }
@@ -668,7 +668,7 @@ namespace variants {
             {
                 return false;
             }
-            inline bool operator< (T const&) const
+            inline bool operator<(T const&) const
             {
                 return false;
             }
@@ -1501,7 +1501,7 @@ namespace variants {
 
     // 19.7.9 monostate relational operators
 
-    inline variant_constexpr bool operator< (monostate, monostate) variant_noexcept
+    inline variant_constexpr bool operator<(monostate, monostate) variant_noexcept
     {
         return false;
     }
@@ -3382,7 +3382,7 @@ namespace variants {
         class T13,
         class T14,
         class T15>
-    inline bool operator< (
+    inline bool operator<(
         variant<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> const& v,
         variant<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> const& w)
     {
@@ -4814,12 +4814,12 @@ namespace optional_lite {
 
         // x.x.3.5, observers
 
-        optional_constexpr value_type const* operator-> () const
+        optional_constexpr value_type const* operator->() const
         {
             return assert (has_value ()), contained.value_ptr ();
         }
 
-        optional_constexpr14 value_type* operator-> ()
+        optional_constexpr14 value_type* operator->()
         {
             return assert (has_value ()), contained.value_ptr ();
         }
@@ -4988,7 +4988,7 @@ namespace optional_lite {
     }
 
     template<typename T, typename U>
-    inline optional_constexpr bool operator< (optional<T> const& x, optional<U> const& y)
+    inline optional_constexpr bool operator<(optional<T> const& x, optional<U> const& y)
     {
         return (!y) ? false : (!x) ? true : *x < *y;
     }
@@ -5042,14 +5042,14 @@ namespace optional_lite {
     }
 
     template<typename T>
-    inline optional_constexpr bool operator< (optional<T> const& /*unused*/,
+    inline optional_constexpr bool operator<(optional<T> const& /*unused*/,
         nullopt_t /*unused*/) optional_noexcept
     {
         return false;
     }
 
     template<typename T>
-    inline optional_constexpr bool operator< (nullopt_t /*unused*/,
+    inline optional_constexpr bool operator<(nullopt_t /*unused*/,
         optional<T> const& x) optional_noexcept
     {
         return bool (x);
@@ -5124,13 +5124,13 @@ namespace optional_lite {
     }
 
     template<typename T, typename U>
-    inline optional_constexpr bool operator< (optional<T> const& x, U const& v)
+    inline optional_constexpr bool operator<(optional<T> const& x, U const& v)
     {
         return bool (x) ? *x < v : true;
     }
 
     template<typename T, typename U>
-    inline optional_constexpr bool operator< (U const& v, optional<T> const& x)
+    inline optional_constexpr bool operator<(U const& v, optional<T> const& x)
     {
         return bool (x) ? v < *x : false;
     }

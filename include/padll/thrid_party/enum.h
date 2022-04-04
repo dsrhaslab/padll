@@ -466,7 +466,7 @@ struct optional {
     {
         return _value;
     }
-    BETTER_ENUMS_CONSTEXPR_ const T* operator-> () const
+    BETTER_ENUMS_CONSTEXPR_ const T* operator->() const
     {
         return &_value;
     }
@@ -1014,7 +1014,7 @@ struct _initialize_at_program_start {
         return a._to_integral () != b._to_integral ();                                             \
     }                                                                                              \
                                                                                                    \
-    BETTER_ENUMS_UNUSED BETTER_ENUMS_CONSTEXPR_ inline bool operator< (const Enum& a,              \
+    BETTER_ENUMS_UNUSED BETTER_ENUMS_CONSTEXPR_ inline bool operator<(const Enum& a,               \
         const Enum& b)                                                                             \
     {                                                                                              \
         return a._to_integral () < b._to_integral ();                                              \

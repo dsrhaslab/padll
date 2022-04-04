@@ -21,9 +21,9 @@ namespace padll::options {
  * Defines the available mount points of which PADLL will intercept requests to/from.
  *  - kNone: no mount point differentiation is made; all requests will be interpreted as if destined
  *  to the same mount point;
- *  - kLocal: only requests destined towards a local mount point (mount point deployed on the same 
- *  host as PADLL) will be handled by PADLL; 
- *  - kRemote: only requests destined towards a remote mount point (e.g., Lustre, NFS server, etc.) 
+ *  - kLocal: only requests destined towards a local mount point (mount point deployed on the same
+ *  host as PADLL) will be handled by PADLL;
+ *  - kRemote: only requests destined towards a remote mount point (e.g., Lustre, NFS server, etc.)
  *  will be handled by PADLL.
  */
 enum class MountPoint { kNone = 0, kLocal = 1, kRemote = 2 };
