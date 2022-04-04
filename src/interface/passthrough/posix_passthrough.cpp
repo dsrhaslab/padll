@@ -15,6 +15,7 @@ namespace padll::interface::passthrough {
 // PosixPassthrough default constructor.
 PosixPassthrough::PosixPassthrough () : m_logger_ptr { std::make_shared<Log> () }
 {
+    std::printf ("PosixPassthrough default constructor.\n");
     // initialize library handle pointer.
     this->initialize ();
 }
@@ -23,6 +24,7 @@ PosixPassthrough::PosixPassthrough () : m_logger_ptr { std::make_shared<Log> () 
 PosixPassthrough::PosixPassthrough (std::shared_ptr<Log> log_ptr) :
     m_logger_ptr { log_ptr }
 {
+    std::printf ("PosixPassthrough explicit constructor.\n");
     // initialize library handle pointer.
     this->initialize ();
 }
@@ -32,6 +34,7 @@ PosixPassthrough::PosixPassthrough (std::string lib_name, std::shared_ptr<Log> l
     m_lib_name { lib_name },
     m_logger_ptr { log_ptr }
 {
+    std::printf ("PosixPassthrough parameterized constructor.\n");
     // initialize library handle pointer.
     this->initialize ();
 }
@@ -56,8 +59,8 @@ PosixPassthrough::~PosixPassthrough ()
     }
 
     // print debug messages
-    this->m_logger_ptr->log_info ("PosixPassthrough default destructor.");
-    this->m_logger_ptr->log_debug (this->to_string ());
+    std::printf ("PosixPassthrough default destructor.\n");
+    std::printf ("%s\n", this->to_string ().c_str ());
 }
 
 // to_string call. (...)
@@ -91,6 +94,7 @@ bool PosixPassthrough::dlopen_library_handle ()
 void PosixPassthrough::initialize ()
 {
 
+    std::printf ("PosixPassthrough before initialize.\n");
     // open library and assign pointer to m_lib_handle
     bool open_lib_handle = this->dlopen_library_handle ();
 
@@ -100,6 +104,8 @@ void PosixPassthrough::initialize ()
             "PosixPassthrough::Error while dlopen'ing " + this->m_lib_name + ".");
         return;
     }
+
+    std::printf ("PosixPassthrough after initalize.\n");
 }
 
 // set_statistic_collection call. (...)
