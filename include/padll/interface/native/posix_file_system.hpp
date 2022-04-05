@@ -464,38 +464,38 @@ extern "C" int fclose (FILE* stream)
     return m_posix_passthrough.passthrough_posix_fclose (stream);
 }
 
-// /**
-//  * mkdir:
-//  * @param path
-//  * @param mode
-//  * @return
-//  */
-// extern "C" int mkdir (const char* path, mode_t mode)
-// {
-//     return m_posix_passthrough.passthrough_posix_mkdir (path, mode);
-// }
+/**
+ * mkdir:
+ * @param path
+ * @param mode
+ * @return
+ */
+extern "C" int mkdir (const char* path, mode_t mode)
+{
+    return m_posix_passthrough.passthrough_posix_mkdir (path, mode);
+}
 
-// /**
-//  * mkdirat:
-//  * @param dirfd
-//  * @param path
-//  * @param mode
-//  * @return
-//  */
-// extern "C" int mkdirat (int dirfd, const char* path, mode_t mode)
-// {
-//     return m_posix_passthrough.passthrough_posix_mkdirat (dirfd, path, mode);
-// }
+/**
+ * mkdirat:
+ * @param dirfd
+ * @param path
+ * @param mode
+ * @return
+ */
+extern "C" int mkdirat (int dirfd, const char* path, mode_t mode)
+{
+    return m_posix_passthrough.passthrough_posix_mkdirat (dirfd, path, mode);
+}
 
-// /**
-//  * rmdir:
-//  * @param path
-//  * @return
-//  */
-// extern "C" int rmdir (const char* path)
-// {
-//     return m_posix_passthrough.passthrough_posix_rmdir (path);
-// }
+/**
+ * rmdir:
+ * @param path
+ * @return
+ */
+extern "C" int rmdir (const char* path)
+{
+    return m_posix_passthrough.passthrough_posix_rmdir (path);
+}
 
 // /**
 //  * getxattr:
