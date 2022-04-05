@@ -804,7 +804,22 @@ ssize_t PosixPassthrough::passthrough_posix_getxattr (const char* path,
     void* value,
     size_t size)
 {
-    return ((libc_getxattr_t)dlsym (RTLD_NEXT, "getxattr")) (path, name, value, size);
+    ssize_t result = ((libc_getxattr_t)dlsym (RTLD_NEXT, "getxattr")) (path, name, value, size);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result != -1) {
+            this->m_ext_attr_stats.update_statistic_entry (
+                static_cast<int> (ExtendedAttributes::getxattr),
+                1,
+                0);
+        } else {
+            this->m_ext_attr_stats
+                .update_statistic_entry (static_cast<int> (ExtendedAttributes::getxattr), 1, 0, 1);
+        }
+    }
+
+    return result;
 }
 
 // passthrough_posix_lgetxattr call. (...)
@@ -813,14 +828,44 @@ ssize_t PosixPassthrough::passthrough_posix_lgetxattr (const char* path,
     void* value,
     size_t size)
 {
-    return ((libc_lgetxattr_t)dlsym (RTLD_NEXT, "lgetxattr")) (path, name, value, size);
+    ssize_t result = ((libc_lgetxattr_t)dlsym (RTLD_NEXT, "lgetxattr")) (path, name, value, size);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result != -1) {
+            this->m_ext_attr_stats.update_statistic_entry (
+                static_cast<int> (ExtendedAttributes::lgetxattr),
+                1,
+                0);
+        } else {
+            this->m_ext_attr_stats
+                .update_statistic_entry (static_cast<int> (ExtendedAttributes::lgetxattr), 1, 0, 1);
+        }
+    }
+
+    return result;
 }
 
 // passthrough_posix_fgetxattr call. (...)
 ssize_t
 PosixPassthrough::passthrough_posix_fgetxattr (int fd, const char* name, void* value, size_t size)
 {
-    return ((libc_fgetxattr_t)dlsym (RTLD_NEXT, "fgetxattr")) (fd, name, value, size);
+    ssize_t result = ((libc_fgetxattr_t)dlsym (RTLD_NEXT, "fgetxattr")) (fd, name, value, size);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result != -1) {
+            this->m_ext_attr_stats.update_statistic_entry (
+                static_cast<int> (ExtendedAttributes::fgetxattr),
+                1,
+                0);
+        } else {
+            this->m_ext_attr_stats
+                .update_statistic_entry (static_cast<int> (ExtendedAttributes::fgetxattr), 1, 0, 1);
+        }
+    }
+
+    return result;
 }
 
 // passthrough_posix_setxattr call. (...)
@@ -830,7 +875,22 @@ int PosixPassthrough::passthrough_posix_setxattr (const char* path,
     size_t size,
     int flags)
 {
-    return ((libc_setxattr_t)dlsym (RTLD_NEXT, "setxattr")) (path, name, value, size, flags);
+    int result = ((libc_setxattr_t)dlsym (RTLD_NEXT, "setxattr")) (path, name, value, size, flags);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result != -1) {
+            this->m_ext_attr_stats.update_statistic_entry (
+                static_cast<int> (ExtendedAttributes::setxattr),
+                1,
+                0);
+        } else {
+            this->m_ext_attr_stats
+                .update_statistic_entry (static_cast<int> (ExtendedAttributes::setxattr), 1, 0, 1);
+        }
+    }
+
+    return result;
 }
 
 // passthrough_posix_lsetxattr call. (...)
@@ -840,7 +900,22 @@ int PosixPassthrough::passthrough_posix_lsetxattr (const char* path,
     size_t size,
     int flags)
 {
-    return ((libc_lsetxattr_t)dlsym (RTLD_NEXT, "lsetxattr")) (path, name, value, size, flags);
+    int result = ((libc_lsetxattr_t)dlsym (RTLD_NEXT, "lsetxattr")) (path, name, value, size, flags);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result != -1) {
+            this->m_ext_attr_stats.update_statistic_entry (
+                static_cast<int> (ExtendedAttributes::lsetxattr),
+                1,
+                0);
+        } else {
+            this->m_ext_attr_stats
+                .update_statistic_entry (static_cast<int> (ExtendedAttributes::lsetxattr), 1, 0, 1);
+        }
+    }
+
+    return result;
 }
 
 // passthrough_posix_fsetxattr call. (...)
@@ -850,25 +925,86 @@ int PosixPassthrough::passthrough_posix_fsetxattr (int fd,
     size_t size,
     int flags)
 {
-    return ((libc_fsetxattr_t)dlsym (RTLD_NEXT, "fsetxattr")) (fd, name, value, size, flags);
+    int result = ((libc_fsetxattr_t)dlsym (RTLD_NEXT, "fsetxattr")) (fd, name, value, size, flags);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result != -1) {
+            this->m_ext_attr_stats.update_statistic_entry (
+                static_cast<int> (ExtendedAttributes::fsetxattr),
+                1,
+                0);
+        } else {
+            this->m_ext_attr_stats
+                .update_statistic_entry (static_cast<int> (ExtendedAttributes::fsetxattr), 1, 0, 1);
+        }
+    }
+
+    return result;
 }
 
 // passthrough_posix_listxattr call. (...)
 ssize_t PosixPassthrough::passthrough_posix_listxattr (const char* path, char* list, size_t size)
 {
-    return ((libc_listxattr_t)dlsym (RTLD_NEXT, "listxattr")) (path, list, size);
+    ssize_t result = ((libc_listxattr_t)dlsym (RTLD_NEXT, "listxattr")) (path, list, size);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result != -1) {
+            this->m_ext_attr_stats.update_statistic_entry (
+                static_cast<int> (ExtendedAttributes::listxattr),
+                1,
+                0);
+        } else {
+            this->m_ext_attr_stats
+                .update_statistic_entry (static_cast<int> (ExtendedAttributes::listxattr), 1, 0, 1);
+        }
+    }
+
+    return result;
+
 }
 
 // passthrough_posix_llistxattr call. (...)
 ssize_t PosixPassthrough::passthrough_posix_llistxattr (const char* path, char* list, size_t size)
 {
-    return ((libc_llistxattr_t)dlsym (RTLD_NEXT, "llistxattr")) (path, list, size);
+    ssize_t result = ((libc_llistxattr_t)dlsym (RTLD_NEXT, "llistxattr")) (path, list, size);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result != -1) {
+            this->m_ext_attr_stats.update_statistic_entry (
+                static_cast<int> (ExtendedAttributes::llistxattr),
+                1,
+                0);
+        } else {
+            this->m_ext_attr_stats
+                .update_statistic_entry (static_cast<int> (ExtendedAttributes::llistxattr), 1, 0, 1);
+        }
+    }
+
+    return result;
 }
 
 // passthrough_posix_flistxattr call. (...)
 ssize_t PosixPassthrough::passthrough_posix_flistxattr (int fd, char* list, size_t size)
 {
-    return ((libc_flistxattr_t)dlsym (RTLD_NEXT, "flistxattr")) (fd, list, size);
+    ssize_t result = ((libc_flistxattr_t)dlsym (RTLD_NEXT, "flistxattr")) (fd, list, size);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result != -1) {
+            this->m_ext_attr_stats.update_statistic_entry (
+                static_cast<int> (ExtendedAttributes::flistxattr),
+                1,
+                0);
+        } else {
+            this->m_ext_attr_stats
+                .update_statistic_entry (static_cast<int> (ExtendedAttributes::flistxattr), 1, 0, 1);
+        }
+    }
+
+    return result;
 }
 
 } // namespace padll::interface::passthrough

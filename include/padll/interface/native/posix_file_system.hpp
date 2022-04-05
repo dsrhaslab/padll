@@ -497,135 +497,135 @@ extern "C" int rmdir (const char* path)
     return m_posix_passthrough.passthrough_posix_rmdir (path);
 }
 
-// /**
-//  * getxattr:
-//  * @param path
-//  * @param name
-//  * @param value
-//  * @param size
-//  * @return
-//  */
-// #ifdef __linux__
-// extern "C" ssize_t getxattr (const char* path, const char* name, void* value, size_t size)
-// {
-//     return m_posix_passthrough.passthrough_posix_getxattr (path, name, value, size);
-// }
-// #endif
+/**
+ * getxattr:
+ * @param path
+ * @param name
+ * @param value
+ * @param size
+ * @return
+ */
+#ifdef __linux__
+extern "C" ssize_t getxattr (const char* path, const char* name, void* value, size_t size)
+{
+    return m_posix_passthrough.passthrough_posix_getxattr (path, name, value, size);
+}
+#endif
 
-// /**
-//  * lgetxattr:
-//  * @param path
-//  * @param name
-//  * @param value
-//  * @param size
-//  * @return
-//  */
-// extern "C" ssize_t lgetxattr (const char* path, const char* name, void* value, size_t size)
-// {
-//     return m_posix_passthrough.passthrough_posix_lgetxattr (path, name, value, size);
-// }
+/**
+ * lgetxattr:
+ * @param path
+ * @param name
+ * @param value
+ * @param size
+ * @return
+ */
+extern "C" ssize_t lgetxattr (const char* path, const char* name, void* value, size_t size)
+{
+    return m_posix_passthrough.passthrough_posix_lgetxattr (path, name, value, size);
+}
 
-// /**
-//  * fgetxattr:
-//  * @param fd
-//  * @param name
-//  * @param value
-//  * @param size
-//  * @return
-//  */
-// #ifdef __linux__
-// extern "C" ssize_t fgetxattr (int fd, const char* name, void* value, size_t size)
-// {
-//     return m_posix_passthrough.passthrough_posix_fgetxattr (fd, name, value, size);
-// }
-// #endif
+/**
+ * fgetxattr:
+ * @param fd
+ * @param name
+ * @param value
+ * @param size
+ * @return
+ */
+#ifdef __linux__
+extern "C" ssize_t fgetxattr (int fd, const char* name, void* value, size_t size)
+{
+    return m_posix_passthrough.passthrough_posix_fgetxattr (fd, name, value, size);
+}
+#endif
 
-// /**
-//  * setxattr:
-//  * @param path
-//  * @param name
-//  * @param value
-//  * @param size
-//  * @param flags
-//  * @return
-//  */
-// #ifdef __linux__
-// extern "C" int
-// setxattr (const char* path, const char* name, const void* value, size_t size, int flags)
-// {
-//     return m_posix_passthrough.passthrough_posix_setxattr (path, name, value, size, flags);
-// }
-// #endif
+/**
+ * setxattr:
+ * @param path
+ * @param name
+ * @param value
+ * @param size
+ * @param flags
+ * @return
+ */
+#ifdef __linux__
+extern "C" int
+setxattr (const char* path, const char* name, const void* value, size_t size, int flags)
+{
+    return m_posix_passthrough.passthrough_posix_setxattr (path, name, value, size, flags);
+}
+#endif
 
-// /**
-//  * lsetxattr:
-//  * @param path
-//  * @param name
-//  * @param value
-//  * @param size
-//  * @param flags
-//  * @return
-//  */
-// extern "C" int
-// lsetxattr (const char* path, const char* name, const void* value, size_t size, int flags)
-// {
-//     return m_posix_passthrough.passthrough_posix_lsetxattr (path, name, value, size, flags);
-// }
+/**
+ * lsetxattr:
+ * @param path
+ * @param name
+ * @param value
+ * @param size
+ * @param flags
+ * @return
+ */
+extern "C" int
+lsetxattr (const char* path, const char* name, const void* value, size_t size, int flags)
+{
+    return m_posix_passthrough.passthrough_posix_lsetxattr (path, name, value, size, flags);
+}
 
-// /**
-//  * fsetxattr:
-//  * @param fd
-//  * @param name
-//  * @param value
-//  * @param size
-//  * @param flags
-//  * @return
-//  */
-// #ifdef __linux__
-// extern "C" int fsetxattr (int fd, const char* name, const void* value, size_t size, int flags)
-// {
-//     return m_posix_passthrough.passthrough_posix_fsetxattr (fd, name, value, size, flags);
-// }
-// #endif
+/**
+ * fsetxattr:
+ * @param fd
+ * @param name
+ * @param value
+ * @param size
+ * @param flags
+ * @return
+ */
+#ifdef __linux__
+extern "C" int fsetxattr (int fd, const char* name, const void* value, size_t size, int flags)
+{
+    return m_posix_passthrough.passthrough_posix_fsetxattr (fd, name, value, size, flags);
+}
+#endif
 
-// /**
-//  * listxattr:
-//  * @param path
-//  * @param list
-//  * @param size
-//  * @return
-//  */
-// #ifdef __linux__
-// extern "C" ssize_t listxattr (const char* path, char* list, size_t size)
-// {
-//     return m_posix_passthrough.passthrough_posix_listxattr (path, list, size);
-// }
-// #endif
+/**
+ * listxattr:
+ * @param path
+ * @param list
+ * @param size
+ * @return
+ */
+#ifdef __linux__
+extern "C" ssize_t listxattr (const char* path, char* list, size_t size)
+{
+    return m_posix_passthrough.passthrough_posix_listxattr (path, list, size);
+}
+#endif
 
-// /**
-//  * llistxattr:
-//  * @param path
-//  * @param list
-//  * @param size
-//  * @return
-//  */
-// extern "C" ssize_t llistxattr (const char* path, char* list, size_t size)
-// {
-//     return m_posix_passthrough.passthrough_posix_llistxattr (path, list, size);
-// }
+/**
+ * llistxattr:
+ * @param path
+ * @param list
+ * @param size
+ * @return
+ */
+extern "C" ssize_t llistxattr (const char* path, char* list, size_t size)
+{
+    return m_posix_passthrough.passthrough_posix_llistxattr (path, list, size);
+}
 
-// /**
-//  * flistxattr:
-//  * @param fd
-//  * @param list
-//  * @param size
-//  * @return
-//  */
-// #ifdef __linux__
-// extern "C" ssize_t flistxattr (int fd, char* list, size_t size)
-// {
-//     return m_posix_passthrough.passthrough_posix_flistxattr (fd, list, size);
-// }
-// #endif
+/**
+ * flistxattr:
+ * @param fd
+ * @param list
+ * @param size
+ * @return
+ */
+#ifdef __linux__
+extern "C" ssize_t flistxattr (int fd, char* list, size_t size)
+{
+    return m_posix_passthrough.passthrough_posix_flistxattr (fd, list, size);
+}
+#endif
 
 #endif // PADLL_POSIX_FILE_SYSTEM_H
