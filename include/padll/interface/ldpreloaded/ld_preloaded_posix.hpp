@@ -251,105 +251,105 @@ public:
      */
     void ld_preloaded_posix_sync ();
 
-    /**
-     * ld_preloaded_posix_stat:
-     *  This method respects to the stat call.
-     *  https://refspecs.linuxbase.org/LSB_3.0.0/LSB-PDA/LSB-PDA/baselib-xstat-1.html
-     *  https://linux.die.net/man/2/stat
-     * @param version
-     * @param path
-     * @param statbuf
-     * @return
-     */
-    int ld_preloaded_posix_xstat (int version, const char* path, struct stat* statbuf);
+    // /**
+    //  * ld_preloaded_posix_stat:
+    //  *  This method respects to the stat call.
+    //  *  https://refspecs.linuxbase.org/LSB_3.0.0/LSB-PDA/LSB-PDA/baselib-xstat-1.html
+    //  *  https://linux.die.net/man/2/stat
+    //  * @param version
+    //  * @param path
+    //  * @param statbuf
+    //  * @return
+    //  */
+    // int ld_preloaded_posix_xstat (int version, const char* path, struct stat* statbuf);
 
-    /**
-     * ld_preloaded_posix_lxstat:
-     *  https://linux.die.net/man/2/lstat
-     * @param version
-     * @param path
-     * @param statbuf
-     * @return
-     */
-    int ld_preloaded_posix_lxstat (int version, const char* path, struct stat* statbuf);
+    // /**
+    //  * ld_preloaded_posix_lxstat:
+    //  *  https://linux.die.net/man/2/lstat
+    //  * @param version
+    //  * @param path
+    //  * @param statbuf
+    //  * @return
+    //  */
+    // int ld_preloaded_posix_lxstat (int version, const char* path, struct stat* statbuf);
 
-    /**
-     * ld_preloaded_posix_fxstat:
-     *  https://linux.die.net/man/2/fstat
-     * @param version
-     * @param fd
-     * @param statbuf
-     * @return
-     */
-    int ld_preloaded_posix_fxstat (int version, int fd, struct stat* statbuf);
+    // /**
+    //  * ld_preloaded_posix_fxstat:
+    //  *  https://linux.die.net/man/2/fstat
+    //  * @param version
+    //  * @param fd
+    //  * @param statbuf
+    //  * @return
+    //  */
+    // int ld_preloaded_posix_fxstat (int version, int fd, struct stat* statbuf);
 
-    /**
-     * ld_preloaded_posix_fxstatat:
-     *  https://refspecs.linuxbase.org/LSB_5.0.0/LSB-Core-generic/LSB-Core-generic/baselib---fxstatat-1.html
-     *  https://linux.die.net/man/2/fstatat
-     * @param version
-     * @param dirfd
-     * @param path
-     * @param statbuf
-     * @param flags
-     * @return
-     */
-    int ld_preloaded_posix_fxstatat (int version,
-        int dirfd,
-        const char* path,
-        struct stat* statbuf,
-        int flags);
+    // /**
+    //  * ld_preloaded_posix_fxstatat:
+    //  *  https://refspecs.linuxbase.org/LSB_5.0.0/LSB-Core-generic/LSB-Core-generic/baselib---fxstatat-1.html
+    //  *  https://linux.die.net/man/2/fstatat
+    //  * @param version
+    //  * @param dirfd
+    //  * @param path
+    //  * @param statbuf
+    //  * @param flags
+    //  * @return
+    //  */
+    // int ld_preloaded_posix_fxstatat (int version,
+    //     int dirfd,
+    //     const char* path,
+    //     struct stat* statbuf,
+    //     int flags);
 
-    /**
-     * ld_preloaded_posix_stat64:
-     *  This method respects to the stat call.
-     *  https://refspecs.linuxbase.org/LSB_3.0.0/LSB-PDA/LSB-PDA/baselib-xstat-1.html
-     *  https://linux.die.net/man/2/stat64
-     * @param version
-     * @param path
-     * @param statbuf
-     * @return
-     */
-    int ld_preloaded_posix_xstat64 (int version, const char* path, struct stat64* statbuf);
+    // /**
+    //  * ld_preloaded_posix_stat64:
+    //  *  This method respects to the stat call.
+    //  *  https://refspecs.linuxbase.org/LSB_3.0.0/LSB-PDA/LSB-PDA/baselib-xstat-1.html
+    //  *  https://linux.die.net/man/2/stat64
+    //  * @param version
+    //  * @param path
+    //  * @param statbuf
+    //  * @return
+    //  */
+    // int ld_preloaded_posix_xstat64 (int version, const char* path, struct stat64* statbuf);
 
-    /**
-     * ld_preloaded_posix_lxstat64:
-     *  https://linux.die.net/man/2/lstat64
-     *  https://refspecs.linuxbase.org/LSB_3.0.0/LSB-PDA/LSB-PDA/baselib-xstat64-1.html
-     * @param version
-     * @param path
-     * @param statbuf
-     * @return
-     */
-    int ld_preloaded_posix_lxstat64 (int version, const char* path, struct stat64* statbuf);
+    // /**
+    //  * ld_preloaded_posix_lxstat64:
+    //  *  https://linux.die.net/man/2/lstat64
+    //  *  https://refspecs.linuxbase.org/LSB_3.0.0/LSB-PDA/LSB-PDA/baselib-xstat64-1.html
+    //  * @param version
+    //  * @param path
+    //  * @param statbuf
+    //  * @return
+    //  */
+    // int ld_preloaded_posix_lxstat64 (int version, const char* path, struct stat64* statbuf);
 
-    /**
-     * ld_preloaded_posix_fxstat64:
-     *  https://linux.die.net/man/2/fstat64
-     *  https://refspecs.linuxbase.org/LSB_3.0.0/LSB-PDA/LSB-PDA/baselib-xstat64-1.html
-     * @param version
-     * @param fd
-     * @param statbuf
-     * @return
-     */
-    int ld_preloaded_posix_fxstat64 (int version, int fd, struct stat64* statbuf);
+    // /**
+    //  * ld_preloaded_posix_fxstat64:
+    //  *  https://linux.die.net/man/2/fstat64
+    //  *  https://refspecs.linuxbase.org/LSB_3.0.0/LSB-PDA/LSB-PDA/baselib-xstat64-1.html
+    //  * @param version
+    //  * @param fd
+    //  * @param statbuf
+    //  * @return
+    //  */
+    // int ld_preloaded_posix_fxstat64 (int version, int fd, struct stat64* statbuf);
 
-    /**
-     * ld_preloaded_posix_fxstatat64:
-     *  https://refspecs.linuxbase.org/LSB_5.0.0/LSB-Core-generic/LSB-Core-generic/baselib---fxstatat-1.html
-     *  https://linux.die.net/man/2/fstatat
-     * @param version
-     * @param dirfd
-     * @param path
-     * @param statbuf
-     * @param flags
-     * @return
-     */
-    int ld_preloaded_posix_fxstatat64 (int version,
-        int dirfd,
-        const char* path,
-        struct stat64* statbuf,
-        int flags);
+    // /**
+    //  * ld_preloaded_posix_fxstatat64:
+    //  *  https://refspecs.linuxbase.org/LSB_5.0.0/LSB-Core-generic/LSB-Core-generic/baselib---fxstatat-1.html
+    //  *  https://linux.die.net/man/2/fstatat
+    //  * @param version
+    //  * @param dirfd
+    //  * @param path
+    //  * @param statbuf
+    //  * @param flags
+    //  * @return
+    //  */
+    // int ld_preloaded_posix_fxstatat64 (int version,
+    //     int dirfd,
+    //     const char* path,
+    //     struct stat64* statbuf,
+    //     int flags);
 
     /**
      * ld_preloaded_posix_statfs:

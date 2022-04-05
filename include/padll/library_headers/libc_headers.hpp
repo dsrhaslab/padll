@@ -16,6 +16,7 @@
 #include <unistd.h>
 #ifdef __linux__
 #include <sys/vfs.h>
+#include <sys/xattr.h>
 #elif __APPLE__
 #include <sys/mount.h>
 #endif
@@ -35,19 +36,18 @@ typedef int (*libc_open64_variadic_t) (const char*, int, ...);
 typedef int (*libc_open64_t) (const char*, int);
 typedef int (*libc_close_t) (int);
 typedef void (*libc_sync_t) ();
-typedef int (*libc_xstat_t) (int, const char*, struct stat*);
-typedef int (*libc_lxstat_t) (int, const char*, struct stat*);
-typedef int (*libc_fxstat_t) (int, int, struct stat*);
-typedef int (*libc_fxstatat_t) (int, int, const char*, struct stat*, int);
-typedef int (*libc_xstat64_t) (int, const char*, struct stat64*);
-typedef int (*libc_lxstat64_t) (int, const char*, struct stat64*);
-typedef int (*libc_fxstat64_t) (int, int, struct stat64*);
-typedef int (*libc_fxstatat64_t) (int, int, const char*, struct stat64*, int);
+// typedef int (*libc_xstat_t) (int, const char*, struct stat*);
+// typedef int (*libc_lxstat_t) (int, const char*, struct stat*);
+// typedef int (*libc_fxstat_t) (int, int, struct stat*);
+// typedef int (*libc_fxstatat_t) (int, int, const char*, struct stat*, int);
+// typedef int (*libc_xstat64_t) (int, const char*, struct stat64*);
+// typedef int (*libc_lxstat64_t) (int, const char*, struct stat64*);
+// typedef int (*libc_fxstat64_t) (int, int, struct stat64*);
+// typedef int (*libc_fxstatat64_t) (int, int, const char*, struct stat64*, int);
 typedef int (*libc_statfs_t) (const char*, struct statfs*);
 typedef int (*libc_fstatfs_t) (int, struct statfs*);
 typedef int (*libc_statfs64_t) (const char*, struct statfs64*);
 typedef int (*libc_fstatfs64_t) (int, struct statfs64*);
-typedef int (*libc_link_t) (const char*, const char*);
 typedef int (*libc_unlink_t) (const char*);
 typedef int (*libc_unlinkat_t) (int, const char*, int);
 typedef int (*libc_rename_t) (const char*, const char*);
@@ -71,14 +71,14 @@ struct libc_metadata {
     libc_open64_t m_open64 { nullptr };
     libc_close_t m_close { nullptr };
     libc_sync_t m_sync { nullptr };
-    libc_xstat_t m_xstat { nullptr };
-    libc_lxstat_t m_lxstat { nullptr };
-    libc_fxstat_t m_fxstat { nullptr };
-    libc_fxstatat_t m_fxstatat { nullptr };
-    libc_xstat64_t m_xstat64 { nullptr };
-    libc_lxstat64_t m_lxstat64 { nullptr };
-    libc_fxstat64_t m_fxstat64 { nullptr };
-    libc_fxstatat64_t m_fxstatat64 { nullptr };
+    // libc_xstat_t m_xstat { nullptr };
+    // libc_lxstat_t m_lxstat { nullptr };
+    // libc_fxstat_t m_fxstat { nullptr };
+    // libc_fxstatat_t m_fxstatat { nullptr };
+    // libc_xstat64_t m_xstat64 { nullptr };
+    // libc_lxstat64_t m_lxstat64 { nullptr };
+    // libc_fxstat64_t m_fxstat64 { nullptr };
+    // libc_fxstatat64_t m_fxstatat64 { nullptr };
     libc_statfs_t m_statfs { nullptr };
     libc_fstatfs_t m_fstatfs { nullptr };
     libc_statfs64_t m_statfs64 { nullptr };
