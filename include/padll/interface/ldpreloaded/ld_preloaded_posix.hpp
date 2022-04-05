@@ -58,8 +58,7 @@ public:
      * @param lib String that respects to the library that will be intercepted.
      * @param stat_collection Boolean that defines if statistic collection is enabled or disabled.
      */
-    LdPreloadedPosix (const std::string& lib,
-        const bool& stat_collection);
+    LdPreloadedPosix (const std::string& lib, const bool& stat_collection);
 
     /**
      * LdPreloadedPosix default destructor.

@@ -20,7 +20,7 @@ LdPreloadedPosix::LdPreloadedPosix (const std::string& lib,
     const bool& stat_collection) :
     m_collect { stat_collection },
     m_stage { std::make_unique<DataPlaneStage> () },
-    m_mount_point_table { "ld-preloaded-posix" }
+    m_mount_point_table { "ld-preloaded-posix-" + lib }
 {
     std::printf ("LdPreloadedPosix parameterized constructor.\n");
 }
