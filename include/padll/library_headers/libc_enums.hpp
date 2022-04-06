@@ -59,7 +59,9 @@ BETTER_ENUM (Data,
     pread = 3,
     pwrite = 4,
     pread64 = 5,
-    pwrite64 = 6)
+    pwrite64 = 6,
+    mmap = 7,
+    munmap = 8)
 
 /**
  * Directory Definitions.
