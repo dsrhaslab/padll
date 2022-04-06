@@ -162,7 +162,8 @@ public:
      * @param offset
      * @return
      */
-    void* passthrough_posix_mmap (void* addr, size_t length, int prot, int flags, int fd, off_t offset);
+    void*
+    passthrough_posix_mmap (void* addr, size_t length, int prot, int flags, int fd, off_t offset);
 
     /**
      * passthrough_posix_munmap:

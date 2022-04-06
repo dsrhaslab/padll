@@ -33,7 +33,7 @@ private:
 
         // validate library pointer
         if (!open_lib_handle) {
-            std::printf ("Error while dlopen'ing %s.\n", this->m_lib_name.c_str());
+            std::printf ("Error while dlopen'ing %s.\n", this->m_lib_name.c_str ());
             return;
         }
     }
@@ -72,8 +72,7 @@ public:
      * @param library_path
      * TODO: validate move operation of the Log
      */
-    DlsymHookLibc (const std::string& library_path) :
-        m_lib_name { library_path }
+    DlsymHookLibc (const std::string& library_path) : m_lib_name { library_path }
     {
         // validate if 'lib' is valid
         if (library_path.empty ()) {

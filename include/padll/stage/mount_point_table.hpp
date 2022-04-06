@@ -44,7 +44,6 @@ private:
     std::unordered_map<FILE*, std::unique_ptr<MountPointEntry>> m_file_ptr_table {};
     std::map<MountPoint, std::vector<uint32_t>> m_mount_point_workflows {};
 
-
     /**
      * initialize:
      */

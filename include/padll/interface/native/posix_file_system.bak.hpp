@@ -13,19 +13,19 @@
 #include <padll/interface/passthrough/posix_passthrough.hpp>
 #include <thread>
 
-namespace ld   = padll::interface::ldpreloaded;
+namespace ld = padll::interface::ldpreloaded;
 namespace pass = padll::interface::passthrough;
-namespace opt  = padll::options;
+namespace opt = padll::options;
 
 /**
  * LdPreloaded file system object.
  */
-ld::LdPreloadedPosix m_ld_preloaded_posix { };
+ld::LdPreloadedPosix m_ld_preloaded_posix {};
 
 /**
  * PosixPassthrough file system object.
  */
-pass::PosixPassthrough m_posix_passthrough { };
+pass::PosixPassthrough m_posix_passthrough {};
 
 /**
  * init_method: constructor of the PosixFileSystem.

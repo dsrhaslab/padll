@@ -13,13 +13,12 @@
 #include <thread>
 
 namespace pass = padll::interface::passthrough;
-namespace opt  = padll::options;
-
+namespace opt = padll::options;
 
 /**
  * PosixPassthrough file system object.
  */
-pass::PosixPassthrough m_posix_passthrough { };
+pass::PosixPassthrough m_posix_passthrough {};
 
 /**
  * init_method: constructor of the PosixFileSystem.
@@ -144,7 +143,7 @@ extern "C" void* mmap (void* addr, size_t length, int prot, int flags, int fd, o
  * @param length
  * @return
  */
-extern "C" int munmap (void *addr, size_t length)
+extern "C" int munmap (void* addr, size_t length)
 {
     return m_posix_passthrough.passthrough_posix_munmap (addr, length);
 }
@@ -367,7 +366,7 @@ extern "C" FILE* fopen (const char* pathname, const char* mode)
  */
 extern "C" FILE* fopen64 (const char* pathname, const char* mode)
 {
-    return  m_posix_passthrough.passthrough_posix_fopen64 (pathname, mode);
+    return m_posix_passthrough.passthrough_posix_fopen64 (pathname, mode);
 }
 
 /**

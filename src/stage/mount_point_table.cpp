@@ -8,7 +8,7 @@
 namespace padll::stage {
 
 // MountPointTable default constructor.
-MountPointTable::MountPointTable () 
+MountPointTable::MountPointTable ()
 {
     // logging message
     std::printf ("MountPointTable default constructor.\n");

@@ -285,7 +285,8 @@ public:
 
     // /**
     //  * ld_preloaded_posix_fxstatat:
-    //  *  https://refspecs.linuxbase.org/LSB_5.0.0/LSB-Core-generic/LSB-Core-generic/baselib---fxstatat-1.html
+    //  *
+    //  https://refspecs.linuxbase.org/LSB_5.0.0/LSB-Core-generic/LSB-Core-generic/baselib---fxstatat-1.html
     //  *  https://linux.die.net/man/2/fstatat
     //  * @param version
     //  * @param dirfd
@@ -336,7 +337,8 @@ public:
 
     // /**
     //  * ld_preloaded_posix_fxstatat64:
-    //  *  https://refspecs.linuxbase.org/LSB_5.0.0/LSB-Core-generic/LSB-Core-generic/baselib---fxstatat-1.html
+    //  *
+    //  https://refspecs.linuxbase.org/LSB_5.0.0/LSB-Core-generic/LSB-Core-generic/baselib---fxstatat-1.html
     //  *  https://linux.die.net/man/2/fstatat
     //  * @param version
     //  * @param dirfd

@@ -12,7 +12,7 @@ using namespace padll::stats;
 namespace padll::tests {
 
 class StatisticsTest {
-// private:
+    // private:
 
 public:
     StatisticsTest ()
