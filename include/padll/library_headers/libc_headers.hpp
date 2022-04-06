@@ -71,14 +71,6 @@ struct libc_metadata {
     libc_open64_t m_open64 { nullptr };
     libc_close_t m_close { nullptr };
     libc_sync_t m_sync { nullptr };
-    // libc_xstat_t m_xstat { nullptr };
-    // libc_lxstat_t m_lxstat { nullptr };
-    // libc_fxstat_t m_fxstat { nullptr };
-    // libc_fxstatat_t m_fxstatat { nullptr };
-    // libc_xstat64_t m_xstat64 { nullptr };
-    // libc_lxstat64_t m_lxstat64 { nullptr };
-    // libc_fxstat64_t m_fxstat64 { nullptr };
-    // libc_fxstatat64_t m_fxstatat64 { nullptr };
     libc_statfs_t m_statfs { nullptr };
     libc_fstatfs_t m_fstatfs { nullptr };
     libc_statfs64_t m_statfs64 { nullptr };
@@ -124,6 +116,8 @@ struct libc_data {
 typedef int (*libc_mkdir_t) (const char*, mode_t);
 typedef int (*libc_mkdirat_t) (int, const char*, mode_t);
 typedef int (*libc_rmdir_t) (const char*);
+typedef int (*libc_mknod_t) (const char*, mode_t, dev_t);
+typedef int (*libc_mknodat_t) (int, const char*, mode_t, dev_t);
 
 /**
  * libc_directory: provides an object with the function pointers to all libc directory-like
@@ -133,6 +127,8 @@ struct libc_directory {
     libc_mkdir_t m_mkdir { nullptr };
     libc_mkdirat_t m_mkdirat { nullptr };
     libc_rmdir_t m_rmdir { nullptr };
+    libc_mknod_t m_mknod { nullptr };
+    libc_mknodat_t m_mknodat { nullptr };
 };
 
 /**

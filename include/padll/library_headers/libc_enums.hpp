@@ -36,14 +36,6 @@ BETTER_ENUM (Metadata,
     openat_variadic = 8,
     close = 9,
     sync = 10,
-    // stat = 11,
-    // lstat = 12,
-    // fstat = 13,
-    // fstatat = 14,
-    // stat64 = 15,
-    // lstat64 = 16,
-    // fstat64 = 17,
-    // fstatat64 = 18,
     statfs = 11,
     fstatfs = 12,
     statfs64 = 13,
@@ -72,7 +64,7 @@ BETTER_ENUM (Data,
 /**
  * Directory Definitions.
  */
-BETTER_ENUM (Directory, int, no_op = 0, mkdir = 1, mkdirat = 2, rmdir = 3)
+BETTER_ENUM (Directory, int, no_op = 0, mkdir = 1, mkdirat = 2, rmdir = 3, mknod = 4, mknodat = 5)
 
 /**
  * ExtendedAttributes Definitions.

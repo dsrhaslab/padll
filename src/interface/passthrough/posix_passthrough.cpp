@@ -441,67 +441,6 @@ void PosixPassthrough::passthrough_posix_sync ()
     }
 }
 
-// // passthrough_posix_xstat call. (...)
-// int PosixPassthrough::passthrough_posix_xstat (int version, const char* path, struct stat* statbuf)
-// {
-//     return ((libc_xstat_t)dlsym (RTLD_NEXT, "xstat")) (version, path, statbuf);
-// }
-
-// // passthrough_posix_lxstat call. (...)
-// int PosixPassthrough::passthrough_posix_lxstat (int version, const char* path, struct stat* statbuf)
-// {
-//     return ((libc_lxstat_t)dlsym (RTLD_NEXT, "lxstat")) (version, path, statbuf);
-// }
-
-// // passthrough_posix_fxstat call. (...)
-// int PosixPassthrough::passthrough_posix_fxstat (int version, int fd, struct stat* statbuf)
-// {
-//     return ((libc_fxstat_t)dlsym (RTLD_NEXT, "fxstat")) (version, fd, statbuf);
-// }
-
-// // passthrough_posix_fxstatat call. (...)
-// int PosixPassthrough::passthrough_posix_fxstatat (int version,
-//     int dirfd,
-//     const char* path,
-//     struct stat* statbuf,
-//     int flags)
-// {
-//     return ((libc_fxstatat_t)dlsym (RTLD_NEXT, "fxstatat")) (version, dirfd, path, statbuf, flags);
-// }
-
-// // passthrough_posix_xstat64 call. (...)
-// int PosixPassthrough::passthrough_posix_xstat64 (int version,
-//     const char* path,
-//     struct stat64* statbuf)
-// {
-//     return ((libc_xstat64_t)dlsym (RTLD_NEXT, "xstat64")) (version, path, statbuf);
-// }
-
-// // passthrough_posix_lxstat64 call. (...)
-// int PosixPassthrough::passthrough_posix_lxstat64 (int version,
-//     const char* path,
-//     struct stat64* statbuf)
-// {
-//     return ((libc_lxstat64_t)dlsym (RTLD_NEXT, "lxstat64")) (version, path, statbuf);
-// }
-
-// // passthrough_posix_fxstat64 call. (...)
-// int PosixPassthrough::passthrough_posix_fxstat64 (int version, int fd, struct stat64* statbuf)
-// {
-//     return ((libc_fxstat64_t)dlsym (RTLD_NEXT, "fxstat64")) (version, fd, statbuf);
-// }
-
-// // passthrough_posix_fxstatat64 call. (...)
-// int PosixPassthrough::passthrough_posix_fxstatat64 (int version,
-//     int dirfd,
-//     const char* path,
-//     struct stat64* statbuf,
-//     int flags)
-// {
-//     return (
-//         (libc_fxstatat64_t)dlsym (RTLD_NEXT, "fxstatat64")) (version, dirfd, path, statbuf, flags);
-// }
-
 // passthrough_posix_statfs call. (...)
 int PosixPassthrough::passthrough_posix_statfs (const char* path, struct statfs* buf)
 {
@@ -792,6 +731,40 @@ int PosixPassthrough::passthrough_posix_rmdir (const char* path)
             this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::rmdir), 1, 0);
         } else {
             this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::rmdir), 1, 0, 1);
+        }
+    }
+
+    return result;
+}
+
+// passthrough_posix_mknod call. (...)
+int PosixPassthrough::passthrough_posix_mknod (const char* path, mode_t mode, dev_t dev)
+{
+    int result = ((libc_mknod_t)dlsym (RTLD_NEXT, "mknod")) (path, mode, dev);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result == 0) {
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::mknod), 1, 0);
+        } else {
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::mknod), 1, 0, 1);
+        }
+    }
+
+    return result;
+}
+
+// passthrough_posix_mknodat call. (...)
+int PosixPassthrough::passthrough_posix_mknodat (int dirfd, const char* path, mode_t mode, dev_t dev)
+{
+    int result = ((libc_mknodat_t)dlsym (RTLD_NEXT, "mknodat")) (dirfd, path, mode, dev);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result == 0) {
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::mknodat), 1, 0);
+        } else {
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::mknodat), 1, 0, 1);
         }
     }
 

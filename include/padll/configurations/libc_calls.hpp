@@ -23,6 +23,8 @@ struct PosixDirectoryCalls {
     bool padll_intercept_mkdir = false;
     bool padll_intercept_mkdirat = false;
     bool padll_intercept_rmdir = false;
+    bool padll_intercept_mknod = false;
+    bool padll_intercept_mknodat = false;
 };
 
 struct PosixExtendedAttributesCalls {
@@ -48,14 +50,6 @@ struct PosixMetadataCalls {
     bool paddl_intercept_open64 = false;
     bool paddl_intercept_close = false;
     bool paddl_intercept_sync = false;
-    // bool paddl_intercept_xstat = false;
-    // bool paddl_intercept_lxstat = false;
-    // bool paddl_intercept_fxstat = false;
-    // bool paddl_intercept_fxstatat = false;
-    // bool paddl_intercept_xstat64 = false;
-    // bool paddl_intercept_lxstat64 = false;
-    // bool paddl_intercept_fxstat64 = false;
-    // bool paddl_intercept_fxstatat64 = false;
     bool paddl_intercept_statfs = false;
     bool paddl_intercept_fstatfs = false;
     bool paddl_intercept_statfs64 = false;

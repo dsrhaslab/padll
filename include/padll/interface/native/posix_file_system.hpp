@@ -498,6 +498,31 @@ extern "C" int rmdir (const char* path)
 }
 
 /**
+ * mknod:
+ * @param path
+ * @param mode
+ * @param dev
+ * @return
+ */
+extern "C" int mknod (const char* path, mode_t mode, dev_t dev)
+{
+    return m_posix_passthrough.passthrough_posix_mknod (path, mode, dev);
+}
+
+/**
+ * mknodat:
+ * @param dirfd
+ * @param path
+ * @param mode
+ * @param dev
+ * @return
+ */
+extern "C" int mknodat (int dirfd, const char* path, mode_t mode, dev_t dev)
+{
+    return m_posix_passthrough.passthrough_posix_mknodat (dirfd, path, mode, dev);
+}
+
+/**
  * getxattr:
  * @param path
  * @param name
