@@ -40,27 +40,27 @@ struct PosixExtendedAttributesCalls {
 };
 
 struct PosixMetadataCalls {
-    bool paddl_intercept_open_var = false;
-    bool paddl_intercept_open = false;
-    bool paddl_intercept_creat = false;
-    bool paddl_intercept_creat64 = false;
-    bool paddl_intercept_openat_var = false;
-    bool paddl_intercept_openat = false;
-    bool paddl_intercept_open64_var = false;
-    bool paddl_intercept_open64 = false;
-    bool paddl_intercept_close = false;
-    bool paddl_intercept_sync = false;
-    bool paddl_intercept_statfs = false;
-    bool paddl_intercept_fstatfs = false;
-    bool paddl_intercept_statfs64 = false;
-    bool paddl_intercept_fstatfs64 = false;
-    bool paddl_intercept_unlink = false;
-    bool paddl_intercept_unlinkat = false;
-    bool paddl_intercept_rename = false;
-    bool paddl_intercept_renameat = false;
-    bool paddl_intercept_fopen = false;
-    bool paddl_intercept_fopen64 = false;
-    bool paddl_intercept_fclose = false;
+    bool padll_intercept_open_var = false;
+    bool padll_intercept_open = false;
+    bool padll_intercept_creat = false;
+    bool padll_intercept_creat64 = false;
+    bool padll_intercept_openat_var = false;
+    bool padll_intercept_openat = false;
+    bool padll_intercept_open64_var = false;
+    bool padll_intercept_open64 = false;
+    bool padll_intercept_close = false;
+    bool padll_intercept_sync = false;
+    bool padll_intercept_statfs = false;
+    bool padll_intercept_fstatfs = false;
+    bool padll_intercept_statfs64 = false;
+    bool padll_intercept_fstatfs64 = false;
+    bool padll_intercept_unlink = false;
+    bool padll_intercept_unlinkat = false;
+    bool padll_intercept_rename = false;
+    bool padll_intercept_renameat = false;
+    bool padll_intercept_fopen = false;
+    bool padll_intercept_fopen64 = false;
+    bool padll_intercept_fclose = false;
 };
 
 const static PosixDataCalls posix_data_calls;
