@@ -153,6 +153,26 @@ public:
 #endif
 
     /**
+     * passthrough_posix_mmap:
+     * @param addr
+     * @param length
+     * @param prot
+     * @param flags
+     * @param fd
+     * @param offset
+     * @return
+     */
+    void* passthrough_posix_mmap (void* addr, size_t length, int prot, int flags, int fd, off_t offset);
+
+    /**
+     * passthrough_posix_munmap:
+     * @param addr
+     * @param length
+     * @return
+     */
+    int passthrough_posix_munmap (void* addr, size_t length);
+
+    /**
      * passthrough_posix_open:
      *  https://linux.die.net/man/2/open
      * Notes:

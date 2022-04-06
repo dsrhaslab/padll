@@ -247,6 +247,40 @@ ssize_t PosixPassthrough::passthrough_posix_pwrite64 (int fd,
 }
 #endif
 
+// pass_through_posix_mmap call. (...)
+void* PosixPassthrough::passthrough_posix_mmap (void* addr, size_t length, int prot, int flags, int fd, off_t offset)
+{
+    void* result = ((libc_mmap_t)dlsym (RTLD_NEXT, "mmap")) (addr, length, prot, flags, fd, offset);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result != (void*)-1) {
+            this->m_data_stats.update_statistic_entry (static_cast<int> (Data::mmap), 1, 0);
+        } else {
+            this->m_data_stats.update_statistic_entry (static_cast<int> (Data::mmap), 1, 0, 1);
+        }
+    }
+
+    return result;
+}
+
+// pass_through_posix_munmap call. (...)
+int PosixPassthrough::passthrough_posix_munmap (void* addr, size_t length)
+{
+    int result = ((libc_munmap_t)dlsym (RTLD_NEXT, "munmap")) (addr, length);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result == 0) {
+            this->m_data_stats.update_statistic_entry (static_cast<int> (Data::munmap), 1, 0);
+        } else {
+            this->m_data_stats.update_statistic_entry (static_cast<int> (Data::munmap), 1, 0, 1);
+        }
+    }
+
+    return result;
+}
+
 // passthrough_posix_open call. (...)
 int PosixPassthrough::passthrough_posix_open (const char* path, int flags, mode_t mode)
 {

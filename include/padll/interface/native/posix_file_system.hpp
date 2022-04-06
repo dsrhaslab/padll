@@ -124,6 +124,32 @@ extern "C" ssize_t pwrite64 (int fd, const void* buf, size_t size, off64_t offse
 #endif
 
 /**
+ * mmap:
+ * @param addr
+ * @param length
+ * @param prot
+ * @param flags
+ * @param fd
+ * @param offset
+ * @return
+ */
+extern "C" void* mmap (void* addr, size_t length, int prot, int flags, int fd, off_t offset)
+{
+    return m_posix_passthrough.passthrough_posix_mmap (addr, length, prot, flags, fd, offset);
+}
+
+/**
+ * munmap:
+ * @param addr
+ * @param length
+ * @return
+ */
+extern "C" int munmap (void *addr, size_t length)
+{
+    return m_posix_passthrough.passthrough_posix_munmap (addr, length);
+}
+
+/**
  * open:
  * @param path
  * @param flags
@@ -229,116 +255,6 @@ extern "C" void sync ()
 {
     return m_posix_passthrough.passthrough_posix_sync ();
 }
-
-// /**
-//  * __xstat:
-//  *  This method respects to the stat call.
-//  * @param version
-//  * @param path
-//  * @param statbuf
-//  * @return
-//  */
-// extern "C" int __xstat (int version, const char* path, struct stat* statbuf)
-// {
-//     return m_posix_passthrough.passthrough_posix_xstat (version, path, statbuf);
-// }
-
-// /**
-//  * __lxstat:
-//  *  This method respects to the lstat call.
-//  * @param version
-//  * @param path
-//  * @param statbuf
-//  * @return
-//  */
-// extern "C" int __lxstat (int version, const char* path, struct stat* statbuf)
-// {
-//     return m_posix_passthrough.passthrough_posix_lxstat (version, path, statbuf);
-// }
-
-// /**
-//  * __fxstat:
-//  *  This method respects to the fstat call.
-//  * @param version
-//  * @param fd
-//  * @param statbuf
-//  * @return
-//  */
-// extern "C" int __fxstat (int version, int fd, struct stat* statbuf)
-// {
-//     return m_posix_passthrough.passthrough_posix_fxstat (version, fd, statbuf);
-// }
-
-// /**
-//  * fxstatat:
-//  *  This method respects to the fstatat call.
-//  * @param version
-//  * @param dirfd
-//  * @param path
-//  * @param statbuf
-//  * @param flags
-//  * @return
-//  */
-// extern "C" int
-// __fxstatat (int version, int dirfd, const char* path, struct stat* statbuf, int flags)
-// {
-//     return m_posix_passthrough.passthrough_posix_fxstatat (version, dirfd, path, statbuf, flags);
-// }
-
-// /**
-//  * __xstat64:
-//  *  This method respects to the stat64 call.
-//  * @param version
-//  * @param path
-//  * @param statbuf
-//  * @return
-//  */
-// extern "C" int __xstat64 (int version, const char* path, struct stat64* statbuf)
-// {
-//     return m_posix_passthrough.passthrough_posix_xstat64 (version, path, statbuf);
-// }
-
-// /**
-//  * __lxstat64:
-//  *  This method respects to the lstat64 call.
-//  * @param version
-//  * @param path
-//  * @param statbuf
-//  * @return
-//  */
-// extern "C" int __lxstat64 (int version, const char* path, struct stat64* statbuf)
-// {
-//     return m_posix_passthrough.passthrough_posix_lxstat64 (version, path, statbuf);
-// }
-
-// /**
-//  * __fxstat64:
-//  *  This method respects to the fstat64 call.
-//  * @param version
-//  * @param fd
-//  * @param statbuf
-//  * @return
-//  */
-// extern "C" int __fxstat64 (int version, int fd, struct stat64* statbuf)
-// {
-//     return m_posix_passthrough.passthrough_posix_fxstat64 (version, fd, statbuf);
-// }
-
-// /**
-//  * fxstatat64:
-//  *  This method respects to the fstatat64 call.
-//  * @param version
-//  * @param dirfd
-//  * @param path
-//  * @param statbuf
-//  * @param flags
-//  * @return
-//  */
-// extern "C" int
-// __fxstatat64 (int version, int dirfd, const char* path, struct stat64* statbuf, int flags)
-// {
-//     return m_posix_passthrough.passthrough_posix_fxstatat64 (version, dirfd, path, statbuf, flags);
-// }
 
 /**
  * statfs:
