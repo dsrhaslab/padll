@@ -432,7 +432,7 @@ public:
 
     void test_pick_workflow_id ()
     {
-        std::fprintf (this->m_fd, "");
+        std::fprintf (this->m_fd, "test_pick_workflow_id: incomplete ...\n");
     }
 };
 } // namespace padll::tests
@@ -480,7 +480,7 @@ int main (int argc, char** argv)
     int num_threads = 1;
     int num_files = 100;
     bool use_fd = true;
-    bool print_debug_info = false;
+    bool print_debug_info = true;
 
     // test.test_register_mount_point_type (&mount_point_table);
     // test.test_extract_mount_point (&mount_point_table);
@@ -517,6 +517,11 @@ int main (int argc, char** argv)
             &file_identifiers_list,
             print_debug_info);
         test.test_get_mount_point_entry (&mount_point_table,
+            use_fd,
+            num_threads,
+            file_identifiers_list,
+            print_debug_info);
+        test.test_remove_mount_point_entry (&mount_point_table,
             use_fd,
             num_threads,
             file_identifiers_list,
