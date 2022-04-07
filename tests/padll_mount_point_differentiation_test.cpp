@@ -166,6 +166,7 @@ private:
 
                 // print error message if remote went wrong
                 if (!return_value) {
+                    auto tmp_get = table_ptr->get_mount_point_entry (fd);
                     std::fprintf (this->m_fd, "Error (delete_mount_point_entry): %d\n", fd);
                 }
             } else {
@@ -174,6 +175,7 @@ private:
                 
                 // print error message if remote went wrong
                 if (!return_value) {
+                    auto tmp_get = table_ptr->get_mount_point_entry (f_ptr);
                     std::fprintf (this->m_fd, "Error (delete_mount_point_entry): %p\n", f_ptr);
                 }
                 
