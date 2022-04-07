@@ -63,7 +63,7 @@ private:
                 // check if file was created
                 if (fd == -1) {
                     std::fprintf (this->m_fd,
-                        "Error: %s - %s\n",
+                        "Error (create_mount_point_entry): %s - %s\n",
                         strerror (errno),
                         path_to_file.c_str ());
                     return;
@@ -79,7 +79,7 @@ private:
                 auto f_ptr = ::fopen (path_to_file.c_str (), "w");
                 // check if file was created
                 if (f_ptr == nullptr) {
-                    std::fprintf (this->m_fd, "Error: %s\n", strerror (errno));
+                    std::fprintf (this->m_fd, "Error (create_mount_point_entry): %s\n", strerror (errno));
                     return;
                 }
 
@@ -92,7 +92,7 @@ private:
 
             // check if entry was created
             if (!result) {
-                std::fprintf (this->m_fd, "Error: %s\n", strerror (errno));
+                std::fprintf (this->m_fd, "Error (create_mount_point_entry): %s\n", strerror (errno));
             }
         }
     }
@@ -133,7 +133,7 @@ private:
                 }
                 successful_ops++;
             } else {
-                std::fprintf (this->m_fd, "Error: %s\n", strerror (errno));
+                std::fprintf (this->m_fd, "Error (get_mount_point_entry): %s\n", strerror (errno));
             }
         }
 
@@ -172,7 +172,7 @@ private:
                 successful_ops++;
                 std::fprintf (this->m_fd, "Success\n");
             } else {
-                std::fprintf (this->m_fd, "Error: %s\n", strerror (errno));
+                std::fprintf (this->m_fd, "Error (delete_mount_point_entry): %s\n", strerror (errno));
             }
         }
     }
