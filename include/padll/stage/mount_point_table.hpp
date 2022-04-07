@@ -19,10 +19,10 @@ namespace padll::stage {
 
 /**
  * MountPointWorkflows class.
- * fixme: this needs to be adjusted (later); the controller should specify these ...
  */
 class MountPointWorkflows {
-
+    // TODO: Tasks pending completion -@ricardomacedo at 4/7/2022, 10:19:02 AM
+    // The mountpoint workflows should be defined by the controller, not by the data plane stage.
 public:
     const std::vector<uint32_t> default_mount_point_workflows { 1000,
         2000,
@@ -79,9 +79,8 @@ public:
     /**
      * MountPointTable parameterized constructor.
      * @param value
-     * Fixme: remove value parameter; only for debugging purposes.
      */
-    [[maybe_unused]] MountPointTable (const std::string& value);
+    [[maybe_unused]] explicit MountPointTable (const std::string& value);
 
     /**
      * MountPointTable default destructor.
@@ -122,7 +121,7 @@ public:
      * @param path
      * @return
      */
-    [[nodiscard]] uint32_t pick_workflow_id (const std::string_view& path);
+    [[nodiscard]] uint32_t pick_workflow_id (const std::string_view& path) const;
 
     /**
      * pick_workflow_id:

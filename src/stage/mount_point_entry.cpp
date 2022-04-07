@@ -11,7 +11,7 @@ namespace padll::stage {
 MountPointEntry::MountPointEntry () = default;
 
 // MountPointEntry parameterized constructor.
-MountPointEntry::MountPointEntry (std::string path, const MountPoint& mount_point) :
+MountPointEntry::MountPointEntry (const std::string& path, const MountPoint& mount_point) :
     m_path { path },
     m_mount_point { mount_point }
 { }
@@ -36,10 +36,7 @@ std::string MountPointEntry::to_string () const
 {
     std::stringstream stream;
     stream << "{" << this->m_path << ", ";
-    stream << ((this->m_mount_point == MountPoint::kLocal) ? "local"
-            : (this->m_mount_point == MountPoint::kRemote) ? "remote"
-                                                           : "none");
-    stream << "}";
+    stream << padll::options::mount_point_to_string (this->m_mount_point) << "}";
 
     return stream.str ();
 }

@@ -3,8 +3,8 @@
  *   Copyright (c) 2021-2022 INESC TEC.
  **/
 
-#ifndef PADDL_OPTIONS_HPP
-#define PADDL_OPTIONS_HPP
+#ifndef PADLL_OPTIONS_HPP
+#define PADLL_OPTIONS_HPP
 
 #include <filesystem>
 #include <string>
@@ -20,13 +20,32 @@ namespace padll::options {
  * MountPoint enum class.
  * Defines the available mount points of which PADLL will intercept requests to/from.
  *  - kNone: no mount point differentiation is made; all requests will be interpreted as if destined
- *  to the same mount point;
+ * to the same mount point;
  *  - kLocal: only requests destined towards a local mount point (mount point deployed on the same
- *  host as PADLL) will be handled by PADLL;
+ * host as PADLL) will be handled by PADLL;
  *  - kRemote: only requests destined towards a remote mount point (e.g., Lustre, NFS server, etc.)
  *  will be handled by PADLL.
  */
 enum class MountPoint { kNone = 0, kLocal = 1, kRemote = 2 };
+
+/**
+ * mount_point_to_string: auxiliary method that converts a MountPoint enum value to a string.
+ * @param mount_point_value
+ * @return constexpr std::string_view
+ */
+constexpr std::string_view mount_point_to_string (const MountPoint& mount_point)
+{
+    switch (mount_point) {
+        case MountPoint::kNone:
+            return "kNone";
+        case MountPoint::kLocal:
+            return "kLocal";
+        case MountPoint::kRemote:
+            return "kRemote";
+        default:
+            return "unknown";
+    }
+}
 
 /***************************************************************************************************
  * PADLL default configurations
@@ -118,4 +137,4 @@ constexpr std::string_view option_default_stage_name { "tensorflow-" };
 
 } // namespace padll::options
 
-#endif // PADDL_OPTIONS_HPP
+#endif // PADLL_OPTIONS_HPP

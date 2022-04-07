@@ -186,7 +186,7 @@ extern "C" int open (const char* path, int flags, ...)
         va_list args;
 
         va_start (args, flags);
-        mode_t mode = va_arg (args, int);
+        auto mode = static_cast<mode_t> (va_arg (args, int));
         va_end (args);
 
         return (posix_metadata_calls.padll_intercept_open_var)
@@ -239,7 +239,7 @@ extern "C" int openat (int dirfd, const char* path, int flags, ...)
         va_list args;
 
         va_start (args, flags);
-        mode_t mode = va_arg (args, int);
+        auto mode = static_cast<mode_t> (va_arg (args, int));
         va_end (args);
 
         return (posix_metadata_calls.padll_intercept_openat_var)
@@ -265,7 +265,7 @@ extern "C" int open64 (const char* path, int flags, ...)
         va_list args;
 
         va_start (args, flags);
-        mode_t mode = va_arg (args, int);
+        auto mode = static_cast<mode_t> (va_arg (args, int));
         va_end (args);
 
         return (posix_metadata_calls.padll_intercept_open64_var)

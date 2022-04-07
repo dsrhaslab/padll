@@ -15,6 +15,10 @@ using namespace padll::options;
 
 namespace padll::stage {
 
+/**
+ * MountPointEntry class.
+ * Complete me ...
+ */
 class MountPointEntry {
 
 private:
@@ -33,7 +37,7 @@ public:
      * @param path
      * @param mount_point
      */
-    MountPointEntry (std::string path, const MountPoint& mount_point);
+    MountPointEntry (const std::string& path, const MountPoint& mount_point);
 
     /**
      * MountPointEntry default destructor.

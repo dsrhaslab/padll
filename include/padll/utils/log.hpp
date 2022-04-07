@@ -3,8 +3,8 @@
  *   Copyright (c) 2021-2022 INESC TEC.
  **/
 
-#ifndef PADDL_LOG_HPP
-#define PADDL_LOG_HPP
+#ifndef PADLL_LOG_HPP
+#define PADLL_LOG_HPP
 
 #include <ctime>
 #include <fcntl.h>
@@ -125,4 +125,4 @@ public:
 };
 } // namespace padll::utils::log
 
-#endif // PADDL_LOG_HPP
+#endif // PADLL_LOG_HPP
