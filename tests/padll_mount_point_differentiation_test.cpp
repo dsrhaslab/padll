@@ -79,7 +79,9 @@ private:
                 auto f_ptr = ::fopen (path_to_file.c_str (), "w");
                 // check if file was created
                 if (f_ptr == nullptr) {
-                    std::fprintf (this->m_fd, "Error (create_mount_point_entry): %s\n", strerror (errno));
+                    std::fprintf (this->m_fd,
+                        "Error (create_mount_point_entry): %s\n",
+                        strerror (errno));
                     return;
                 }
 
@@ -92,7 +94,9 @@ private:
 
             // check if entry was created
             if (!result) {
-                std::fprintf (this->m_fd, "Error (create_mount_point_entry): %s\n", strerror (errno));
+                std::fprintf (this->m_fd,
+                    "Error (create_mount_point_entry): %s\n",
+                    strerror (errno));
             }
         }
     }
@@ -111,7 +115,7 @@ private:
         std::stringstream stream;
         long successful_ops = 0;
 
-        for (int i = 0; i < file_identifiers.size (); i++) {
+        for (int i = 0; i < static_cast<int> (file_identifiers.size ()); i++) {
             auto index = static_cast<int> (random () % file_identifiers.size ());
 
             const MountPointEntry* entry;
@@ -151,12 +155,13 @@ private:
      */
     void delete_mount_point_entry (MountPointTable* table_ptr,
         const bool& use_file_descriptor,
-        const std::vector<std::variant<int, FILE*>>& file_identifiers)
+        const std::vector<std::variant<int, FILE*>>& file_identifiers,
+        const bool& print_debug_info)
     {
         std::stringstream stream;
         long successful_ops = 0;
 
-        for (int i = 0; i < file_identifiers.size (); i++) {
+        for (int i = 0; i < static_cast<int> (file_identifiers.size ()); i++) {
             auto index = static_cast<int> (random () % file_identifiers.size ());
 
             bool return_value;
@@ -165,25 +170,26 @@ private:
                 return_value = table_ptr->remove_mount_point_entry (fd);
 
                 // print error message if remote went wrong
-                if (!return_value) {
-                    auto tmp_get = table_ptr->get_mount_point_entry (fd);
+                if (!return_value && print_debug_info) {
                     std::fprintf (this->m_fd, "Error (delete_mount_point_entry): %d\n", fd);
                 }
             } else {
                 auto f_ptr = std::get<FILE*> (file_identifiers[index]);
                 return_value = table_ptr->remove_mount_point_entry (f_ptr);
-                
+
                 // print error message if remote went wrong
-                if (!return_value) {
-                    auto tmp_get = table_ptr->get_mount_point_entry (f_ptr);
-                    std::fprintf (this->m_fd, "Error (delete_mount_point_entry): %p\n", f_ptr);
+                if (!return_value && print_debug_info) {
+                    std::fprintf (this->m_fd,
+                        "Error (delete_mount_point_entry): %p\n",
+                        (void*)f_ptr);
                 }
-                
             }
 
             if (return_value) {
                 successful_ops++;
-                std::fprintf (this->m_fd, "Success\n");
+                if (print_debug_info) {
+                    std::fprintf (this->m_fd, "Success (delete_mount_point_entry)\n");
+                }
             }
         }
     }
@@ -219,14 +225,12 @@ public:
             "/remote/path/to/file3",
             "/tmp/path/to/file4" };
 
-        for (auto& elem : file_paths) {
+        for (auto const& elem : file_paths) {
             auto mount_point = table_ptr->extract_mount_point (elem);
             std::fprintf (this->m_fd,
                 "\tfile_path: %s -- %s\n",
                 elem.data (),
-                (mount_point == MountPoint::kLocal)
-                    ? "local"
-                    : ((mount_point == MountPoint::kRemote) ? "remote" : "none"));
+                padll::options::mount_point_to_string (mount_point).data ());
         }
     }
 
@@ -282,18 +286,24 @@ public:
         const bool& print_debug_info)
     {
         // create lambda function for each thread to execute
-        auto func = [this] (MountPointTable* table_ptr,
-                        const bool& create_fd,
-                        const std::string& path,
-                        const int& num_files,
-                        std::vector<std::variant<int, FILE*>>* file_ptrs) {
+        auto func = [this] (MountPointTable* f_table_ptr,
+                        const bool& f_create_fd,
+                        const std::string& f_path,
+                        const int& f_num_files,
+                        std::vector<std::variant<int, FILE*>>* f_file_ptrs) {
             std::stringstream stream;
             stream << "\t" << get_id () << ": test_create_mount_point_entry" << std::endl;
             std::fprintf (this->m_fd, "%s", stream.str ().c_str ());
-            this->create_mount_point_entry (table_ptr, create_fd, path, num_files, file_ptrs);
+            this->create_mount_point_entry (f_table_ptr,
+                f_create_fd,
+                f_path,
+                f_num_files,
+                f_file_ptrs);
         };
 
-        std::thread threads[num_threads];
+        // create vector of threads and reserve space for num_threads
+        std::vector<std::thread> threads;
+        threads.reserve (num_threads);
 
         auto start = std::chrono::high_resolution_clock::now ();
         // create threads
@@ -312,7 +322,7 @@ public:
 
         // print table info
         if (print_debug_info) {
-            (create_fd)
+            create_fd
                 ? std::fprintf (this->m_fd, "%s\n", table_ptr->fd_table_to_string ().c_str ())
                 : std::fprintf (this->m_fd, "%s\n", table_ptr->fp_table_to_string ().c_str ());
         }
@@ -333,17 +343,21 @@ public:
         const bool& print_debug_info)
     {
         // create lambda function for each thread to execute
-        auto func = [this] (MountPointTable* table_ptr,
-                        const bool& use_fd,
-                        const std::vector<std::variant<int, FILE*>>& file_ptrs,
-                        const bool& print_debug_info) {
+        auto func = [this] (MountPointTable* f_table_ptr,
+                        const bool& f_use_fd,
+                        const std::vector<std::variant<int, FILE*>>& f_file_ptrs,
+                        const bool& f_print_debug_info) {
             std::stringstream stream;
             stream << "\t" << get_id () << ": test_get_mount_point_entry" << std::endl;
             std::fprintf (this->m_fd, "%s", stream.str ().c_str ());
-            this->get_mount_point_entry (table_ptr, use_fd, file_ptrs, print_debug_info);
+
+            // execute get_mount_point_entry routine
+            this->get_mount_point_entry (f_table_ptr, f_use_fd, f_file_ptrs, f_print_debug_info);
         };
 
-        std::thread threads[num_threads];
+        // create vector of threads and reserve space for num_threads
+        std::vector<std::thread> threads;
+        threads.reserve (num_threads);
 
         auto start = std::chrono::high_resolution_clock::now ();
         // create threads
@@ -376,17 +390,24 @@ public:
         const bool& print_debug_info)
     {
         // create lambda function for each thread to execute
-        auto func = [this] (MountPointTable* table_ptr,
-                        const bool& create_fd,
-                        const std::vector<std::variant<int, FILE*>>& file_ptrs,
-                        const bool& print_debug_info) {
+        auto func = [this] (MountPointTable* f_table_ptr,
+                        const bool& f_create_fd,
+                        const std::vector<std::variant<int, FILE*>>& f_file_ptrs,
+                        const bool& f_print_debug_info) {
             std::stringstream stream;
             stream << "\t" << get_id () << ": test_remove_mount_point_entry" << std::endl;
             std::fprintf (this->m_fd, "%s", stream.str ().c_str ());
-            this->delete_mount_point_entry (table_ptr, create_fd, file_ptrs);
+
+            // execute delete_mount_point_entry routine
+            this->delete_mount_point_entry (f_table_ptr,
+                f_create_fd,
+                f_file_ptrs,
+                f_print_debug_info);
         };
 
-        std::thread threads[num_threads];
+        // create vector of threads and reserve space for num_threads
+        std::vector<std::thread> threads;
+        threads.reserve (num_threads);
 
         auto start = std::chrono::high_resolution_clock::now ();
         // create threads
@@ -405,7 +426,7 @@ public:
 
         // print performance report (number of operations and elapsed time)
         this->performance_report ("test_remove_mount_point_entry",
-            num_threads * file_ptrs.size (),
+            static_cast<int> ((num_threads * file_ptrs.size ())),
             std::chrono::duration_cast<std::chrono::nanoseconds> (elapsed_time).count ());
     }
 
@@ -438,7 +459,8 @@ void print_file_identifiers_list (
     std::fprintf (stdout, "%s", stream.str ().c_str ());
 }
 
-// NOTE: To execute these tests, ensure that all syscalls (e.g., ::open) will be submitted to the PosixPassthrough backend; otherwise, they will be first submitted to PAIO data plane stage.
+// NOTE: To execute these tests, ensure that all syscalls (e.g., ::open) will be submitted to the
+// PosixPassthrough backend; otherwise, they will be first submitted to PAIO data plane stage.
 int main (int argc, char** argv)
 {
     // check argv for the file to be placed the result
