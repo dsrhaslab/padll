@@ -163,16 +163,25 @@ private:
             if (use_file_descriptor) {
                 auto fd = std::get<int> (file_identifiers[index]);
                 return_value = table_ptr->remove_mount_point_entry (fd);
+
+                // print error message if remote went wrong
+                if (!return_value) {
+                    std::fprintf (this->m_fd, "Error (delete_mount_point_entry): %d\n", fd);
+                }
             } else {
                 auto f_ptr = std::get<FILE*> (file_identifiers[index]);
                 return_value = table_ptr->remove_mount_point_entry (f_ptr);
+                
+                // print error message if remote went wrong
+                if (!return_value) {
+                    std::fprintf (this->m_fd, "Error (delete_mount_point_entry): %p\n", f_ptr);
+                }
+                
             }
 
             if (return_value) {
                 successful_ops++;
                 std::fprintf (this->m_fd, "Success\n");
-            } else {
-                std::fprintf (this->m_fd, "Error (delete_mount_point_entry): %s\n", strerror (errno));
             }
         }
     }
@@ -427,6 +436,7 @@ void print_file_identifiers_list (
     std::fprintf (stdout, "%s", stream.str ().c_str ());
 }
 
+// NOTE: To execute these tests, ensure that all syscalls (e.g., ::open) will be submitted to the PosixPassthrough backend; otherwise, they will be first submitted to PAIO data plane stage.
 int main (int argc, char** argv)
 {
     // check argv for the file to be placed the result
