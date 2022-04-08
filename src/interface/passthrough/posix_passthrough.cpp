@@ -13,7 +13,10 @@
 namespace padll::interface::passthrough {
 
 // PosixPassthrough default constructor.
-PosixPassthrough::PosixPassthrough ()
+PosixPassthrough::PosixPassthrough () :
+    m_log { std::make_shared<Log> (option_default_enable_debug_level,
+        option_default_enable_debug_with_ld_preload,
+        std::string { option_default_log_path }) }
 {
     std::printf ("PosixPassthrough default constructor.\n");
     // initialize library handle pointer.
@@ -21,7 +24,9 @@ PosixPassthrough::PosixPassthrough ()
 }
 
 // PosixPassthrough explicit parameterized constructor.
-PosixPassthrough::PosixPassthrough (std::string lib_name) : m_lib_name { lib_name }
+PosixPassthrough::PosixPassthrough (const std::string& lib_name, std::shared_ptr<Log> log_ptr) :
+    m_lib_name { lib_name },
+    m_log { log_ptr }
 {
     std::printf ("PosixPassthrough parameterized constructor.\n");
     // initialize library handle pointer.
@@ -35,20 +40,13 @@ PosixPassthrough::~PosixPassthrough ()
     std::printf ("PosixPassthrough default destructor.\n");
     std::printf ("%s\n", this->to_string ().c_str ());
 
-    // validate if library handle is valid and close dynamic linking
-    if (this->m_lib_handle != nullptr) {
-        // close dynamic linking to intercepted library.
-        // It decrements the reference count on the dynamically loaded shared object, referred to
-        // by handle m_lib_handle. If the reference count drops to zero, then the object is
-        // unloaded. All shared objects that were automatically loaded when dlopen () was invoked
-        // on the object referred to by handle are recursively closed in the same manner.
-        int dlclose_result = ::dlclose (this->m_lib_handle);
-
-        // validate result from dlclose
-        if (dlclose_result != 0) {
-            std::printf ("PosixPassthrough::Error while closing dynamic link (%d).\n",
-                dlclose_result);
-        }
+    // validate if library handle is valid and close dynamic linking.
+    // It decrements the reference count on the dynamically loaded shared object, referred to
+    // by handle m_lib_handle. If the reference count drops to zero, then the object is
+    // unloaded. All shared objects that were automatically loaded when dlopen () was invoked
+    // on the object referred to by handle are recursively closed in the same manner.
+    if (this->m_lib_handle != nullptr && !::dlclose (this->m_lib_handle)) {
+        std::printf ("PosixPassthrough::Error while closing dynamic link.\n");
     }
 }
 
@@ -78,7 +76,8 @@ std::string PosixPassthrough::to_string ()
 // dlopen_library_handle call. (...)
 bool PosixPassthrough::dlopen_library_handle ()
 {
-    std::unique_lock<std::mutex> unique_lock (this->m_lock);
+    // unique_lock over mutex
+    std::unique_lock lock (this->m_lock);
     // Dynamic loading of the libc library (referred to as 'libc.so.6').
     // loads the dynamic shared object (shared library) file named by the null-terminated string
     // filename and returns an opaque "handle" for the loaded object.
@@ -91,18 +90,15 @@ bool PosixPassthrough::dlopen_library_handle ()
 // initialize call. (...)
 void PosixPassthrough::initialize ()
 {
-
+    // TODO: check m_log pointer value and compare with the other instances.
     std::printf ("PosixPassthrough before initialize.\n");
-    // open library and assign pointer to m_lib_handle
-    bool open_lib_handle = this->dlopen_library_handle ();
-
-    // validate library pointer
-    if (!open_lib_handle) {
+    // assign pointer to m_lib_handle, and validate pointer
+    if (!this->dlopen_library_handle ()) {
         std::printf ("PosixPassthrough::Error while dlopen'ing %s.\n", this->m_lib_name.c_str ());
         return;
     }
 
-    std::printf ("PosixPassthrough after initalize.\n");
+    std::printf ("PosixPassthrough after initialize.\n");
 }
 
 // set_statistic_collection call. (...)

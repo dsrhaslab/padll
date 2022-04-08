@@ -96,8 +96,10 @@ public:
     //     // validate if library handle is valid and close dynamic linking
     //     if (this->m_lib_handle != nullptr) {
     //         // close dynamic linking to intercepted library.
-    //         // It decrements the reference count on the dynamically loaded shared object, referred
-    //         // to by handle m_lib_handle. If the reference count drops to zero, then the object is
+    //         // It decrements the reference count on the dynamically loaded shared object,
+    //         referred
+    //         // to by handle m_lib_handle. If the reference count drops to zero, then the object
+    //         is
     //         // unloaded. All shared objects that were automatically loaded when dlopen () was
     //         // invoked on the object referred to by handle are recursively closed in the same
     //         // manner.

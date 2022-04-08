@@ -38,7 +38,12 @@ private:
     int m_fd { STDOUT_FILENO };
     std::string m_log_file_path {};
 
-    std::string create_file_name (const std::string& file_name);
+    /**
+     * create_file_name:
+     * @param file_name
+     * @return std::string
+     */
+    std::string create_file_name (const std::string& file_name) const;
 
     /**
      * initialize:
@@ -56,28 +61,29 @@ private:
      * @param level
      * @return
      */
-    std::string create_formatted_message (const std::string& message, const std::string& level);
+    std::string create_formatted_message (const std::string& message,
+        const std::string& level) const;
 
     /**
      * create_formatted_info_message:
      * @param message
      * @return
      */
-    std::string create_formatted_info_message (const std::string& message);
+    std::string create_formatted_info_message (const std::string& message) const;
 
     /**
      * create_formatted_error_message:
      * @param message
      * @return
      */
-    std::string create_formatted_error_message (const std::string& message);
+    std::string create_formatted_error_message (const std::string& message) const;
 
     /**
      * create_formatted_debug_message:
      * @param message
      * @return
      */
-    std::string create_formatted_debug_message (const std::string& message);
+    std::string create_formatted_debug_message (const std::string& message) const;
 
     /**
      * dlsym_write_message:
@@ -85,7 +91,7 @@ private:
      * @param message
      * @return
      */
-    ssize_t dlsym_write_message (int fd, const std::string& message);
+    ssize_t dlsym_write_message (int fd, const std::string& message) const;
 
 public:
     /**

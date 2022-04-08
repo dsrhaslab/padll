@@ -8,7 +8,7 @@
 namespace padll::interface::ldpreloaded {
 
 // LdPreloadedPosix default constructor.
-LdPreloadedPosix::LdPreloadedPosix () : m_stage { std::make_unique<DataPlaneStage> () }
+LdPreloadedPosix::LdPreloadedPosix ()
 {
     std::printf ("LdPreloadedPosix default constructor.\n");
 }
@@ -16,7 +16,6 @@ LdPreloadedPosix::LdPreloadedPosix () : m_stage { std::make_unique<DataPlaneStag
 // LdPreloadedPosix parameterized constructor.
 LdPreloadedPosix::LdPreloadedPosix (const std::string& lib, const bool& stat_collection) :
     m_collect { stat_collection },
-    m_stage { std::make_unique<DataPlaneStage> () },
     m_mount_point_table { "ld-preloaded-posix-" + lib }
 {
     std::printf ("LdPreloadedPosix parameterized constructor.\n");
@@ -321,7 +320,7 @@ int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags, mode
     // perform original POSIX open operation
     int result = m_metadata_operations.m_open_var (path, flags, mode);
 
-    // todo: create_mount_point_entry
+    // TODO: create_mount_point_entry
 
     // update statistic entry
     if (this->m_collect) {
@@ -359,7 +358,7 @@ int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags)
     // perform original POSIX open operation
     int result = m_metadata_operations.m_open (path, flags);
 
-    // todo: create_mount_point_entry
+    // TODO: create_mount_point_entry
 
     // update statistic entry
     if (this->m_collect) {
@@ -396,7 +395,7 @@ int LdPreloadedPosix::ld_preloaded_posix_creat (const char* path, mode_t mode)
     // perform original POSIX creat operation
     int result = m_metadata_operations.m_creat (path, mode);
 
-    // todo: create_mount_point_entry
+    // TODO: create_mount_point_entry
 
     // update statistic entry
     if (this->m_collect) {
@@ -436,7 +435,7 @@ int LdPreloadedPosix::ld_preloaded_posix_creat64 (const char* path, mode_t mode)
     // perform original POSIX creat64 operation
     int result = m_metadata_operations.m_creat64 (path, mode);
 
-    // todo: create_mount_point_entry
+    // TODO: create_mount_point_entry
 
     // update statistic entry
     if (this->m_collect) {
@@ -479,7 +478,7 @@ int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd,
     // perform original POSIX openat operation
     int result = m_metadata_operations.m_openat_var (dirfd, path, flags, mode);
 
-    // todo: create_mount_point_entry
+    // TODO: create_mount_point_entry
 
     // update statistic entry
     if (this->m_collect) {
@@ -519,7 +518,7 @@ int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd, const char* path, in
     // perform original POSIX openat operation
     int result = m_metadata_operations.m_openat (dirfd, path, flags);
 
-    // todo: create_mount_point_entry
+    // TODO: create_mount_point_entry
 
     // update statistic entry
     if (this->m_collect) {
@@ -559,7 +558,7 @@ int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags, mo
     // perform original POSIX open64 operation
     int result = m_metadata_operations.m_open64_var (path, flags, mode);
 
-    // todo: create_mount_point_entry
+    // TODO: create_mount_point_entry
 
     // update statistic entry
     if (this->m_collect) {
@@ -597,7 +596,7 @@ int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags)
     // perform original POSIX open64 operation
     int result = m_metadata_operations.m_open64 (path, flags);
 
-    // todo: create_mount_point_entry
+    // TODO: create_mount_point_entry
 
     // update statistic entry
     if (this->m_collect) {
@@ -636,7 +635,7 @@ int LdPreloadedPosix::ld_preloaded_posix_close (int fd)
     // perform original POSIX close operation
     int result = m_metadata_operations.m_close (fd);
 
-    // todo: remove_mount_point_entry
+    // TODO: remove_mount_point_entry
 
     // update statistic entry
     if (this->m_collect) {
@@ -667,7 +666,7 @@ void LdPreloadedPosix::ld_preloaded_posix_sync ()
     this->m_dlsym_hook.hook_posix_sync (m_metadata_operations.m_sync);
 
     // enforce sync request to PAIO data plane stage
-    // todo: don't really know what to do here
+    // TODO: don't really know what to do here
     // this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
     // static_cast<int> (paio::core::POSIX::sync),
     //    static_cast<int> (paio::core::POSIX_META::meta_op),
@@ -853,7 +852,7 @@ int LdPreloadedPosix::ld_preloaded_posix_unlink (const char* path)
     // perform original POSIX unlink operation
     int result = m_metadata_operations.m_unlink (path);
 
-    // todo: remove_mount_point_entry
+    // TODO: remove_mount_point_entry
 
     // update statistic entry
     if (this->m_collect) {
@@ -893,7 +892,7 @@ int LdPreloadedPosix::ld_preloaded_posix_unlinkat (int dirfd, const char* pathna
     // perform original POSIX unlinkat operation
     int result = m_metadata_operations.m_unlinkat (dirfd, pathname, flags);
 
-    // todo: remove_mount_point_entry
+    // TODO: remove_mount_point_entry
 
     // update statistic entry
     if (this->m_collect) {
@@ -934,8 +933,8 @@ int LdPreloadedPosix::ld_preloaded_posix_rename (const char* old_path, const cha
     // perform original POSIX rename operation
     int result = m_metadata_operations.m_rename (old_path, new_path);
 
-    // todo: create_mount_point_entry (new_path)
-    // todo: remove_mount_point_entry (old_path)
+    // TODO: create_mount_point_entry (new_path)
+    // TODO: remove_mount_point_entry (old_path)
 
     // update statistic entry
     if (this->m_collect) {
@@ -980,8 +979,8 @@ int LdPreloadedPosix::ld_preloaded_posix_renameat (int olddirfd,
     // perform original POSIX renameat operation
     int result = m_metadata_operations.m_renameat (olddirfd, old_path, newdirfd, new_path);
 
-    // todo: create_mount_point_entry (new_path)
-    // todo: remove_mount_point_entry (old_path)
+    // TODO: create_mount_point_entry (new_path)
+    // TODO: remove_mount_point_entry (old_path)
 
     // update statistic entry
     if (this->m_collect) {
@@ -1021,7 +1020,7 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_fopen (const char* pathname, const ch
     // perform original POSIX fopen operation
     FILE* result = m_metadata_operations.m_fopen (pathname, mode);
 
-    // todo: create_mount_point_entry
+    // TODO: create_mount_point_entry
 
     // update statistic entry
     if (this->m_collect) {
@@ -1061,7 +1060,7 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_fopen64 (const char* pathname, const 
     // perform original POSIX fopen64 operation
     FILE* result = m_metadata_operations.m_fopen64 (pathname, mode);
 
-    // todo: create_mount_point_entry
+    // TODO: create_mount_point_entry
 
     // update statistic entry
     if (this->m_collect) {
@@ -1100,7 +1099,7 @@ int LdPreloadedPosix::ld_preloaded_posix_fclose (FILE* stream)
     // perform original POSIX fclose operation
     int result = m_metadata_operations.m_fclose (stream);
 
-    // todo: remove_mount_point_entry
+    // TODO: remove_mount_point_entry
 
     // update statistic entry
     if (this->m_collect) {

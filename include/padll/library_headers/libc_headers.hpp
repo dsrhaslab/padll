@@ -26,27 +26,27 @@ namespace padll::headers {
 /**
  * Metadata calls.
  */
-using libc_open_variadic_t = int (*)(const char*, int, ...);
-using libc_open_t = int (*)(const char*, int);
-using libc_creat_t = int (*)(const char*, mode_t);
-using libc_creat64_t = int (*)(const char*, mode_t);
-using libc_openat_variadic_t = int (*)(int, const char*, int, ...);
-using libc_openat_t = int (*)(int, const char*, int);
-using libc_open64_variadic_t = int (*)(const char*, int, ...);
-using libc_open64_t = int (*)(const char*, int);
-using libc_close_t = int (*)(int);
-using libc_sync_t = void (*)();
-using libc_statfs_t = int (*)(const char*, struct statfs*);
-using libc_fstatfs_t = int (*)(int, struct statfs*);
-using libc_statfs64_t = int (*)(const char*, struct statfs64*);
-using libc_fstatfs64_t = int (*)(int, struct statfs64*);
-using libc_unlink_t = int (*)(const char*);
-using libc_unlinkat_t = int (*)(int, const char*, int);
-using libc_rename_t = int (*)(const char*, const char*);
-using libc_renameat_t = int (*)(int, const char*, int, const char*);
+using libc_open_variadic_t = int (*) (const char*, int, ...);
+using libc_open_t = int (*) (const char*, int);
+using libc_creat_t = int (*) (const char*, mode_t);
+using libc_creat64_t = int (*) (const char*, mode_t);
+using libc_openat_variadic_t = int (*) (int, const char*, int, ...);
+using libc_openat_t = int (*) (int, const char*, int);
+using libc_open64_variadic_t = int (*) (const char*, int, ...);
+using libc_open64_t = int (*) (const char*, int);
+using libc_close_t = int (*) (int);
+using libc_sync_t = void (*) ();
+using libc_statfs_t = int (*) (const char*, struct statfs*);
+using libc_fstatfs_t = int (*) (int, struct statfs*);
+using libc_statfs64_t = int (*) (const char*, struct statfs64*);
+using libc_fstatfs64_t = int (*) (int, struct statfs64*);
+using libc_unlink_t = int (*) (const char*);
+using libc_unlinkat_t = int (*) (int, const char*, int);
+using libc_rename_t = int (*) (const char*, const char*);
+using libc_renameat_t = int (*) (int, const char*, int, const char*);
 using libc_fopen_t = FILE* (*)(const char*, const char*);
 using libc_fopen64_t = FILE* (*)(const char*, const char*);
-using libc_fclose_t = int (*)(FILE*);
+using libc_fclose_t = int (*) (FILE*);
 
 /**
  * libc_metadata struct: provides an object with the function pointers to all libc metadata-like
@@ -79,16 +79,16 @@ struct libc_metadata {
 /**
  * Data calls.
  */
-using libc_read_t = ssize_t (*)(int, void*, size_t);
-using libc_write_t = ssize_t (*)(int, const void*, size_t);
-using libc_pread_t = ssize_t (*)(int, void*, size_t, off_t);
-using libc_pwrite_t = ssize_t (*)(int, const void*, size_t, off_t);
+using libc_read_t = ssize_t (*) (int, void*, size_t);
+using libc_write_t = ssize_t (*) (int, const void*, size_t);
+using libc_pread_t = ssize_t (*) (int, void*, size_t, off_t);
+using libc_pwrite_t = ssize_t (*) (int, const void*, size_t, off_t);
 #if defined(__USE_LARGEFILE64)
-using libc_pread64_t = ssize_t (*)(int, void*, size_t, off64_t);
-using libc_pwrite64_t = ssize_t (*)(int, const void*, size_t, off64_t);
+using libc_pread64_t = ssize_t (*) (int, void*, size_t, off64_t);
+using libc_pwrite64_t = ssize_t (*) (int, const void*, size_t, off64_t);
 #endif
 using libc_mmap_t = void* (*)(void*, size_t, int, int, int, off_t);
-using libc_munmap_t = int (*)(void*, size_t);
+using libc_munmap_t = int (*) (void*, size_t);
 
 /**
  * libc_data: provides an object with the function pointers to all libc data-like operations.
@@ -109,11 +109,11 @@ struct libc_data {
 /**
  * Directory calls.
  */
-using libc_mkdir_t = int (*)(const char*, mode_t);
-using libc_mkdirat_t = int (*)(int, const char*, mode_t);
-using libc_rmdir_t = int (*)(const char*);
-using libc_mknod_t = int (*)(const char*, mode_t, dev_t);
-using libc_mknodat_t = int (*)(int, const char*, mode_t, dev_t);
+using libc_mkdir_t = int (*) (const char*, mode_t);
+using libc_mkdirat_t = int (*) (int, const char*, mode_t);
+using libc_rmdir_t = int (*) (const char*);
+using libc_mknod_t = int (*) (const char*, mode_t, dev_t);
+using libc_mknodat_t = int (*) (int, const char*, mode_t, dev_t);
 
 /**
  * libc_directory: provides an object with the function pointers to all libc directory-like
@@ -130,15 +130,15 @@ struct libc_directory {
 /**
  * Extended attributes calls.
  */
-using libc_getxattr_t = ssize_t (*)(const char*, const char*, void*, size_t);
-using libc_lgetxattr_t = ssize_t (*)(const char*, const char*, void*, size_t);
-using libc_fgetxattr_t = ssize_t (*)(int, const char*, void*, size_t);
-using libc_setxattr_t = int (*)(const char*, const char*, const void*, size_t, int);
-using libc_lsetxattr_t = int (*)(const char*, const char*, const void*, size_t, int);
-using libc_fsetxattr_t = int (*)(int, const char*, const void*, size_t, int);
-using libc_listxattr_t = ssize_t (*)(const char*, char*, size_t);
-using libc_llistxattr_t = ssize_t (*)(const char*, char*, size_t);
-using libc_flistxattr_t = ssize_t (*)(int, char*, size_t);
+using libc_getxattr_t = ssize_t (*) (const char*, const char*, void*, size_t);
+using libc_lgetxattr_t = ssize_t (*) (const char*, const char*, void*, size_t);
+using libc_fgetxattr_t = ssize_t (*) (int, const char*, void*, size_t);
+using libc_setxattr_t = int (*) (const char*, const char*, const void*, size_t, int);
+using libc_lsetxattr_t = int (*) (const char*, const char*, const void*, size_t, int);
+using libc_fsetxattr_t = int (*) (int, const char*, const void*, size_t, int);
+using libc_listxattr_t = ssize_t (*) (const char*, char*, size_t);
+using libc_llistxattr_t = ssize_t (*) (const char*, char*, size_t);
+using libc_flistxattr_t = ssize_t (*) (int, char*, size_t);
 
 /**
  * libc_extattr: provides an object with the function pointers to all libc extended attributes
