@@ -3,6 +3,7 @@
  *   Copyright (c) 2021-2022 INESC TEC.
  **/
 
+#include <cinttypes>
 #include <padll/statistics/statistic_entry.hpp>
 
 namespace padll::stats {
@@ -88,7 +89,7 @@ std::string StatisticEntry::to_string ()
     // TODO: use fmtlib/fmt for easier and faster formatting
     char stream[65];
     std::sprintf (stream,
-        "%18s %10llu %12llu %15llu",
+        "%18s %10" PRIu64 " %10" PRIu64 " %15" PRIu64 "",
         this->m_entry_name.c_str (),
         this->m_operation_counter,
         this->m_error_counter,

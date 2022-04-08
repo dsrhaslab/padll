@@ -47,7 +47,8 @@ private:
      */
     bool dlopen_library_handle ()
     {
-        std::unique_lock<std::mutex> unique_lock (this->m_lock);
+        // unique_lock over mutex
+        std::unique_lock unique_lock (this->m_lock);
         // Dynamic loading of the libc library (referred to as 'libc.so.6').
         // loads the dynamic shared object (shared library) file named by the null-terminated string
         // filename and returns an opaque "handle" for the loaded object.
@@ -72,7 +73,7 @@ public:
      * @param library_path
      * TODO: validate move operation of the Log
      */
-    DlsymHookLibc (const std::string& library_path) : m_lib_name { library_path }
+    explicit DlsymHookLibc (const std::string_view& library_path) : m_lib_name { library_path }
     {
         // validate if 'lib' is valid
         if (library_path.empty ()) {
@@ -87,25 +88,27 @@ public:
     /**
      * DlsymHookLibc default destructor.
      */
-    ~DlsymHookLibc ()
-    {
-        std::unique_lock<std::mutex> lock (this->m_lock);
-        // validate if library handle is valid and close dynamic linking
-        if (this->m_lib_handle != nullptr) {
-            // close dynamic linking to intercepted library.
-            // It decrements the reference count on the dynamically loaded shared object, referred
-            // to by handle m_lib_handle. If the reference count drops to zero, then the object is
-            // unloaded. All shared objects that were automatically loaded when dlopen () was
-            // invoked on the object referred to by handle are recursively closed in the same
-            // manner.
-            int dlclose_result = ::dlclose (this->m_lib_handle);
+    ~DlsymHookLibc () = default;
+    // ~DlsymHookLibc ()
+    // {
+    //     // unique_lock over mutex
+    //     std::unique_lock lock (this->m_lock);
+    //     // validate if library handle is valid and close dynamic linking
+    //     if (this->m_lib_handle != nullptr) {
+    //         // close dynamic linking to intercepted library.
+    //         // It decrements the reference count on the dynamically loaded shared object, referred
+    //         // to by handle m_lib_handle. If the reference count drops to zero, then the object is
+    //         // unloaded. All shared objects that were automatically loaded when dlopen () was
+    //         // invoked on the object referred to by handle are recursively closed in the same
+    //         // manner.
+    //         int dlclose_result = ::dlclose (this->m_lib_handle);
 
-            // validate result from dlclose
-            if (dlclose_result != 0) {
-                std::printf ("Error while closing dynamic link (%d).\n", dlclose_result);
-            }
-        }
-    }
+    //         // validate result from dlclose
+    //         if (dlclose_result != 0) {
+    //             std::printf ("Error while closing dynamic link (%d).\n", dlclose_result);
+    //         }
+    //     }
+    // }
 
     /**
      * hook_posix_read:
