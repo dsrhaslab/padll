@@ -12,7 +12,7 @@
 
 /**
  * TODO: create Options class and initialize as a shared_ptr; otherwise we can have initialization
- *  issues in MountPointTable::initialize()
+ * issues in MountPointTable::initialize()
  */
 namespace padll::options {
 
@@ -24,7 +24,7 @@ namespace padll::options {
  *  - kLocal: only requests destined towards a local mount point (mount point deployed on the same
  * host as PADLL) will be handled by PADLL;
  *  - kRemote: only requests destined towards a remote mount point (e.g., Lustre, NFS server, etc.)
- *  will be handled by PADLL.
+ * will be handled by PADLL.
  */
 enum class MountPoint { kNone = 0, kLocal = 1, kRemote = 2 };
 

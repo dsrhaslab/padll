@@ -33,7 +33,12 @@ private:
     std::vector<StatisticEntry> m_statistic_entries {};
     std::mutex m_stats_mutex;
 
-    long aggregate_counters (int type);
+    /**
+     * aggregate_counters:
+     * @param type
+     * @return long
+     */
+    [[nodiscard]] long aggregate_counters (int type);
 
 public:
     /**
@@ -45,7 +50,7 @@ public:
      * Statistics parameterized constructor.
      * @param operation_type
      */
-    Statistics (std::string identifier, const OperationType& operation_type);
+    Statistics (const std::string& identifier, const OperationType& operation_type);
 
     /**
      * Statistics default destructor.
@@ -70,7 +75,7 @@ public:
      * @param operation Defines the operation entry to be retrieved.
      * @return Returns a copy of the respective StatisticEntry object.
      */
-    StatisticEntry get_statistic_entry (const int& operation);
+    [[nodiscard]] StatisticEntry get_statistic_entry (const int& operation);
 
     /**
      * update_statistic_entry: update both byte and operation counters of a specific StatisticEntry
@@ -100,20 +105,20 @@ public:
      * get_stats_identifier_call: get the identifier of the Statistics object.
      * @return Returns a copy of the m_stats_identifier parameter.
      */
-    std::string get_stats_identifier () const;
+    [[nodiscard]] std::string get_stats_identifier () const;
 
     /**
      * get_stats_size: Get the total of statistics entries stored in the container.
      * @return Returns a copy of the m_stats_size parameter.
      */
-    int get_stats_size () const;
+    [[nodiscard]] int get_stats_size () const;
 
     /**
      * to_string: generate a string with all statistic entries stored in the m_statistic_entries
      * container.
      * @return Returns the description of all StatisticEntry objects in string-based format.
      */
-    std::string to_string ();
+    [[maybe_unused]] std::string to_string ();
 
     /**
      * tabulate:

@@ -11,7 +11,7 @@ namespace padll::stats {
 Statistics::Statistics () = default;
 
 // Statistics parameterized constructor.
-Statistics::Statistics (std::string identifier, const OperationType& operation_type) :
+Statistics::Statistics (const std::string& identifier, const OperationType& operation_type) :
     m_stats_identifier { identifier }
 {
     this->initialize (operation_type);
@@ -23,7 +23,8 @@ Statistics::~Statistics () = default;
 // initialize call. (...)
 void Statistics::initialize (const OperationType& operation_type)
 {
-    std::unique_lock<std::mutex> lock (this->m_stats_mutex);
+    // unique_lock over mutex
+    std::unique_lock lock (this->m_stats_mutex);
 
     switch (operation_type) {
         case OperationType::metadata_calls: {
@@ -84,7 +85,8 @@ std::string Statistics::get_stats_identifier () const
 // get_statistic_entry call. (...)
 StatisticEntry Statistics::get_statistic_entry (const int& operation)
 {
-    std::unique_lock<std::mutex> unique_lock (this->m_stats_mutex);
+    // unique_lock over mutex
+    std::unique_lock lock (this->m_stats_mutex);
     // calculate the operation's position in the statistics container
     int position = operation % this->m_stats_size;
 
@@ -96,7 +98,7 @@ void Statistics::update_statistic_entry (const int& operation_type,
     const uint64_t& operation_value,
     const uint64_t& byte_value)
 {
-    // calculate the operation's position in the statistics container
+    // calculate the operation's position (index) in the statistics container
     int position = operation_type % this->m_stats_size;
 
     // update operation and byte counters
@@ -110,7 +112,7 @@ void Statistics::update_statistic_entry (const int& operation_type,
     const uint64_t& byte_value,
     const uint64_t& error_value)
 {
-    // calculate the operation's position in the statistics container
+    // calculate the operation's position (index) in the statistics container
     int position = operation_type % this->m_stats_size;
 
     // update operation, byte, and error counters
@@ -137,6 +139,7 @@ std::string Statistics::to_string ()
         }
     }
 
+    // TODO: use fmtlib/fmt for easier and faster formatting
     char header[65];
     std::sprintf (header, "%18s %10s %12s %15s", "syscall", "calls", "errors", "bytes");
     stream << header << "\n";
