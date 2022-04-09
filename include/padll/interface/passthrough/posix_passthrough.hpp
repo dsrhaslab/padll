@@ -26,7 +26,7 @@ class PosixPassthrough {
 
 private:
     std::mutex m_lock;
-    std::string m_lib_name { option_library_name };
+    const std::string m_lib_name { option_library_name };
     void* m_lib_handle { nullptr };
     std::shared_ptr<Log> m_log { nullptr };
 

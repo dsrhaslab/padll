@@ -115,19 +115,19 @@ public:
      * log_info: Log a message with the INFO qualifier.
      * @param message Log message.
      */
-    void log_info (const std::string& message);
+    void log_info (const std::string& message) const;
 
     /**
      * log_error: Log a message with the ERROR qualifier.
      * @param message Log message.
      */
-    void log_error (const std::string& message);
+    void log_error (const std::string& message) const;
 
     /**
      * log_debug: Log a message with the DEBUG qualifier.
      * @param message Log message.
      */
-    void log_debug (const std::string& message);
+    void log_debug (const std::string& message) const;
 };
 } // namespace padll::utils::log
 

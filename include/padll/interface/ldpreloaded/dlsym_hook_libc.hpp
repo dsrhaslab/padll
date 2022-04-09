@@ -9,10 +9,12 @@
 #include <mutex>
 #include <padll/library_headers/libc_headers.hpp>
 #include <padll/options/options.hpp>
+#include <padll/utils/log.hpp>
 #include <utility>
 
 using namespace padll::headers;
 using namespace padll::options;
+using namespace padll::utils::log;
 
 namespace padll::interface::ldpreloaded {
 
@@ -22,18 +24,19 @@ private:
     std::mutex m_lock;
     std::string m_lib_name { option_library_name };
     void* m_lib_handle { nullptr };
+    std::shared_ptr<Log> m_log { nullptr };
 
     /**
      *  initialize:
      */
     void initialize ()
     {
+        // TODO: check m_log pointer value and compare with the other instances.
+        std::printf ("DlsymHookLibc initialize (%p).\n", (void*)this->m_log.get ());
         // open library and assign pointer to m_lib_handle
-        bool open_lib_handle = this->dlopen_library_handle ();
-
-        // validate library pointer
-        if (!open_lib_handle) {
-            std::printf ("Error while dlopen'ing %s.\n", this->m_lib_name.c_str ());
+        if (!this->dlopen_library_handle ()) {
+            this->m_log->log_error ("DlymHook::Error while dlopen'ing "
+                + (this->m_lib_name.empty () ? "<undefined lib>" : this->m_lib_name) + ".");
             return;
         }
     }
@@ -48,7 +51,7 @@ private:
     bool dlopen_library_handle ()
     {
         // unique_lock over mutex
-        std::unique_lock unique_lock (this->m_lock);
+        std::unique_lock lock (this->m_lock);
         // Dynamic loading of the libc library (referred to as 'libc.so.6').
         // loads the dynamic shared object (shared library) file named by the null-terminated string
         // filename and returns an opaque "handle" for the loaded object.
@@ -62,7 +65,10 @@ public:
     /**
      * DlsymHookLibc default constructor.
      */
-    DlsymHookLibc ()
+    DlsymHookLibc () :
+        m_log { std::make_shared<Log> (option_default_enable_debug_level,
+            option_default_enable_debug_with_ld_preload,
+            std::string { option_default_log_path }) }
     {
         // initialize library handle pointer
         this->initialize ();
@@ -71,13 +77,15 @@ public:
     /**
      * DlsymHookLibc parameterized constructor.
      * @param library_path
-     * TODO: validate move operation of the Log
+     * @param log_ptr
      */
-    explicit DlsymHookLibc (const std::string_view& library_path) : m_lib_name { library_path }
+    DlsymHookLibc (const std::string_view& library_path, std::shared_ptr<Log> log_ptr) :
+        m_lib_name { library_path },
+        m_log { log_ptr }
     {
         // validate if 'lib' is valid
         if (library_path.empty ()) {
-            std::printf ("Library path not valid.\n");
+            this->m_log->log_error ("Library path not valid.");
             return;
         }
 

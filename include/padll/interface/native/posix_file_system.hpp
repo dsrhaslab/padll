@@ -30,7 +30,10 @@ const std::shared_ptr<lgr::Log> m_logger_ptr { std::make_shared<lgr::Log> (
 /**
  * LdPreloaded file system object.
  */
-ldp::LdPreloadedPosix m_ld_preloaded_posix {};
+// ldp::LdPreloadedPosix m_ld_preloaded_posix {};
+ldp::LdPreloadedPosix m_ld_preloaded_posix { std::string (option_library_name),
+    option_default_statistic_collection,
+    m_logger_ptr };
 
 /**
  * PosixPassthrough file system object.

@@ -67,7 +67,7 @@ void Log::initialize ()
 
         // verify file descriptor result
         if (this->m_fd == -1) {
-            perror ("Error in Log::initialize");
+            perror ("Log::Error in initialize");
             this->m_fd = STDOUT_FILENO;
         }
     }
@@ -84,7 +84,7 @@ void Log::cleanup ()
 
         // verify return_value
         if (return_value < 0) {
-            perror ("Error on cleanup");
+            perror ("Log::Error on cleanup");
         }
     }
 }
@@ -96,8 +96,7 @@ std::string Log::create_formatted_message (const std::string& message,
     std::time_t current_time = std::time (nullptr);
     struct std::tm time_info;
     localtime_r (&current_time, &time_info);
-    // std::time_t current_time = std::time (nullptr);
-    // std::tm time_info = *std::localtime (&current_time);
+
     std::stringstream formatted_message;
     formatted_message << "[" << std::put_time (&time_info, "%F %T") << "] ";
     formatted_message << level;
@@ -131,7 +130,7 @@ ssize_t Log::dlsym_write_message (int fd, const std::string& message) const
 }
 
 // log_info call. Log message with INFO qualifier.
-void Log::log_info (const std::string& message)
+void Log::log_info (const std::string& message) const
 {
     if (this->m_is_ld_preloaded) {
         // generate formatted info message
@@ -141,7 +140,7 @@ void Log::log_info (const std::string& message)
 
         // verify return value of write operation
         if (return_value < 0) {
-            perror ("Error on log_info");
+            perror ("Log::Error on log_info");
         }
     } else {
         spdlog::info (message);
@@ -149,7 +148,7 @@ void Log::log_info (const std::string& message)
 }
 
 // log_error call. Log message with ERROR qualifier.
-void Log::log_error (const std::string& message)
+void Log::log_error (const std::string& message) const
 {
     if (this->m_is_ld_preloaded) {
         // generate formatted error message
@@ -159,7 +158,7 @@ void Log::log_error (const std::string& message)
 
         // verify return value of write operation
         if (return_value < 0) {
-            perror ("Error on log_error");
+            perror ("Log::Error on log_error");
         }
     } else {
         spdlog::error (message);
@@ -167,7 +166,7 @@ void Log::log_error (const std::string& message)
 }
 
 // log_debug call. Log message with DEBUG qualifier.
-void Log::log_debug (const std::string& message)
+void Log::log_debug (const std::string& message) const
 {
     if (this->m_is_ld_preloaded) {
         // generate formatted debug message
@@ -177,7 +176,7 @@ void Log::log_debug (const std::string& message)
 
         // verify return value of write operation
         if (return_value < 0) {
-            perror ("Error on log_debug");
+            perror ("Log::Error on log_debug");
         }
     } else {
         spdlog::debug (message);

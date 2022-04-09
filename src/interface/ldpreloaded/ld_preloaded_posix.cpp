@@ -8,17 +8,27 @@
 namespace padll::interface::ldpreloaded {
 
 // LdPreloadedPosix default constructor.
-LdPreloadedPosix::LdPreloadedPosix ()
+LdPreloadedPosix::LdPreloadedPosix () :
+    m_log { std::make_shared<Log> (option_default_enable_debug_level,
+        option_default_enable_debug_with_ld_preload,
+        std::string { option_default_log_path }) },
+    m_dlsym_hook { option_library_name, this->m_log }
 {
-    std::printf ("LdPreloadedPosix default constructor.\n");
+    // TODO: check m_log pointer value and compare with the other instances.
+    std::printf ("LdPreloadedPosix default constructor (%p).\n", (void*)this->m_log.get ());
 }
 
 // LdPreloadedPosix parameterized constructor.
-LdPreloadedPosix::LdPreloadedPosix (const std::string& lib, const bool& stat_collection) :
+LdPreloadedPosix::LdPreloadedPosix (const std::string& lib,
+    const bool& stat_collection,
+    std::shared_ptr<Log> log_ptr) :
+    m_log { log_ptr },
+    m_dlsym_hook { lib, this->m_log },
     m_collect { stat_collection },
     m_mount_point_table { "ld-preloaded-posix-" + lib }
 {
-    std::printf ("LdPreloadedPosix parameterized constructor.\n");
+    // TODO: check m_log pointer value and compare with the other instances.
+    std::printf ("LdPreloadedPosix parameterized constructor (%p).\n", (void*)this->m_log.get ());
 }
 
 // LdPreloadedPosix default destructor.

@@ -91,14 +91,13 @@ bool PosixPassthrough::dlopen_library_handle ()
 void PosixPassthrough::initialize ()
 {
     // TODO: check m_log pointer value and compare with the other instances.
-    std::printf ("PosixPassthrough before initialize.\n");
+    std::printf ("PosixPassthrough after initialize (%p).\n", (void*)this->m_log.get ());
     // assign pointer to m_lib_handle, and validate pointer
     if (!this->dlopen_library_handle ()) {
-        std::printf ("PosixPassthrough::Error while dlopen'ing %s.\n", this->m_lib_name.c_str ());
+        this->m_log->log_error ("PosixPassthrough::Error while dlopen'ing "
+            + (this->m_lib_name.empty () ? "<undefined lib>" : this->m_lib_name) + ".");
         return;
     }
-
-    std::printf ("PosixPassthrough after initialize.\n");
 }
 
 // set_statistic_collection call. (...)

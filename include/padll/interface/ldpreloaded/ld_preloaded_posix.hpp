@@ -15,11 +15,13 @@
 #include <padll/stage/data_plane_stage.hpp>
 #include <padll/stage/mount_point_table.hpp>
 #include <padll/statistics/statistics.hpp>
+#include <padll/utils/log.hpp>
 #include <unistd.h>
 
 using namespace padll::headers;
 using namespace padll::stage;
 using namespace padll::stats;
+using namespace padll::utils::log;
 
 namespace padll::interface::ldpreloaded {
 
@@ -36,12 +38,14 @@ private:
     libc_data m_data_operations {};
     libc_directory m_directory_operations {};
     libc_extattr m_extattr_operations {};
+    std::shared_ptr<Log> m_log { nullptr };
+    DlsymHookLibc m_dlsym_hook {};
+
     std::atomic<bool> m_collect { option_default_statistic_collection };
     Statistics m_metadata_stats { "metadata", OperationType::metadata_calls };
     Statistics m_data_stats { "data", OperationType::data_calls };
     Statistics m_dir_stats { "directory", OperationType::directory_calls };
     Statistics m_ext_attr_stats { "ext-attr", OperationType::ext_attr_calls };
-    DlsymHookLibc m_dlsym_hook {};
 
     // data plane stage configurations
     std::unique_ptr<DataPlaneStage> m_stage { std::make_unique<DataPlaneStage> () };
@@ -57,8 +61,11 @@ public:
      * LdPreloadedPosix parameterized constructor.
      * @param lib String that respects to the library that will be intercepted.
      * @param stat_collection Boolean that defines if statistic collection is enabled or disabled.
+     * @param log_ptr
      */
-    LdPreloadedPosix (const std::string& lib, const bool& stat_collection);
+    LdPreloadedPosix (const std::string& lib,
+        const bool& stat_collection,
+        std::shared_ptr<Log> log_ptr);
 
     /**
      * LdPreloadedPosix default destructor.
