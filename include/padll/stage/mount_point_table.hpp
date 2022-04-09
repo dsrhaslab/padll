@@ -1,6 +1,6 @@
 /**
  *   Written by Ricardo Macedo.
- *   Copyright (c) 2021 INESC TEC.
+ *   Copyright (c) 2021-2022 INESC TEC.
  **/
 
 #ifndef PADLL_MOUNT_POINT_TABLE_HPP
@@ -10,22 +10,19 @@
 #include <map>
 #include <padll/options/options.hpp>
 #include <padll/stage/mount_point_entry.hpp>
-#include <padll/utils/log.hpp>
 #include <shared_mutex>
 #include <sstream>
 #include <unordered_map>
 #include <vector>
 
-using namespace padll::utils::log;
-
 namespace padll::stage {
 
 /**
  * MountPointWorkflows class.
- * fixme: this needs to be adjusted (later); the controller should specify these ...
  */
 class MountPointWorkflows {
-
+    // TODO: Tasks pending completion -@ricardomacedo at 4/7/2022, 10:19:02 AM
+    // The mountpoint workflows should be defined by the controller, not by the data plane stage.
 public:
     const std::vector<uint32_t> default_mount_point_workflows { 1000,
         2000,
@@ -46,7 +43,6 @@ private:
     std::unordered_map<int, std::unique_ptr<MountPointEntry>> m_file_descriptors_table {};
     std::unordered_map<FILE*, std::unique_ptr<MountPointEntry>> m_file_ptr_table {};
     std::map<MountPoint, std::vector<uint32_t>> m_mount_point_workflows {};
-    std::shared_ptr<Log> m_logging {};
 
     /**
      * initialize:
@@ -83,9 +79,8 @@ public:
     /**
      * MountPointTable parameterized constructor.
      * @param value
-     * Fixme: remove value parameter; only for debugging purposes.
      */
-    [[maybe_unused]] MountPointTable (std::shared_ptr<Log> log_ptr, const std::string& value);
+    [[maybe_unused]] explicit MountPointTable (const std::string& value);
 
     /**
      * MountPointTable default destructor.
@@ -126,7 +121,7 @@ public:
      * @param path
      * @return
      */
-    [[nodiscard]] uint32_t pick_workflow_id (const std::string_view& path);
+    [[nodiscard]] uint32_t pick_workflow_id (const std::string_view& path) const;
 
     /**
      * pick_workflow_id:

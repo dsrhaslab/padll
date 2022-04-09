@@ -1,6 +1,6 @@
 /**
  *   Written by Ricardo Macedo.
- *   Copyright (c) 2021 INESC TEC.
+ *   Copyright (c) 2021-2022 INESC TEC.
  **/
 
 #include <padll/utils/log.hpp>
@@ -10,27 +10,35 @@ namespace padll::utils::log {
 // Log default constructor.
 Log::Log ()
 {
+    // initialize log object
     this->initialize ();
+    // write debug message
+    this->dlsym_write_message (STDOUT_FILENO, "Log parameterized constructor.\n");
 }
 
 // Log parameterized constructor.
-Log::Log (const bool& enable_debug,
-    const bool& debug_with_ldpreload,
-    const std::string& log_file) :
+Log::Log (const bool& enable_debug, const bool& debug_with_ldpreload, const std::string& log_file) :
     m_debug_enabled { enable_debug },
     m_is_ld_preloaded { debug_with_ldpreload },
     m_log_file_path { this->create_file_name (log_file) }
 {
+    // initialize log object
     this->initialize ();
+    // write debug message
+    this->dlsym_write_message (STDOUT_FILENO, "Log parameterized constructor.\n");
 }
 
 // Log default destructor.
 Log::~Log ()
 {
+    // cleanup log object
     this->cleanup ();
+    // write debug message
+    this->dlsym_write_message (STDOUT_FILENO, "Log default destructor.\n");
 }
 
-std::string Log::create_file_name (const std::string& file_name)
+// create_file_name call. (...)
+std::string Log::create_file_name (const std::string& file_name) const
 {
     std::string name {};
     if (!file_name.empty ()) {
@@ -43,7 +51,8 @@ std::string Log::create_file_name (const std::string& file_name)
 // Log initialize call.
 void Log::initialize ()
 {
-    std::lock_guard<std::mutex> guard (this->m_lock);
+    // lock_guard over mutex
+    std::lock_guard guard (this->m_lock);
 
     // enable debug level at spdlog
     if (this->m_debug_enabled) {
@@ -51,17 +60,15 @@ void Log::initialize ()
     }
 
     // bypass spdlog to prevent recursive dependency and/or null pointers to libc functions
-    if (this->m_is_ld_preloaded) {
-        if (!this->m_log_file_path.empty ()) {
-            // open file using dlsym'ed close
-            this->m_fd = ((libc_open_variadic_t)dlsym (RTLD_NEXT,
-                "open")) (m_log_file_path.c_str (), O_CREAT | O_WRONLY | O_APPEND, 0666);
+    if (this->m_is_ld_preloaded && !this->m_log_file_path.empty ()) {
+        // open file using dlsym'ed close
+        this->m_fd = ((libc_open_variadic_t)dlsym (RTLD_NEXT,
+            "open")) (m_log_file_path.c_str (), O_CREAT | O_WRONLY | O_APPEND, 0666);
 
-            // verify file descriptor result
-            if (this->m_fd == -1) {
-                perror ("Error in Log::initialize");
-                this->m_fd = STDOUT_FILENO;
-            }
+        // verify file descriptor result
+        if (this->m_fd == -1) {
+            perror ("Log::Error in initialize");
+            this->m_fd = STDOUT_FILENO;
         }
     }
 }
@@ -69,25 +76,27 @@ void Log::initialize ()
 // Log cleanup call.
 void Log::cleanup ()
 {
-    std::lock_guard<std::mutex> guard (this->m_lock);
-    if (this->m_fd != STDOUT_FILENO) {
-        if (this->m_basic_logger.use_count () == 0) {
-            // close file descriptor using dlsym'ed close
-            auto return_value = ((libc_close_t)dlsym (RTLD_NEXT, "close")) (this->m_fd);
+    // lock_guard over mutex
+    std::lock_guard guard (this->m_lock);
+    if (this->m_fd != STDOUT_FILENO && this->m_basic_logger.use_count () == 0) {
+        // close file descriptor using dlsym'ed close
+        auto return_value = ((libc_close_t)dlsym (RTLD_NEXT, "close")) (this->m_fd);
 
-            // verify return_value
-            if (return_value < 0) {
-                perror ("Error on cleanup");
-            }
+        // verify return_value
+        if (return_value < 0) {
+            perror ("Log::Error on cleanup");
         }
     }
 }
 
 // create_formatted_message call.
-std::string Log::create_formatted_message (const std::string& message, const std::string& level)
+std::string Log::create_formatted_message (const std::string& message,
+    const std::string& level) const
 {
     std::time_t current_time = std::time (nullptr);
-    std::tm time_info = *std::localtime (&current_time);
+    struct std::tm time_info;
+    localtime_r (&current_time, &time_info);
+
     std::stringstream formatted_message;
     formatted_message << "[" << std::put_time (&time_info, "%F %T") << "] ";
     formatted_message << level;
@@ -97,31 +106,31 @@ std::string Log::create_formatted_message (const std::string& message, const std
 }
 
 // create_formatted_info_message call.
-std::string Log::create_formatted_info_message (const std::string& message)
+std::string Log::create_formatted_info_message (const std::string& message) const
 {
     return this->create_formatted_message (message, "[info] ");
 }
 
 // create_formatted_error_message call.
-std::string Log::create_formatted_error_message (const std::string& message)
+std::string Log::create_formatted_error_message (const std::string& message) const
 {
     return this->create_formatted_message (message, "[error] ");
 }
 
 // create_formatted_debug_message call.
-std::string Log::create_formatted_debug_message (const std::string& message)
+std::string Log::create_formatted_debug_message (const std::string& message) const
 {
     return this->create_formatted_message (message, "[debug] ");
 }
 
 // dlsym_write_message call.
-ssize_t Log::dlsym_write_message (int fd, const std::string& message)
+ssize_t Log::dlsym_write_message (int fd, const std::string& message) const
 {
     return ((libc_write_t)dlsym (RTLD_NEXT, "write")) (fd, message.c_str (), message.size ());
 }
 
 // log_info call. Log message with INFO qualifier.
-void Log::log_info (const std::string& message)
+void Log::log_info (const std::string& message) const
 {
     if (this->m_is_ld_preloaded) {
         // generate formatted info message
@@ -131,7 +140,7 @@ void Log::log_info (const std::string& message)
 
         // verify return value of write operation
         if (return_value < 0) {
-            perror ("Error on log_info");
+            perror ("Log::Error on log_info");
         }
     } else {
         spdlog::info (message);
@@ -139,7 +148,7 @@ void Log::log_info (const std::string& message)
 }
 
 // log_error call. Log message with ERROR qualifier.
-void Log::log_error (const std::string& message)
+void Log::log_error (const std::string& message) const
 {
     if (this->m_is_ld_preloaded) {
         // generate formatted error message
@@ -149,7 +158,7 @@ void Log::log_error (const std::string& message)
 
         // verify return value of write operation
         if (return_value < 0) {
-            perror ("Error on log_error");
+            perror ("Log::Error on log_error");
         }
     } else {
         spdlog::error (message);
@@ -157,7 +166,7 @@ void Log::log_error (const std::string& message)
 }
 
 // log_debug call. Log message with DEBUG qualifier.
-void Log::log_debug (const std::string& message)
+void Log::log_debug (const std::string& message) const
 {
     if (this->m_is_ld_preloaded) {
         // generate formatted debug message
@@ -167,7 +176,7 @@ void Log::log_debug (const std::string& message)
 
         // verify return value of write operation
         if (return_value < 0) {
-            perror ("Error on log_debug");
+            perror ("Log::Error on log_debug");
         }
     } else {
         spdlog::debug (message);

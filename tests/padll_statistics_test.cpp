@@ -1,6 +1,6 @@
 /**
  *   Written by Ricardo Macedo.
- *   Copyright (c) 2021 INESC TEC.
+ *   Copyright (c) 2021-2022 INESC TEC.
  **/
 
 #include <padll/statistics/statistics.hpp>
@@ -8,17 +8,28 @@
 
 using namespace padll::headers;
 using namespace padll::stats;
-using namespace padll::utils::log;
 
 namespace padll::tests {
 
+/**
+ * StatisticsTest class.
+ * Complete me ...
+ */
 class StatisticsTest {
+
 private:
-    Log m_logger;
+    FILE* m_fd { stdout };
 
 public:
-    StatisticsTest () : m_logger { true, true, "/tmp/padll-info.log" }
-    { }
+    /**
+     * StatisticsTest default constructor.
+     */
+    StatisticsTest () = default;
+
+    /**
+     * StatisticTest parameterized constructor
+     */
+    explicit StatisticsTest (FILE* fd) : m_fd { fd } {};
 
     /**
      * test_statistics_constructors:
@@ -26,10 +37,10 @@ public:
     void test_statistics_constructors ()
     {
         Statistics stats {};
-        this->m_logger.log_info (stats.to_string ());
+        std::fprintf (this->m_fd, "%s\n", stats.to_string ().c_str ());
 
         Statistics stats_param { "stats-parameterized-test", OperationType::metadata_calls };
-        this->m_logger.log_info (stats_param.to_string ());
+        std::fprintf (this->m_fd, "%s\n", stats_param.to_string ().c_str ());
     }
 
     /**
@@ -39,7 +50,13 @@ public:
      */
     void test_initialize_statistics (Statistics* stats, OperationType type)
     {
+        std::fprintf (this->m_fd, "----------------------------------------------\n");
+        std::fprintf (this->m_fd, "StatisticsTest (test_initialize_statistics)\n");
+        std::fprintf (this->m_fd, "----------------------------------------------\n");
+
+        // initialize statistics
         stats->initialize (type);
+        std::fprintf (this->m_fd, "%s\n", stats->to_string ().c_str ());
     }
 
     /**
@@ -49,11 +66,12 @@ public:
      */
     void test_get_statistic_entry (Statistics* stats, int iterations)
     {
+        std::fprintf (this->m_fd, "----------------------------------------------\n");
+        std::fprintf (this->m_fd, "StatisticsTest (test_get_statistics_entry)\n");
+        std::fprintf (this->m_fd, "----------------------------------------------\n");
+
         // load the Statistics object
-        for (int i = 0; i < iterations; i++) {
-            int operation = static_cast<int> (random ()) % stats->get_stats_size ();
-            stats->update_statistic_entry (operation, 1, 1);
-        }
+        this->test_update_statistic_entry (stats, iterations, false);
 
         for (int i = 0; i < (iterations / 10); i++) {
             int operation = static_cast<int> (random ()) % stats->get_stats_size ();
@@ -63,31 +81,41 @@ public:
     }
 
     /**
-     * test_update_entries:
+     * test_update_statistic_entry:
      * @param stats
      * @param iterations
+     * @param debug
      */
-    void test_update_entries (Statistics* stats, int iterations)
+    void test_update_statistic_entry (Statistics* stats, int iterations, bool debug)
     {
+        if (debug) {
+            std::fprintf (this->m_fd, "----------------------------------------------\n");
+            std::fprintf (this->m_fd, "StatisticsTest (test_update_statistic_entry)\n");
+            std::fprintf (this->m_fd, "----------------------------------------------\n");
+        }
+
         for (int i = 0; i < iterations; i++) {
             int operation = static_cast<int> (random ()) % stats->get_stats_size ();
             stats->update_statistic_entry (operation, 1, 1);
         }
-        std::cout << stats->to_string () << "\n";
+
+        if (debug) {
+            std::cout << stats->to_string () << "\n";
+        }
     }
 };
 } // namespace padll::tests
 
 namespace tests = padll::tests;
 
-int main (int argc, char** argv)
+int main ()
 {
-    tests::StatisticsTest test {};
+    tests::StatisticsTest test { stdout };
     Statistics stats_obj {};
-
-    test.test_initialize_statistics (&stats_obj, OperationType::metadata_calls);
-    test.test_update_entries (&stats_obj, 1000);
-    test.test_get_statistic_entry (&stats_obj, 1000);
+    bool debug { true };
 
     test.test_statistics_constructors ();
+    test.test_initialize_statistics (&stats_obj, OperationType::metadata_calls);
+    test.test_update_statistic_entry (&stats_obj, 1000, debug);
+    test.test_get_statistic_entry (&stats_obj, 1000);
 }

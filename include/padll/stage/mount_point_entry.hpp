@@ -1,6 +1,6 @@
 /**
  *   Written by Ricardo Macedo.
- *   Copyright (c) 2021 INESC TEC.
+ *   Copyright (c) 2021-2022 INESC TEC.
  **/
 
 #ifndef PADLL_NAMESPACE_ENTRY_H
@@ -15,6 +15,10 @@ using namespace padll::options;
 
 namespace padll::stage {
 
+/**
+ * MountPointEntry class.
+ * Complete me ...
+ */
 class MountPointEntry {
 
 private:
@@ -33,7 +37,7 @@ public:
      * @param path
      * @param mount_point
      */
-    MountPointEntry (std::string path, const MountPoint& mount_point);
+    MountPointEntry (const std::string& path, const MountPoint& mount_point);
 
     /**
      * MountPointEntry default destructor.

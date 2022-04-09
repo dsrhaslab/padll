@@ -1,10 +1,10 @@
 /**
  *   Written by Ricardo Macedo.
- *   Copyright (c) 2021 INESC TEC.
+ *   Copyright (c) 2021-2022 INESC TEC.
  **/
 
-#ifndef PADDL_LOG_HPP
-#define PADDL_LOG_HPP
+#ifndef PADLL_LOG_HPP
+#define PADLL_LOG_HPP
 
 #include <ctime>
 #include <fcntl.h>
@@ -38,7 +38,12 @@ private:
     int m_fd { STDOUT_FILENO };
     std::string m_log_file_path {};
 
-    std::string create_file_name (const std::string& file_name);
+    /**
+     * create_file_name:
+     * @param file_name
+     * @return std::string
+     */
+    std::string create_file_name (const std::string& file_name) const;
 
     /**
      * initialize:
@@ -56,28 +61,29 @@ private:
      * @param level
      * @return
      */
-    std::string create_formatted_message (const std::string& message, const std::string& level);
+    std::string create_formatted_message (const std::string& message,
+        const std::string& level) const;
 
     /**
      * create_formatted_info_message:
      * @param message
      * @return
      */
-    std::string create_formatted_info_message (const std::string& message);
+    std::string create_formatted_info_message (const std::string& message) const;
 
     /**
      * create_formatted_error_message:
      * @param message
      * @return
      */
-    std::string create_formatted_error_message (const std::string& message);
+    std::string create_formatted_error_message (const std::string& message) const;
 
     /**
      * create_formatted_debug_message:
      * @param message
      * @return
      */
-    std::string create_formatted_debug_message (const std::string& message);
+    std::string create_formatted_debug_message (const std::string& message) const;
 
     /**
      * dlsym_write_message:
@@ -85,7 +91,7 @@ private:
      * @param message
      * @return
      */
-    ssize_t dlsym_write_message (int fd, const std::string& message);
+    ssize_t dlsym_write_message (int fd, const std::string& message) const;
 
 public:
     /**
@@ -98,9 +104,7 @@ public:
      * If @param debug is true, the logging mode is set to debug.
      * @param debug Boolean value that defines if the debug is enabled or disabled.
      */
-    Log (const bool& enable_debug,
-        const bool& debug_with_ldpreload,
-        const std::string& log_file);
+    Log (const bool& enable_debug, const bool& debug_with_ldpreload, const std::string& log_file);
 
     /**
      * Log default destructor.
@@ -111,20 +115,20 @@ public:
      * log_info: Log a message with the INFO qualifier.
      * @param message Log message.
      */
-    void log_info (const std::string& message);
+    void log_info (const std::string& message) const;
 
     /**
      * log_error: Log a message with the ERROR qualifier.
      * @param message Log message.
      */
-    void log_error (const std::string& message);
+    void log_error (const std::string& message) const;
 
     /**
      * log_debug: Log a message with the DEBUG qualifier.
      * @param message Log message.
      */
-    void log_debug (const std::string& message);
+    void log_debug (const std::string& message) const;
 };
 } // namespace padll::utils::log
 
-#endif // PADDL_LOG_HPP
+#endif // PADLL_LOG_HPP

@@ -1,11 +1,12 @@
 /**
  *   Written by Ricardo Macedo.
- *   Copyright (c) 2021 INESC TEC.
+ *   Copyright (c) 2021-2022 INESC TEC.
  **/
 
 #ifndef PADLL_DLSYM_HOOK_LIBC_HPP
 #define PADLL_DLSYM_HOOK_LIBC_HPP
 
+#include <mutex>
 #include <padll/library_headers/libc_headers.hpp>
 #include <padll/options/options.hpp>
 #include <padll/utils/log.hpp>
@@ -23,19 +24,19 @@ private:
     std::mutex m_lock;
     std::string m_lib_name { option_library_name };
     void* m_lib_handle { nullptr };
-    std::shared_ptr<Log> m_logger_ptr {};
+    std::shared_ptr<Log> m_log { nullptr };
 
     /**
      *  initialize:
      */
     void initialize ()
     {
+        // TODO: check m_log pointer value and compare with the other instances.
+        std::printf ("DlsymHookLibc initialize (%p).\n", (void*)this->m_log.get ());
         // open library and assign pointer to m_lib_handle
-        bool open_lib_handle = this->dlopen_library_handle ();
-
-        // validate library pointer
-        if (!open_lib_handle) {
-            this->m_logger_ptr->log_error ("Error while dlopen'ing " + this->m_lib_name + ".");
+        if (!this->dlopen_library_handle ()) {
+            this->m_log->log_error ("DlymHook::Error while dlopen'ing "
+                + (this->m_lib_name.empty () ? "<undefined lib>" : this->m_lib_name) + ".");
             return;
         }
     }
@@ -49,7 +50,8 @@ private:
      */
     bool dlopen_library_handle ()
     {
-        std::unique_lock<std::mutex> unique_lock (this->m_lock);
+        // unique_lock over mutex
+        std::unique_lock lock (this->m_lock);
         // Dynamic loading of the libc library (referred to as 'libc.so.6').
         // loads the dynamic shared object (shared library) file named by the null-terminated string
         // filename and returns an opaque "handle" for the loaded object.
@@ -63,7 +65,10 @@ public:
     /**
      * DlsymHookLibc default constructor.
      */
-    DlsymHookLibc () : m_logger_ptr { std::make_shared<Log> () }
+    DlsymHookLibc () :
+        m_log { std::make_shared<Log> (option_default_enable_debug_level,
+            option_default_enable_debug_with_ld_preload,
+            std::string { option_default_log_path }) }
     {
         // initialize library handle pointer
         this->initialize ();
@@ -72,15 +77,15 @@ public:
     /**
      * DlsymHookLibc parameterized constructor.
      * @param library_path
-     * TODO: validate move operation of the Log
+     * @param log_ptr
      */
-    DlsymHookLibc (const std::string& library_path, std::shared_ptr<Log> log_ptr) :
+    DlsymHookLibc (const std::string_view& library_path, std::shared_ptr<Log> log_ptr) :
         m_lib_name { library_path },
-        m_logger_ptr { std::move (log_ptr) }
+        m_log { log_ptr }
     {
         // validate if 'lib' is valid
         if (library_path.empty ()) {
-            this->m_logger_ptr->log_error ("Library path not valid.");
+            this->m_log->log_error ("Library path not valid.");
             return;
         }
 
@@ -88,26 +93,32 @@ public:
         this->initialize ();
     }
 
-    ~DlsymHookLibc ()
-    {
-        std::unique_lock<std::mutex> lock (this->m_lock);
-        // validate if library handle is valid and close dynamic linking
-        if (this->m_lib_handle != nullptr) {
-            // close dynamic linking to intercepted library.
-            // It decrements the reference count on the dynamically loaded shared object, referred
-            // to by handle m_lib_handle. If the reference count drops to zero, then the object is
-            // unloaded. All shared objects that were automatically loaded when dlopen () was
-            // invoked on the object referred to by handle are recursively closed in the same
-            // manner.
-            int dlclose_result = ::dlclose (this->m_lib_handle);
+    /**
+     * DlsymHookLibc default destructor.
+     */
+    ~DlsymHookLibc () = default;
+    // ~DlsymHookLibc ()
+    // {
+    //     // unique_lock over mutex
+    //     std::unique_lock lock (this->m_lock);
+    //     // validate if library handle is valid and close dynamic linking
+    //     if (this->m_lib_handle != nullptr) {
+    //         // close dynamic linking to intercepted library.
+    //         // It decrements the reference count on the dynamically loaded shared object,
+    //         referred
+    //         // to by handle m_lib_handle. If the reference count drops to zero, then the object
+    //         is
+    //         // unloaded. All shared objects that were automatically loaded when dlopen () was
+    //         // invoked on the object referred to by handle are recursively closed in the same
+    //         // manner.
+    //         int dlclose_result = ::dlclose (this->m_lib_handle);
 
-            // validate result from dlclose
-            if (dlclose_result != 0) {
-                this->m_logger_ptr->log_error (
-                    "Error while closing dynamic link (" + std::to_string (dlclose_result) + ").");
-            }
-        }
-    }
+    //         // validate result from dlclose
+    //         if (dlclose_result != 0) {
+    //             std::printf ("Error while closing dynamic link (%d).\n", dlclose_result);
+    //         }
+    //     }
+    // }
 
     /**
      * hook_posix_read:
@@ -236,42 +247,42 @@ public:
 #endif
 
     /**
-     * hook_posix_fread:
-     * @param fread_ptr
+     * hook_posix_mmap:
+     * @param mmap_ptr
      */
-    void hook_posix_fread (libc_fread_t& fread_ptr)
+    void hook_posix_mmap (libc_mmap_t& mmap_ptr)
     {
         // validate function and library handle pointers
-        if (!fread_ptr && !this->m_lib_handle) {
+        if (!mmap_ptr && !this->m_lib_handle) {
             // open library handle, and assign the operation pointer through m_lib_handle if the
             // open was successful, or through the next operation link.
             (this->dlopen_library_handle ())
-                ? fread_ptr = (libc_fread_t)dlsym (this->m_lib_handle, "fread")
-                : fread_ptr = (libc_fread_t)dlsym (RTLD_NEXT, "fread");
+                ? mmap_ptr = (libc_mmap_t)dlsym (this->m_lib_handle, "mmap")
+                : mmap_ptr = (libc_mmap_t)dlsym (RTLD_NEXT, "mmap");
 
             // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!fread_ptr) {
-            fread_ptr = (libc_fread_t)dlsym (this->m_lib_handle, "fread");
+        } else if (!mmap_ptr) {
+            mmap_ptr = (libc_mmap_t)dlsym (this->m_lib_handle, "mmap");
         }
     }
 
     /**
-     * hook_posix_fwrite:
-     * @param fwrite_ptr
+     * hook_posix_munmap:
+     * @param munmap_ptr
      */
-    void hook_posix_fwrite (libc_fwrite_t& fwrite_ptr)
+    void hook_posix_munmap (libc_munmap_t& munmap_ptr)
     {
         // validate function and library handle pointers
-        if (!fwrite_ptr && !this->m_lib_handle) {
+        if (!munmap_ptr && !this->m_lib_handle) {
             // open library handle, and assign the operation pointer through m_lib_handle if the
             // open was successful, or through the next operation link.
             (this->dlopen_library_handle ())
-                ? fwrite_ptr = (libc_fwrite_t)dlsym (this->m_lib_handle, "fwrite")
-                : fwrite_ptr = (libc_fwrite_t)dlsym (RTLD_NEXT, "fwrite");
+                ? munmap_ptr = (libc_munmap_t)dlsym (this->m_lib_handle, "munmap")
+                : munmap_ptr = (libc_munmap_t)dlsym (RTLD_NEXT, "munmap");
 
             // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!fwrite_ptr) {
-            fwrite_ptr = (libc_fwrite_t)dlsym (this->m_lib_handle, "fwrite");
+        } else if (!munmap_ptr) {
+            munmap_ptr = (libc_munmap_t)dlsym (this->m_lib_handle, "munmap");
         }
     }
 
@@ -456,46 +467,6 @@ public:
     }
 
     /**
-     * hook_posix_fsync:
-     * @param fsync_ptr
-     */
-    void hook_posix_fsync (libc_fsync_t& fsync_ptr)
-    {
-        // validate function and library handle pointers
-        if (!fsync_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? fsync_ptr = (libc_fsync_t)dlsym (this->m_lib_handle, "fsync")
-                : fsync_ptr = (libc_fsync_t)dlsym (RTLD_NEXT, "fsync");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!fsync_ptr) {
-            fsync_ptr = (libc_fsync_t)dlsym (this->m_lib_handle, "fsync");
-        }
-    }
-
-    /**
-     * hook_posix_fdatasync:
-     * @param fdatasync_ptr
-     */
-    void hook_posix_fdatasync (libc_fdatasync_t& fdatasync_ptr)
-    {
-        // validate function and library handle pointers
-        if (!fdatasync_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? fdatasync_ptr = (libc_fdatasync_t)dlsym (this->m_lib_handle, "fdatasync")
-                : fdatasync_ptr = (libc_fdatasync_t)dlsym (RTLD_NEXT, "fdatasync");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!fdatasync_ptr) {
-            fdatasync_ptr = (libc_fdatasync_t)dlsym (this->m_lib_handle, "fdatasync");
-        }
-    }
-
-    /**
      * hook_posix_sync:
      * @param sync_ptr
      */
@@ -512,266 +483,6 @@ public:
             // in case the library handle pointer is valid, assign the operation pointer
         } else if (!sync_ptr) {
             sync_ptr = (libc_sync_t)dlsym (this->m_lib_handle, "sync");
-        }
-    }
-
-    /**
-     * hook_posix_syncfs:
-     * @param syncfs_ptr
-     */
-    void hook_posix_syncfs (libc_syncfs_t& syncfs_ptr)
-    {
-        // validate function and library handle pointers
-        if (!syncfs_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? syncfs_ptr = (libc_syncfs_t)dlsym (this->m_lib_handle, "syncfs")
-                : syncfs_ptr = (libc_syncfs_t)dlsym (RTLD_NEXT, "syncfs");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!syncfs_ptr) {
-            syncfs_ptr = (libc_syncfs_t)dlsym (this->m_lib_handle, "syncfs");
-        }
-    }
-
-    /**
-     * hook_posix_truncate:
-     * @param truncate_ptr
-     */
-    void hook_posix_truncate (libc_truncate_t& truncate_ptr)
-    {
-        // validate function and library handle pointers
-        if (!truncate_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? truncate_ptr = (libc_truncate_t)dlsym (this->m_lib_handle, "truncate")
-                : truncate_ptr = (libc_truncate_t)dlsym (RTLD_NEXT, "truncate");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!truncate_ptr) {
-            truncate_ptr = (libc_truncate_t)dlsym (this->m_lib_handle, "truncate");
-        }
-    }
-
-    /**
-     * ftruncate_ptr
-     * @param ftruncate_ptr
-     */
-    void hook_posix_ftruncate (libc_ftruncate_t& ftruncate_ptr)
-    {
-        // validate function and library handle pointers
-        if (!ftruncate_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? ftruncate_ptr = (libc_ftruncate_t)dlsym (this->m_lib_handle, "ftruncate")
-                : ftruncate_ptr = (libc_ftruncate_t)dlsym (RTLD_NEXT, "ftruncate");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!ftruncate_ptr) {
-            ftruncate_ptr = (libc_ftruncate_t)dlsym (this->m_lib_handle, "ftruncate");
-        }
-    }
-
-    /**
-     * hook_posix_truncate64:
-     * @param truncate64_ptr
-     */
-    void hook_posix_truncate64 (libc_truncate64_t& truncate64_ptr)
-    {
-        // validate function and library handle pointers
-        if (!truncate64_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? truncate64_ptr = (libc_truncate64_t)dlsym (this->m_lib_handle, "truncate64")
-                : truncate64_ptr = (libc_truncate64_t)dlsym (RTLD_NEXT, "truncate64");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!truncate64_ptr) {
-            truncate64_ptr = (libc_truncate64_t)dlsym (this->m_lib_handle, "truncate64");
-        }
-    }
-
-    /**
-     * hook_posix_ftruncate64:
-     * @param ftruncate64_ptr
-     */
-    void hook_posix_ftruncate64 (libc_ftruncate64_t& ftruncate64_ptr)
-    {
-        // validate function and library handle pointers
-        if (!ftruncate64_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? ftruncate64_ptr = (libc_ftruncate64_t)dlsym (this->m_lib_handle, "ftruncate64")
-                : ftruncate64_ptr = (libc_ftruncate64_t)dlsym (RTLD_NEXT, "ftruncate64");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!ftruncate64_ptr) {
-            ftruncate64_ptr = (libc_ftruncate64_t)dlsym (this->m_lib_handle, "ftruncate64");
-        }
-    }
-
-    /**
-     * hook_posix_xstat:
-     * @param xstat_ptr
-     */
-    void hook_posix_xstat (libc_xstat_t& xstat_ptr)
-    {
-        // validate function and library handle pointers
-        if (!xstat_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? xstat_ptr = (libc_xstat_t)dlsym (this->m_lib_handle, "__xstat")
-                : xstat_ptr = (libc_xstat_t)dlsym (RTLD_NEXT, "__xstat");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!xstat_ptr) {
-            xstat_ptr = (libc_xstat_t)dlsym (this->m_lib_handle, "__xstat");
-        }
-    }
-
-    /**
-     * hook_posix_lxstat:
-     * @param lxstat_ptr
-     */
-    void hook_posix_lxstat (libc_lxstat_t& lxstat_ptr)
-    {
-        // validate function and library handle pointers
-        if (!lxstat_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? lxstat_ptr = (libc_lxstat_t)dlsym (this->m_lib_handle, "__lxstat")
-                : lxstat_ptr = (libc_lxstat_t)dlsym (RTLD_NEXT, "__lxstat");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!lxstat_ptr) {
-            lxstat_ptr = (libc_lxstat_t)dlsym (this->m_lib_handle, "__lxstat");
-        }
-    }
-
-    /**
-     * hook_posix_fxstat:
-     * @param fxstat_ptr
-     */
-    void hook_posix_fxstat (libc_fxstat_t& fxstat_ptr)
-    {
-        // validate function and library handle pointers
-        if (!fxstat_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? fxstat_ptr = (libc_fxstat_t)dlsym (this->m_lib_handle, "__fxstat")
-                : fxstat_ptr = (libc_fxstat_t)dlsym (RTLD_NEXT, "__fxstat");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!fxstat_ptr) {
-            fxstat_ptr = (libc_fxstat_t)dlsym (this->m_lib_handle, "__fxstat");
-        }
-    }
-
-    /**
-     * hook_posix_fxstatat:
-     * @param fxstatat_ptr
-     */
-    void hook_posix_fxstatat (libc_fxstatat_t& fxstatat_ptr)
-    {
-        // validate function and library handle pointers
-        if (!fxstatat_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? fxstatat_ptr = (libc_fxstatat_t)dlsym (this->m_lib_handle, "__fxstatat")
-                : fxstatat_ptr = (libc_fxstatat_t)dlsym (RTLD_NEXT, "__fxstatat");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!fxstatat_ptr) {
-            fxstatat_ptr = (libc_fxstatat_t)dlsym (this->m_lib_handle, "__fxstatat");
-        }
-    }
-
-    /**
-     * hook_posix_xstat64:
-     * @param xstat64_ptr
-     */
-    void hook_posix_xstat64 (libc_xstat64_t& xstat64_ptr)
-    {
-        // validate function and library handle pointers
-        if (!xstat64_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? xstat64_ptr = (libc_xstat64_t)dlsym (this->m_lib_handle, "__xstat64")
-                : xstat64_ptr = (libc_xstat64_t)dlsym (RTLD_NEXT, "__xstat64");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!xstat64_ptr) {
-            xstat64_ptr = (libc_xstat64_t)dlsym (this->m_lib_handle, "__xstat64");
-        }
-    }
-
-    /**
-     * hook_posix_lxstat64:
-     * @param lxstat64_ptr
-     */
-    void hook_posix_lxstat64 (libc_lxstat64_t& lxstat64_ptr)
-    {
-        // validate function and library handle pointers
-        if (!lxstat64_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? lxstat64_ptr = (libc_lxstat64_t)dlsym (this->m_lib_handle, "__lxstat64")
-                : lxstat64_ptr = (libc_lxstat64_t)dlsym (RTLD_NEXT, "__lxstat64");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!lxstat64_ptr) {
-            lxstat64_ptr = (libc_lxstat64_t)dlsym (this->m_lib_handle, "__lxstat64");
-        }
-    }
-
-    /**
-     * hook_posix_fxstat64:
-     * @param fxstat64_ptr
-     */
-    void hook_posix_fxstat64 (libc_fxstat64_t& fxstat64_ptr)
-    {
-        // validate function and library handle pointers
-        if (!fxstat64_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? fxstat64_ptr = (libc_fxstat64_t)dlsym (this->m_lib_handle, "__fxstat64")
-                : fxstat64_ptr = (libc_fxstat64_t)dlsym (RTLD_NEXT, "__fxstat64");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!fxstat64_ptr) {
-            fxstat64_ptr = (libc_fxstat64_t)dlsym (this->m_lib_handle, "__fxstat64");
-        }
-    }
-
-    /**
-     * hook_posix_fxstatat64:
-     * @param fxstatat64_ptr
-     */
-    void hook_posix_fxstatat64 (libc_fxstatat64_t& fxstatat64_ptr)
-    {
-        // validate function and library handle pointers
-        if (!fxstatat64_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? fxstatat64_ptr = (libc_fxstatat64_t)dlsym (this->m_lib_handle, "__fxstatat64")
-                : fxstatat64_ptr = (libc_fxstatat64_t)dlsym (RTLD_NEXT, "__fxstatat64");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!fxstatat64_ptr) {
-            fxstatat64_ptr = (libc_fxstatat64_t)dlsym (this->m_lib_handle, "__fxstatat64");
         }
     }
 
@@ -856,26 +567,6 @@ public:
     }
 
     /**
-     * hook_posix_link:
-     * @param link_ptr
-     */
-    void hook_posix_link (libc_link_t& link_ptr)
-    {
-        // validate function and library handle pointers
-        if (!link_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? link_ptr = (libc_link_t)dlsym (this->m_lib_handle, "link")
-                : link_ptr = (libc_link_t)dlsym (RTLD_NEXT, "link");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!link_ptr) {
-            link_ptr = (libc_link_t)dlsym (this->m_lib_handle, "link");
-        }
-    }
-
-    /**
      * hook_posix_unlink:
      * @param unlink_ptr
      */
@@ -892,26 +583,6 @@ public:
             // in case the library handle pointer is valid, assign the operation pointer
         } else if (!unlink_ptr) {
             unlink_ptr = (libc_unlink_t)dlsym (this->m_lib_handle, "unlink");
-        }
-    }
-
-    /**
-     * hook_posix_linkat:
-     * @param linkat_ptr
-     */
-    void hook_posix_linkat (libc_linkat_t& linkat_ptr)
-    {
-        // validate function and library handle pointers
-        if (!linkat_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? linkat_ptr = (libc_linkat_t)dlsym (this->m_lib_handle, "linkat")
-                : linkat_ptr = (libc_linkat_t)dlsym (RTLD_NEXT, "linkat");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!linkat_ptr) {
-            linkat_ptr = (libc_linkat_t)dlsym (this->m_lib_handle, "linkat");
         }
     }
 
@@ -976,86 +647,6 @@ public:
     }
 
     /**
-     * hook_posix_symlink:
-     * @param symlink_ptr
-     */
-    void hook_posix_symlink (libc_symlink_t& symlink_ptr)
-    {
-        // validate function and library handle pointers
-        if (!symlink_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? symlink_ptr = (libc_symlink_t)dlsym (this->m_lib_handle, "symlink")
-                : symlink_ptr = (libc_symlink_t)dlsym (RTLD_NEXT, "symlink");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!symlink_ptr) {
-            symlink_ptr = (libc_symlink_t)dlsym (this->m_lib_handle, "symlink");
-        }
-    }
-
-    /**
-     * hook_posix_symlinkat:
-     * @param symlinkat_ptr
-     */
-    void hook_posix_symlinkat (libc_symlinkat_t& symlinkat_ptr)
-    {
-        // validate function and library handle pointers
-        if (!symlinkat_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? symlinkat_ptr = (libc_symlinkat_t)dlsym (this->m_lib_handle, "symlinkat")
-                : symlinkat_ptr = (libc_symlinkat_t)dlsym (RTLD_NEXT, "symlinkat");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!symlinkat_ptr) {
-            symlinkat_ptr = (libc_symlinkat_t)dlsym (this->m_lib_handle, "symlinkat");
-        }
-    }
-
-    /**
-     * hook_posix_readlink:
-     * @param readlink_ptr
-     */
-    void hook_posix_readlink (libc_readlink_t& readlink_ptr)
-    {
-        // validate function and library handle pointers
-        if (!readlink_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? readlink_ptr = (libc_readlink_t)dlsym (this->m_lib_handle, "readlink")
-                : readlink_ptr = (libc_readlink_t)dlsym (RTLD_NEXT, "readlink");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!readlink_ptr) {
-            readlink_ptr = (libc_readlink_t)dlsym (this->m_lib_handle, "readlink");
-        }
-    }
-
-    /**
-     * hook_posix_readlinkat:
-     * @param readlinkat_ptr
-     */
-    void hook_posix_readlinkat (libc_readlinkat_t& readlinkat_ptr)
-    {
-        // validate function and library handle pointers
-        if (!readlinkat_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? readlinkat_ptr = (libc_readlinkat_t)dlsym (this->m_lib_handle, "readlinkat")
-                : readlinkat_ptr = (libc_readlinkat_t)dlsym (RTLD_NEXT, "readlinkat");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!readlinkat_ptr) {
-            readlinkat_ptr = (libc_readlinkat_t)dlsym (this->m_lib_handle, "readlinkat");
-        }
-    }
-
-    /**
      * hook_posix_fopen:
      * @param fopen_ptr
      */
@@ -1096,66 +687,6 @@ public:
     }
 
     /**
-     * hook_posix_fdopen:
-     * @param fdopen_ptr
-     */
-    void hook_posix_fdopen (libc_fdopen_t& fdopen_ptr)
-    {
-        // validate function and library handle pointers
-        if (!fdopen_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? fdopen_ptr = (libc_fdopen_t)dlsym (this->m_lib_handle, "fdopen")
-                : fdopen_ptr = (libc_fdopen_t)dlsym (RTLD_NEXT, "fdopen");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!fdopen_ptr) {
-            fdopen_ptr = (libc_fdopen_t)dlsym (this->m_lib_handle, "fdopen");
-        }
-    }
-
-    /**
-     * hook_posix_freopen:
-     * @param freopen_ptr
-     */
-    void hook_posix_freopen (libc_freopen_t& freopen_ptr)
-    {
-        // validate function and library handle pointers
-        if (!freopen_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? freopen_ptr = (libc_freopen_t)dlsym (this->m_lib_handle, "freopen")
-                : freopen_ptr = (libc_freopen_t)dlsym (RTLD_NEXT, "freopen");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!freopen_ptr) {
-            freopen_ptr = (libc_freopen_t)dlsym (this->m_lib_handle, "freopen");
-        }
-    }
-
-    /**
-     * hook_posix_freopen64:
-     * @param freopen64_ptr
-     */
-    void hook_posix_freopen64 (libc_freopen64_t& freopen64_ptr)
-    {
-        // validate function and library handle pointers
-        if (!freopen64_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? freopen64_ptr = (libc_freopen64_t)dlsym (this->m_lib_handle, "freopen64")
-                : freopen64_ptr = (libc_freopen64_t)dlsym (RTLD_NEXT, "freopen64");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!freopen64_ptr) {
-            freopen64_ptr = (libc_freopen64_t)dlsym (this->m_lib_handle, "freopen64");
-        }
-    }
-
-    /**
      * hook_posix_fclose:
      * @param fclose_ptr
      */
@@ -1172,186 +703,6 @@ public:
             // in case the library handle pointer is valid, assign the operation pointer
         } else if (!fclose_ptr) {
             fclose_ptr = (libc_fclose_t)dlsym (this->m_lib_handle, "fclose");
-        }
-    }
-
-    /**
-     * hook_posix_fflush:
-     * @param fflush_ptr
-     */
-    void hook_posix_fflush (libc_fflush_t& fflush_ptr)
-    {
-        // validate function and library handle pointers
-        if (!fflush_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? fflush_ptr = (libc_fflush_t)dlsym (this->m_lib_handle, "fflush")
-                : fflush_ptr = (libc_fflush_t)dlsym (RTLD_NEXT, "fflush");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!fflush_ptr) {
-            fflush_ptr = (libc_fflush_t)dlsym (this->m_lib_handle, "fflush");
-        }
-    }
-
-    /**
-     * hook_posix_access:
-     * @param access_ptr
-     */
-    void hook_posix_access (libc_access_t& access_ptr)
-    {
-        // validate function and library handle pointers
-        if (!access_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? access_ptr = (libc_access_t)dlsym (this->m_lib_handle, "access")
-                : access_ptr = (libc_access_t)dlsym (RTLD_NEXT, "access");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!access_ptr) {
-            access_ptr = (libc_access_t)dlsym (this->m_lib_handle, "access");
-        }
-    }
-
-    /**
-     * hook_posix_faccessat:
-     * @param faccessat_ptr
-     */
-    void hook_posix_faccessat (libc_faccessat_t& faccessat_ptr)
-    {
-        // validate function and library handle pointers
-        if (!faccessat_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? faccessat_ptr = (libc_faccessat_t)dlsym (this->m_lib_handle, "faccessat")
-                : faccessat_ptr = (libc_faccessat_t)dlsym (RTLD_NEXT, "faccessat");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!faccessat_ptr) {
-            faccessat_ptr = (libc_faccessat_t)dlsym (this->m_lib_handle, "faccessat");
-        }
-    }
-
-    /**
-     * hook_posix_lseek:
-     * @param lseek_ptr
-     */
-    void hook_posix_lseek (libc_lseek_t& lseek_ptr)
-    {
-        // validate function and library handle pointers
-        if (!lseek_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? lseek_ptr = (libc_lseek_t)dlsym (this->m_lib_handle, "lseek")
-                : lseek_ptr = (libc_lseek_t)dlsym (RTLD_NEXT, "lseek");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!lseek_ptr) {
-            lseek_ptr = (libc_lseek_t)dlsym (this->m_lib_handle, "lseek");
-        }
-    }
-
-    /**
-     * hook_posix_fseek:
-     * @param fseek_ptr
-     */
-    void hook_posix_fseek (libc_fseek_t& fseek_ptr)
-    {
-        // validate function and library handle pointers
-        if (!fseek_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? fseek_ptr = (libc_fseek_t)dlsym (this->m_lib_handle, "fseek")
-                : fseek_ptr = (libc_fseek_t)dlsym (RTLD_NEXT, "fseek");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!fseek_ptr) {
-            fseek_ptr = (libc_fseek_t)dlsym (this->m_lib_handle, "fseek");
-        }
-    }
-
-    /**
-     * hook_posix_ftell:
-     * @param ftell_ptr
-     */
-    void hook_posix_ftell (libc_ftell_t& ftell_ptr)
-    {
-        // validate function and library handle pointers
-        if (!ftell_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? ftell_ptr = (libc_ftell_t)dlsym (this->m_lib_handle, "ftell")
-                : ftell_ptr = (libc_ftell_t)dlsym (RTLD_NEXT, "ftell");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!ftell_ptr) {
-            ftell_ptr = (libc_ftell_t)dlsym (this->m_lib_handle, "ftell");
-        }
-    }
-
-    /**
-     * hook_posix_lseek64:
-     * @param lseek64_ptr
-     */
-    void hook_posix_lseek64 (libc_lseek64_t& lseek64_ptr)
-    {
-        // validate function and library handle pointers
-        if (!lseek64_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? lseek64_ptr = (libc_lseek64_t)dlsym (this->m_lib_handle, "lseek64")
-                : lseek64_ptr = (libc_lseek64_t)dlsym (RTLD_NEXT, "lseek64");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!lseek64_ptr) {
-            lseek64_ptr = (libc_lseek64_t)dlsym (this->m_lib_handle, "lseek64");
-        }
-    }
-
-    /**
-     * hook_posix_fseeko64:
-     * @param fseeko64_ptr
-     */
-    void hook_posix_fseeko64 (libc_fseeko64_t& fseeko64_ptr)
-    {
-        // validate function and library handle pointers
-        if (!fseeko64_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? fseeko64_ptr = (libc_fseeko64_t)dlsym (this->m_lib_handle, "fseeko64")
-                : fseeko64_ptr = (libc_fseeko64_t)dlsym (RTLD_NEXT, "fseeko64");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!fseeko64_ptr) {
-            fseeko64_ptr = (libc_fseeko64_t)dlsym (this->m_lib_handle, "fseeko64");
-        }
-    }
-
-    /**
-     * hook_posix_ftello64:
-     * @param ftello64_ptr
-     */
-    void hook_posix_ftello64 (libc_ftello64_t& ftello64_ptr)
-    {
-        // validate function and library handle pointers
-        if (!ftello64_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? ftello64_ptr = (libc_ftello64_t)dlsym (this->m_lib_handle, "ftello64")
-                : ftello64_ptr = (libc_ftello64_t)dlsym (RTLD_NEXT, "ftello64");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!ftello64_ptr) {
-            ftello64_ptr = (libc_ftello64_t)dlsym (this->m_lib_handle, "ftello64");
         }
     }
 
@@ -1396,106 +747,6 @@ public:
     }
 
     /**
-     * hook_posix_readdir:
-     * @param readdir_ptr
-     */
-    void hook_posix_readdir (libc_readdir_t& readdir_ptr)
-    {
-        // validate function and library handle pointers
-        if (!readdir_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? readdir_ptr = (libc_readdir_t)dlsym (this->m_lib_handle, "readdir")
-                : readdir_ptr = (libc_readdir_t)dlsym (RTLD_NEXT, "readdir");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!readdir_ptr) {
-            readdir_ptr = (libc_readdir_t)dlsym (this->m_lib_handle, "readdir");
-        }
-    }
-
-    /**
-     * hook_posix_readdir64:
-     * @param readdir64_ptr
-     */
-    void hook_posix_readdir64 (libc_readdir64_t& readdir64_ptr)
-    {
-        // validate function and library handle pointers
-        if (!readdir64_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? readdir64_ptr = (libc_readdir64_t)dlsym (this->m_lib_handle, "readdir64")
-                : readdir64_ptr = (libc_readdir64_t)dlsym (RTLD_NEXT, "readdir64");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!readdir64_ptr) {
-            readdir64_ptr = (libc_readdir64_t)dlsym (this->m_lib_handle, "readdir64");
-        }
-    }
-
-    /**
-     * hook_posix_opendir:
-     * @param opendir_ptr
-     */
-    void hook_posix_opendir (libc_opendir_t& opendir_ptr)
-    {
-        // validate function and library handle pointers
-        if (!opendir_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? opendir_ptr = (libc_opendir_t)dlsym (this->m_lib_handle, "opendir")
-                : opendir_ptr = (libc_opendir_t)dlsym (RTLD_NEXT, "opendir");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!opendir_ptr) {
-            opendir_ptr = (libc_opendir_t)dlsym (this->m_lib_handle, "opendir");
-        }
-    }
-
-    /**
-     * hook_posix_fdopendir:
-     * @param fdopendir_ptr
-     */
-    void hook_posix_fdopendir (libc_fdopendir_t& fdopendir_ptr)
-    {
-        // validate function and library handle pointers
-        if (!fdopendir_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? fdopendir_ptr = (libc_fdopendir_t)dlsym (this->m_lib_handle, "fdopendir")
-                : fdopendir_ptr = (libc_fdopendir_t)dlsym (RTLD_NEXT, "fdopendir");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!fdopendir_ptr) {
-            fdopendir_ptr = (libc_fdopendir_t)dlsym (this->m_lib_handle, "fdopendir");
-        }
-    }
-
-    /**
-     * hook_posix_closedir:
-     * @param closedir_ptr
-     */
-    void hook_posix_closedir (libc_closedir_t& closedir_ptr)
-    {
-        // validate function and library handle pointers
-        if (!closedir_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? closedir_ptr = (libc_closedir_t)dlsym (this->m_lib_handle, "closedir")
-                : closedir_ptr = (libc_closedir_t)dlsym (RTLD_NEXT, "closedir");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!closedir_ptr) {
-            closedir_ptr = (libc_closedir_t)dlsym (this->m_lib_handle, "closedir");
-        }
-    }
-
-    /**
      * hook_posix_rmdir:
      * @param rmdir_ptr
      */
@@ -1516,22 +767,42 @@ public:
     }
 
     /**
-     * hook_posix_dirfd:
-     * @param dirfd_ptr
+     * hook_posix_mknod:
+     * @param mknod_ptr
      */
-    void hook_posix_dirfd (libc_dirfd_t& dirfd_ptr)
+    void hook_posix_mknod (libc_mknod_t& mknod_ptr)
     {
         // validate function and library handle pointers
-        if (!dirfd_ptr && !this->m_lib_handle) {
+        if (!mknod_ptr && !this->m_lib_handle) {
             // open library handle, and assign the operation pointer through m_lib_handle if the
             // open was successful, or through the next operation link.
             (this->dlopen_library_handle ())
-                ? dirfd_ptr = (libc_dirfd_t)dlsym (this->m_lib_handle, "dirfd")
-                : dirfd_ptr = (libc_dirfd_t)dlsym (RTLD_NEXT, "dirfd");
+                ? mknod_ptr = (libc_mknod_t)dlsym (this->m_lib_handle, "mknod")
+                : mknod_ptr = (libc_mknod_t)dlsym (RTLD_NEXT, "mknod");
 
             // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!dirfd_ptr) {
-            dirfd_ptr = (libc_dirfd_t)dlsym (this->m_lib_handle, "dirfd");
+        } else if (!mknod_ptr) {
+            mknod_ptr = (libc_mknod_t)dlsym (this->m_lib_handle, "mknod");
+        }
+    }
+
+    /**
+     * hook_posix_mknodat:
+     * @param mknodat_ptr
+     */
+    void hook_posix_mknodat (libc_mknodat_t& mknodat_ptr)
+    {
+        // validate function and library handle pointers
+        if (!mknodat_ptr && !this->m_lib_handle) {
+            // open library handle, and assign the operation pointer through m_lib_handle if the
+            // open was successful, or through the next operation link.
+            (this->dlopen_library_handle ())
+                ? mknodat_ptr = (libc_mknodat_t)dlsym (this->m_lib_handle, "mknodat")
+                : mknodat_ptr = (libc_mknodat_t)dlsym (RTLD_NEXT, "mknodat");
+
+            // in case the library handle pointer is valid, assign the operation pointer
+        } else if (!mknodat_ptr) {
+            mknodat_ptr = (libc_mknodat_t)dlsym (this->m_lib_handle, "mknodat");
         }
     }
 
@@ -1712,206 +983,6 @@ public:
             // in case the library handle pointer is valid, assign the operation pointer
         } else if (!flistxattr_ptr) {
             flistxattr_ptr = (libc_flistxattr_t)dlsym (this->m_lib_handle, "flistxattr");
-        }
-    }
-
-    /**
-     * hook_posix_removexattr:
-     * @param removexattr_ptr
-     */
-    void hook_posix_removexattr (libc_removexattr_t& removexattr_ptr)
-    {
-        // validate function and library handle pointers
-        if (!removexattr_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? removexattr_ptr = (libc_removexattr_t)dlsym (this->m_lib_handle, "removexattr")
-                : removexattr_ptr = (libc_removexattr_t)dlsym (RTLD_NEXT, "removexattr");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!removexattr_ptr) {
-            removexattr_ptr = (libc_removexattr_t)dlsym (this->m_lib_handle, "removexattr");
-        }
-    }
-
-    /**
-     * hook_posix_lremovexattr:
-     * @param lremovexattr_ptr
-     */
-    void hook_posix_lremovexattr (libc_lremovexattr_t& lremovexattr_ptr)
-    {
-        // validate function and library handle pointers
-        if (!lremovexattr_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? lremovexattr_ptr = (libc_lremovexattr_t)dlsym (this->m_lib_handle, "lremovexattr")
-                : lremovexattr_ptr = (libc_lremovexattr_t)dlsym (RTLD_NEXT, "lremovexattr");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!lremovexattr_ptr) {
-            lremovexattr_ptr = (libc_lremovexattr_t)dlsym (this->m_lib_handle, "lremovexattr");
-        }
-    }
-
-    /**
-     * hook_posix_fremovexattr:
-     * @param fremovexattr_ptr
-     */
-    void hook_posix_fremovexattr (libc_fremovexattr_t& fremovexattr_ptr)
-    {
-        // validate function and library handle pointers
-        if (!fremovexattr_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? fremovexattr_ptr = (libc_fremovexattr_t)dlsym (this->m_lib_handle, "fremovexattr")
-                : fremovexattr_ptr = (libc_fremovexattr_t)dlsym (RTLD_NEXT, "fremovexattr");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!fremovexattr_ptr) {
-            fremovexattr_ptr = (libc_fremovexattr_t)dlsym (this->m_lib_handle, "fremovexattr");
-        }
-    }
-
-    /**
-     * hook_posix_chmod:
-     * @param chmod_ptr
-     */
-    void hook_posix_chmod (libc_chmod_t& chmod_ptr)
-    {
-        // validate function and library handle pointers
-        if (!chmod_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? chmod_ptr = (libc_chmod_t)dlsym (this->m_lib_handle, "chmod")
-                : chmod_ptr = (libc_chmod_t)dlsym (RTLD_NEXT, "chmod");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!chmod_ptr) {
-            chmod_ptr = (libc_chmod_t)dlsym (this->m_lib_handle, "chmod");
-        }
-    }
-
-    /**
-     * hook_posix_fchmod:
-     * @param fchmod_ptr
-     */
-    void hook_posix_fchmod (libc_fchmod_t& fchmod_ptr)
-    {
-        // validate function and library handle pointers
-        if (!fchmod_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? fchmod_ptr = (libc_fchmod_t)dlsym (this->m_lib_handle, "fchmod")
-                : fchmod_ptr = (libc_fchmod_t)dlsym (RTLD_NEXT, "fchmod");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!fchmod_ptr) {
-            fchmod_ptr = (libc_fchmod_t)dlsym (this->m_lib_handle, "fchmod");
-        }
-    }
-
-    /**
-     * hook_posix_fchmodat:
-     * @param fchmodat_ptr
-     */
-    void hook_posix_fchmodat (libc_fchmodat_t& fchmodat_ptr)
-    {
-        // validate function and library handle pointers
-        if (!fchmodat_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? fchmodat_ptr = (libc_fchmodat_t)dlsym (this->m_lib_handle, "fchmodat")
-                : fchmodat_ptr = (libc_fchmodat_t)dlsym (RTLD_NEXT, "fchmodat");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!fchmodat_ptr) {
-            fchmodat_ptr = (libc_fchmodat_t)dlsym (this->m_lib_handle, "fchmodat");
-        }
-    }
-
-    /**
-     * hook_posix_chown:
-     * @param chown_ptr
-     */
-    void hook_posix_chown (libc_chown_t& chown_ptr)
-    {
-        // validate function and library handle pointers
-        if (!chown_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? chown_ptr = (libc_chown_t)dlsym (this->m_lib_handle, "chown")
-                : chown_ptr = (libc_chown_t)dlsym (RTLD_NEXT, "chown");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!chown_ptr) {
-            chown_ptr = (libc_chown_t)dlsym (this->m_lib_handle, "chown");
-        }
-    }
-
-    /**
-     * hook_posix_lchown:
-     * @param lchown_ptr
-     */
-    void hook_posix_lchown (libc_lchown_t& lchown_ptr)
-    {
-        // validate function and library handle pointers
-        if (!lchown_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? lchown_ptr = (libc_chown_t)dlsym (this->m_lib_handle, "lchown")
-                : lchown_ptr = (libc_chown_t)dlsym (RTLD_NEXT, "lchown");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!lchown_ptr) {
-            lchown_ptr = (libc_chown_t)dlsym (this->m_lib_handle, "lchown");
-        }
-    }
-
-    /**
-     * hook_posix_fchown:
-     * @param fchown_ptr
-     */
-    void hook_posix_fchown (libc_fchown_t& fchown_ptr)
-    {
-        // validate function and library handle pointers
-        if (!fchown_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? fchown_ptr = (libc_fchown_t)dlsym (this->m_lib_handle, "fchown")
-                : fchown_ptr = (libc_fchown_t)dlsym (RTLD_NEXT, "fchown");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!fchown_ptr) {
-            fchown_ptr = (libc_fchown_t)dlsym (this->m_lib_handle, "fchown");
-        }
-    }
-
-    /**
-     * hook_posix_fchownat:
-     * @param fchownat_ptr
-     */
-    void hook_posix_fchownat (libc_fchownat_t fchownat_ptr)
-    {
-        // validate function and library handle pointers
-        if (!fchownat_ptr && !this->m_lib_handle) {
-            // open library handle, and assign the operation pointer through m_lib_handle if the
-            // open was successful, or through the next operation link.
-            (this->dlopen_library_handle ())
-                ? fchownat_ptr = (libc_fchownat_t)dlsym (this->m_lib_handle, "fchownat")
-                : fchownat_ptr = (libc_fchownat_t)dlsym (RTLD_NEXT, "fchownat");
-
-            // in case the library handle pointer is valid, assign the operation pointer
-        } else if (!fchownat_ptr) {
-            fchownat_ptr = (libc_fchownat_t)dlsym (this->m_lib_handle, "fchownat");
         }
     }
 };

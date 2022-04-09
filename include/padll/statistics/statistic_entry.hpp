@@ -1,6 +1,6 @@
 /**
  *   Written by Ricardo Macedo.
- *   Copyright (c) 2021 INESC TEC.
+ *   Copyright (c) 2021-2022 INESC TEC.
  **/
 
 #ifndef PADLL_STATISTIC_ENTRY_H
@@ -36,7 +36,7 @@ public:
      * StatisticEntry parameterized constructor.
      * @param name
      */
-    explicit StatisticEntry (std::string name);
+    explicit StatisticEntry (const std::string& name);
 
     /**
      * StatisticEntry copy constructor.
@@ -53,7 +53,7 @@ public:
      * get_entry_name: Get the name of the StatisticEntry object.
      * @return Returns a copy of the m_entry_name parameter.
      */
-    std::string get_entry_name () const;
+    [[nodiscard]] std::string get_entry_name () const;
 
     /**
      * get_operation_counter: Get the total number of operations registered (counted) at the
@@ -61,7 +61,7 @@ public:
      * This method is thread-safe.
      * @return Returns a copy of the m_operation_counter parameter.
      */
-    uint64_t get_operation_counter ();
+    [[nodiscard]] uint64_t get_operation_counter ();
 
     /**
      * get_byte_counter: Get the total number of bytes registered (counted) at the StatisticEntry
@@ -69,7 +69,7 @@ public:
      * This method is thread-safe.
      * @return Returns a copy of the m_byte_counter parameter.
      */
-    uint64_t get_byte_counter ();
+    [[nodiscard]] uint64_t get_byte_counter ();
 
     /**
      * get_error_counter: Get the total number of errors registered (counted) at the StatisticEntry
@@ -77,7 +77,7 @@ public:
      * This method is thread-safe.
      * @return Returns a copy of the m_error_counter parameter.
      */
-    uint64_t get_error_counter ();
+    [[nodiscard]] uint64_t get_error_counter ();
 
     /**
      * increment_operation_counter: Increments the total number of operations of the StatisticEntry

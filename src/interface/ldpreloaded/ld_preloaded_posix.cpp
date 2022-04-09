@@ -1,6 +1,6 @@
 /**
  *   Written by Ricardo Macedo.
- *   Copyright (c) 2021 INESC TEC.
+ *   Copyright (c) 2021-2022 INESC TEC.
  **/
 
 #include <padll/interface/ldpreloaded/ld_preloaded_posix.hpp>
@@ -9,39 +9,32 @@ namespace padll::interface::ldpreloaded {
 
 // LdPreloadedPosix default constructor.
 LdPreloadedPosix::LdPreloadedPosix () :
-    m_logger_ptr { std::make_shared<Log> () },
-    m_stage { std::make_unique<DataPlaneStage> (this->m_logger_ptr) }
+    m_log { std::make_shared<Log> (option_default_enable_debug_level,
+        option_default_enable_debug_with_ld_preload,
+        std::string { option_default_log_path }) },
+    m_dlsym_hook { option_library_name, this->m_log }
 {
-    std::printf ("LdPreloadedPosix default constructor.\n");
-}
-
-// TODO: check move operation within LdPreloadPosix, but not on PosixFileSystem
-// LdPreloadedPosix explicit constructor.
-LdPreloadedPosix::LdPreloadedPosix (const std::shared_ptr<Log>& logging_ptr) :
-    m_logger_ptr { logging_ptr },
-    m_stage { std::make_unique<DataPlaneStage> (logging_ptr) },
-    m_mount_point_table { logging_ptr, "ld-preloaded-posix" }
-{
-    std::printf ("LdPreloadedPosix explicit constructor.\n");
+    // TODO: check m_log pointer value and compare with the other instances.
+    std::printf ("LdPreloadedPosix default constructor (%p).\n", (void*)this->m_log.get ());
 }
 
 // LdPreloadedPosix parameterized constructor.
 LdPreloadedPosix::LdPreloadedPosix (const std::string& lib,
     const bool& stat_collection,
-    const std::shared_ptr<Log>& logging_ptr) :
+    std::shared_ptr<Log> log_ptr) :
+    m_log { log_ptr },
+    m_dlsym_hook { lib, this->m_log },
     m_collect { stat_collection },
-    m_logger_ptr { logging_ptr },
-    m_stage { std::make_unique<DataPlaneStage> (logging_ptr) },
-    m_mount_point_table { logging_ptr, "ld-preloaded-posix" }
+    m_mount_point_table { "ld-preloaded-posix-" + lib }
 {
-    std::printf ("LdPreloadedPosix parameterized constructor.\n");
+    // TODO: check m_log pointer value and compare with the other instances.
+    std::printf ("LdPreloadedPosix parameterized constructor (%p).\n", (void*)this->m_log.get ());
 }
 
 // LdPreloadedPosix default destructor.
 LdPreloadedPosix::~LdPreloadedPosix ()
 {
     std::printf ("LdPreloadedPosix default destructor.\n");
-    this->m_logger_ptr->log_info ("LdPreloadedPosix default destructor.");
 
     if (option_default_table_format) {
         // print to stdout metadata-based statistics in tabular format
@@ -52,10 +45,8 @@ LdPreloadedPosix::~LdPreloadedPosix ()
         this->m_dir_stats.tabulate ();
         // print to stdout extended attributes based statistics in tabular format
         this->m_ext_attr_stats.tabulate ();
-        // print to stdout file modes based statistics in tabular format
-        this->m_file_mode_stats.tabulate ();
     } else {
-        this->m_logger_ptr->log_debug (this->to_string ());
+        std::printf ("%s\n", this->to_string ().c_str ());
     }
 }
 
@@ -81,9 +72,6 @@ StatisticEntry LdPreloadedPosix::get_statistic_entry (const OperationType& opera
 
         case OperationType::ext_attr_calls:
             return this->m_ext_attr_stats.get_statistic_entry (operation_entry);
-
-        case OperationType::file_mode_calls:
-            return this->m_file_mode_stats.get_statistic_entry (operation_entry);
 
         default:
             return StatisticEntry {};
@@ -113,10 +101,6 @@ std::string LdPreloadedPosix::to_string ()
     stream << "-------------------------------------------------------------------\n";
     stream << this->m_ext_attr_stats.to_string () << "\n";
 
-    stream << "LdPreloadedPosix::File mode statistics (" << pid << ", " << ppid << ")\n";
-    stream << "-----------------------------------------------------------\n";
-    stream << this->m_file_mode_stats.to_string () << "\n";
-
     return stream.str ();
 }
 
@@ -125,17 +109,17 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_read (int fd, void* buf, size_t cou
 {
     // logging message
     if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-read (" + std::to_string (fd) + ")");
+        std::printf ("ld_preloaded_posix-read (%d)\n", fd);
     }
 
     // hook POSIX read operation to m_data_operations.m_read
     this->m_dlsym_hook.hook_posix_read (m_data_operations.m_read);
 
-    //    // enforce read request to PAIO data plane stage
-    //    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-    //        static_cast<int> (paio::core::POSIX::read),
-    //        static_cast<int> (paio::core::POSIX_META::data_op),
-    //        counter);
+    // enforce read request to PAIO data plane stage
+    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
+        static_cast<int> (paio::core::POSIX::read),
+        static_cast<int> (paio::core::POSIX_META::data_op),
+        counter);
 
     // perform original POSIX read operation
     ssize_t result = m_data_operations.m_read (fd, buf, counter);
@@ -157,17 +141,17 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_write (int fd, const void* buf, siz
 {
     // logging message
     if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-write (" + std::to_string (fd) + ")");
+        std::printf ("ld_preloaded_posix-write (%d)\n", fd);
     }
 
     // hook POSIX write operation to m_data_operations.m_write
     this->m_dlsym_hook.hook_posix_write (m_data_operations.m_write);
 
-    //    // enforce write request to PAIO data plane stage
-    //    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-    //        static_cast<int> (paio::core::POSIX::write),
-    //        static_cast<int> (paio::core::POSIX_META::data_op),
-    //        counter);
+    // enforce write request to PAIO data plane stage
+    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
+        static_cast<int> (paio::core::POSIX::write),
+        static_cast<int> (paio::core::POSIX_META::data_op),
+        counter);
 
     // perform original POSIX write operation
     ssize_t result = m_data_operations.m_write (fd, buf, counter);
@@ -176,11 +160,6 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_write (int fd, const void* buf, siz
     if (this->m_collect) {
         if (result >= 0) {
             this->m_data_stats.update_statistic_entry (static_cast<int> (Data::write), 1, result);
-            this->m_logger_ptr->log_debug ("ld_preloaded_posix-counter-write ("
-                + std::to_string (
-                    this->m_data_stats.get_statistic_entry (static_cast<int> (Data::write))
-                        .get_operation_counter ())
-                + ")");
         } else {
             this->m_data_stats.update_statistic_entry (static_cast<int> (Data::write), 1, 0, 1);
         }
@@ -194,7 +173,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_pread (int fd, void* buf, size_t co
 {
     // logging message
     if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-pread (" + std::to_string (fd) + ")");
+        std::printf ("ld_preloaded_posix-pread (%d)\n", fd);
     }
 
     // hook POSIX pread operation to m_data_operations.m_pread
@@ -227,7 +206,7 @@ LdPreloadedPosix::ld_preloaded_posix_pwrite (int fd, const void* buf, size_t cou
 {
     // logging message
     if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-pwrite (" + std::to_string (fd) + ")");
+        std::printf ("ld_preloaded_posix-pwrite (%d)\n", fd);
     }
 
     // hook POSIX pwrite operation to m_data_operations.m_pwrite
@@ -260,9 +239,10 @@ ssize_t
 LdPreloadedPosix::ld_preloaded_posix_pread64 (int fd, void* buf, size_t counter, off64_t offset)
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-pread64 (" + std::to_string (fd) + ")");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-pread64 (" + std::to_string (fd) +
+    //     ")");
+    // }
 
     // hook POSIX pread64 operation to m_data_operations.m_pread64
     this->m_dlsym_hook.hook_posix_pread64 (m_data_operations.m_pread64);
@@ -297,9 +277,10 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_pwrite64 (int fd,
     off64_t offset)
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-pwrite64 (" + std::to_string (fd) + ")");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-pwrite64 (" + std::to_string (fd) +
+    //     ")");
+    // }
 
     // hook POSIX pwrite64 operation to m_data_operations.m_pwrite64
     this->m_dlsym_hook.hook_posix_pwrite64 (m_data_operations.m_pwrite64);
@@ -328,81 +309,14 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_pwrite64 (int fd,
 }
 #endif
 
-// ld_preloaded_posix_fread call. (...)
-size_t
-LdPreloadedPosix::ld_preloaded_posix_fread (void* ptr, size_t size, size_t nmemb, FILE* stream)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fpread");
-    }
-
-    // hook POSIX fread operation to m_data_operations.m_fread
-    this->m_dlsym_hook.hook_posix_fread (m_data_operations.m_fread);
-
-    // enforce fread request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (stream),
-        static_cast<int> (paio::core::POSIX::fread),
-        static_cast<int> (paio::core::POSIX_META::data_op),
-        (size > 0 && nmemb > 0) ? size * nmemb : 1);
-
-    // perform original POSIX fread operation
-    size_t result = m_data_operations.m_fread (ptr, size, nmemb, stream);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result >= 0) {
-            this->m_data_stats.update_statistic_entry (static_cast<int> (Data::fread), 1, result);
-        } else {
-            this->m_data_stats.update_statistic_entry (static_cast<int> (Data::fread), 1, 0, 1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_fwrite call. (...)
-size_t LdPreloadedPosix::ld_preloaded_posix_fwrite (const void* ptr,
-    size_t size,
-    size_t nmemb,
-    FILE* stream)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fwrite");
-    }
-
-    // hook POSIX fwrite operation to m_data_operations.m_fwrite
-    this->m_dlsym_hook.hook_posix_fwrite (m_data_operations.m_fwrite);
-
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (stream),
-        static_cast<int> (paio::core::POSIX::fwrite),
-        static_cast<int> (paio::core::POSIX_META::data_op),
-        (size > 0 && nmemb > 0) ? size * nmemb : 1);
-
-    // perform original POSIX fwrite operation
-    size_t result = m_data_operations.m_fwrite (ptr, size, nmemb, stream);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result >= 0) {
-            this->m_data_stats.update_statistic_entry (static_cast<int> (Data::fwrite), 1, result);
-        } else {
-            this->m_data_stats.update_statistic_entry (static_cast<int> (Data::fwrite), 1, 0, 1);
-        }
-    }
-
-    return result;
-}
-
 // ld_preloaded_posix_open call.
 int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags, mode_t mode)
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug (
-            "ld_preloaded_posix-open-variadic (" + std::string (path) + ")");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug (
+    //         "ld_preloaded_posix-open-variadic (" + std::string (path) + ")");
+    // }
 
     // hook POSIX open operation to m_metadata_operations.m_open_var
     this->m_dlsym_hook.hook_posix_open_var (m_metadata_operations.m_open_var);
@@ -416,7 +330,7 @@ int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags, mode
     // perform original POSIX open operation
     int result = m_metadata_operations.m_open_var (path, flags, mode);
 
-    // todo: create_mount_point_entry
+    // TODO: create_mount_point_entry
 
     // update statistic entry
     if (this->m_collect) {
@@ -438,9 +352,9 @@ int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags, mode
 int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags)
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-open (" + std::string (path) + ")");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-open (" + std::string (path) + ")");
+    // }
 
     // hook POSIX open operation to m_metadata_operations.m_open
     this->m_dlsym_hook.hook_posix_open (m_metadata_operations.m_open);
@@ -454,7 +368,7 @@ int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags)
     // perform original POSIX open operation
     int result = m_metadata_operations.m_open (path, flags);
 
-    // todo: create_mount_point_entry
+    // TODO: create_mount_point_entry
 
     // update statistic entry
     if (this->m_collect) {
@@ -475,9 +389,9 @@ int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags)
 int LdPreloadedPosix::ld_preloaded_posix_creat (const char* path, mode_t mode)
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-creat (" + std::string (path) + ")");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-creat (" + std::string (path) + ")");
+    // }
 
     // hook POSIX creat operation to m_metadata_operations.m_creat
     this->m_dlsym_hook.hook_posix_creat (m_metadata_operations.m_creat);
@@ -491,7 +405,7 @@ int LdPreloadedPosix::ld_preloaded_posix_creat (const char* path, mode_t mode)
     // perform original POSIX creat operation
     int result = m_metadata_operations.m_creat (path, mode);
 
-    // todo: create_mount_point_entry
+    // TODO: create_mount_point_entry
 
     // update statistic entry
     if (this->m_collect) {
@@ -514,9 +428,10 @@ int LdPreloadedPosix::ld_preloaded_posix_creat (const char* path, mode_t mode)
 int LdPreloadedPosix::ld_preloaded_posix_creat64 (const char* path, mode_t mode)
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-creat64 (" + std::string (path) + ")");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-creat64 (" + std::string (path) +
+    //     ")");
+    // }
 
     // hook POSIX creat64 operation to m_metadata_operations.m_creat64
     this->m_dlsym_hook.hook_posix_creat64 (m_metadata_operations.m_creat64);
@@ -530,7 +445,7 @@ int LdPreloadedPosix::ld_preloaded_posix_creat64 (const char* path, mode_t mode)
     // perform original POSIX creat64 operation
     int result = m_metadata_operations.m_creat64 (path, mode);
 
-    // todo: create_mount_point_entry
+    // TODO: create_mount_point_entry
 
     // update statistic entry
     if (this->m_collect) {
@@ -556,10 +471,10 @@ int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd,
     mode_t mode)
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-openat-variadic ("
-            + std::to_string (dirfd) + ", " + std::string (path) + ")");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-openat-variadic ("
+    //         + std::to_string (dirfd) + ", " + std::string (path) + ")");
+    // }
 
     // hook POSIX openat variadic operation to m_metadata_operations.m_openat_var
     this->m_dlsym_hook.hook_posix_openat_var (m_metadata_operations.m_openat_var);
@@ -573,7 +488,7 @@ int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd,
     // perform original POSIX openat operation
     int result = m_metadata_operations.m_openat_var (dirfd, path, flags, mode);
 
-    // todo: create_mount_point_entry
+    // TODO: create_mount_point_entry
 
     // update statistic entry
     if (this->m_collect) {
@@ -595,10 +510,11 @@ int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd,
 int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd, const char* path, int flags)
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-openat (" + std::to_string (dirfd) + ", "
-            + std::string (path) + ")");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-openat (" + std::to_string (dirfd) +
+    //     ", "
+    //         + std::string (path) + ")");
+    // }
 
     // hook POSIX openat operation to m_metadata_operations.m_openat
     this->m_dlsym_hook.hook_posix_openat (m_metadata_operations.m_openat);
@@ -612,7 +528,7 @@ int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd, const char* path, in
     // perform original POSIX openat operation
     int result = m_metadata_operations.m_openat (dirfd, path, flags);
 
-    // todo: create_mount_point_entry
+    // TODO: create_mount_point_entry
 
     // update statistic entry
     if (this->m_collect) {
@@ -635,10 +551,10 @@ int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd, const char* path, in
 int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags, mode_t mode)
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug (
-            "ld_preloaded_posix-open64-variadic (" + std::string (path) + ")");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug (
+    //         "ld_preloaded_posix-open64-variadic (" + std::string (path) + ")");
+    // }
 
     // hook POSIX open64_var operation to m_metadata_operations.m_open64_var
     this->m_dlsym_hook.hook_posix_open64_variadic (m_metadata_operations.m_open64_var);
@@ -652,7 +568,7 @@ int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags, mo
     // perform original POSIX open64 operation
     int result = m_metadata_operations.m_open64_var (path, flags, mode);
 
-    // todo: create_mount_point_entry
+    // TODO: create_mount_point_entry
 
     // update statistic entry
     if (this->m_collect) {
@@ -674,9 +590,9 @@ int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags, mo
 int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags)
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-open64 (" + std::string (path) + ")");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-open64 (" + std::string (path) + ")");
+    // }
 
     // hook POSIX open64 operation to m_metadata_operations.m_open64
     this->m_dlsym_hook.hook_posix_open64 (m_metadata_operations.m_open64);
@@ -690,7 +606,7 @@ int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags)
     // perform original POSIX open64 operation
     int result = m_metadata_operations.m_open64 (path, flags);
 
-    // todo: create_mount_point_entry
+    // TODO: create_mount_point_entry
 
     // update statistic entry
     if (this->m_collect) {
@@ -713,9 +629,9 @@ int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags)
 int LdPreloadedPosix::ld_preloaded_posix_close (int fd)
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-close (" + std::to_string (fd) + ")");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-close (" + std::to_string (fd) + ")");
+    // }
 
     // hook POSIX close operation to m_metadata_operations.m_close
     this->m_dlsym_hook.hook_posix_close (m_metadata_operations.m_close);
@@ -729,7 +645,7 @@ int LdPreloadedPosix::ld_preloaded_posix_close (int fd)
     // perform original POSIX close operation
     int result = m_metadata_operations.m_close (fd);
 
-    // todo: remove_mount_point_entry
+    // TODO: remove_mount_point_entry
 
     // update statistic entry
     if (this->m_collect) {
@@ -739,81 +655,6 @@ int LdPreloadedPosix::ld_preloaded_posix_close (int fd)
                 0);
         } else {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::close),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_fsync call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_fsync (int fd)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fsync (" + std::to_string (fd) + ")");
-    }
-
-    // hook POSIX fsync operation to m_metadata_operations.m_fsync
-    this->m_dlsym_hook.hook_posix_fsync (m_metadata_operations.m_fsync);
-
-    // enforce fsync request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::core::POSIX::fsync),
-        static_cast<int> (paio::core::POSIX_META::meta_op),
-        1);
-
-    // perform original POSIX fsync operation
-    int result = m_metadata_operations.m_fsync (fd);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result == 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fsync),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fsync),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_fdatasync call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_fdatasync (int fd)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug (
-            "ld_preloaded_posix-fdatasync (" + std::to_string (fd) + ")");
-    }
-
-    // hook POSIX fdatasync operation to m_metadata_operations.m_fdatasync
-    this->m_dlsym_hook.hook_posix_fdatasync (m_metadata_operations.m_fdatasync);
-
-    // enforce fdatasync request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::core::POSIX::fdatasync),
-        static_cast<int> (paio::core::POSIX_META::meta_op),
-        1);
-
-    // perform original POSIX fdatasync operation
-    int result = m_metadata_operations.m_fdatasync (fd);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result == 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fdatasync),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fdatasync),
                 1,
                 0,
                 1);
@@ -827,15 +668,15 @@ int LdPreloadedPosix::ld_preloaded_posix_fdatasync (int fd)
 void LdPreloadedPosix::ld_preloaded_posix_sync ()
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-sync");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-sync");
+    // }
 
     // hook POSIX sync operation to m_metadata_operations.m_sync
     this->m_dlsym_hook.hook_posix_sync (m_metadata_operations.m_sync);
 
     // enforce sync request to PAIO data plane stage
-    // todo: don't really know what to do here
+    // TODO: don't really know what to do here
     // this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
     // static_cast<int> (paio::core::POSIX::sync),
     //    static_cast<int> (paio::core::POSIX_META::meta_op),
@@ -850,515 +691,13 @@ void LdPreloadedPosix::ld_preloaded_posix_sync ()
     }
 }
 
-// ld_preloaded_posix_syncfs call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_syncfs (int fd)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-syncfs (" + std::to_string (fd) + ")");
-    }
-
-    // hook POSIX syncfs operation to m_metadata_operations.m_syncfs
-    this->m_dlsym_hook.hook_posix_syncfs (m_metadata_operations.m_syncfs);
-
-    // enforce syncfs request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::core::POSIX::syncfs),
-        static_cast<int> (paio::core::POSIX_META::meta_op),
-        1);
-
-    // perform original POSIX syncfs operation
-    int result = m_metadata_operations.m_syncfs (fd);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result == 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::syncfs),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::syncfs),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_truncate call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_truncate (const char* path, off_t length)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-truncate (" + std::string (path) + ")");
-    }
-
-    // hook POSIX truncate operation to m_metadata_operations.m_truncate
-    this->m_dlsym_hook.hook_posix_truncate (m_metadata_operations.m_truncate);
-
-    // TODO: does truncate only cost one IOP?
-    // enforce truncate request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::core::POSIX::truncate),
-        static_cast<int> (paio::core::POSIX_META::meta_op),
-        1);
-
-    // perform original POSIX truncate operation
-    int result = m_metadata_operations.m_truncate (path, length);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result == 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::truncate),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::truncate),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_ftruncate call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_ftruncate (int fd, off_t length)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug (
-            "ld_preloaded_posix-ftruncate (" + std::to_string (fd) + ")");
-    }
-
-    // hook POSIX ftruncate operation to m_metadata_operations.m_ftruncate
-    this->m_dlsym_hook.hook_posix_ftruncate (m_metadata_operations.m_ftruncate);
-
-    // TODO: does ftruncate only cost one IOP?
-    // enforce ftruncate request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::core::POSIX::ftruncate),
-        static_cast<int> (paio::core::POSIX_META::meta_op),
-        1);
-
-    // perform original POSIX ftruncate operation
-    int result = m_metadata_operations.m_ftruncate (fd, length);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result == 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::ftruncate),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::ftruncate),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_truncate64 call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_truncate64 (const char* path, off_t length)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug (
-            "ld_preloaded_posix-truncate64 (" + std::string (path) + ")");
-    }
-
-    // hook POSIX truncate64 operation to m_metadata_operations.m_truncate64
-    this->m_dlsym_hook.hook_posix_truncate64 (m_metadata_operations.m_truncate64);
-
-    // TODO: does truncate64 only cost one IOP?
-    // enforce truncate64 request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::core::POSIX::truncate64),
-        static_cast<int> (paio::core::POSIX_META::meta_op),
-        1);
-
-    // perform original POSIX truncate64 operation
-    int result = m_metadata_operations.m_truncate64 (path, length);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result == 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::truncate64),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::truncate64),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_ftruncate64 call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_ftruncate64 (int fd, off_t length)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug (
-            "ld_preloaded_posix-ftruncate64 (" + std::to_string (fd) + ")");
-    }
-
-    // hook POSIX ftruncate64 operation to m_metadata_operations.m_ftruncate64
-    this->m_dlsym_hook.hook_posix_ftruncate64 (m_metadata_operations.m_ftruncate64);
-
-    // TODO: does ftruncate64 only cost one IOP?
-    // enforce ftruncate64 request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::core::POSIX::ftruncate64),
-        static_cast<int> (paio::core::POSIX_META::meta_op),
-        1);
-
-    // perform original POSIX ftruncate64 operation
-    int result = m_metadata_operations.m_ftruncate64 (fd, length);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result == 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::ftruncate64),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::ftruncate64),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_xstat call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_xstat (int version, const char* path, struct stat* statbuf)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-xstat (" + std::string (path) + ")");
-    }
-
-    // hook POSIX __xstat operation to m_metadata_operations.m_xstat
-    this->m_dlsym_hook.hook_posix_xstat (m_metadata_operations.m_xstat);
-
-    // enforce __xstat request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::core::POSIX::xstat),
-        static_cast<int> (paio::core::POSIX_META::meta_op),
-        1);
-
-    // perform original POSIX __xstat (stat) operation
-    int result = m_metadata_operations.m_xstat (version, path, statbuf);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result == 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::stat), 1, 0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::stat),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_lxstat call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_lxstat (int version,
-    const char* path,
-    struct stat* statbuf)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-lxstat (" + std::string (path) + ")");
-    }
-
-    // hook POSIX __lxstat operation to m_metadata_operations.m_lxstat
-    this->m_dlsym_hook.hook_posix_lxstat (m_metadata_operations.m_lxstat);
-
-    // enforce __lxstat request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::core::POSIX::lxstat),
-        static_cast<int> (paio::core::POSIX_META::meta_op),
-        1);
-
-    // perform original POSIX __lxstat (lstat) operation
-    int result = m_metadata_operations.m_lxstat (version, path, statbuf);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result == 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::lstat),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::lstat),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_fxstat call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_fxstat (int version, int fd, struct stat* statbuf)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fxstat (" + std::to_string (fd) + ")");
-    }
-
-    // hook POSIX __fxstat operation to m_metadata_operations.m_fxstat
-    this->m_dlsym_hook.hook_posix_fxstat (m_metadata_operations.m_fxstat);
-
-    // enforce __fxstat request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::core::POSIX::fxstat),
-        static_cast<int> (paio::core::POSIX_META::meta_op),
-        1);
-
-    // perform original POSIX __fxstat (fstat) operation
-    int result = m_metadata_operations.m_fxstat (version, fd, statbuf);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result == 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fstat),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fstat),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_fxstatat call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_fxstatat (int version,
-    int dirfd,
-    const char* path,
-    struct stat* statbuf,
-    int flags)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fxstatat (" + std::to_string (dirfd)
-            + ", " + std::string (path) + ")");
-    }
-
-    // hook POSIX __fxstatat operation to m_metadata_operations.m_fxstatat
-    this->m_dlsym_hook.hook_posix_fxstatat (m_metadata_operations.m_fxstatat);
-
-    // enforce __fxstatat request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::core::POSIX::fxstatat),
-        static_cast<int> (paio::core::POSIX_META::meta_op),
-        1);
-
-    // perform original POSIX __fxstatat (fstatat) operation
-    int result = m_metadata_operations.m_fxstatat (version, dirfd, path, statbuf, flags);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result == 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fstatat),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fstatat),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_xstat64 call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_xstat64 (int version,
-    const char* path,
-    struct stat64* statbuf)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-xstat64 (" + std::string (path) + ")");
-    }
-
-    // hook POSIX __xstat64 operation to m_metadata_operations.m_xstat64
-    this->m_dlsym_hook.hook_posix_xstat64 (m_metadata_operations.m_xstat64);
-
-    // enforce __xstat64 request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::core::POSIX::xstat64),
-        static_cast<int> (paio::core::POSIX_META::meta_op),
-        1);
-
-    // perform original POSIX __xstat64 (stat) operation
-    int result = m_metadata_operations.m_xstat64 (version, path, statbuf);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result == 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::stat64),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::stat64),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_lxstat64 call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_lxstat64 (int version,
-    const char* path,
-    struct stat64* statbuf)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-lxstat64 (" + std::string (path) + ")");
-    }
-
-    // hook POSIX __lxstat64 operation to m_metadata_operations.m_lxstat64
-    this->m_dlsym_hook.hook_posix_lxstat64 (m_metadata_operations.m_lxstat64);
-
-    // enforce __lxstat64 request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::core::POSIX::lxstat64),
-        static_cast<int> (paio::core::POSIX_META::meta_op),
-        1);
-
-    // perform original POSIX __lxstat64 (lstat64) operation
-    int result = m_metadata_operations.m_lxstat64 (version, path, statbuf);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result == 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::lstat64),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::lstat64),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_fxstat64 call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_fxstat64 (int version, int fd, struct stat64* statbuf)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fxstat64 (" + std::to_string (fd) + ")");
-    }
-
-    // hook POSIX __fxstat64 operation to m_metadata_operations.m_fxstat64
-    this->m_dlsym_hook.hook_posix_fxstat64 (m_metadata_operations.m_fxstat64);
-
-    // enforce __fxstat64 request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::core::POSIX::fxstat64),
-        static_cast<int> (paio::core::POSIX_META::meta_op),
-        1);
-
-    // perform original POSIX __fxstat64 (fxstat64) operation
-    int result = m_metadata_operations.m_fxstat64 (version, fd, statbuf);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result == 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fstat64),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fstat64),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_fxstatat64 call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_fxstatat64 (int version,
-    int dirfd,
-    const char* path,
-    struct stat64* statbuf,
-    int flags)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fxstatat64 (" + std::to_string (dirfd)
-            + ", " + std::string (path) + ")");
-    }
-
-    // hook POSIX __fxstatat64 operation to m_metadata_operations.m_fxstatat64
-    this->m_dlsym_hook.hook_posix_fxstatat64 (m_metadata_operations.m_fxstatat64);
-
-    // enforce __fxstatat64 request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::core::POSIX::fxstatat64),
-        static_cast<int> (paio::core::POSIX_META::meta_op),
-        1);
-
-    // perform original POSIX __fxstatat64 (fxstatat64) operation
-    int result = m_metadata_operations.m_fxstatat64 (version, dirfd, path, statbuf, flags);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result == 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fstatat64),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fstatat64),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
 // ld_preloaded_posix_statfs call. (...)
 int LdPreloadedPosix::ld_preloaded_posix_statfs (const char* path, struct statfs* buf)
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-statfs (" + std::string (path) + ")");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-statfs (" + std::string (path) + ")");
+    // }
 
     // hook POSIX statfs operation to m_metadata_operations.m_statfs
     this->m_dlsym_hook.hook_posix_statfs (m_metadata_operations.m_statfs);
@@ -1393,9 +732,10 @@ int LdPreloadedPosix::ld_preloaded_posix_statfs (const char* path, struct statfs
 int LdPreloadedPosix::ld_preloaded_posix_fstatfs (int fd, struct statfs* buf)
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fstatfs (" + std::to_string (fd) + ")");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-fstatfs (" + std::to_string (fd) +
+    //     ")");
+    // }
 
     // hook POSIX fstatfs operation to m_metadata_operations.m_fstatfs
     this->m_dlsym_hook.hook_posix_fstatfs (m_metadata_operations.m_fstatfs);
@@ -1430,9 +770,10 @@ int LdPreloadedPosix::ld_preloaded_posix_fstatfs (int fd, struct statfs* buf)
 int LdPreloadedPosix::ld_preloaded_posix_statfs64 (const char* path, struct statfs64* buf)
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-statfs64 (" + std::string (path) + ")");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-statfs64 (" + std::string (path) +
+    //     ")");
+    // }
 
     // hook POSIX statfs64 operation to m_metadata_operations.m_statfs64
     this->m_dlsym_hook.hook_posix_statfs64 (m_metadata_operations.m_statfs64);
@@ -1467,10 +808,10 @@ int LdPreloadedPosix::ld_preloaded_posix_statfs64 (const char* path, struct stat
 int LdPreloadedPosix::ld_preloaded_posix_fstatfs64 (int fd, struct statfs64* buf)
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug (
-            "ld_preloaded_posix-fstatfs64 (" + std::to_string (fd) + ")");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug (
+    //         "ld_preloaded_posix-fstatfs64 (" + std::to_string (fd) + ")");
+    // }
 
     // hook POSIX fstatfs64 operation to m_metadata_operations.m_fstatfs64
     this->m_dlsym_hook.hook_posix_fstatfs64 (m_metadata_operations.m_fstatfs64);
@@ -1501,49 +842,13 @@ int LdPreloadedPosix::ld_preloaded_posix_fstatfs64 (int fd, struct statfs64* buf
     return result;
 }
 
-// ld_preloaded_posix_link call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_link (const char* old_path, const char* new_path)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-link (" + std::string (old_path) + ", "
-            + std::string (new_path) + ")");
-    }
-
-    // hook POSIX link operation to m_metadata_operations.m_link
-    this->m_dlsym_hook.hook_posix_link (m_metadata_operations.m_link);
-
-    // enforce link request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (new_path),
-        static_cast<int> (paio::core::POSIX::link),
-        static_cast<int> (paio::core::POSIX_META::meta_op),
-        1);
-
-    // perform original POSIX link operation
-    int result = m_metadata_operations.m_link (old_path, new_path);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result == 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::link), 1, 0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::link),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
 // ld_preloaded_posix_unlink call. (...)
 int LdPreloadedPosix::ld_preloaded_posix_unlink (const char* path)
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-unlink (" + std::string (path) + ")");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-unlink (" + std::string (path) + ")");
+    // }
 
     // hook POSIX unlink operation to m_metadata_operations.m_unlink
     this->m_dlsym_hook.hook_posix_unlink (m_metadata_operations.m_unlink);
@@ -1557,7 +862,7 @@ int LdPreloadedPosix::ld_preloaded_posix_unlink (const char* path)
     // perform original POSIX unlink operation
     int result = m_metadata_operations.m_unlink (path);
 
-    // todo: remove_mount_point_entry
+    // TODO: remove_mount_point_entry
 
     // update statistic entry
     if (this->m_collect) {
@@ -1567,49 +872,6 @@ int LdPreloadedPosix::ld_preloaded_posix_unlink (const char* path)
                 0);
         } else {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::unlink),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_linkat call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_linkat (int olddirfd,
-    const char* old_path,
-    int newdirfd,
-    const char* new_path,
-    int flags)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-linkat (" + std::to_string (olddirfd)
-            + ", " + std::string (old_path) + ", " + std::to_string (newdirfd) + ", "
-            + std::string (new_path) + ")");
-    }
-
-    // hook POSIX linkat operation to m_metadata_operations.m_linkat
-    this->m_dlsym_hook.hook_posix_linkat (m_metadata_operations.m_linkat);
-
-    // enforce linkat request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (new_path),
-        static_cast<int> (paio::core::POSIX::linkat),
-        static_cast<int> (paio::core::POSIX_META::meta_op),
-        1);
-
-    // perform original POSIX linkat operation
-    int result = m_metadata_operations.m_linkat (olddirfd, old_path, newdirfd, new_path, flags);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result == 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::linkat),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::linkat),
                 1,
                 0,
                 1);
@@ -1623,10 +885,10 @@ int LdPreloadedPosix::ld_preloaded_posix_linkat (int olddirfd,
 int LdPreloadedPosix::ld_preloaded_posix_unlinkat (int dirfd, const char* pathname, int flags)
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-unlinkat (" + std::to_string (dirfd)
-            + ", " + std::string (pathname) + ", " + std::to_string (flags) + ")");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-unlinkat (" + std::to_string (dirfd)
+    //         + ", " + std::string (pathname) + ", " + std::to_string (flags) + ")");
+    // }
 
     // hook POSIX unlinkat operation to m_metadata_operations.m_unlinkat
     this->m_dlsym_hook.hook_posix_unlinkat (m_metadata_operations.m_unlinkat);
@@ -1640,7 +902,7 @@ int LdPreloadedPosix::ld_preloaded_posix_unlinkat (int dirfd, const char* pathna
     // perform original POSIX unlinkat operation
     int result = m_metadata_operations.m_unlinkat (dirfd, pathname, flags);
 
-    // todo: remove_mount_point_entry
+    // TODO: remove_mount_point_entry
 
     // update statistic entry
     if (this->m_collect) {
@@ -1663,10 +925,11 @@ int LdPreloadedPosix::ld_preloaded_posix_unlinkat (int dirfd, const char* pathna
 int LdPreloadedPosix::ld_preloaded_posix_rename (const char* old_path, const char* new_path)
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-rename (" + std::string (old_path) + ", "
-            + std::string (new_path) + ")");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-rename (" + std::string (old_path) +
+    //     ", "
+    //         + std::string (new_path) + ")");
+    // }
 
     // hook POSIX rename operation to m_metadata_operations.m_rename
     this->m_dlsym_hook.hook_posix_rename (m_metadata_operations.m_rename);
@@ -1680,8 +943,8 @@ int LdPreloadedPosix::ld_preloaded_posix_rename (const char* old_path, const cha
     // perform original POSIX rename operation
     int result = m_metadata_operations.m_rename (old_path, new_path);
 
-    // todo: create_mount_point_entry (new_path)
-    // todo: remove_mount_point_entry (old_path)
+    // TODO: create_mount_point_entry (new_path)
+    // TODO: remove_mount_point_entry (old_path)
 
     // update statistic entry
     if (this->m_collect) {
@@ -1707,11 +970,12 @@ int LdPreloadedPosix::ld_preloaded_posix_renameat (int olddirfd,
     const char* new_path)
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-renameat (" + std::to_string (olddirfd)
-            + ", " + std::string (old_path) + ", " + std::to_string (newdirfd) + ", "
-            + std::string (new_path) + ")");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-renameat (" + std::to_string
+    //     (olddirfd)
+    //         + ", " + std::string (old_path) + ", " + std::to_string (newdirfd) + ", "
+    //         + std::string (new_path) + ")");
+    // }
 
     // hook POSIX renameat operation to m_metadata_operations.m_renameat
     this->m_dlsym_hook.hook_posix_renameat (m_metadata_operations.m_renameat);
@@ -1725,8 +989,8 @@ int LdPreloadedPosix::ld_preloaded_posix_renameat (int olddirfd,
     // perform original POSIX renameat operation
     int result = m_metadata_operations.m_renameat (olddirfd, old_path, newdirfd, new_path);
 
-    // todo: create_mount_point_entry (new_path)
-    // todo: remove_mount_point_entry (old_path)
+    // TODO: create_mount_point_entry (new_path)
+    // TODO: remove_mount_point_entry (old_path)
 
     // update statistic entry
     if (this->m_collect) {
@@ -1736,162 +1000,6 @@ int LdPreloadedPosix::ld_preloaded_posix_renameat (int olddirfd,
                 0);
         } else {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::renameat),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_symlink call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_symlink (const char* target, const char* linkpath)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-symlink (" + std::string (target) + ", "
-            + std::string (linkpath) + ")");
-    }
-
-    // hook POSIX symlink operation to m_metadata_operations.m_symlink
-    this->m_dlsym_hook.hook_posix_symlink (m_metadata_operations.m_symlink);
-
-    // enforce symlink request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (linkpath),
-        static_cast<int> (paio::core::POSIX::symlink),
-        static_cast<int> (paio::core::POSIX_META::meta_op),
-        1);
-
-    // perform original POSIX symlink operation
-    int result = m_metadata_operations.m_symlink (target, linkpath);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result == 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::symlink),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::symlink),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_symlinkat call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_symlinkat (const char* target,
-    int newdirfd,
-    const char* linkpath)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-symlinkat (" + std::string (target)
-            + ", " + std::to_string (newdirfd) + ", " + std::string (linkpath) + ")");
-    }
-
-    // hook POSIX symlinkat operation to m_metadata_operations.m_symlinkat
-    this->m_dlsym_hook.hook_posix_symlinkat (m_metadata_operations.m_symlinkat);
-
-    // enforce symlinkat request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (linkpath),
-        static_cast<int> (paio::core::POSIX::symlinkat),
-        static_cast<int> (paio::core::POSIX_META::meta_op),
-        1);
-
-    // perform original POSIX symlinkat operation
-    int result = m_metadata_operations.m_symlinkat (target, newdirfd, linkpath);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result == 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::symlinkat),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::symlinkat),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_readlink call. (...)
-ssize_t LdPreloadedPosix::ld_preloaded_posix_readlink (const char* path, char* buf, size_t bufsize)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-readlink (" + std::string (path) + ")");
-    }
-
-    // hook POSIX readlink operation to m_metadata_operations.m_readlink
-    this->m_dlsym_hook.hook_posix_readlink (m_metadata_operations.m_readlink);
-
-    // enforce readlink request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::core::POSIX::readlink),
-        static_cast<int> (paio::core::POSIX_META::meta_op),
-        1);
-
-    // perform original POSIX readlink operation
-    ssize_t result = m_metadata_operations.m_readlink (path, buf, bufsize);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result >= 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::readlink),
-                1,
-                result);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::readlink),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_readlinkat call. (...)
-ssize_t LdPreloadedPosix::ld_preloaded_posix_readlinkat (int dirfd,
-    const char* path,
-    char* buf,
-    size_t bufsize)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-readlinkat (" + std::to_string (dirfd)
-            + ", " + std::string (path) + ")");
-    }
-
-    // hook POSIX readlinkat operation to m_metadata_operations.m_readlinkat
-    this->m_dlsym_hook.hook_posix_readlinkat (m_metadata_operations.m_readlinkat);
-
-    // enforce readlinkat request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::core::POSIX::readlinkat),
-        static_cast<int> (paio::core::POSIX_META::meta_op),
-        1);
-
-    // perform original POSIX readlinkat operation
-    ssize_t result = m_metadata_operations.m_readlinkat (dirfd, path, buf, bufsize);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result >= 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::readlinkat),
-                1,
-                result);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::readlinkat),
                 1,
                 0,
                 1);
@@ -1905,9 +1013,10 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_readlinkat (int dirfd,
 FILE* LdPreloadedPosix::ld_preloaded_posix_fopen (const char* pathname, const char* mode)
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fopen (" + std::string (pathname) + ")");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-fopen (" + std::string (pathname) +
+    //     ")");
+    // }
 
     // hook POSIX fopen operation to m_metadata_operations.m_fopen
     this->m_dlsym_hook.hook_posix_fopen (m_metadata_operations.m_fopen);
@@ -1921,7 +1030,7 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_fopen (const char* pathname, const ch
     // perform original POSIX fopen operation
     FILE* result = m_metadata_operations.m_fopen (pathname, mode);
 
-    // todo: create_mount_point_entry
+    // TODO: create_mount_point_entry
 
     // update statistic entry
     if (this->m_collect) {
@@ -1944,10 +1053,10 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_fopen (const char* pathname, const ch
 FILE* LdPreloadedPosix::ld_preloaded_posix_fopen64 (const char* pathname, const char* mode)
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug (
-            "ld_preloaded_posix-fopen64 (" + std::string (pathname) + ")");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug (
+    //         "ld_preloaded_posix-fopen64 (" + std::string (pathname) + ")");
+    // }
 
     // hook POSIX fopen64 operation to m_metadata_operations.m_fopen64
     this->m_dlsym_hook.hook_posix_fopen64 (m_metadata_operations.m_fopen64);
@@ -1961,7 +1070,7 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_fopen64 (const char* pathname, const 
     // perform original POSIX fopen64 operation
     FILE* result = m_metadata_operations.m_fopen64 (pathname, mode);
 
-    // todo: create_mount_point_entry
+    // TODO: create_mount_point_entry
 
     // update statistic entry
     if (this->m_collect) {
@@ -1971,129 +1080,6 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_fopen64 (const char* pathname, const 
                 0);
         } else {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fopen64),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_fdopen call. (...)
-FILE* LdPreloadedPosix::ld_preloaded_posix_fdopen (int fd, const char* mode)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fdopen (" + std::to_string (fd) + ")");
-    }
-
-    // hook POSIX fdopen operation to m_metadata_operations.m_fdopen
-    this->m_dlsym_hook.hook_posix_fdopen (m_metadata_operations.m_fdopen);
-
-    // enforce fdopen request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::core::POSIX::fdopen),
-        static_cast<int> (paio::core::POSIX_META::meta_op),
-        1);
-
-    // perform original POSIX fdopen operation
-    FILE* result = m_metadata_operations.m_fdopen (fd, mode);
-
-    // todo: create_mount_point_entry
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result != nullptr) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fdopen),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fdopen),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_freopen call. (...)
-FILE* LdPreloadedPosix::ld_preloaded_posix_freopen (const char* pathname,
-    const char* mode,
-    FILE* stream)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug (
-            "ld_preloaded_posix-freopen (" + std::string (pathname) + ")");
-    }
-
-    // hook POSIX freopen operation to m_metadata_operations.m_freopen
-    this->m_dlsym_hook.hook_posix_freopen (m_metadata_operations.m_freopen);
-
-    // enforce freopen request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (pathname),
-        static_cast<int> (paio::core::POSIX::freopen),
-        static_cast<int> (paio::core::POSIX_META::meta_op),
-        1);
-
-    // perform original POSIX freopen operation
-    FILE* result = m_metadata_operations.m_freopen (pathname, mode, stream);
-
-    // todo: create_mount_point_entry
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result != nullptr) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::freopen),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::freopen),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_freopen64 call. (...)
-FILE* LdPreloadedPosix::ld_preloaded_posix_freopen64 (const char* pathname,
-    const char* mode,
-    FILE* stream)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug (
-            "ld_preloaded_posix-freopen64 (" + std::string (pathname) + ")");
-    }
-
-    // hook POSIX freopen64 operation to m_metadata_operations.m_freopen64
-    this->m_dlsym_hook.hook_posix_freopen64 (m_metadata_operations.m_freopen64);
-
-    // enforce freopen64 request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (pathname),
-        static_cast<int> (paio::core::POSIX::freopen64),
-        static_cast<int> (paio::core::POSIX_META::meta_op),
-        1);
-
-    // perform original POSIX freopen64 operation
-    FILE* result = m_metadata_operations.m_freopen64 (pathname, mode, stream);
-
-    // todo: create_mount_point_entry
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result != nullptr) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::freopen64),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::freopen64),
                 1,
                 0,
                 1);
@@ -2107,9 +1093,9 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_freopen64 (const char* pathname,
 int LdPreloadedPosix::ld_preloaded_posix_fclose (FILE* stream)
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fclose");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-fclose");
+    // }
 
     // hook POSIX fclose operation to m_metadata_operations.m_fclose
     this->m_dlsym_hook.hook_posix_fclose (m_metadata_operations.m_fclose);
@@ -2123,7 +1109,7 @@ int LdPreloadedPosix::ld_preloaded_posix_fclose (FILE* stream)
     // perform original POSIX fclose operation
     int result = m_metadata_operations.m_fclose (stream);
 
-    // todo: remove_mount_point_entry
+    // TODO: remove_mount_point_entry
 
     // update statistic entry
     if (this->m_collect) {
@@ -2133,342 +1119,6 @@ int LdPreloadedPosix::ld_preloaded_posix_fclose (FILE* stream)
                 0);
         } else {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fclose),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_fflush call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_fflush (FILE* stream)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fflush");
-    }
-
-    // hook POSIX fflush operation to m_metadata_operations.m_fflush
-    this->m_dlsym_hook.hook_posix_fflush (m_metadata_operations.m_fflush);
-
-    // enforce fflush request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (stream),
-        static_cast<int> (paio::core::POSIX::fflush),
-        static_cast<int> (paio::core::POSIX_META::meta_op),
-        1);
-
-    // perform original POSIX fflush operation
-    int result = m_metadata_operations.m_fflush (stream);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result == 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fflush),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fflush),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_access call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_access (const char* path, int mode)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-access");
-    }
-
-    // hook POSIX access operation to m_metadata_operations.m_access
-    this->m_dlsym_hook.hook_posix_access (m_metadata_operations.m_access);
-
-    // enforce access request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::core::POSIX::access),
-        static_cast<int> (paio::core::POSIX_META::meta_op),
-        1);
-
-    // perform original POSIX access operation
-    int result = m_metadata_operations.m_access (path, mode);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result == 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::access),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::access),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_faccessat call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_faccessat (int dirfd,
-    const char* path,
-    int mode,
-    int flags)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-faccessat");
-    }
-
-    // hook POSIX faccessat operation to m_metadata_operations.m_faccessat
-    this->m_dlsym_hook.hook_posix_faccessat (m_metadata_operations.m_faccessat);
-
-    // enforce faccessat request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::core::POSIX::faccessat),
-        static_cast<int> (paio::core::POSIX_META::meta_op),
-        1);
-
-    // perform original POSIX faccessat operation
-    int result = m_metadata_operations.m_faccessat (dirfd, path, mode, flags);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result == 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::faccessat),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::faccessat),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_lseek call. (...)
-off_t LdPreloadedPosix::ld_preloaded_posix_lseek (int fd, off_t offset, int whence)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-lseek");
-    }
-
-    // hook POSIX lseek operation to m_metadata_operations.m_lseek
-    this->m_dlsym_hook.hook_posix_lseek (m_metadata_operations.m_lseek);
-
-    // enforce lseek request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::core::POSIX::lseek),
-        static_cast<int> (paio::core::POSIX_META::meta_op),
-        1);
-
-    // perform original POSIX lseek operation
-    off_t result = m_metadata_operations.m_lseek (fd, offset, whence);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result >= 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::lseek),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::lseek),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_fseek call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_fseek (FILE* stream, long offset, int whence)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fseek");
-    }
-
-    // hook POSIX fseek operation to m_metadata_operations.m_fseek
-    this->m_dlsym_hook.hook_posix_fseek (m_metadata_operations.m_fseek);
-
-    // enforce fseek request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (stream),
-        static_cast<int> (paio::core::POSIX::fseek),
-        static_cast<int> (paio::core::POSIX_META::meta_op),
-        1);
-
-    // perform original POSIX fseek operation
-    int result = m_metadata_operations.m_fseek (stream, offset, whence);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result == 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fseek),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fseek),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_ftell call. (...)
-long LdPreloadedPosix::ld_preloaded_posix_ftell (FILE* stream)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-ftell");
-    }
-
-    // hook POSIX ftell operation to m_metadata_operations.m_ftell
-    this->m_dlsym_hook.hook_posix_ftell (m_metadata_operations.m_ftell);
-
-    // enforce ftell request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (stream),
-        static_cast<int> (paio::core::POSIX::ftell),
-        static_cast<int> (paio::core::POSIX_META::meta_op),
-        1);
-
-    // perform original POSIX ftell operation
-    long result = m_metadata_operations.m_ftell (stream);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result >= 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::ftell),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::ftell),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_lseek64 call. (...)
-off_t LdPreloadedPosix::ld_preloaded_posix_lseek64 (int fd, off_t offset, int whence)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-lseek64");
-    }
-
-    // hook POSIX lseek64 operation to m_metadata_operations.m_lseek64
-    this->m_dlsym_hook.hook_posix_lseek64 (m_metadata_operations.m_lseek64);
-
-    // enforce lseek64 request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::core::POSIX::lseek64),
-        static_cast<int> (paio::core::POSIX_META::meta_op),
-        1);
-
-    // perform original POSIX lseek64 operation
-    off_t result = m_metadata_operations.m_lseek64 (fd, offset, whence);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result >= 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::lseek64),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::lseek64),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_fseeko64 call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_fseeko64 (FILE* stream, off_t offset, int whence)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fseeko64");
-    }
-
-    // hook POSIX fseeko64 operation to m_metadata_operations.m_fseeko64
-    this->m_dlsym_hook.hook_posix_fseeko64 (m_metadata_operations.m_fseeko64);
-
-    // enforce fseeko64 request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (stream),
-        static_cast<int> (paio::core::POSIX::fseeko64),
-        static_cast<int> (paio::core::POSIX_META::meta_op),
-        1);
-
-    // perform original POSIX fseeko64 operation
-    int result = m_metadata_operations.m_fseeko64 (stream, offset, whence);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result == 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fseeko64),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fseeko64),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_ftello64 call. (...)
-off_t LdPreloadedPosix::ld_preloaded_posix_ftello64 (FILE* stream)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-ftello64");
-    }
-
-    // hook POSIX ftello64 operation to m_metadata_operations.m_ftello64
-    this->m_dlsym_hook.hook_posix_ftello64 (m_metadata_operations.m_ftello64);
-
-    // enforce ftello64 request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (stream),
-        static_cast<int> (paio::core::POSIX::ftello64),
-        static_cast<int> (paio::core::POSIX_META::meta_op),
-        1);
-
-    // perform original POSIX ftello64 operation
-    long result = m_metadata_operations.m_ftello64 (stream);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result >= 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::ftello64),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::ftello64),
                 1,
                 0,
                 1);
@@ -2482,9 +1132,9 @@ off_t LdPreloadedPosix::ld_preloaded_posix_ftello64 (FILE* stream)
 int LdPreloadedPosix::ld_preloaded_posix_mkdir (const char* path, mode_t mode)
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-mkdir (" + std::string (path) + ")");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-mkdir (" + std::string (path) + ")");
+    // }
 
     // hook POSIX mkdir operation to m_directory_operations.m_mkdir
     this->m_dlsym_hook.hook_posix_mkdir (m_directory_operations.m_mkdir);
@@ -2514,10 +1164,10 @@ int LdPreloadedPosix::ld_preloaded_posix_mkdir (const char* path, mode_t mode)
 int LdPreloadedPosix::ld_preloaded_posix_mkdirat (int dirfd, const char* path, mode_t mode)
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-mkdirat (" + std::to_string (dirfd)
-            + ", " + std::string (path) + ")");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-mkdirat (" + std::to_string (dirfd)
+    //         + ", " + std::string (path) + ")");
+    // }
 
     // hook POSIX mkdirat operation to m_directory_operations.m_mkdirat
     this->m_dlsym_hook.hook_posix_mkdirat (m_directory_operations.m_mkdirat);
@@ -2546,196 +1196,13 @@ int LdPreloadedPosix::ld_preloaded_posix_mkdirat (int dirfd, const char* path, m
     return result;
 }
 
-// ld_preloaded_posix_readdir call. (...)
-struct dirent* LdPreloadedPosix::ld_preloaded_posix_readdir (DIR* dirp)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-readdir");
-    }
-
-    // hook POSIX readdir operation to m_directory_operations.m_readdir
-    this->m_dlsym_hook.hook_posix_readdir (m_directory_operations.m_readdir);
-
-    // enforce readdir request to PAIO data plane stage
-    // fixme: not sure what to do here
-    // this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-    //    static_cast<int> (paio::core::POSIX::readdir),
-    //    static_cast<int> (paio::core::POSIX_META::dir_op),
-    //    1);
-
-    // perform original POSIX readdir operation
-    struct dirent* entry = m_directory_operations.m_readdir (dirp);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (entry != nullptr) {
-            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::readdir), 1, 0);
-        } else {
-            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::readdir),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return entry;
-}
-
-// ld_preloaded_posix_readdir64 call. (...)
-struct dirent64* LdPreloadedPosix::ld_preloaded_posix_readdir64 (DIR* dirp)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-readdir64");
-    }
-
-    // hook POSIX readdir64 operation to m_directory_operations.m_readdir64
-    this->m_dlsym_hook.hook_posix_readdir64 (m_directory_operations.m_readdir64);
-
-    // enforce readdir64 request to PAIO data plane stage
-    // fixme: not sure what to do here
-    // this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-    //     static_cast<int> (paio::core::POSIX::readdir64),
-    //     static_cast<int> (paio::core::POSIX_META::dir_op),
-    //    1);
-
-    // perform original POSIX readdir64 operation
-    struct dirent64* entry = m_directory_operations.m_readdir64 (dirp);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (entry != nullptr) {
-            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::readdir64),
-                1,
-                0);
-        } else {
-            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::readdir64),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return entry;
-}
-
-// ld_preloaded_posix_opendir call. (...)
-DIR* LdPreloadedPosix::ld_preloaded_posix_opendir (const char* path)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-opendir (" + std::string (path) + ")");
-    }
-
-    // hook POSIX opendir operation to m_directory_operations.m_opendir
-    this->m_dlsym_hook.hook_posix_opendir (m_directory_operations.m_opendir);
-
-    // enforce opendir request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::core::POSIX::opendir),
-        static_cast<int> (paio::core::POSIX_META::dir_op),
-        1);
-
-    // perform original POSIX opendir operation
-    DIR* folder = m_directory_operations.m_opendir (path);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (folder != nullptr) {
-            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::opendir), 1, 0);
-        } else {
-            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::opendir),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return folder;
-}
-
-// ld_preloaded_posix_fdopendir call. (...)
-DIR* LdPreloadedPosix::ld_preloaded_posix_fdopendir (int fd)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug (
-            "ld_preloaded_posix-fdopendir (" + std::to_string (fd) + ")");
-    }
-
-    // hook POSIX fdopendir operation to m_directory_operations.m_fdopendir
-    this->m_dlsym_hook.hook_posix_fdopendir (m_directory_operations.m_fdopendir);
-
-    // enforce fdopendir request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::core::POSIX::fdopendir),
-        static_cast<int> (paio::core::POSIX_META::dir_op),
-        1);
-
-    // perform original POSIX fopendir operation
-    DIR* folder = m_directory_operations.m_fdopendir (fd);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (folder != nullptr) {
-            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::fdopendir),
-                1,
-                0);
-        } else {
-            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::fdopendir),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return folder;
-}
-
-// ld_preloaded_posix_closedir call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_closedir (DIR* dirp)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-closedir");
-    }
-
-    // hook POSIX closedir operation to m_directory_operations.m_closedir
-    this->m_dlsym_hook.hook_posix_closedir (m_directory_operations.m_closedir);
-
-    // enforce closedir request to PAIO data plane stage
-    // fixme: not sure what to do here
-    // this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-    //     static_cast<int> (paio::core::POSIX::closedir),
-    //     static_cast<int> (paio::core::POSIX_META::dir_op),
-    //     1);
-
-    // perform original POSIX closedir operation
-    int result = m_directory_operations.m_closedir (dirp);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result == 0) {
-            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::closedir), 1, 0);
-        } else {
-            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::closedir),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
 // ld_preloaded_posix_rmdir call. (...)
 int LdPreloadedPosix::ld_preloaded_posix_rmdir (const char* path)
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-rmdir");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-rmdir");
+    // }
 
     // hook POSIX rmdir operation to m_directory_operations.m_rmdir
     this->m_dlsym_hook.hook_posix_rmdir (m_directory_operations.m_rmdir);
@@ -2761,39 +1228,6 @@ int LdPreloadedPosix::ld_preloaded_posix_rmdir (const char* path)
     return result;
 }
 
-// ld_preloaded_posix_dirfd call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_dirfd (DIR* dirp)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-dirfd");
-    }
-
-    // hook POSIX dirfd operation to m_directory_operations.m_dirfd
-    this->m_dlsym_hook.hook_posix_dirfd (m_directory_operations.m_dirfd);
-
-    // enforce dirfd request to PAIO data plane stage
-    // fixme: not sure what to do here
-    // this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-    //     static_cast<int> (paio::core::POSIX::dirfd),
-    //     static_cast<int> (paio::core::POSIX_META::dir_op),
-    //     1);
-
-    // perform original POSIX dirfd operation
-    int result = m_directory_operations.m_dirfd (dirp);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result >= 0) {
-            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::dirfd), 1, 0);
-        } else {
-            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::dirfd), 1, 0, 1);
-        }
-    }
-
-    return result;
-}
-
 // ld_preloaded_posix_getxattr call. (...)
 ssize_t LdPreloadedPosix::ld_preloaded_posix_getxattr (const char* path,
     const char* name,
@@ -2801,10 +1235,11 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_getxattr (const char* path,
     size_t size)
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug (
-            "ld_preloaded_posix-getxattr (" + std::string (path) + ", " + std::string (name) + ")");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug (
+    //         "ld_preloaded_posix-getxattr (" + std::string (path) + ", " + std::string (name) +
+    //         ")");
+    // }
 
     // hook POSIX getxattr operation to m_extattr_operations.m_getxattr
     this->m_dlsym_hook.hook_posix_getxattr (m_extattr_operations.m_getxattr);
@@ -2841,10 +1276,11 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_lgetxattr (const char* path,
     size_t size)
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-lgetxattr (" + std::string (path) + ", "
-            + std::string (name) + ")");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-lgetxattr (" + std::string (path) + ",
+    //     "
+    //         + std::string (name) + ")");
+    // }
 
     // hook POSIX lgetxattr operation to m_extattr_operations.m_lgetxattr
     this->m_dlsym_hook.hook_posix_lgetxattr (m_extattr_operations.m_lgetxattr);
@@ -2879,10 +1315,11 @@ ssize_t
 LdPreloadedPosix::ld_preloaded_posix_fgetxattr (int fd, const char* name, void* value, size_t size)
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fgetxattr (" + std::to_string (fd) + ", "
-            + std::string (name) + ")");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-fgetxattr (" + std::to_string (fd) +
+    //     ", "
+    //         + std::string (name) + ")");
+    // }
 
     // hook POSIX fgetxattr operation to m_extattr_operations.m_fgetxattr
     this->m_dlsym_hook.hook_posix_fgetxattr (m_extattr_operations.m_fgetxattr);
@@ -2920,10 +1357,11 @@ int LdPreloadedPosix::ld_preloaded_posix_setxattr (const char* path,
     int flags)
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug (
-            "ld_preloaded_posix-setxattr (" + std::string (path) + ", " + std::string (name) + ")");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug (
+    //         "ld_preloaded_posix-setxattr (" + std::string (path) + ", " + std::string (name) +
+    //         ")");
+    // }
 
     // hook POSIX setxattr operation to m_extattr_operations.m_setxattr
     this->m_dlsym_hook.hook_posix_setxattr (m_extattr_operations.m_setxattr);
@@ -2961,10 +1399,11 @@ int LdPreloadedPosix::ld_preloaded_posix_lsetxattr (const char* path,
     int flags)
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-lsetxattr (" + std::string (path) + ", "
-            + std::string (name) + ")");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-lsetxattr (" + std::string (path) + ",
+    //     "
+    //         + std::string (name) + ")");
+    // }
 
     // hook POSIX lsetxattr operation to m_extattr_operations.m_lsetxattr
     this->m_dlsym_hook.hook_posix_lsetxattr (m_extattr_operations.m_lsetxattr);
@@ -3002,10 +1441,11 @@ int LdPreloadedPosix::ld_preloaded_posix_fsetxattr (int fd,
     int flags)
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fsetxattr (" + std::to_string (fd) + ", "
-            + std::string (name) + ")");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-fsetxattr (" + std::to_string (fd) +
+    //     ", "
+    //         + std::string (name) + ")");
+    // }
 
     // hook POSIX fsetxattr operation to m_extattr_operations.m_fsetxattr
     this->m_dlsym_hook.hook_posix_fsetxattr (m_extattr_operations.m_fsetxattr);
@@ -3039,9 +1479,10 @@ int LdPreloadedPosix::ld_preloaded_posix_fsetxattr (int fd,
 ssize_t LdPreloadedPosix::ld_preloaded_posix_listxattr (const char* path, char* list, size_t size)
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-listxattr (" + std::string (path) + ")");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-listxattr (" + std::string (path) +
+    //     ")");
+    // }
 
     // hook POSIX listxattr operation to m_extattr_operations.m_listxattr
     this->m_dlsym_hook.hook_posix_listxattr (m_extattr_operations.m_listxattr);
@@ -3075,10 +1516,10 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_listxattr (const char* path, char* 
 ssize_t LdPreloadedPosix::ld_preloaded_posix_llistxattr (const char* path, char* list, size_t size)
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug (
-            "ld_preloaded_posix-llistxattr (" + std::string (path) + ")");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug (
+    //         "ld_preloaded_posix-llistxattr (" + std::string (path) + ")");
+    // }
 
     // hook POSIX llistxattr operation to m_extattr_operations.m_llistxattr
     this->m_dlsym_hook.hook_posix_llistxattr (m_extattr_operations.m_llistxattr);
@@ -3115,10 +1556,10 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_llistxattr (const char* path, char*
 ssize_t LdPreloadedPosix::ld_preloaded_posix_flistxattr (int fd, char* list, size_t size)
 {
     // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug (
-            "ld_preloaded_posix-flistxattr (" + std::to_string (fd) + ")");
-    }
+    // if (option_default_detailed_logging) {
+    //     this->m_logger_ptr->log_debug (
+    //         "ld_preloaded_posix-flistxattr (" + std::to_string (fd) + ")");
+    // }
 
     // hook POSIX flistxattr operation to m_extattr_operations.m_flistxattr
     this->m_dlsym_hook.hook_posix_flistxattr (m_extattr_operations.m_flistxattr);
@@ -3142,395 +1583,6 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_flistxattr (int fd, char* list, siz
         } else {
             this->m_ext_attr_stats.update_statistic_entry (
                 static_cast<int> (ExtendedAttributes::flistxattr),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_removexattr call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_removexattr (const char* path, const char* name)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-removexattr (" + std::string (path)
-            + ", " + std::string (name) + ")");
-    }
-
-    // hook POSIX removexattr operation to m_extattr_operations.m_removexattr
-    this->m_dlsym_hook.hook_posix_removexattr (m_extattr_operations.m_removexattr);
-
-    // enforce removexattr request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::core::POSIX::removexattr),
-        static_cast<int> (paio::core::POSIX_META::ext_attr_op),
-        1);
-
-    // perform original POSIX removexattr operation
-    int result = m_extattr_operations.m_removexattr (path, name);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result != -1) {
-            this->m_ext_attr_stats.update_statistic_entry (
-                static_cast<int> (ExtendedAttributes::removexattr),
-                1,
-                0);
-        } else {
-            this->m_ext_attr_stats.update_statistic_entry (
-                static_cast<int> (ExtendedAttributes::removexattr),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_lremovexattr call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_lremovexattr (const char* path, const char* name)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-lremovexattr (" + std::string (path)
-            + ", " + std::string (name) + ")");
-    }
-
-    // hook POSIX lremovexattr operation to m_extattr_operations.m_lremovexattr
-    this->m_dlsym_hook.hook_posix_lremovexattr (m_extattr_operations.m_lremovexattr);
-
-    // enforce lremovexattr request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::core::POSIX::lremovexattr),
-        static_cast<int> (paio::core::POSIX_META::ext_attr_op),
-        1);
-
-    // perform original POSIX lremovexattr operation
-    int result = m_extattr_operations.m_lremovexattr (path, name);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result != -1) {
-            this->m_ext_attr_stats.update_statistic_entry (
-                static_cast<int> (ExtendedAttributes::lremovexattr),
-                1,
-                0);
-        } else {
-            this->m_ext_attr_stats.update_statistic_entry (
-                static_cast<int> (ExtendedAttributes::lremovexattr),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_fremovexattr call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_fremovexattr (int fd, const char* name)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fremovexattr (" + std::to_string (fd)
-            + ", " + std::string (name) + ")");
-    }
-
-    // hook POSIX fremovexattr operation to m_extattr_operations.m_fremovexattr
-    this->m_dlsym_hook.hook_posix_fremovexattr (m_extattr_operations.m_fremovexattr);
-
-    // enforce fremovexattr request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::core::POSIX::fremovexattr),
-        static_cast<int> (paio::core::POSIX_META::ext_attr_op),
-        1);
-
-    // perform original POSIX fremovexattr operation
-    int result = m_extattr_operations.m_fremovexattr (fd, name);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result != -1) {
-            this->m_ext_attr_stats.update_statistic_entry (
-                static_cast<int> (ExtendedAttributes::fremovexattr),
-                1,
-                0);
-        } else {
-            this->m_ext_attr_stats.update_statistic_entry (
-                static_cast<int> (ExtendedAttributes::fremovexattr),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_chmod call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_chmod (const char* path, mode_t mode)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-chmod (" + std::string (path) + ")");
-    }
-
-    // hook POSIX chmod operation to m_filemodes_operations.m_chmod
-    this->m_dlsym_hook.hook_posix_chmod (m_filemodes_operations.m_chmod);
-
-    // enforce chmod request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::core::POSIX::chmod),
-        static_cast<int> (paio::core::POSIX_META::file_mod_op),
-        1);
-
-    // perform original POSIX chmod operation
-    int result = m_filemodes_operations.m_chmod (path, mode);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result == 0) {
-            this->m_file_mode_stats.update_statistic_entry (static_cast<int> (FileModes::chmod),
-                1,
-                0);
-        } else {
-            this->m_file_mode_stats.update_statistic_entry (static_cast<int> (FileModes::chmod),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_fchmod call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_fchmod (int fd, mode_t mode)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fchmod (" + std::to_string (fd) + ")");
-    }
-
-    // hook POSIX fchmod operation to m_filemodes_operations.m_fchmod
-    this->m_dlsym_hook.hook_posix_fchmod (m_filemodes_operations.m_fchmod);
-
-    // enforce fchmod request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::core::POSIX::fchmod),
-        static_cast<int> (paio::core::POSIX_META::file_mod_op),
-        1);
-
-    // perform original POSIX fchmod operation
-    int result = m_filemodes_operations.m_fchmod (fd, mode);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result == 0) {
-            this->m_file_mode_stats.update_statistic_entry (static_cast<int> (FileModes::fchmod),
-                1,
-                0);
-        } else {
-            this->m_file_mode_stats.update_statistic_entry (static_cast<int> (FileModes::fchmod),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_fchmodat call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_fchmodat (int dirfd,
-    const char* path,
-    mode_t mode,
-    int flags)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fchmodat (" + std::to_string (dirfd)
-            + ", " + std::string (path) + ")");
-    }
-
-    // hook POSIX fchmodat operation to m_filemodes_operations.m_fchmodat
-    this->m_dlsym_hook.hook_posix_fchmodat (m_filemodes_operations.m_fchmodat);
-
-    // enforce fchmodat request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
-        static_cast<int> (paio::core::POSIX::fchmodat),
-        static_cast<int> (paio::core::POSIX_META::file_mod_op),
-        1);
-
-    // perform original POSIX fchmodat operation
-    int result = m_filemodes_operations.m_fchmodat (dirfd, path, mode, flags);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result == 0) {
-            this->m_file_mode_stats.update_statistic_entry (static_cast<int> (FileModes::fchmodat),
-                1,
-                0);
-        } else {
-            this->m_file_mode_stats.update_statistic_entry (static_cast<int> (FileModes::fchmodat),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_chown call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_chown (const char* pathname, uid_t owner, gid_t group)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-chown (" + std::string (pathname) + ")");
-    }
-
-    // hook POSIX chown operation to m_filemodes_operations.m_chown
-    this->m_dlsym_hook.hook_posix_chown (m_filemodes_operations.m_chown);
-
-    // enforce chown request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (pathname),
-        static_cast<int> (paio::core::POSIX::chown),
-        static_cast<int> (paio::core::POSIX_META::file_mod_op),
-        1);
-
-    // perform original POSIX chown operation
-    int result = m_filemodes_operations.m_chown (pathname, owner, group);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result == 0) {
-            this->m_file_mode_stats.update_statistic_entry (static_cast<int> (FileModes::chown),
-                1,
-                0);
-        } else {
-            this->m_file_mode_stats.update_statistic_entry (static_cast<int> (FileModes::chown),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_lchown call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_lchown (const char* pathname, uid_t owner, gid_t group)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug (
-            "ld_preloaded_posix-lchown (" + std::string (pathname) + ")");
-    }
-
-    // hook POSIX lchown operation to m_filemodes_operations.m_lchown
-    this->m_dlsym_hook.hook_posix_lchown (m_filemodes_operations.m_lchown);
-
-    // enforce lchown request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (pathname),
-        static_cast<int> (paio::core::POSIX::lchown),
-        static_cast<int> (paio::core::POSIX_META::file_mod_op),
-        1);
-
-    // perform original POSIX lchown operation
-    int result = m_filemodes_operations.m_lchown (pathname, owner, group);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result == 0) {
-            this->m_file_mode_stats.update_statistic_entry (static_cast<int> (FileModes::lchown),
-                1,
-                0);
-        } else {
-            this->m_file_mode_stats.update_statistic_entry (static_cast<int> (FileModes::lchown),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_fchown call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_fchown (int fd, uid_t owner, gid_t group)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fchown (" + std::to_string (fd) + ")");
-    }
-
-    // hook POSIX fchown operation to m_filemodes_operations.m_fchown
-    this->m_dlsym_hook.hook_posix_fchown (m_filemodes_operations.m_fchown);
-
-    // enforce fchown request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::core::POSIX::fchown),
-        static_cast<int> (paio::core::POSIX_META::file_mod_op),
-        1);
-
-    // perform original POSIX fchown operation
-    int result = m_filemodes_operations.m_fchown (fd, owner, group);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result == 0) {
-            this->m_file_mode_stats.update_statistic_entry (static_cast<int> (FileModes::fchown),
-                1,
-                0);
-        } else {
-            this->m_file_mode_stats.update_statistic_entry (static_cast<int> (FileModes::fchown),
-                1,
-                0,
-                1);
-        }
-    }
-
-    return result;
-}
-
-// ld_preloaded_posix_fchownat call. (...)
-int LdPreloadedPosix::ld_preloaded_posix_fchownat (int dirfd,
-    const char* pathname,
-    uid_t owner,
-    gid_t group,
-    int flags)
-{
-    // logging message
-    if (option_default_detailed_logging) {
-        this->m_logger_ptr->log_debug ("ld_preloaded_posix-fchownat (" + std::to_string (dirfd)
-            + ", " + std::string (pathname) + ")");
-    }
-
-    // hook POSIX fchownat operation to m_filemodes_operations.m_fchownat
-    this->m_dlsym_hook.hook_posix_fchownat (m_filemodes_operations.m_fchownat);
-
-    // enforce fchownat request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (pathname),
-        static_cast<int> (paio::core::POSIX::fchownat),
-        static_cast<int> (paio::core::POSIX_META::file_mod_op),
-        1);
-
-    // perform original POSIX fchownat operation
-    int result = m_filemodes_operations.m_fchownat (dirfd, pathname, owner, group, flags);
-
-    // update statistic entry
-    if (this->m_collect) {
-        if (result == 0) {
-            this->m_file_mode_stats.update_statistic_entry (static_cast<int> (FileModes::fchownat),
-                1,
-                0);
-        } else {
-            this->m_file_mode_stats.update_statistic_entry (static_cast<int> (FileModes::fchownat),
                 1,
                 0,
                 1);
