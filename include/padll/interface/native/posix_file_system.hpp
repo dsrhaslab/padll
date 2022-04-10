@@ -71,6 +71,11 @@ static __attribute__ ((destructor)) void destroy_method ()
  */
 extern "C" ssize_t read (int fd, void* buf, size_t size)
 {
+    // detailed logging message
+    #ifdef OPTION_DETAILED_LOGGING
+        m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
+    #endif
+
     return (posix_data_calls.padll_intercept_read)
         ? m_ld_preloaded_posix.ld_preloaded_posix_read (fd, buf, size)
         : m_posix_passthrough.passthrough_posix_read (fd, buf, size);
@@ -85,6 +90,11 @@ extern "C" ssize_t read (int fd, void* buf, size_t size)
  */
 extern "C" ssize_t write (int fd, const void* buf, size_t size)
 {
+    // detailed logging message
+    #ifdef OPTION_DETAILED_LOGGING
+        m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
+    #endif
+
     return (posix_data_calls.padll_intercept_write)
         ? m_ld_preloaded_posix.ld_preloaded_posix_write (fd, buf, size)
         : m_posix_passthrough.passthrough_posix_write (fd, buf, size);
@@ -100,6 +110,11 @@ extern "C" ssize_t write (int fd, const void* buf, size_t size)
  */
 extern "C" ssize_t pread (int fd, void* buf, size_t size, off_t offset)
 {
+    // detailed logging message
+    #ifdef OPTION_DETAILED_LOGGING
+        m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
+    #endif
+    
     return (posix_data_calls.padll_intercept_pread)
         ? m_ld_preloaded_posix.ld_preloaded_posix_pread (fd, buf, size, offset)
         : m_posix_passthrough.passthrough_posix_pread (fd, buf, size, offset);
@@ -115,6 +130,11 @@ extern "C" ssize_t pread (int fd, void* buf, size_t size, off_t offset)
  */
 extern "C" ssize_t pwrite (int fd, const void* buf, size_t size, off_t offset)
 {
+    // detailed logging message
+    #ifdef OPTION_DETAILED_LOGGING
+        m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
+    #endif
+    
     return (posix_data_calls.padll_intercept_pwrite)
         ? m_ld_preloaded_posix.ld_preloaded_posix_pwrite (fd, buf, size, offset)
         : m_posix_passthrough.passthrough_posix_pwrite (fd, buf, size, offset);
@@ -131,6 +151,11 @@ extern "C" ssize_t pwrite (int fd, const void* buf, size_t size, off_t offset)
 #if defined(__USE_LARGEFILE64)
 extern "C" ssize_t pread64 (int fd, void* buf, size_t size, off64_t offset)
 {
+    // detailed logging message
+    #ifdef OPTION_DETAILED_LOGGING
+        m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
+    #endif
+    
     return (posix_data_calls.padll_intercept_pread64)
         ? m_ld_preloaded_posix.ld_preloaded_posix_pread64 (fd, buf, size, offset)
         : m_posix_passthrough.passthrough_posix_pread64 (fd, buf, size, offset);
@@ -148,6 +173,11 @@ extern "C" ssize_t pread64 (int fd, void* buf, size_t size, off64_t offset)
 #if defined(__USE_LARGEFILE64)
 extern "C" ssize_t pwrite64 (int fd, const void* buf, size_t size, off64_t offset)
 {
+    // detailed logging message
+    #ifdef OPTION_DETAILED_LOGGING
+        m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
+    #endif
+    
     return (posix_data_calls.padll_intercept_pwrite64)
         ? m_ld_preloaded_posix.ld_preloaded_posix_pwrite64 (fd, buf, size, offset)
         : m_posix_passthrough.passthrough_posix_pwrite64 (fd, buf, size, offset);
@@ -166,6 +196,11 @@ extern "C" ssize_t pwrite64 (int fd, const void* buf, size_t size, off64_t offse
  */
 extern "C" void* mmap (void* addr, size_t length, int prot, int flags, int fd, off_t offset)
 {
+    // detailed logging message
+    #ifdef OPTION_DETAILED_LOGGING
+        m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
+    #endif
+    
     // return (posix_data_calls.padll_intercept_mmap)
     //     ? m_ld_preloaded_posix.ld_preloaded_posix_mmap (addr, length, prot, flags, fd, offset)
     //     : m_posix_passthrough.passthrough_posix_mmap (addr, length, prot, flags, fd, offset);
@@ -180,6 +215,11 @@ extern "C" void* mmap (void* addr, size_t length, int prot, int flags, int fd, o
  */
 extern "C" int munmap (void* addr, size_t length)
 {
+    // detailed logging message
+    #ifdef OPTION_DETAILED_LOGGING
+        m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (-1) });
+    #endif
+    
     // return (posix_data_calls.padll_intercept_munmap)
     // ? m_ld_preloaded_posix.ld_preloaded_posix_munmap (addr, length)
     // : m_posix_passthrough.passthrough_posix_munmap (addr, length);
@@ -195,6 +235,11 @@ extern "C" int munmap (void* addr, size_t length)
  */
 extern "C" int open (const char* path, int flags, ...)
 {
+    // detailed logging message
+    #ifdef OPTION_DETAILED_LOGGING
+        m_logger_ptr->create_routine_log_message (__func__, path);
+    #endif
+    
     if (flags & O_CREAT) {
         va_list args;
 
@@ -220,6 +265,11 @@ extern "C" int open (const char* path, int flags, ...)
  */
 extern "C" int creat (const char* path, mode_t mode)
 {
+    // detailed logging message
+    #ifdef OPTION_DETAILED_LOGGING
+        m_logger_ptr->create_routine_log_message (__func__, path);
+    #endif
+    
     return (posix_metadata_calls.padll_intercept_creat)
         ? m_ld_preloaded_posix.ld_preloaded_posix_creat (path, mode)
         : m_posix_passthrough.passthrough_posix_creat (path, mode);
