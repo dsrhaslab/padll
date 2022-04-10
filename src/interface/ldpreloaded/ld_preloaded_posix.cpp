@@ -107,11 +107,6 @@ std::string LdPreloadedPosix::to_string ()
 // ld_preloaded_posix_read call.
 ssize_t LdPreloadedPosix::ld_preloaded_posix_read (int fd, void* buf, size_t counter)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
-#endif
-
     // hook POSIX read operation to m_data_operations.m_read
     this->m_dlsym_hook.hook_posix_read (m_data_operations.m_read);
 
@@ -139,11 +134,6 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_read (int fd, void* buf, size_t cou
 // ld_preloaded_posix_write call.
 ssize_t LdPreloadedPosix::ld_preloaded_posix_write (int fd, const void* buf, size_t counter)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
-#endif
-
     // hook POSIX write operation to m_data_operations.m_write
     this->m_dlsym_hook.hook_posix_write (m_data_operations.m_write);
 
@@ -171,11 +161,6 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_write (int fd, const void* buf, siz
 // ld_preloaded_posix_pread call.
 ssize_t LdPreloadedPosix::ld_preloaded_posix_pread (int fd, void* buf, size_t counter, off_t offset)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
-#endif
-
     // hook POSIX pread operation to m_data_operations.m_pread
     this->m_dlsym_hook.hook_posix_pread (m_data_operations.m_pread);
 
@@ -204,11 +189,6 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_pread (int fd, void* buf, size_t co
 ssize_t
 LdPreloadedPosix::ld_preloaded_posix_pwrite (int fd, const void* buf, size_t counter, off_t offset)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
-#endif
-
     // hook POSIX pwrite operation to m_data_operations.m_pwrite
     this->m_dlsym_hook.hook_posix_pwrite (m_data_operations.m_pwrite);
 
@@ -238,12 +218,6 @@ LdPreloadedPosix::ld_preloaded_posix_pwrite (int fd, const void* buf, size_t cou
 ssize_t
 LdPreloadedPosix::ld_preloaded_posix_pread64 (int fd, void* buf, size_t counter, off64_t offset)
 {
-    // logging message
-    // if (option_default_detailed_logging) {
-    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-pread64 (" + std::to_string (fd) +
-    //     ")");
-    // }
-
     // hook POSIX pread64 operation to m_data_operations.m_pread64
     this->m_dlsym_hook.hook_posix_pread64 (m_data_operations.m_pread64);
 
@@ -276,12 +250,6 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_pwrite64 (int fd,
     size_t counter,
     off64_t offset)
 {
-    // logging message
-    // if (option_default_detailed_logging) {
-    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-pwrite64 (" + std::to_string (fd) +
-    //     ")");
-    // }
-
     // hook POSIX pwrite64 operation to m_data_operations.m_pwrite64
     this->m_dlsym_hook.hook_posix_pwrite64 (m_data_operations.m_pwrite64);
 
@@ -312,12 +280,6 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_pwrite64 (int fd,
 // ld_preloaded_posix_open call.
 int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags, mode_t mode)
 {
-    // logging message
-    // if (option_default_detailed_logging) {
-    //     this->m_logger_ptr->log_debug (
-    //         "ld_preloaded_posix-open-variadic (" + std::string (path) + ")");
-    // }
-
     // hook POSIX open operation to m_metadata_operations.m_open_var
     this->m_dlsym_hook.hook_posix_open_var (m_metadata_operations.m_open_var);
 
@@ -351,11 +313,6 @@ int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags, mode
 // ld_preloaded_posix_open call.
 int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags)
 {
-    // logging message
-    // if (option_default_detailed_logging) {
-    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-open (" + std::string (path) + ")");
-    // }
-
     // hook POSIX open operation to m_metadata_operations.m_open
     this->m_dlsym_hook.hook_posix_open (m_metadata_operations.m_open);
 
@@ -388,11 +345,6 @@ int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags)
 // ld_preloaded_posix_creat call.
 int LdPreloadedPosix::ld_preloaded_posix_creat (const char* path, mode_t mode)
 {
-    // logging message
-    // if (option_default_detailed_logging) {
-    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-creat (" + std::string (path) + ")");
-    // }
-
     // hook POSIX creat operation to m_metadata_operations.m_creat
     this->m_dlsym_hook.hook_posix_creat (m_metadata_operations.m_creat);
 
@@ -427,12 +379,6 @@ int LdPreloadedPosix::ld_preloaded_posix_creat (const char* path, mode_t mode)
 // ld_preloaded_posix_creat64 call.
 int LdPreloadedPosix::ld_preloaded_posix_creat64 (const char* path, mode_t mode)
 {
-    // logging message
-    // if (option_default_detailed_logging) {
-    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-creat64 (" + std::string (path) +
-    //     ")");
-    // }
-
     // hook POSIX creat64 operation to m_metadata_operations.m_creat64
     this->m_dlsym_hook.hook_posix_creat64 (m_metadata_operations.m_creat64);
 
@@ -470,12 +416,6 @@ int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd,
     int flags,
     mode_t mode)
 {
-    // logging message
-    // if (option_default_detailed_logging) {
-    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-openat-variadic ("
-    //         + std::to_string (dirfd) + ", " + std::string (path) + ")");
-    // }
-
     // hook POSIX openat variadic operation to m_metadata_operations.m_openat_var
     this->m_dlsym_hook.hook_posix_openat_var (m_metadata_operations.m_openat_var);
 
@@ -509,13 +449,6 @@ int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd,
 // ld_preloaded_posix_openat call.
 int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd, const char* path, int flags)
 {
-    // logging message
-    // if (option_default_detailed_logging) {
-    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-openat (" + std::to_string (dirfd) +
-    //     ", "
-    //         + std::string (path) + ")");
-    // }
-
     // hook POSIX openat operation to m_metadata_operations.m_openat
     this->m_dlsym_hook.hook_posix_openat (m_metadata_operations.m_openat);
 
@@ -550,12 +483,6 @@ int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd, const char* path, in
 // ld_preloaded_posix_open64 call. (...)
 int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags, mode_t mode)
 {
-    // logging message
-    // if (option_default_detailed_logging) {
-    //     this->m_logger_ptr->log_debug (
-    //         "ld_preloaded_posix-open64-variadic (" + std::string (path) + ")");
-    // }
-
     // hook POSIX open64_var operation to m_metadata_operations.m_open64_var
     this->m_dlsym_hook.hook_posix_open64_variadic (m_metadata_operations.m_open64_var);
 
@@ -589,11 +516,6 @@ int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags, mo
 // ld_preloaded_posix_open64 call. (...)
 int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags)
 {
-    // logging message
-    // if (option_default_detailed_logging) {
-    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-open64 (" + std::string (path) + ")");
-    // }
-
     // hook POSIX open64 operation to m_metadata_operations.m_open64
     this->m_dlsym_hook.hook_posix_open64 (m_metadata_operations.m_open64);
 
@@ -628,11 +550,6 @@ int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags)
 // ld_preloaded_posix_close call.
 int LdPreloadedPosix::ld_preloaded_posix_close (int fd)
 {
-    // logging message
-    // if (option_default_detailed_logging) {
-    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-close (" + std::to_string (fd) + ")");
-    // }
-
     // hook POSIX close operation to m_metadata_operations.m_close
     this->m_dlsym_hook.hook_posix_close (m_metadata_operations.m_close);
 
@@ -667,11 +584,6 @@ int LdPreloadedPosix::ld_preloaded_posix_close (int fd)
 // ld_preloaded_posix_sync call. (...)
 void LdPreloadedPosix::ld_preloaded_posix_sync ()
 {
-    // logging message
-    // if (option_default_detailed_logging) {
-    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-sync");
-    // }
-
     // hook POSIX sync operation to m_metadata_operations.m_sync
     this->m_dlsym_hook.hook_posix_sync (m_metadata_operations.m_sync);
 
@@ -694,11 +606,6 @@ void LdPreloadedPosix::ld_preloaded_posix_sync ()
 // ld_preloaded_posix_statfs call. (...)
 int LdPreloadedPosix::ld_preloaded_posix_statfs (const char* path, struct statfs* buf)
 {
-    // logging message
-    // if (option_default_detailed_logging) {
-    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-statfs (" + std::string (path) + ")");
-    // }
-
     // hook POSIX statfs operation to m_metadata_operations.m_statfs
     this->m_dlsym_hook.hook_posix_statfs (m_metadata_operations.m_statfs);
 
@@ -731,12 +638,6 @@ int LdPreloadedPosix::ld_preloaded_posix_statfs (const char* path, struct statfs
 // ld_preloaded_posix_fstatfs call. (...)
 int LdPreloadedPosix::ld_preloaded_posix_fstatfs (int fd, struct statfs* buf)
 {
-    // logging message
-    // if (option_default_detailed_logging) {
-    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-fstatfs (" + std::to_string (fd) +
-    //     ")");
-    // }
-
     // hook POSIX fstatfs operation to m_metadata_operations.m_fstatfs
     this->m_dlsym_hook.hook_posix_fstatfs (m_metadata_operations.m_fstatfs);
 
@@ -769,12 +670,6 @@ int LdPreloadedPosix::ld_preloaded_posix_fstatfs (int fd, struct statfs* buf)
 // ld_preloaded_posix_statfs64 call. (...)
 int LdPreloadedPosix::ld_preloaded_posix_statfs64 (const char* path, struct statfs64* buf)
 {
-    // logging message
-    // if (option_default_detailed_logging) {
-    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-statfs64 (" + std::string (path) +
-    //     ")");
-    // }
-
     // hook POSIX statfs64 operation to m_metadata_operations.m_statfs64
     this->m_dlsym_hook.hook_posix_statfs64 (m_metadata_operations.m_statfs64);
 
@@ -807,12 +702,6 @@ int LdPreloadedPosix::ld_preloaded_posix_statfs64 (const char* path, struct stat
 // ld_preloaded_posix_fstatfs64 call. (...)
 int LdPreloadedPosix::ld_preloaded_posix_fstatfs64 (int fd, struct statfs64* buf)
 {
-    // logging message
-    // if (option_default_detailed_logging) {
-    //     this->m_logger_ptr->log_debug (
-    //         "ld_preloaded_posix-fstatfs64 (" + std::to_string (fd) + ")");
-    // }
-
     // hook POSIX fstatfs64 operation to m_metadata_operations.m_fstatfs64
     this->m_dlsym_hook.hook_posix_fstatfs64 (m_metadata_operations.m_fstatfs64);
 
@@ -845,11 +734,6 @@ int LdPreloadedPosix::ld_preloaded_posix_fstatfs64 (int fd, struct statfs64* buf
 // ld_preloaded_posix_unlink call. (...)
 int LdPreloadedPosix::ld_preloaded_posix_unlink (const char* path)
 {
-    // logging message
-    // if (option_default_detailed_logging) {
-    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-unlink (" + std::string (path) + ")");
-    // }
-
     // hook POSIX unlink operation to m_metadata_operations.m_unlink
     this->m_dlsym_hook.hook_posix_unlink (m_metadata_operations.m_unlink);
 
@@ -884,12 +768,6 @@ int LdPreloadedPosix::ld_preloaded_posix_unlink (const char* path)
 // ld_preloaded_posix_unlinkat call. (...)
 int LdPreloadedPosix::ld_preloaded_posix_unlinkat (int dirfd, const char* pathname, int flags)
 {
-    // logging message
-    // if (option_default_detailed_logging) {
-    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-unlinkat (" + std::to_string (dirfd)
-    //         + ", " + std::string (pathname) + ", " + std::to_string (flags) + ")");
-    // }
-
     // hook POSIX unlinkat operation to m_metadata_operations.m_unlinkat
     this->m_dlsym_hook.hook_posix_unlinkat (m_metadata_operations.m_unlinkat);
 
@@ -924,13 +802,6 @@ int LdPreloadedPosix::ld_preloaded_posix_unlinkat (int dirfd, const char* pathna
 // ld_preloaded_posix_rename call. (...)
 int LdPreloadedPosix::ld_preloaded_posix_rename (const char* old_path, const char* new_path)
 {
-    // logging message
-    // if (option_default_detailed_logging) {
-    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-rename (" + std::string (old_path) +
-    //     ", "
-    //         + std::string (new_path) + ")");
-    // }
-
     // hook POSIX rename operation to m_metadata_operations.m_rename
     this->m_dlsym_hook.hook_posix_rename (m_metadata_operations.m_rename);
 
@@ -969,14 +840,6 @@ int LdPreloadedPosix::ld_preloaded_posix_renameat (int olddirfd,
     int newdirfd,
     const char* new_path)
 {
-    // logging message
-    // if (option_default_detailed_logging) {
-    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-renameat (" + std::to_string
-    //     (olddirfd)
-    //         + ", " + std::string (old_path) + ", " + std::to_string (newdirfd) + ", "
-    //         + std::string (new_path) + ")");
-    // }
-
     // hook POSIX renameat operation to m_metadata_operations.m_renameat
     this->m_dlsym_hook.hook_posix_renameat (m_metadata_operations.m_renameat);
 
@@ -1012,12 +875,6 @@ int LdPreloadedPosix::ld_preloaded_posix_renameat (int olddirfd,
 // ld_preloaded_posix_fopen call. (...)
 FILE* LdPreloadedPosix::ld_preloaded_posix_fopen (const char* pathname, const char* mode)
 {
-    // logging message
-    // if (option_default_detailed_logging) {
-    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-fopen (" + std::string (pathname) +
-    //     ")");
-    // }
-
     // hook POSIX fopen operation to m_metadata_operations.m_fopen
     this->m_dlsym_hook.hook_posix_fopen (m_metadata_operations.m_fopen);
 
@@ -1052,12 +909,6 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_fopen (const char* pathname, const ch
 // ld_preloaded_posix_fopen64 call. (...)
 FILE* LdPreloadedPosix::ld_preloaded_posix_fopen64 (const char* pathname, const char* mode)
 {
-    // logging message
-    // if (option_default_detailed_logging) {
-    //     this->m_logger_ptr->log_debug (
-    //         "ld_preloaded_posix-fopen64 (" + std::string (pathname) + ")");
-    // }
-
     // hook POSIX fopen64 operation to m_metadata_operations.m_fopen64
     this->m_dlsym_hook.hook_posix_fopen64 (m_metadata_operations.m_fopen64);
 
@@ -1092,11 +943,6 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_fopen64 (const char* pathname, const 
 // ld_preloaded_posix_fclose call. (...)
 int LdPreloadedPosix::ld_preloaded_posix_fclose (FILE* stream)
 {
-    // logging message
-    // if (option_default_detailed_logging) {
-    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-fclose");
-    // }
-
     // hook POSIX fclose operation to m_metadata_operations.m_fclose
     this->m_dlsym_hook.hook_posix_fclose (m_metadata_operations.m_fclose);
 
@@ -1131,11 +977,6 @@ int LdPreloadedPosix::ld_preloaded_posix_fclose (FILE* stream)
 // ld_preloaded_posix_mkdir call. (...)
 int LdPreloadedPosix::ld_preloaded_posix_mkdir (const char* path, mode_t mode)
 {
-    // logging message
-    // if (option_default_detailed_logging) {
-    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-mkdir (" + std::string (path) + ")");
-    // }
-
     // hook POSIX mkdir operation to m_directory_operations.m_mkdir
     this->m_dlsym_hook.hook_posix_mkdir (m_directory_operations.m_mkdir);
 
@@ -1163,12 +1004,6 @@ int LdPreloadedPosix::ld_preloaded_posix_mkdir (const char* path, mode_t mode)
 // ld_preloaded_posix_mkdirat call. (...)
 int LdPreloadedPosix::ld_preloaded_posix_mkdirat (int dirfd, const char* path, mode_t mode)
 {
-    // logging message
-    // if (option_default_detailed_logging) {
-    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-mkdirat (" + std::to_string (dirfd)
-    //         + ", " + std::string (path) + ")");
-    // }
-
     // hook POSIX mkdirat operation to m_directory_operations.m_mkdirat
     this->m_dlsym_hook.hook_posix_mkdirat (m_directory_operations.m_mkdirat);
 
@@ -1199,11 +1034,6 @@ int LdPreloadedPosix::ld_preloaded_posix_mkdirat (int dirfd, const char* path, m
 // ld_preloaded_posix_rmdir call. (...)
 int LdPreloadedPosix::ld_preloaded_posix_rmdir (const char* path)
 {
-    // logging message
-    // if (option_default_detailed_logging) {
-    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-rmdir");
-    // }
-
     // hook POSIX rmdir operation to m_directory_operations.m_rmdir
     this->m_dlsym_hook.hook_posix_rmdir (m_directory_operations.m_rmdir);
 
@@ -1234,13 +1064,6 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_getxattr (const char* path,
     void* value,
     size_t size)
 {
-    // logging message
-    // if (option_default_detailed_logging) {
-    //     this->m_logger_ptr->log_debug (
-    //         "ld_preloaded_posix-getxattr (" + std::string (path) + ", " + std::string (name) +
-    //         ")");
-    // }
-
     // hook POSIX getxattr operation to m_extattr_operations.m_getxattr
     this->m_dlsym_hook.hook_posix_getxattr (m_extattr_operations.m_getxattr);
 
@@ -1275,13 +1098,6 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_lgetxattr (const char* path,
     void* value,
     size_t size)
 {
-    // logging message
-    // if (option_default_detailed_logging) {
-    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-lgetxattr (" + std::string (path) + ",
-    //     "
-    //         + std::string (name) + ")");
-    // }
-
     // hook POSIX lgetxattr operation to m_extattr_operations.m_lgetxattr
     this->m_dlsym_hook.hook_posix_lgetxattr (m_extattr_operations.m_lgetxattr);
 
@@ -1314,13 +1130,6 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_lgetxattr (const char* path,
 ssize_t
 LdPreloadedPosix::ld_preloaded_posix_fgetxattr (int fd, const char* name, void* value, size_t size)
 {
-    // logging message
-    // if (option_default_detailed_logging) {
-    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-fgetxattr (" + std::to_string (fd) +
-    //     ", "
-    //         + std::string (name) + ")");
-    // }
-
     // hook POSIX fgetxattr operation to m_extattr_operations.m_fgetxattr
     this->m_dlsym_hook.hook_posix_fgetxattr (m_extattr_operations.m_fgetxattr);
 
@@ -1356,13 +1165,6 @@ int LdPreloadedPosix::ld_preloaded_posix_setxattr (const char* path,
     size_t size,
     int flags)
 {
-    // logging message
-    // if (option_default_detailed_logging) {
-    //     this->m_logger_ptr->log_debug (
-    //         "ld_preloaded_posix-setxattr (" + std::string (path) + ", " + std::string (name) +
-    //         ")");
-    // }
-
     // hook POSIX setxattr operation to m_extattr_operations.m_setxattr
     this->m_dlsym_hook.hook_posix_setxattr (m_extattr_operations.m_setxattr);
 
@@ -1398,13 +1200,6 @@ int LdPreloadedPosix::ld_preloaded_posix_lsetxattr (const char* path,
     size_t size,
     int flags)
 {
-    // logging message
-    // if (option_default_detailed_logging) {
-    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-lsetxattr (" + std::string (path) + ",
-    //     "
-    //         + std::string (name) + ")");
-    // }
-
     // hook POSIX lsetxattr operation to m_extattr_operations.m_lsetxattr
     this->m_dlsym_hook.hook_posix_lsetxattr (m_extattr_operations.m_lsetxattr);
 
@@ -1440,13 +1235,6 @@ int LdPreloadedPosix::ld_preloaded_posix_fsetxattr (int fd,
     size_t size,
     int flags)
 {
-    // logging message
-    // if (option_default_detailed_logging) {
-    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-fsetxattr (" + std::to_string (fd) +
-    //     ", "
-    //         + std::string (name) + ")");
-    // }
-
     // hook POSIX fsetxattr operation to m_extattr_operations.m_fsetxattr
     this->m_dlsym_hook.hook_posix_fsetxattr (m_extattr_operations.m_fsetxattr);
 
@@ -1478,12 +1266,6 @@ int LdPreloadedPosix::ld_preloaded_posix_fsetxattr (int fd,
 // ld_preloaded_posix_listxattr call. (...)
 ssize_t LdPreloadedPosix::ld_preloaded_posix_listxattr (const char* path, char* list, size_t size)
 {
-    // logging message
-    // if (option_default_detailed_logging) {
-    //     this->m_logger_ptr->log_debug ("ld_preloaded_posix-listxattr (" + std::string (path) +
-    //     ")");
-    // }
-
     // hook POSIX listxattr operation to m_extattr_operations.m_listxattr
     this->m_dlsym_hook.hook_posix_listxattr (m_extattr_operations.m_listxattr);
 
@@ -1515,12 +1297,6 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_listxattr (const char* path, char* 
 // ld_preloaded_posix_llistxattr call. (...)
 ssize_t LdPreloadedPosix::ld_preloaded_posix_llistxattr (const char* path, char* list, size_t size)
 {
-    // logging message
-    // if (option_default_detailed_logging) {
-    //     this->m_logger_ptr->log_debug (
-    //         "ld_preloaded_posix-llistxattr (" + std::string (path) + ")");
-    // }
-
     // hook POSIX llistxattr operation to m_extattr_operations.m_llistxattr
     this->m_dlsym_hook.hook_posix_llistxattr (m_extattr_operations.m_llistxattr);
 
@@ -1555,12 +1331,6 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_llistxattr (const char* path, char*
 // ld_preloaded_posix_flistxattr call. (...)
 ssize_t LdPreloadedPosix::ld_preloaded_posix_flistxattr (int fd, char* list, size_t size)
 {
-    // logging message
-    // if (option_default_detailed_logging) {
-    //     this->m_logger_ptr->log_debug (
-    //         "ld_preloaded_posix-flistxattr (" + std::to_string (fd) + ")");
-    // }
-
     // hook POSIX flistxattr operation to m_extattr_operations.m_flistxattr
     this->m_dlsym_hook.hook_posix_flistxattr (m_extattr_operations.m_flistxattr);
 
