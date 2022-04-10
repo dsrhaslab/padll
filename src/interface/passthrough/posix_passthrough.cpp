@@ -131,11 +131,6 @@ StatisticEntry PosixPassthrough::get_statistic_entry (const OperationType& opera
 // passthrough_posix_read call. (...)
 ssize_t PosixPassthrough::passthrough_posix_read (int fd, void* buf, size_t counter)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
-#endif
-
     ssize_t result = ((libc_read_t)dlsym (RTLD_NEXT, "read")) (fd, buf, counter);
 
     // update statistic entry
@@ -153,11 +148,6 @@ ssize_t PosixPassthrough::passthrough_posix_read (int fd, void* buf, size_t coun
 // passthrough_posix_write call. (...)
 ssize_t PosixPassthrough::passthrough_posix_write (int fd, const void* buf, size_t counter)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
-#endif
-
     ssize_t result = ((libc_write_t)dlsym (RTLD_NEXT, "write")) (fd, buf, counter);
 
     // update statistic entry
@@ -175,11 +165,6 @@ ssize_t PosixPassthrough::passthrough_posix_write (int fd, const void* buf, size
 // passthrough_posix_pread call. (...)
 ssize_t PosixPassthrough::passthrough_posix_pread (int fd, void* buf, size_t counter, off_t offset)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
-#endif
-
     ssize_t result = ((libc_pread_t)dlsym (RTLD_NEXT, "pread")) (fd, buf, counter, offset);
 
     // update statistic entry
@@ -198,11 +183,6 @@ ssize_t PosixPassthrough::passthrough_posix_pread (int fd, void* buf, size_t cou
 ssize_t
 PosixPassthrough::passthrough_posix_pwrite (int fd, const void* buf, size_t counter, off_t offset)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
-#endif
-
     ssize_t result = ((libc_pwrite_t)dlsym (RTLD_NEXT, "pwrite")) (fd, buf, counter, offset);
 
     // update statistic entry
@@ -222,11 +202,6 @@ PosixPassthrough::passthrough_posix_pwrite (int fd, const void* buf, size_t coun
 ssize_t
 PosixPassthrough::passthrough_posix_pread64 (int fd, void* buf, size_t counter, off64_t offset)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
-#endif
-
     ssize_t result = ((libc_pread64_t)dlsym (RTLD_NEXT, "pread64")) (fd, buf, counter, offset);
 
     // update statistic entry
@@ -249,11 +224,6 @@ ssize_t PosixPassthrough::passthrough_posix_pwrite64 (int fd,
     size_t counter,
     off64_t offset)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
-#endif
-
     ssize_t result = ((libc_pwrite64_t)dlsym (RTLD_NEXT, "pwrite64")) (fd, buf, counter, offset);
 
     // update statistic entry
@@ -279,11 +249,6 @@ void* PosixPassthrough::passthrough_posix_mmap (void* addr,
     int fd,
     off_t offset)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
-#endif
-
     void* result = ((libc_mmap_t)dlsym (RTLD_NEXT, "mmap")) (addr, length, prot, flags, fd, offset);
 
     // update statistic entry
@@ -301,11 +266,6 @@ void* PosixPassthrough::passthrough_posix_mmap (void* addr,
 // pass_through_posix_munmap call. (...)
 int PosixPassthrough::passthrough_posix_munmap (void* addr, size_t length)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, std::string_view { std::to_string (-1) });
-#endif
-
     int result = ((libc_munmap_t)dlsym (RTLD_NEXT, "munmap")) (addr, length);
 
     // update statistic entry
@@ -323,11 +283,6 @@ int PosixPassthrough::passthrough_posix_munmap (void* addr, size_t length)
 // passthrough_posix_open call. (...)
 int PosixPassthrough::passthrough_posix_open (const char* path, int flags, mode_t mode)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, path);
-#endif
-
     int result = ((libc_open_variadic_t)dlsym (RTLD_NEXT, "open")) (path, flags, mode);
 
     printf ("Path (%d): %s\n", ::getpid (), path);
@@ -350,11 +305,6 @@ int PosixPassthrough::passthrough_posix_open (const char* path, int flags, mode_
 // passthrough_posix_open call. (...)
 int PosixPassthrough::passthrough_posix_open (const char* path, int flags)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, path);
-#endif
-
     int result = ((libc_open_t)dlsym (RTLD_NEXT, "open")) (path, flags);
 
     printf ("Path (%d): %s\n", ::getpid (), path);
@@ -376,11 +326,6 @@ int PosixPassthrough::passthrough_posix_open (const char* path, int flags)
 // passthrough_posix_creat call. (...)
 int PosixPassthrough::passthrough_posix_creat (const char* path, mode_t mode)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, path);
-#endif
-
     int result = ((libc_creat_t)dlsym (RTLD_NEXT, "creat")) (path, mode);
 
     // update statistic entry
@@ -403,11 +348,6 @@ int PosixPassthrough::passthrough_posix_creat (const char* path, mode_t mode)
 // passthrough_posix_creat64 call. (...)
 int PosixPassthrough::passthrough_posix_creat64 (const char* path, mode_t mode)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, path);
-#endif
-
     int result = ((libc_creat64_t)dlsym (RTLD_NEXT, "creat64")) (path, mode);
 
     // update statistic entry
@@ -430,13 +370,6 @@ int PosixPassthrough::passthrough_posix_creat64 (const char* path, mode_t mode)
 // passthrough_posix_openat call. (...)
 int PosixPassthrough::passthrough_posix_openat (int dirfd, const char* path, int flags, mode_t mode)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__,
-        std::string_view { std::to_string (dirfd) },
-        path);
-#endif
-
     int result = ((libc_openat_variadic_t)dlsym (RTLD_NEXT, "openat")) (dirfd, path, flags, mode);
 
     // update statistic entry
@@ -458,13 +391,6 @@ int PosixPassthrough::passthrough_posix_openat (int dirfd, const char* path, int
 // passthrough_posix_openat call. (...)
 int PosixPassthrough::passthrough_posix_openat (int dirfd, const char* path, int flags)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__,
-        std::string_view { std::to_string (dirfd) },
-        path);
-#endif
-
     int result = ((libc_openat_t)dlsym (RTLD_NEXT, "openat")) (dirfd, path, flags);
 
     // update statistic entry
@@ -487,11 +413,6 @@ int PosixPassthrough::passthrough_posix_openat (int dirfd, const char* path, int
 // passthrough_posix_open64 call. (...)
 int PosixPassthrough::passthrough_posix_open64 (const char* path, int flags, mode_t mode)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, path);
-#endif
-
     int result = ((libc_open64_variadic_t)dlsym (RTLD_NEXT, "open64")) (path, flags, mode);
 
     // update statistic entry
@@ -514,11 +435,6 @@ int PosixPassthrough::passthrough_posix_open64 (const char* path, int flags, mod
 // passthrough_posix_open64 call. (...)
 int PosixPassthrough::passthrough_posix_open64 (const char* path, int flags)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, path);
-#endif
-
     int result = ((libc_open64_t)dlsym (RTLD_NEXT, "open64")) (path, flags);
 
     // update statistic entry
@@ -541,11 +457,6 @@ int PosixPassthrough::passthrough_posix_open64 (const char* path, int flags)
 // passthrough_posix_close call. (...)
 int PosixPassthrough::passthrough_posix_close (int fd)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
-#endif
-
     int result = ((libc_close_t)dlsym (RTLD_NEXT, "close")) (fd);
 
     // update statistic entry
@@ -568,11 +479,6 @@ int PosixPassthrough::passthrough_posix_close (int fd)
 // passthrough_posix_sync call. (...)
 void PosixPassthrough::passthrough_posix_sync ()
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, std::string_view { std::to_string (-1) });
-#endif
-
     return ((libc_sync_t)dlsym (RTLD_NEXT, "sync")) ();
 
     // update statistic entry
@@ -584,11 +490,6 @@ void PosixPassthrough::passthrough_posix_sync ()
 // passthrough_posix_statfs call. (...)
 int PosixPassthrough::passthrough_posix_statfs (const char* path, struct statfs* buf)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, path);
-#endif
-
     int result = ((libc_statfs_t)dlsym (RTLD_NEXT, "statfs")) (path, buf);
 
     // update statistic entry
@@ -611,11 +512,6 @@ int PosixPassthrough::passthrough_posix_statfs (const char* path, struct statfs*
 // passthrough_posix_fstatfs call. (...)
 int PosixPassthrough::passthrough_posix_fstatfs (int fd, struct statfs* buf)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
-#endif
-
     int result = ((libc_fstatfs_t)dlsym (RTLD_NEXT, "fstatfs")) (fd, buf);
 
     // update statistic entry
@@ -638,11 +534,6 @@ int PosixPassthrough::passthrough_posix_fstatfs (int fd, struct statfs* buf)
 // passthrough_posix_statfs64 call. (...)
 int PosixPassthrough::passthrough_posix_statfs64 (const char* path, struct statfs64* buf)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, path);
-#endif
-
     int result = ((libc_statfs64_t)dlsym (RTLD_NEXT, "statfs64")) (path, buf);
 
     // update statistic entry
@@ -665,11 +556,6 @@ int PosixPassthrough::passthrough_posix_statfs64 (const char* path, struct statf
 // passthrough_posix_fstatfs64 call. (...)
 int PosixPassthrough::passthrough_posix_fstatfs64 (int fd, struct statfs64* buf)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
-#endif
-
     int result = ((libc_fstatfs64_t)dlsym (RTLD_NEXT, "fstatfs64")) (fd, buf);
 
     // update statistic entry
@@ -692,11 +578,6 @@ int PosixPassthrough::passthrough_posix_fstatfs64 (int fd, struct statfs64* buf)
 // passthrough_posix_unlink call. (...)
 int PosixPassthrough::passthrough_posix_unlink (const char* old_path)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, old_path);
-#endif
-
     int result = ((libc_unlink_t)dlsym (RTLD_NEXT, "unlink")) (old_path);
 
     // update statistic entry
@@ -719,13 +600,6 @@ int PosixPassthrough::passthrough_posix_unlink (const char* old_path)
 // passthrough_posix_unlinkat call. (...)
 int PosixPassthrough::passthrough_posix_unlinkat (int dirfd, const char* pathname, int flags)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__,
-        std::string_view { std::to_string (dirfd) },
-        pathname);
-#endif
-
     int result = ((libc_unlinkat_t)dlsym (RTLD_NEXT, "unlinkat")) (dirfd, pathname, flags);
 
     // update statistic entry
@@ -748,11 +622,6 @@ int PosixPassthrough::passthrough_posix_unlinkat (int dirfd, const char* pathnam
 // passthrough_posix_rename call. (...)
 int PosixPassthrough::passthrough_posix_rename (const char* old_path, const char* new_path)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, old_path, new_path);
-#endif
-
     int result = ((libc_rename_t)dlsym (RTLD_NEXT, "rename")) (old_path, new_path);
 
     // update statistic entry
@@ -778,11 +647,6 @@ int PosixPassthrough::passthrough_posix_renameat (int olddirfd,
     int newdirfd,
     const char* new_path)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, old_path, new_path);
-#endif
-
     int result
         = ((libc_renameat_t)dlsym (RTLD_NEXT, "renameat")) (olddirfd, old_path, newdirfd, new_path);
 
@@ -806,11 +670,6 @@ int PosixPassthrough::passthrough_posix_renameat (int olddirfd,
 // passthrough_posix_fopen call. (...)
 FILE* PosixPassthrough::passthrough_posix_fopen (const char* pathname, const char* mode)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, pathname);
-#endif
-
     FILE* result = ((libc_fopen_t)dlsym (RTLD_NEXT, "fopen")) (pathname, mode);
 
     // update statistic entry
@@ -833,11 +692,6 @@ FILE* PosixPassthrough::passthrough_posix_fopen (const char* pathname, const cha
 // passthrough_posix_fopen64 call. (...)
 FILE* PosixPassthrough::passthrough_posix_fopen64 (const char* pathname, const char* mode)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, pathname);
-#endif
-
     FILE* result = ((libc_fopen64_t)dlsym (RTLD_NEXT, "fopen64")) (pathname, mode);
 
     // update statistic entry
@@ -860,11 +714,6 @@ FILE* PosixPassthrough::passthrough_posix_fopen64 (const char* pathname, const c
 // passthrough_posix_fclose call. (...)
 int PosixPassthrough::passthrough_posix_fclose (FILE* stream)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, std::string_view { std::to_string (-1) });
-#endif
-
     int result = ((libc_fclose_t)dlsym (RTLD_NEXT, "fclose")) (stream);
 
     // update statistic entry
@@ -887,11 +736,6 @@ int PosixPassthrough::passthrough_posix_fclose (FILE* stream)
 // passthrough_posix_mkdir call. (...)
 int PosixPassthrough::passthrough_posix_mkdir (const char* path, mode_t mode)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, path);
-#endif
-
     int result = ((libc_mkdir_t)dlsym (RTLD_NEXT, "mkdir")) (path, mode);
 
     // update statistic entry
@@ -909,13 +753,6 @@ int PosixPassthrough::passthrough_posix_mkdir (const char* path, mode_t mode)
 // passthrough_posix_mkdirat call. (...)
 int PosixPassthrough::passthrough_posix_mkdirat (int dirfd, const char* path, mode_t mode)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__,
-        std::string_view { std::to_string (dirfd) },
-        path);
-#endif
-
     int result = ((libc_mkdirat_t)dlsym (RTLD_NEXT, "mkdirat")) (dirfd, path, mode);
 
     // update statistic entry
@@ -936,11 +773,6 @@ int PosixPassthrough::passthrough_posix_mkdirat (int dirfd, const char* path, mo
 // passthrough_posix_rmdir call. (...)
 int PosixPassthrough::passthrough_posix_rmdir (const char* path)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, path);
-#endif
-
     int result = ((libc_rmdir_t)dlsym (RTLD_NEXT, "rmdir")) (path);
 
     // update statistic entry
@@ -958,11 +790,6 @@ int PosixPassthrough::passthrough_posix_rmdir (const char* path)
 // passthrough_posix_mknod call. (...)
 int PosixPassthrough::passthrough_posix_mknod (const char* path, mode_t mode, dev_t dev)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, path);
-#endif
-
     int result = ((libc_mknod_t)dlsym (RTLD_NEXT, "mknod")) (path, mode, dev);
 
     // update statistic entry
@@ -983,13 +810,6 @@ int PosixPassthrough::passthrough_posix_mknodat (int dirfd,
     mode_t mode,
     dev_t dev)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__,
-        std::string_view { std::to_string (dirfd) },
-        path);
-#endif
-
     int result = ((libc_mknodat_t)dlsym (RTLD_NEXT, "mknodat")) (dirfd, path, mode, dev);
 
     // update statistic entry
@@ -1013,11 +833,6 @@ ssize_t PosixPassthrough::passthrough_posix_getxattr (const char* path,
     void* value,
     size_t size)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, path, name);
-#endif
-
     ssize_t result = ((libc_getxattr_t)dlsym (RTLD_NEXT, "getxattr")) (path, name, value, size);
 
     // update statistic entry
@@ -1042,11 +857,6 @@ ssize_t PosixPassthrough::passthrough_posix_lgetxattr (const char* path,
     void* value,
     size_t size)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, path, name);
-#endif
-
     ssize_t result = ((libc_lgetxattr_t)dlsym (RTLD_NEXT, "lgetxattr")) (path, name, value, size);
 
     // update statistic entry
@@ -1069,13 +879,6 @@ ssize_t PosixPassthrough::passthrough_posix_lgetxattr (const char* path,
 ssize_t
 PosixPassthrough::passthrough_posix_fgetxattr (int fd, const char* name, void* value, size_t size)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__,
-        std::string_view { std::to_string (fd) },
-        name);
-#endif
-
     ssize_t result = ((libc_fgetxattr_t)dlsym (RTLD_NEXT, "fgetxattr")) (fd, name, value, size);
 
     // update statistic entry
@@ -1101,11 +904,6 @@ int PosixPassthrough::passthrough_posix_setxattr (const char* path,
     size_t size,
     int flags)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, path, name);
-#endif
-
     int result = ((libc_setxattr_t)dlsym (RTLD_NEXT, "setxattr")) (path, name, value, size, flags);
 
     // update statistic entry
@@ -1131,11 +929,6 @@ int PosixPassthrough::passthrough_posix_lsetxattr (const char* path,
     size_t size,
     int flags)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, path, name);
-#endif
-
     int result
         = ((libc_lsetxattr_t)dlsym (RTLD_NEXT, "lsetxattr")) (path, name, value, size, flags);
 
@@ -1162,13 +955,6 @@ int PosixPassthrough::passthrough_posix_fsetxattr (int fd,
     size_t size,
     int flags)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__,
-        std::string_view { std::to_string (fd) },
-        name);
-#endif
-
     int result = ((libc_fsetxattr_t)dlsym (RTLD_NEXT, "fsetxattr")) (fd, name, value, size, flags);
 
     // update statistic entry
@@ -1190,11 +976,6 @@ int PosixPassthrough::passthrough_posix_fsetxattr (int fd,
 // passthrough_posix_listxattr call. (...)
 ssize_t PosixPassthrough::passthrough_posix_listxattr (const char* path, char* list, size_t size)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, path);
-#endif
-
     ssize_t result = ((libc_listxattr_t)dlsym (RTLD_NEXT, "listxattr")) (path, list, size);
 
     // update statistic entry
@@ -1216,11 +997,6 @@ ssize_t PosixPassthrough::passthrough_posix_listxattr (const char* path, char* l
 // passthrough_posix_llistxattr call. (...)
 ssize_t PosixPassthrough::passthrough_posix_llistxattr (const char* path, char* list, size_t size)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, path);
-#endif
-
     ssize_t result = ((libc_llistxattr_t)dlsym (RTLD_NEXT, "llistxattr")) (path, list, size);
 
     // update statistic entry
@@ -1245,11 +1021,6 @@ ssize_t PosixPassthrough::passthrough_posix_llistxattr (const char* path, char* 
 // passthrough_posix_flistxattr call. (...)
 ssize_t PosixPassthrough::passthrough_posix_flistxattr (int fd, char* list, size_t size)
 {
-// detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
-#endif
-
     ssize_t result = ((libc_flistxattr_t)dlsym (RTLD_NEXT, "flistxattr")) (fd, list, size);
 
     // update statistic entry

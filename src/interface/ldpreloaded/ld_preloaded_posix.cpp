@@ -109,7 +109,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_read (int fd, void* buf, size_t cou
 {
 // detailed logging message
 #ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, std::string_view { std::to_string (fd)});
+    this->m_log->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
 #endif
 
     // hook POSIX read operation to m_data_operations.m_read
@@ -141,7 +141,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_write (int fd, const void* buf, siz
 {
 // detailed logging message
 #ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, std::string_view { std::to_string (fd)});
+    this->m_log->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
 #endif
 
     // hook POSIX write operation to m_data_operations.m_write
@@ -173,7 +173,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_pread (int fd, void* buf, size_t co
 {
 // detailed logging message
 #ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, std::string_view { std::to_string (fd)});
+    this->m_log->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
 #endif
 
     // hook POSIX pread operation to m_data_operations.m_pread
@@ -206,7 +206,7 @@ LdPreloadedPosix::ld_preloaded_posix_pwrite (int fd, const void* buf, size_t cou
 {
 // detailed logging message
 #ifdef OPTION_DETAILED_LOGGING
-    this->m_log->create_routine_log_message (__func__, std::string_view { std::to_string (fd)});
+    this->m_log->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
 #endif
 
     // hook POSIX pwrite operation to m_data_operations.m_pwrite

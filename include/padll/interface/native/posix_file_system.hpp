@@ -71,10 +71,10 @@ static __attribute__ ((destructor)) void destroy_method ()
  */
 extern "C" ssize_t read (int fd, void* buf, size_t size)
 {
-    // detailed logging message
-    #ifdef OPTION_DETAILED_LOGGING
-        m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
-    #endif
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
+#endif
 
     return (posix_data_calls.padll_intercept_read)
         ? m_ld_preloaded_posix.ld_preloaded_posix_read (fd, buf, size)
@@ -90,10 +90,10 @@ extern "C" ssize_t read (int fd, void* buf, size_t size)
  */
 extern "C" ssize_t write (int fd, const void* buf, size_t size)
 {
-    // detailed logging message
-    #ifdef OPTION_DETAILED_LOGGING
-        m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
-    #endif
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
+#endif
 
     return (posix_data_calls.padll_intercept_write)
         ? m_ld_preloaded_posix.ld_preloaded_posix_write (fd, buf, size)
@@ -110,11 +110,11 @@ extern "C" ssize_t write (int fd, const void* buf, size_t size)
  */
 extern "C" ssize_t pread (int fd, void* buf, size_t size, off_t offset)
 {
-    // detailed logging message
-    #ifdef OPTION_DETAILED_LOGGING
-        m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
-    #endif
-    
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
+#endif
+
     return (posix_data_calls.padll_intercept_pread)
         ? m_ld_preloaded_posix.ld_preloaded_posix_pread (fd, buf, size, offset)
         : m_posix_passthrough.passthrough_posix_pread (fd, buf, size, offset);
@@ -130,11 +130,11 @@ extern "C" ssize_t pread (int fd, void* buf, size_t size, off_t offset)
  */
 extern "C" ssize_t pwrite (int fd, const void* buf, size_t size, off_t offset)
 {
-    // detailed logging message
-    #ifdef OPTION_DETAILED_LOGGING
-        m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
-    #endif
-    
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
+#endif
+
     return (posix_data_calls.padll_intercept_pwrite)
         ? m_ld_preloaded_posix.ld_preloaded_posix_pwrite (fd, buf, size, offset)
         : m_posix_passthrough.passthrough_posix_pwrite (fd, buf, size, offset);
@@ -151,11 +151,11 @@ extern "C" ssize_t pwrite (int fd, const void* buf, size_t size, off_t offset)
 #if defined(__USE_LARGEFILE64)
 extern "C" ssize_t pread64 (int fd, void* buf, size_t size, off64_t offset)
 {
-    // detailed logging message
-    #ifdef OPTION_DETAILED_LOGGING
-        m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
-    #endif
-    
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
+#endif
+
     return (posix_data_calls.padll_intercept_pread64)
         ? m_ld_preloaded_posix.ld_preloaded_posix_pread64 (fd, buf, size, offset)
         : m_posix_passthrough.passthrough_posix_pread64 (fd, buf, size, offset);
@@ -173,11 +173,11 @@ extern "C" ssize_t pread64 (int fd, void* buf, size_t size, off64_t offset)
 #if defined(__USE_LARGEFILE64)
 extern "C" ssize_t pwrite64 (int fd, const void* buf, size_t size, off64_t offset)
 {
-    // detailed logging message
-    #ifdef OPTION_DETAILED_LOGGING
-        m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
-    #endif
-    
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
+#endif
+
     return (posix_data_calls.padll_intercept_pwrite64)
         ? m_ld_preloaded_posix.ld_preloaded_posix_pwrite64 (fd, buf, size, offset)
         : m_posix_passthrough.passthrough_posix_pwrite64 (fd, buf, size, offset);
@@ -196,11 +196,11 @@ extern "C" ssize_t pwrite64 (int fd, const void* buf, size_t size, off64_t offse
  */
 extern "C" void* mmap (void* addr, size_t length, int prot, int flags, int fd, off_t offset)
 {
-    // detailed logging message
-    #ifdef OPTION_DETAILED_LOGGING
-        m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
-    #endif
-    
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
+#endif
+
     // return (posix_data_calls.padll_intercept_mmap)
     //     ? m_ld_preloaded_posix.ld_preloaded_posix_mmap (addr, length, prot, flags, fd, offset)
     //     : m_posix_passthrough.passthrough_posix_mmap (addr, length, prot, flags, fd, offset);
@@ -215,11 +215,11 @@ extern "C" void* mmap (void* addr, size_t length, int prot, int flags, int fd, o
  */
 extern "C" int munmap (void* addr, size_t length)
 {
-    // detailed logging message
-    #ifdef OPTION_DETAILED_LOGGING
-        m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (-1) });
-    #endif
-    
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (-1) });
+#endif
+
     // return (posix_data_calls.padll_intercept_munmap)
     // ? m_ld_preloaded_posix.ld_preloaded_posix_munmap (addr, length)
     // : m_posix_passthrough.passthrough_posix_munmap (addr, length);
@@ -235,11 +235,11 @@ extern "C" int munmap (void* addr, size_t length)
  */
 extern "C" int open (const char* path, int flags, ...)
 {
-    // detailed logging message
-    #ifdef OPTION_DETAILED_LOGGING
-        m_logger_ptr->create_routine_log_message (__func__, path);
-    #endif
-    
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__, path);
+#endif
+
     if (flags & O_CREAT) {
         va_list args;
 
@@ -265,11 +265,11 @@ extern "C" int open (const char* path, int flags, ...)
  */
 extern "C" int creat (const char* path, mode_t mode)
 {
-    // detailed logging message
-    #ifdef OPTION_DETAILED_LOGGING
-        m_logger_ptr->create_routine_log_message (__func__, path);
-    #endif
-    
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__, path);
+#endif
+
     return (posix_metadata_calls.padll_intercept_creat)
         ? m_ld_preloaded_posix.ld_preloaded_posix_creat (path, mode)
         : m_posix_passthrough.passthrough_posix_creat (path, mode);
@@ -283,6 +283,11 @@ extern "C" int creat (const char* path, mode_t mode)
  */
 extern "C" int creat64 (const char* path, mode_t mode)
 {
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__, path);
+#endif
+
     return (posix_metadata_calls.padll_intercept_creat64)
         ? m_ld_preloaded_posix.ld_preloaded_posix_creat64 (path, mode)
         : m_posix_passthrough.passthrough_posix_creat64 (path, mode);
@@ -298,6 +303,13 @@ extern "C" int creat64 (const char* path, mode_t mode)
  */
 extern "C" int openat (int dirfd, const char* path, int flags, ...)
 {
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__,
+        std::string_view { std::to_string (dirfd) },
+        path);
+#endif
+
     if (flags & O_CREAT) {
         va_list args;
 
@@ -324,6 +336,11 @@ extern "C" int openat (int dirfd, const char* path, int flags, ...)
  */
 extern "C" int open64 (const char* path, int flags, ...)
 {
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__, path);
+#endif
+
     if (flags & O_CREAT) {
         va_list args;
 
@@ -348,6 +365,11 @@ extern "C" int open64 (const char* path, int flags, ...)
  */
 extern "C" int close (int fd)
 {
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
+#endif
+
     return (posix_metadata_calls.padll_intercept_close)
         ? m_ld_preloaded_posix.ld_preloaded_posix_close (fd)
         : m_posix_passthrough.passthrough_posix_close (fd);
@@ -358,6 +380,11 @@ extern "C" int close (int fd)
  */
 extern "C" void sync ()
 {
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (-1) });
+#endif
+
     return (posix_metadata_calls.padll_intercept_sync)
         ? m_ld_preloaded_posix.ld_preloaded_posix_sync ()
         : m_posix_passthrough.passthrough_posix_sync ();
@@ -371,6 +398,11 @@ extern "C" void sync ()
  */
 extern "C" int statfs (const char* path, struct statfs* buf)
 {
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__, path);
+#endif
+
     return (posix_metadata_calls.padll_intercept_statfs)
         ? m_ld_preloaded_posix.ld_preloaded_posix_statfs (path, buf)
         : m_posix_passthrough.passthrough_posix_statfs (path, buf);
@@ -384,6 +416,11 @@ extern "C" int statfs (const char* path, struct statfs* buf)
  */
 extern "C" int fstatfs (int fd, struct statfs* buf)
 {
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
+#endif
+
     return (posix_metadata_calls.padll_intercept_fstatfs)
         ? m_ld_preloaded_posix.ld_preloaded_posix_fstatfs (fd, buf)
         : m_posix_passthrough.passthrough_posix_fstatfs (fd, buf);
@@ -397,6 +434,11 @@ extern "C" int fstatfs (int fd, struct statfs* buf)
  */
 extern "C" int statfs64 (const char* path, struct statfs64* buf)
 {
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__, path);
+#endif
+
     return (posix_metadata_calls.padll_intercept_statfs64)
         ? m_ld_preloaded_posix.ld_preloaded_posix_statfs64 (path, buf)
         : m_posix_passthrough.passthrough_posix_statfs64 (path, buf);
@@ -410,6 +452,11 @@ extern "C" int statfs64 (const char* path, struct statfs64* buf)
  */
 extern "C" int fstatfs64 (int fd, struct statfs64* buf)
 {
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
+#endif
+
     return (posix_metadata_calls.padll_intercept_fstatfs64)
         ? m_ld_preloaded_posix.ld_preloaded_posix_fstatfs64 (fd, buf)
         : m_posix_passthrough.passthrough_posix_fstatfs64 (fd, buf);
@@ -422,6 +469,11 @@ extern "C" int fstatfs64 (int fd, struct statfs64* buf)
  */
 extern "C" int unlink (const char* path)
 {
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__, path);
+#endif
+
     return (posix_metadata_calls.padll_intercept_unlink)
         ? m_ld_preloaded_posix.ld_preloaded_posix_unlink (path)
         : m_posix_passthrough.passthrough_posix_unlink (path);
@@ -436,6 +488,13 @@ extern "C" int unlink (const char* path)
  */
 extern "C" int unlinkat (int dirfd, const char* pathname, int flags)
 {
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__,
+        std::string_view { std::to_string (dirfd) },
+        pathname);
+#endif
+
     return (posix_metadata_calls.padll_intercept_unlinkat)
         ? m_ld_preloaded_posix.ld_preloaded_posix_unlinkat (dirfd, pathname, flags)
         : m_posix_passthrough.passthrough_posix_unlinkat (dirfd, pathname, flags);
@@ -450,6 +509,11 @@ extern "C" int unlinkat (int dirfd, const char* pathname, int flags)
  */
 extern "C" int rename (const char* old_path, const char* new_path)
 {
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__, old_path, new_path);
+#endif
+
     return (posix_metadata_calls.padll_intercept_rename)
         ? m_ld_preloaded_posix.ld_preloaded_posix_rename (old_path, new_path)
         : m_posix_passthrough.passthrough_posix_rename (old_path, new_path);
@@ -466,6 +530,11 @@ extern "C" int rename (const char* old_path, const char* new_path)
  */
 extern "C" int renameat (int olddirfd, const char* old_path, int newdirfd, const char* new_path)
 {
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__, old_path, new_path);
+#endif
+
     return (posix_metadata_calls.padll_intercept_renameat)
         ? m_ld_preloaded_posix.ld_preloaded_posix_renameat (olddirfd, old_path, newdirfd, new_path)
         : m_posix_passthrough.passthrough_posix_renameat (olddirfd, old_path, newdirfd, new_path);
@@ -479,6 +548,11 @@ extern "C" int renameat (int olddirfd, const char* old_path, int newdirfd, const
  */
 extern "C" FILE* fopen (const char* pathname, const char* mode)
 {
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__, pathname);
+#endif
+
     return (posix_metadata_calls.padll_intercept_fopen)
         ? m_ld_preloaded_posix.ld_preloaded_posix_fopen (pathname, mode)
         : m_posix_passthrough.passthrough_posix_fopen (pathname, mode);
@@ -492,6 +566,11 @@ extern "C" FILE* fopen (const char* pathname, const char* mode)
  */
 extern "C" FILE* fopen64 (const char* pathname, const char* mode)
 {
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__, pathname);
+#endif
+
     return (posix_metadata_calls.padll_intercept_fopen64)
         ? m_ld_preloaded_posix.ld_preloaded_posix_fopen64 (pathname, mode)
         : m_posix_passthrough.passthrough_posix_fopen64 (pathname, mode);
@@ -517,6 +596,11 @@ extern "C" int fclose (FILE* stream)
  */
 extern "C" int mkdir (const char* path, mode_t mode)
 {
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__, path);
+#endif
+
     return (posix_directory_calls.padll_intercept_mkdir)
         ? m_ld_preloaded_posix.ld_preloaded_posix_mkdir (path, mode)
         : m_posix_passthrough.passthrough_posix_mkdir (path, mode);
@@ -531,6 +615,13 @@ extern "C" int mkdir (const char* path, mode_t mode)
  */
 extern "C" int mkdirat (int dirfd, const char* path, mode_t mode)
 {
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__,
+        std::string_view { std::to_string (dirfd) },
+        path);
+#endif
+
     return (posix_directory_calls.padll_intercept_mkdirat)
         ? m_ld_preloaded_posix.ld_preloaded_posix_mkdirat (dirfd, path, mode)
         : m_posix_passthrough.passthrough_posix_mkdirat (dirfd, path, mode);
@@ -543,6 +634,11 @@ extern "C" int mkdirat (int dirfd, const char* path, mode_t mode)
  */
 extern "C" int rmdir (const char* path)
 {
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__, path);
+#endif
+
     return (posix_directory_calls.padll_intercept_rmdir)
         ? m_ld_preloaded_posix.ld_preloaded_posix_rmdir (path)
         : m_posix_passthrough.passthrough_posix_rmdir (path);
@@ -557,6 +653,11 @@ extern "C" int rmdir (const char* path)
  */
 extern "C" int mknod (const char* path, mode_t mode, dev_t dev)
 {
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__, path);
+#endif
+
     // TODO: redirect to ld_preloaded_posix as well
     return m_posix_passthrough.passthrough_posix_mknod (path, mode, dev);
 }
@@ -571,6 +672,13 @@ extern "C" int mknod (const char* path, mode_t mode, dev_t dev)
  */
 extern "C" int mknodat (int dirfd, const char* path, mode_t mode, dev_t dev)
 {
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__,
+        std::string_view { std::to_string (dirfd) },
+        path);
+#endif
+
     // TODO: redirect to ld_preloaded_posix as well
     return m_posix_passthrough.passthrough_posix_mknodat (dirfd, path, mode, dev);
 }
@@ -586,6 +694,11 @@ extern "C" int mknodat (int dirfd, const char* path, mode_t mode, dev_t dev)
 #ifdef __linux__
 extern "C" ssize_t getxattr (const char* path, const char* name, void* value, size_t size)
 {
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__, path, name);
+#endif
+
     return (posix_extended_attributes_calls.padll_intercept_getxattr)
         ? m_ld_preloaded_posix.ld_preloaded_posix_getxattr (path, name, value, size)
         : m_posix_passthrough.passthrough_posix_getxattr (path, name, value, size);
@@ -602,6 +715,11 @@ extern "C" ssize_t getxattr (const char* path, const char* name, void* value, si
  */
 extern "C" ssize_t lgetxattr (const char* path, const char* name, void* value, size_t size)
 {
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__, path, name);
+#endif
+
     return (posix_extended_attributes_calls.padll_intercept_lgetxattr)
         ? m_ld_preloaded_posix.ld_preloaded_posix_lgetxattr (path, name, value, size)
         : m_posix_passthrough.passthrough_posix_lgetxattr (path, name, value, size);
@@ -618,6 +736,13 @@ extern "C" ssize_t lgetxattr (const char* path, const char* name, void* value, s
 #ifdef __linux__
 extern "C" ssize_t fgetxattr (int fd, const char* name, void* value, size_t size)
 {
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__,
+        std::string_view { std::to_string (fd) },
+        name);
+#endif
+
     return (posix_extended_attributes_calls.padll_intercept_fgetxattr)
         ? m_ld_preloaded_posix.ld_preloaded_posix_fgetxattr (fd, name, value, size)
         : m_posix_passthrough.passthrough_posix_fgetxattr (fd, name, value, size);
@@ -637,6 +762,11 @@ extern "C" ssize_t fgetxattr (int fd, const char* name, void* value, size_t size
 extern "C" int
 setxattr (const char* path, const char* name, const void* value, size_t size, int flags)
 {
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__, path, name);
+#endif
+
     return (posix_extended_attributes_calls.padll_intercept_setxattr)
         ? m_ld_preloaded_posix.ld_preloaded_posix_setxattr (path, name, value, size, flags)
         : m_posix_passthrough.passthrough_posix_setxattr (path, name, value, size, flags);
@@ -655,6 +785,11 @@ setxattr (const char* path, const char* name, const void* value, size_t size, in
 extern "C" int
 lsetxattr (const char* path, const char* name, const void* value, size_t size, int flags)
 {
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__, path, name);
+#endif
+
     return (posix_extended_attributes_calls.padll_intercept_lsetxattr)
         ? m_ld_preloaded_posix.ld_preloaded_posix_lsetxattr (path, name, value, size, flags)
         : m_posix_passthrough.passthrough_posix_lsetxattr (path, name, value, size, flags);
@@ -672,6 +807,13 @@ lsetxattr (const char* path, const char* name, const void* value, size_t size, i
 #ifdef __linux__
 extern "C" int fsetxattr (int fd, const char* name, const void* value, size_t size, int flags)
 {
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__,
+        std::string_view { std::to_string (fd) },
+        name);
+#endif
+
     return (posix_extended_attributes_calls.padll_intercept_fsetxattr)
         ? m_ld_preloaded_posix.ld_preloaded_posix_fsetxattr (fd, name, value, size, flags)
         : m_posix_passthrough.passthrough_posix_fsetxattr (fd, name, value, size, flags);
@@ -688,6 +830,11 @@ extern "C" int fsetxattr (int fd, const char* name, const void* value, size_t si
 #ifdef __linux__
 extern "C" ssize_t listxattr (const char* path, char* list, size_t size)
 {
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__, path);
+#endif
+
     return (posix_extended_attributes_calls.padll_intercept_listxattr)
         ? m_ld_preloaded_posix.ld_preloaded_posix_listxattr (path, list, size)
         : m_posix_passthrough.passthrough_posix_listxattr (path, list, size);
@@ -703,6 +850,11 @@ extern "C" ssize_t listxattr (const char* path, char* list, size_t size)
  */
 extern "C" ssize_t llistxattr (const char* path, char* list, size_t size)
 {
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__, path);
+#endif
+
     return (posix_extended_attributes_calls.padll_intercept_llistxattr)
         ? m_ld_preloaded_posix.ld_preloaded_posix_llistxattr (path, list, size)
         : m_posix_passthrough.passthrough_posix_llistxattr (path, list, size);
@@ -718,6 +870,11 @@ extern "C" ssize_t llistxattr (const char* path, char* list, size_t size)
 #ifdef __linux__
 extern "C" ssize_t flistxattr (int fd, char* list, size_t size)
 {
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
+#endif
+
     return (posix_extended_attributes_calls.padll_intercept_flistxattr)
         ? m_ld_preloaded_posix.ld_preloaded_posix_flistxattr (fd, list, size)
         : m_posix_passthrough.passthrough_posix_flistxattr (fd, list, size);
