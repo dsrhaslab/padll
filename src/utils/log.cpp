@@ -184,24 +184,27 @@ void Log::log_debug (const std::string& message) const
 }
 
 // create_routine_log_message call. (...)
-void Log::create_routine_log_message (const char* routine_name, const int arg) const
+void Log::create_routine_log_message (const char* routine_name, const std::string_view& arg) const
 {
     // create logging message
     std::string message;
     message.append (routine_name);
-    message.append (" (").append (std::to_string (arg)).append (")");
+    message.append (" (").append ((arg.empty ()) ? "<empty>" : arg).append (")");
 
     // submit message to debug logging routine
     this->log_debug (message);
 }
 
 // create_routine_log_message call. (...)
-void Log::create_routine_log_message (const char* routine_name, const char* arg) const
+void Log::create_routine_log_message (const char* routine_name,
+    const std::string_view& arg1,
+    const std::string_view& arg2) const
 {
     // create logging message
     std::string message;
     message.append (routine_name);
-    message.append (" (").append (arg).append (")");
+    message.append (" (").append ((arg1.empty ()) ? "<empty>" : arg1).append (", ");
+    message.append ((arg2.empty ()) ? "<empty>" : arg2).append (")");
 
     // submit message to debug logging routine
     this->log_debug (message);

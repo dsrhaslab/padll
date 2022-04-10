@@ -134,14 +134,16 @@ public:
      * @param routine_name
      * @parm arg
      */
-    void create_routine_log_message (const char* routine_name, const int arg) const;
+    void create_routine_log_message (const char* routine_name, const std::string_view& arg) const;
 
     /**
      * create_routine_log_message
      * @param routine_name
      * @param arg
      */
-    void create_routine_log_message (const char* routine_name, const char* arg) const;
+    void create_routine_log_message (const char* routine_name,
+        const std::string_view& arg1,
+        const std::string_view& arg2) const;
 };
 } // namespace padll::utils::log
 
