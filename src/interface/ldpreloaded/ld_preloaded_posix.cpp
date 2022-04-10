@@ -14,8 +14,13 @@ LdPreloadedPosix::LdPreloadedPosix () :
         std::string { option_default_log_path }) },
     m_dlsym_hook { option_library_name, this->m_log }
 {
-    // TODO: check m_log pointer value and compare with the other instances.
-    std::printf ("LdPreloadedPosix default constructor (%p).\n", (void*)this->m_log.get ());
+    // create logging message
+    std::stringstream stream;
+    stream << "LdPreloadedPosix default constructor ";
+    stream << "(" << (void*)this->m_log.get () << ")";
+
+    // write debug logging message
+    this->m_log->log_info (stream.str ());
 }
 
 // LdPreloadedPosix parameterized constructor.
@@ -27,15 +32,22 @@ LdPreloadedPosix::LdPreloadedPosix (const std::string& lib,
     m_collect { stat_collection },
     m_mount_point_table { "ld-preloaded-posix-" + lib }
 {
-    // TODO: check m_log pointer value and compare with the other instances.
-    std::printf ("LdPreloadedPosix parameterized constructor (%p).\n", (void*)this->m_log.get ());
+    // create logging message
+    std::stringstream stream;
+    stream << "LdPreloadedPosix parameterized constructor ";
+    stream << "(" << (void*)this->m_log.get () << ")";
+
+    // write debug logging message
+    this->m_log->log_info (stream.str ());
 }
 
 // LdPreloadedPosix default destructor.
 LdPreloadedPosix::~LdPreloadedPosix ()
 {
-    std::printf ("LdPreloadedPosix default destructor.\n");
+    // create logging message
+    this->m_log->log_info ("LdPreloadedPosix default destructor.");
 
+    // log LdPreloadedPosix statistic counters
     if (option_default_table_format) {
         // print to stdout metadata-based statistics in tabular format
         this->m_metadata_stats.tabulate ();
@@ -46,7 +58,7 @@ LdPreloadedPosix::~LdPreloadedPosix ()
         // print to stdout extended attributes based statistics in tabular format
         this->m_ext_attr_stats.tabulate ();
     } else {
-        std::printf ("%s\n", this->to_string ().c_str ());
+        this->m_log->log_info (this->to_string ());
     }
 }
 

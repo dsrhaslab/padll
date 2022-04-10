@@ -18,7 +18,12 @@ PosixPassthrough::PosixPassthrough () :
         option_default_enable_debug_with_ld_preload,
         std::string { option_default_log_path }) }
 {
-    std::printf ("PosixPassthrough default constructor.\n");
+    // create logging message
+    std::stringstream stream;
+    stream << "PosixPassthrough default constructor ";
+    stream << "(" << (void*)this->m_log.get () << ")";
+    this->m_log->log_info (stream.str ());
+
     // initialize library handle pointer.
     this->initialize ();
 }
@@ -28,7 +33,12 @@ PosixPassthrough::PosixPassthrough (const std::string& lib_name, std::shared_ptr
     m_lib_name { lib_name },
     m_log { log_ptr }
 {
-    std::printf ("PosixPassthrough parameterized constructor.\n");
+    // create logging message
+    std::stringstream stream;
+    stream << "PosixPassthrough parameterized constructor ";
+    stream << "(" << (void*)this->m_log.get () << ")";
+    this->m_log->log_info (stream.str ());
+
     // initialize library handle pointer.
     this->initialize ();
 }
@@ -36,9 +46,11 @@ PosixPassthrough::PosixPassthrough (const std::string& lib_name, std::shared_ptr
 // PosixPassthrough default destructor.
 PosixPassthrough::~PosixPassthrough ()
 {
-    // print debug messages
-    std::printf ("PosixPassthrough default destructor.\n");
-    std::printf ("%s\n", this->to_string ().c_str ());
+    // create logging message
+    std::stringstream stream;
+    stream << "PosixPassthrough default destructor ";
+    stream << "(" << (void*)this->m_log.get () << ")";
+    this->m_log->log_info (stream.str ());
 
     // validate if library handle is valid and close dynamic linking.
     // It decrements the reference count on the dynamically loaded shared object, referred to
@@ -46,7 +58,7 @@ PosixPassthrough::~PosixPassthrough ()
     // unloaded. All shared objects that were automatically loaded when dlopen () was invoked
     // on the object referred to by handle are recursively closed in the same manner.
     if (this->m_lib_handle != nullptr && !::dlclose (this->m_lib_handle)) {
-        std::printf ("PosixPassthrough::Error while closing dynamic link.\n");
+        this->m_log->log_error ("PosixPassthrough::Error while closing dynamic link.\n");
     }
 }
 
@@ -90,8 +102,6 @@ bool PosixPassthrough::dlopen_library_handle ()
 // initialize call. (...)
 void PosixPassthrough::initialize ()
 {
-    // TODO: check m_log pointer value and compare with the other instances.
-    std::printf ("PosixPassthrough after initialize (%p).\n", (void*)this->m_log.get ());
     // assign pointer to m_lib_handle, and validate pointer
     if (!this->dlopen_library_handle ()) {
         this->m_log->log_error ("PosixPassthrough::Error while dlopen'ing "
