@@ -128,6 +128,20 @@ public:
      * @param message Log message.
      */
     void log_debug (const std::string& message) const;
+
+    /**
+     * create_routine_log_message
+     * @param routine_name
+     * @parm arg
+     */
+    void create_routine_log_message (const char* routine_name, const int arg) const;
+
+    /**
+     * create_routine_log_message
+     * @param routine_name
+     * @param arg
+     */
+    void create_routine_log_message (const char* routine_name, const char* arg) const;
 };
 } // namespace padll::utils::log
 

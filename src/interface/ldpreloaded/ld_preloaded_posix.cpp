@@ -107,10 +107,10 @@ std::string LdPreloadedPosix::to_string ()
 // ld_preloaded_posix_read call.
 ssize_t LdPreloadedPosix::ld_preloaded_posix_read (int fd, void* buf, size_t counter)
 {
-    // logging message
-    if (option_default_detailed_logging) {
-        std::printf ("ld_preloaded_posix-read (%d)\n", fd);
-    }
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    this->m_log->create_routine_log_message (__func__, fd);
+#endif
 
     // hook POSIX read operation to m_data_operations.m_read
     this->m_dlsym_hook.hook_posix_read (m_data_operations.m_read);
@@ -139,10 +139,10 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_read (int fd, void* buf, size_t cou
 // ld_preloaded_posix_write call.
 ssize_t LdPreloadedPosix::ld_preloaded_posix_write (int fd, const void* buf, size_t counter)
 {
-    // logging message
-    if (option_default_detailed_logging) {
-        std::printf ("ld_preloaded_posix-write (%d)\n", fd);
-    }
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    this->m_log->create_routine_log_message (__func__, fd);
+#endif
 
     // hook POSIX write operation to m_data_operations.m_write
     this->m_dlsym_hook.hook_posix_write (m_data_operations.m_write);
@@ -171,10 +171,10 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_write (int fd, const void* buf, siz
 // ld_preloaded_posix_pread call.
 ssize_t LdPreloadedPosix::ld_preloaded_posix_pread (int fd, void* buf, size_t counter, off_t offset)
 {
-    // logging message
-    if (option_default_detailed_logging) {
-        std::printf ("ld_preloaded_posix-pread (%d)\n", fd);
-    }
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    this->m_log->create_routine_log_message (__func__, fd);
+#endif
 
     // hook POSIX pread operation to m_data_operations.m_pread
     this->m_dlsym_hook.hook_posix_pread (m_data_operations.m_pread);
@@ -204,10 +204,10 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_pread (int fd, void* buf, size_t co
 ssize_t
 LdPreloadedPosix::ld_preloaded_posix_pwrite (int fd, const void* buf, size_t counter, off_t offset)
 {
-    // logging message
-    if (option_default_detailed_logging) {
-        std::printf ("ld_preloaded_posix-pwrite (%d)\n", fd);
-    }
+// detailed logging message
+#ifdef OPTION_DETAILED_LOGGING
+    this->m_log->create_routine_log_message (__func__, fd);
+#endif
 
     // hook POSIX pwrite operation to m_data_operations.m_pwrite
     this->m_dlsym_hook.hook_posix_pwrite (m_data_operations.m_pwrite);

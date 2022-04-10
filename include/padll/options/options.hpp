@@ -109,7 +109,8 @@ constexpr std::string_view option_default_log_path { "/tmp/padll-info" };
 /**
  * option_default_detailed_logging:
  */
-constexpr bool option_default_detailed_logging { true };
+// constexpr bool option_default_detailed_logging { true };
+#define OPTION_DETAILED_LOGGING true
 
 /**
  * option_default_table_format:

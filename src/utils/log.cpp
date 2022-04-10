@@ -183,4 +183,28 @@ void Log::log_debug (const std::string& message) const
     }
 }
 
+// create_routine_log_message call. (...)
+void Log::create_routine_log_message (const char* routine_name, const int arg) const
+{
+    // create logging message
+    std::string message;
+    message.append (routine_name);
+    message.append (" (").append (std::to_string (arg)).append (")");
+
+    // submit message to debug logging routine
+    this->log_debug (message);
+}
+
+// create_routine_log_message call. (...)
+void Log::create_routine_log_message (const char* routine_name, const char* arg) const
+{
+    // create logging message
+    std::string message;
+    message.append (routine_name);
+    message.append (" (").append (arg).append (")");
+
+    // submit message to debug logging routine
+    this->log_debug (message);
+}
+
 } // namespace padll::utils::log

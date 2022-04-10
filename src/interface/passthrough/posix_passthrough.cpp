@@ -131,6 +131,11 @@ StatisticEntry PosixPassthrough::get_statistic_entry (const OperationType& opera
 // passthrough_posix_read call. (...)
 ssize_t PosixPassthrough::passthrough_posix_read (int fd, void* buf, size_t counter)
 {
+    // detailed logging message
+    #ifdef OPTION_DETAILED_LOGGING
+        this->m_log->create_routine_log_message (__func__, fd);
+    #endif
+
     ssize_t result = ((libc_read_t)dlsym (RTLD_NEXT, "read")) (fd, buf, counter);
 
     // update statistic entry
@@ -148,6 +153,11 @@ ssize_t PosixPassthrough::passthrough_posix_read (int fd, void* buf, size_t coun
 // passthrough_posix_write call. (...)
 ssize_t PosixPassthrough::passthrough_posix_write (int fd, const void* buf, size_t counter)
 {
+    // detailed logging message
+    #ifdef OPTION_DETAILED_LOGGING
+        this->m_log->create_routine_log_message (__func__, fd);
+    #endif
+
     ssize_t result = ((libc_write_t)dlsym (RTLD_NEXT, "write")) (fd, buf, counter);
 
     // update statistic entry
@@ -165,6 +175,11 @@ ssize_t PosixPassthrough::passthrough_posix_write (int fd, const void* buf, size
 // passthrough_posix_pread call. (...)
 ssize_t PosixPassthrough::passthrough_posix_pread (int fd, void* buf, size_t counter, off_t offset)
 {
+    // detailed logging message
+    #ifdef OPTION_DETAILED_LOGGING
+        this->m_log->create_routine_log_message (__func__, fd);
+    #endif
+
     ssize_t result = ((libc_pread_t)dlsym (RTLD_NEXT, "pread")) (fd, buf, counter, offset);
 
     // update statistic entry
@@ -183,6 +198,11 @@ ssize_t PosixPassthrough::passthrough_posix_pread (int fd, void* buf, size_t cou
 ssize_t
 PosixPassthrough::passthrough_posix_pwrite (int fd, const void* buf, size_t counter, off_t offset)
 {
+    // detailed logging message
+    #ifdef OPTION_DETAILED_LOGGING
+        this->m_log->create_routine_log_message (__func__, fd);
+    #endif
+
     ssize_t result = ((libc_pwrite_t)dlsym (RTLD_NEXT, "pwrite")) (fd, buf, counter, offset);
 
     // update statistic entry
@@ -283,6 +303,11 @@ int PosixPassthrough::passthrough_posix_munmap (void* addr, size_t length)
 // passthrough_posix_open call. (...)
 int PosixPassthrough::passthrough_posix_open (const char* path, int flags, mode_t mode)
 {
+    // detailed logging message
+    #ifdef OPTION_DETAILED_LOGGING
+        this->m_log->create_routine_log_message (__func__, path);
+    #endif
+
     int result = ((libc_open_variadic_t)dlsym (RTLD_NEXT, "open")) (path, flags, mode);
 
     printf ("Path (%d): %s\n", ::getpid (), path);
