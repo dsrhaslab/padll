@@ -7,11 +7,13 @@
 #include <cstring>
 #include <fcntl.h>
 #include <iostream>
+#include <padll/library_headers/libc_headers.hpp>
 #include <padll/stage/mount_point_table.hpp>
 #include <thread>
 #include <variant>
 
 using namespace padll::stage;
+using namespace padll::headers;
 using namespace std::this_thread;
 
 namespace padll::tests {
@@ -59,7 +61,10 @@ private:
 
             if (create_fd) {
                 // open file and get file descriptor
-                auto fd = ::open (path_to_file.c_str (), O_CREAT, 0666);
+                // auto fd = ::open (path_to_file.c_str (), O_CREAT, 0666);
+                auto fd = ((libc_open_variadic_t)dlsym (RTLD_NEXT,
+                    "open")) (path_to_file.c_str (), O_CREAT, 0666);
+
                 // check if file was created
                 if (fd == -1) {
                     std::fprintf (this->m_fd,
@@ -468,7 +473,9 @@ int main (int argc, char** argv)
 
     // open file to write the logging results
     if (argc > 1) {
-        fd = ::fopen (argv[1], "w");
+        // fd = ::fopen (argv[1], "w");
+        fd = ((padll::headers::libc_fopen_t)dlsym (RTLD_NEXT,
+            "fopen")) (argv[1], "w");
 
         if (fd == nullptr) {
             fd = stdout;
