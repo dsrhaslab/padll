@@ -14,14 +14,26 @@ DataPlaneStage::DataPlaneStage () :
         option_default_enable_debug_with_ld_preload,
         std::string { option_default_log_path }) }
 {
-    this->m_log->log_info ("DataPlaneStage default constructor.");
+    // create logging message
+    std::stringstream stream;
+    stream << "DataPlaneStage default constructor ";
+    stream << "(" << static_cast<void*> (this->m_log.get ()) << ")";
+
+    // write debug logging message
+    this->m_log->log_info (stream.str ());
 }
 
 // TODO: Tasks pending completion -@ricardomacedo at 4/11/2022, 4:10:45 PM
 // Initialize data plane stage in constructor (connect to control plane)
 DataPlaneStage::DataPlaneStage (std::shared_ptr<Log> log_ptr) : m_log { log_ptr }
 {
-    this->m_log->log_info ("DataPlaneStage parameterized constructor.");
+    // create logging message
+    std::stringstream stream;
+    stream << "DataPlaneStage parameterized constructor ";
+    stream << "(" << static_cast<void*> (this->m_log.get ()) << ")";
+
+    // write debug logging message
+    this->m_log->log_info (stream.str ());
 }
 
 // TODO: Implement the DataPlaneStage destructor
