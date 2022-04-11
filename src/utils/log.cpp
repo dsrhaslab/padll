@@ -13,7 +13,7 @@ Log::Log ()
     // initialize log object
     this->initialize ();
     // write debug message
-    this->dlsym_write_message (STDOUT_FILENO, "Log parameterized constructor.\n");
+    this->log_info ("Log default constructor.");
 }
 
 // Log parameterized constructor.
@@ -25,17 +25,16 @@ Log::Log (const bool& enable_debug, const bool& debug_with_ldpreload, const std:
     // initialize log object
     this->initialize ();
     // write debug message
-    this->dlsym_write_message (STDOUT_FILENO, "Log parameterized constructor.\n");
+    this->log_info ("Log parameterized constructor.");
 }
 
 // Log default destructor.
 Log::~Log ()
 {
+    // write debug message
+    this->log_info ("Log default destructor.");
     // cleanup log object
     this->cleanup ();
-    // write debug message
-    this->dlsym_write_message (STDOUT_FILENO, "Log default destructor.\n");
-
     // close library linking
     if (this->m_dl_handle != nullptr) {
         ::dlclose (this->m_dl_handle);
@@ -71,13 +70,12 @@ void Log::initialize ()
 
         // validate if pointer was successfully attributed
         if (this->m_dl_handle == nullptr) {
-            std::printf ("%s: Error while loading libc.so ... assigning RTLD_NEXT\n", __func__);
+            // write message to stderr
+            std::fprintf (stderr,
+                "%s: Error while loading libc.so ... assigning RTLD_NEXT\n",
+                __func__);
+            // assign RTLD_NEXT to m_dl_handle
             this->m_dl_handle = RTLD_NEXT;
-            // TODO: remove this message
-            std::printf ("Testing m_dl_handle on error (%s, %p)\n", __func__, this->m_dl_handle);
-        } else {
-            // TODO: remove this message
-            std::printf ("Testing m_dl_handle on success (%s, %p)\n", __func__, this->m_dl_handle);
         }
 
         if (!this->m_log_file_path.empty ()) {
@@ -102,9 +100,6 @@ void Log::cleanup ()
     if (this->m_fd != STDOUT_FILENO && this->m_basic_logger.use_count () == 0) {
         // close file descriptor using dlsym'ed close
         auto return_value = ((libc_close_t)dlsym (this->m_dl_handle, "close")) (this->m_fd);
-
-        // TODO: remove this message
-        std::printf ("Testing m_dl_handle (%s, %p)\n", __func__, this->m_dl_handle);
 
         // verify return_value
         if (return_value < 0) {

@@ -21,7 +21,7 @@ PosixPassthrough::PosixPassthrough () :
     // create logging message
     std::stringstream stream;
     stream << "PosixPassthrough default constructor ";
-    stream << "(" << (void*)this->m_log.get () << ")";
+    stream << "(" << static_cast<void*> (this->m_log.get ()) << ")";
     this->m_log->log_info (stream.str ());
 
     // initialize library handle pointer.
@@ -36,7 +36,7 @@ PosixPassthrough::PosixPassthrough (const std::string& lib_name, std::shared_ptr
     // create logging message
     std::stringstream stream;
     stream << "PosixPassthrough parameterized constructor ";
-    stream << "(" << (void*)this->m_log.get () << ")";
+    stream << "(" << static_cast<void*> (this->m_log.get ()) << ")";
     this->m_log->log_info (stream.str ());
 
     // initialize library handle pointer.
@@ -306,7 +306,6 @@ int PosixPassthrough::passthrough_posix_open (const char* path, int flags, mode_
 {
     int result = ((libc_open_variadic_t)dlsym (RTLD_NEXT, "open")) (path, flags, mode);
 
-    printf ("Path (%d): %s\n", ::getpid (), path);
     // update statistic entry
     if (this->m_collect) {
         if (result >= 0) {
@@ -328,7 +327,6 @@ int PosixPassthrough::passthrough_posix_open (const char* path, int flags)
 {
     int result = ((libc_open_t)dlsym (RTLD_NEXT, "open")) (path, flags);
 
-    printf ("Path (%d): %s\n", ::getpid (), path);
     // update statistic entry
     if (this->m_collect) {
         if (result >= 0) {

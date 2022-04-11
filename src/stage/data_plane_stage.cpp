@@ -7,22 +7,34 @@
 
 namespace padll::stage {
 
-// TODO: Implement the DataPlaneStage constructor
-DataPlaneStage::DataPlaneStage ()
+// TODO: Tasks pending completion -@ricardomacedo at 4/11/2022, 4:10:17 PM
+// Initialize data plane stage in constructor (connect to control plane)
+DataPlaneStage::DataPlaneStage () :
+    m_log { std::make_shared<Log> (option_default_enable_debug_level,
+        option_default_enable_debug_with_ld_preload,
+        std::string { option_default_log_path }) }
 {
-    std::printf ("DataPlaneStage default constructor.\n");
+    this->m_log->log_info ("DataPlaneStage default constructor.");
+}
+
+// TODO: Tasks pending completion -@ricardomacedo at 4/11/2022, 4:10:45 PM
+// Initialize data plane stage in constructor (connect to control plane)
+DataPlaneStage::DataPlaneStage (std::shared_ptr<Log> log_ptr) : m_log { log_ptr }
+{
+    this->m_log->log_info ("DataPlaneStage parameterized constructor.");
 }
 
 // TODO: Implement the DataPlaneStage destructor
 DataPlaneStage::~DataPlaneStage ()
 {
-    std::printf ("DataPlaneStage destructor.\n");
+    this->m_log->log_info ("DataPlaneStage destructor.\n");
 }
 
 // initialize_stage call. (...)
 void DataPlaneStage::initialize_stage ()
 {
-    std::unique_lock<std::mutex> lock (this->m_lock);
+    // unique_lock over mutex
+    std::unique_lock lock (this->m_lock);
 
     // initialize PAIO structures (stage and instance-interface)
     this->m_stage = { std::make_shared<paio::PaioStage> (option_default_stage_channels,
@@ -46,6 +58,8 @@ void DataPlaneStage::enforce_request (const uint32_t& workflow_id,
     // Note: temporary just to try out tests w/ and w/o data plane stage
     if (this->m_enforce) {
         // initialize data plane stage
+        // TODO: Tasks pending completion -@ricardomacedo at 4/11/2022, 4:04:55 PM
+        // adjust this to not call m_stage_initialized on every single call
         if (!m_stage_initialized.load (std::memory_order_relaxed)) {
             this->initialize_stage ();
             std::cout << this->m_stage->stage_info_to_string () << "\n";

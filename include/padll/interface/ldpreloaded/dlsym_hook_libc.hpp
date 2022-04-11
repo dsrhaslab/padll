@@ -31,8 +31,6 @@ private:
      */
     void initialize ()
     {
-        // TODO: check m_log pointer value and compare with the other instances.
-        std::printf ("DlsymHookLibc initialize (%p).\n", (void*)this->m_log.get ());
         // open library and assign pointer to m_lib_handle
         if (!this->dlopen_library_handle ()) {
             this->m_log->log_error ("DlymHook::Error while dlopen'ing "
