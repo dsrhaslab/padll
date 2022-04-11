@@ -9,12 +9,14 @@ namespace padll::stage {
 
 // MountPointTable default constructor.
 MountPointTable::MountPointTable () :
-    m_log { std::make_shared<Log> (option_default_enable_debug_level, false, std::string { option_default_log_path } ) }
+    m_log { std::make_shared<Log> (option_default_enable_debug_level,
+        false,
+        std::string { option_default_log_path }) }
 {
     // logging message
     std::stringstream stream;
     stream << "MountPointTable default constructor ";
-    stream << "(" << static_cast<void*> (this->m_log.get()) << ")";
+    stream << "(" << static_cast<void*> (this->m_log.get ()) << ")";
     this->m_log->log_info (stream.str ());
 
     // initialize mount point table with predefined workflows
@@ -22,13 +24,12 @@ MountPointTable::MountPointTable () :
 }
 
 // MountPointTable parameterized constructor.
-MountPointTable::MountPointTable (std::shared_ptr<Log> log_ptr) :
-    m_log { log_ptr }
+MountPointTable::MountPointTable (std::shared_ptr<Log> log_ptr) : m_log { log_ptr }
 {
     // logging message
     std::stringstream stream;
     stream << "MountPointTable parameterized constructor ";
-    stream << "(" << static_cast<void*> (this->m_log.get()) << ")";
+    stream << "(" << static_cast<void*> (this->m_log.get ()) << ")";
     this->m_log->log_info (stream.str ());
 
     // initialize mount point table with predefined workflows
@@ -83,7 +84,8 @@ bool MountPointTable::create_mount_point_entry (const int& fd,
     // check if the insertion was successful
     if (!inserted) {
         // submit error message to the logging facility
-        this->m_log->log_error ("File descriptor " + std::to_string (fd) + " could not be inserted.");
+        this->m_log->log_error (
+            "File descriptor " + std::to_string (fd) + " could not be inserted.");
 
         return false;
     }
@@ -173,7 +175,8 @@ bool MountPointTable::remove_mount_point_entry (const int& key)
     // remove entry for the 'key' file descriptor and check if the removal was successful
     if (this->m_file_descriptors_table.erase (key) == 0) {
         // submit error message to the logging facility
-        this->m_log->log_error ("File descriptor " + std::to_string (key) + " could not be removed.");
+        this->m_log->log_error (
+            "File descriptor " + std::to_string (key) + " could not be removed.");
 
         return false;
     }

@@ -5,6 +5,7 @@
 
 #include <cstdio>
 #include <cstring>
+#include <dlfcn.h>
 #include <fcntl.h>
 #include <iostream>
 #include <padll/library_headers/libc_headers.hpp>
@@ -22,7 +23,7 @@ class MountPointDifferentiationTest {
 
 private:
     FILE* m_fd { stdout };
-    // void* m_lib_link { dlopen("libc.so.6", RTLD_LAZY) };
+    void* m_lib_link { ::dlopen ("libc.so.6", RTLD_LAZY) };
 
     void
     performance_report (const std::string& header, const int& operations, const long& elapsed_time)
@@ -61,15 +62,22 @@ private:
             bool result;
 
             if (create_fd) {
-                // open file and get file descriptor
-                // BUG: use pointer to libc function, rather than RTLD_NEXT
-                auto fd = ((libc_open_variadic_t)dlsym (RTLD_NEXT,
+// open file and get file descriptor
+#ifdef __linux__
+                auto fd = ((libc_open_variadic_t)::dlsym (this->m_lib_link,
                     "open")) (path_to_file.c_str (), O_CREAT, 0666);
+#else
+                // FIXME: this could be further improved (dlsym over libc for non-unix settings)
+                auto fd = ::open (path_to_file.c_str (), O_CREAT, 0666);
+#endif
 
                 // check if file was created
                 if (fd == -1) {
                     std::fprintf (this->m_fd,
-                        "Error (%s): %s - %s\n", __func__, strerror (errno), path_to_file.c_str ());
+                        "Error (%s): %s - %s\n",
+                        __func__,
+                        strerror (errno),
+                        path_to_file.c_str ());
                     return;
                 }
 
@@ -79,9 +87,15 @@ private:
                 // add file descriptor to vector
                 file_identifiers->emplace_back (fd);
             } else {
-                // open file and get file pointer
-                // BUG: use pointer to libc function, rather than RTLD_NEXT
-                auto f_ptr = ((libc_fopen_t)dlsym (RTLD_NEXT, "fopen")) (path_to_file.c_str (), "w");
+// open file and get file pointer
+#ifdef __linux__
+                auto f_ptr = ((
+                    libc_fopen_t)::dlsym (this->m_lib_link, "fopen")) (path_to_file.c_str (), "w");
+#else
+                // FIXME: this could be further improved (dlsym over libc for non-unix settings)
+                auto f_ptr = ::fopen (path_to_file.c_str (), "w");
+#endif
+
                 // check if file was created
                 if (f_ptr == nullptr) {
                     std::fprintf (this->m_fd, "Error (%s): %s\n", __func__, strerror (errno));
@@ -209,7 +223,12 @@ public:
     /**
      * MountPointDifferentiationTest default destructor.
      */
-    ~MountPointDifferentiationTest () = default;
+    ~MountPointDifferentiationTest ()
+    {
+        if (this->m_lib_link != nullptr) {
+            ::dlclose (this->m_lib_link);
+        }
+    }
 
     /*
      * test_extract_mount_point_from_path:
@@ -310,13 +329,15 @@ public:
         auto start = std::chrono::high_resolution_clock::now ();
         // create threads
         for (int i = 0; i < num_threads; i++) {
-            threads.emplace_back (std::thread (func, table_ptr, create_fd, path, num_files, file_ptrs));
+            threads.emplace_back (
+                std::thread (func, table_ptr, create_fd, path, num_files, file_ptrs));
         }
 
         // join threads
         for (int i = 0; i < num_threads; i++) {
             std::stringstream stream;
-            stream << __func__ << "(" << get_id () << "): joining thread-" << i << " (" << threads[i].get_id() << ")" << std::endl;
+            stream << __func__ << "(" << get_id () << "): joining thread-" << i << " ("
+                   << threads[i].get_id () << ")" << std::endl;
             // join thread
             threads[i].join ();
             std::fprintf (this->m_fd, "%s\n", stream.str ().c_str ());
@@ -369,13 +390,15 @@ public:
         auto start = std::chrono::high_resolution_clock::now ();
         // create threads
         for (int i = 0; i < num_threads; i++) {
-            threads.emplace_back (std::thread (func, table_ptr, use_fd, file_ptrs, print_debug_info));
+            threads.emplace_back (
+                std::thread (func, table_ptr, use_fd, file_ptrs, print_debug_info));
         }
 
         // join threads
         for (int i = 0; i < num_threads; i++) {
             std::stringstream stream;
-            stream << __func__ << "(" << get_id () << "): joining thread-" << i << " (" << threads[i].get_id() << ")" << std::endl;
+            stream << __func__ << "(" << get_id () << "): joining thread-" << i << " ("
+                   << threads[i].get_id () << ")" << std::endl;
             // join thread
             threads[i].join ();
             std::fprintf (this->m_fd, "%s\n", stream.str ().c_str ());
@@ -424,13 +447,15 @@ public:
         auto start = std::chrono::high_resolution_clock::now ();
         // create threads
         for (int i = 0; i < num_threads; i++) {
-            threads.emplace_back (std::thread (func, table_ptr, create_fd, file_ptrs, print_debug_info));
+            threads.emplace_back (
+                std::thread (func, table_ptr, create_fd, file_ptrs, print_debug_info));
         }
 
         // join threads
         for (int i = 0; i < num_threads; i++) {
             std::stringstream stream;
-            stream << __func__ << "(" << get_id () << "): joining thread-" << i << " (" << threads[i].get_id() << ")" << std::endl;
+            stream << __func__ << "(" << get_id () << "): joining thread-" << i << " ("
+                   << threads[i].get_id () << ")" << std::endl;
             // join thread
             threads[i].join ();
             std::fprintf (this->m_fd, "%s\n", stream.str ().c_str ());
@@ -484,9 +509,8 @@ int main (int argc, char** argv)
 
     // open file to write the logging results
     if (argc > 1) {
-        // BUG: use pointer to libc function, rather than RTLD_NEXT
-        fd = ((padll::headers::libc_fopen_t)dlsym (RTLD_NEXT,
-            "fopen")) (argv[1], "w");
+        // FIXME: use pointer to libc function, rather than RTLD_NEXT
+        fd = ((padll::headers::libc_fopen_t)dlsym (RTLD_NEXT, "fopen")) (argv[1], "w");
 
         if (fd == nullptr) {
             fd = stdout;
@@ -494,7 +518,7 @@ int main (int argc, char** argv)
     }
 
     tests::MountPointDifferentiationTest test { fd };
-    MountPointTable mount_point_table { };
+    MountPointTable mount_point_table {};
     int num_threads = 1;
     int num_files = 100;
     bool use_fd = true;

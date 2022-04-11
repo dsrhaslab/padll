@@ -35,6 +35,11 @@ Log::~Log ()
     this->cleanup ();
     // write debug message
     this->dlsym_write_message (STDOUT_FILENO, "Log default destructor.\n");
+
+    // close library linking
+    if (this->m_dl_handle != nullptr) {
+        ::dlclose (this->m_dl_handle);
+    }
 }
 
 // create_file_name call. (...)
@@ -60,16 +65,31 @@ void Log::initialize ()
     }
 
     // bypass spdlog to prevent recursive dependency and/or null pointers to libc functions
-    if (this->m_is_ld_preloaded && !this->m_log_file_path.empty ()) {
-        // open file using dlsym'ed close
-        // BUG: use pointer to libc function, rather than RTLD_NEXT
-        this->m_fd = ((libc_open_variadic_t)dlsym (RTLD_NEXT,
-            "open")) (m_log_file_path.c_str (), O_CREAT | O_WRONLY | O_APPEND, 0666);
+    if (this->m_is_ld_preloaded) {
+        // point m_dl_handle to libc
+        this->m_dl_handle = ::dlopen ("libc.so.6", RTLD_LAZY);
 
-        // verify file descriptor result
-        if (this->m_fd == -1) {
-            perror ("Log::Error in initialize");
-            this->m_fd = STDOUT_FILENO;
+        // validate if pointer was successfully attributed
+        if (this->m_dl_handle == nullptr) {
+            std::printf ("%s: Error while loading libc.so ... assigning RTLD_NEXT\n", __func__);
+            this->m_dl_handle = RTLD_NEXT;
+            // TODO: remove this message
+            std::printf ("Testing m_dl_handle on error (%s, %p)\n", __func__, this->m_dl_handle);
+        } else {
+            // TODO: remove this message
+            std::printf ("Testing m_dl_handle on success (%s, %p)\n", __func__, this->m_dl_handle);
+        }
+
+        if (!this->m_log_file_path.empty ()) {
+            // open file using dlsym'ed close
+            this->m_fd = ((libc_open_variadic_t)dlsym (this->m_dl_handle,
+                "open")) (m_log_file_path.c_str (), O_CREAT | O_WRONLY | O_APPEND, 0666);
+
+            // verify file descriptor result
+            if (this->m_fd == -1) {
+                perror ("Log::Error in initialize");
+                this->m_fd = STDOUT_FILENO;
+            }
         }
     }
 }
@@ -81,8 +101,10 @@ void Log::cleanup ()
     std::lock_guard guard (this->m_lock);
     if (this->m_fd != STDOUT_FILENO && this->m_basic_logger.use_count () == 0) {
         // close file descriptor using dlsym'ed close
-        // BUG: use pointer to libc function, rather than RTLD_NEXT
-        auto return_value = ((libc_close_t)dlsym (RTLD_NEXT, "close")) (this->m_fd);
+        auto return_value = ((libc_close_t)dlsym (this->m_dl_handle, "close")) (this->m_fd);
+
+        // TODO: remove this message
+        std::printf ("Testing m_dl_handle (%s, %p)\n", __func__, this->m_dl_handle);
 
         // verify return_value
         if (return_value < 0) {
@@ -128,8 +150,12 @@ std::string Log::create_formatted_debug_message (const std::string& message) con
 // dlsym_write_message call.
 ssize_t Log::dlsym_write_message (int fd, const std::string& message) const
 {
-    // BUG: use pointer to libc function, rather than RTLD_NEXT
+#ifdef __linux__
+    return (
+        (libc_write_t)dlsym (this->m_dl_handle, "write")) (fd, message.c_str (), message.size ());
+#else
     return ((libc_write_t)dlsym (RTLD_NEXT, "write")) (fd, message.c_str (), message.size ());
+#endif
 }
 
 // log_info call. Log message with INFO qualifier.

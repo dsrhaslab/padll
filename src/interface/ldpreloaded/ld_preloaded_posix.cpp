@@ -17,7 +17,7 @@ LdPreloadedPosix::LdPreloadedPosix () :
     // create logging message
     std::stringstream stream;
     stream << "LdPreloadedPosix default constructor ";
-    stream << "(" << static_cast<void*>(this->m_log.get ()) << ")";
+    stream << "(" << static_cast<void*> (this->m_log.get ()) << ")";
 
     // write debug logging message
     this->m_log->log_info (stream.str ());
@@ -34,7 +34,7 @@ LdPreloadedPosix::LdPreloadedPosix (const std::string& lib,
     // create logging message
     std::stringstream stream;
     stream << "LdPreloadedPosix parameterized constructor ";
-    stream << "(" << static_cast<void*>(this->m_log.get ()) << ")";
+    stream << "(" << static_cast<void*> (this->m_log.get ()) << ")";
 
     // write debug logging message
     this->m_log->log_info (stream.str ());

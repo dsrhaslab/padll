@@ -7,6 +7,7 @@
 #define PADLL_LOG_HPP
 
 #include <ctime>
+#include <dlfcn.h>
 #include <fcntl.h>
 #include <iomanip>
 #include <iostream>
@@ -36,6 +37,7 @@ private:
     bool m_debug_enabled { true };
     bool m_is_ld_preloaded { true };
     int m_fd { STDOUT_FILENO };
+    void* m_dl_handle { nullptr };
     std::string m_log_file_path {};
 
     /**
