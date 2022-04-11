@@ -72,7 +72,7 @@ static __attribute__ ((destructor)) void destroy_method ()
 extern "C" ssize_t read (int fd, void* buf, size_t size)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
 #endif
 
@@ -91,7 +91,7 @@ extern "C" ssize_t read (int fd, void* buf, size_t size)
 extern "C" ssize_t write (int fd, const void* buf, size_t size)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
 #endif
 
@@ -111,7 +111,7 @@ extern "C" ssize_t write (int fd, const void* buf, size_t size)
 extern "C" ssize_t pread (int fd, void* buf, size_t size, off_t offset)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
 #endif
 
@@ -131,7 +131,7 @@ extern "C" ssize_t pread (int fd, void* buf, size_t size, off_t offset)
 extern "C" ssize_t pwrite (int fd, const void* buf, size_t size, off_t offset)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
 #endif
 
@@ -152,7 +152,7 @@ extern "C" ssize_t pwrite (int fd, const void* buf, size_t size, off_t offset)
 extern "C" ssize_t pread64 (int fd, void* buf, size_t size, off64_t offset)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
 #endif
 
@@ -174,7 +174,7 @@ extern "C" ssize_t pread64 (int fd, void* buf, size_t size, off64_t offset)
 extern "C" ssize_t pwrite64 (int fd, const void* buf, size_t size, off64_t offset)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
 #endif
 
@@ -197,7 +197,7 @@ extern "C" ssize_t pwrite64 (int fd, const void* buf, size_t size, off64_t offse
 extern "C" void* mmap (void* addr, size_t length, int prot, int flags, int fd, off_t offset)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
 #endif
 
@@ -216,7 +216,7 @@ extern "C" void* mmap (void* addr, size_t length, int prot, int flags, int fd, o
 extern "C" int munmap (void* addr, size_t length)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (-1) });
 #endif
 
@@ -236,7 +236,7 @@ extern "C" int munmap (void* addr, size_t length)
 extern "C" int open (const char* path, int flags, ...)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__, path);
 #endif
 
@@ -266,7 +266,7 @@ extern "C" int open (const char* path, int flags, ...)
 extern "C" int creat (const char* path, mode_t mode)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__, path);
 #endif
 
@@ -284,7 +284,7 @@ extern "C" int creat (const char* path, mode_t mode)
 extern "C" int creat64 (const char* path, mode_t mode)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__, path);
 #endif
 
@@ -304,7 +304,7 @@ extern "C" int creat64 (const char* path, mode_t mode)
 extern "C" int openat (int dirfd, const char* path, int flags, ...)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__,
         std::string_view { std::to_string (dirfd) },
         path);
@@ -337,7 +337,7 @@ extern "C" int openat (int dirfd, const char* path, int flags, ...)
 extern "C" int open64 (const char* path, int flags, ...)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__, path);
 #endif
 
@@ -366,7 +366,7 @@ extern "C" int open64 (const char* path, int flags, ...)
 extern "C" int close (int fd)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
 #endif
 
@@ -381,7 +381,7 @@ extern "C" int close (int fd)
 extern "C" void sync ()
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (-1) });
 #endif
 
@@ -399,7 +399,7 @@ extern "C" void sync ()
 extern "C" int statfs (const char* path, struct statfs* buf)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__, path);
 #endif
 
@@ -417,7 +417,7 @@ extern "C" int statfs (const char* path, struct statfs* buf)
 extern "C" int fstatfs (int fd, struct statfs* buf)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
 #endif
 
@@ -435,7 +435,7 @@ extern "C" int fstatfs (int fd, struct statfs* buf)
 extern "C" int statfs64 (const char* path, struct statfs64* buf)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__, path);
 #endif
 
@@ -453,7 +453,7 @@ extern "C" int statfs64 (const char* path, struct statfs64* buf)
 extern "C" int fstatfs64 (int fd, struct statfs64* buf)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
 #endif
 
@@ -470,7 +470,7 @@ extern "C" int fstatfs64 (int fd, struct statfs64* buf)
 extern "C" int unlink (const char* path)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__, path);
 #endif
 
@@ -489,7 +489,7 @@ extern "C" int unlink (const char* path)
 extern "C" int unlinkat (int dirfd, const char* pathname, int flags)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__,
         std::string_view { std::to_string (dirfd) },
         pathname);
@@ -510,7 +510,7 @@ extern "C" int unlinkat (int dirfd, const char* pathname, int flags)
 extern "C" int rename (const char* old_path, const char* new_path)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__, old_path, new_path);
 #endif
 
@@ -531,7 +531,7 @@ extern "C" int rename (const char* old_path, const char* new_path)
 extern "C" int renameat (int olddirfd, const char* old_path, int newdirfd, const char* new_path)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__, old_path, new_path);
 #endif
 
@@ -549,7 +549,7 @@ extern "C" int renameat (int olddirfd, const char* old_path, int newdirfd, const
 extern "C" FILE* fopen (const char* pathname, const char* mode)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__, pathname);
 #endif
 
@@ -567,7 +567,7 @@ extern "C" FILE* fopen (const char* pathname, const char* mode)
 extern "C" FILE* fopen64 (const char* pathname, const char* mode)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__, pathname);
 #endif
 
@@ -597,7 +597,7 @@ extern "C" int fclose (FILE* stream)
 extern "C" int mkdir (const char* path, mode_t mode)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__, path);
 #endif
 
@@ -616,7 +616,7 @@ extern "C" int mkdir (const char* path, mode_t mode)
 extern "C" int mkdirat (int dirfd, const char* path, mode_t mode)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__,
         std::string_view { std::to_string (dirfd) },
         path);
@@ -635,7 +635,7 @@ extern "C" int mkdirat (int dirfd, const char* path, mode_t mode)
 extern "C" int rmdir (const char* path)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__, path);
 #endif
 
@@ -654,7 +654,7 @@ extern "C" int rmdir (const char* path)
 extern "C" int mknod (const char* path, mode_t mode, dev_t dev)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__, path);
 #endif
 
@@ -673,7 +673,7 @@ extern "C" int mknod (const char* path, mode_t mode, dev_t dev)
 extern "C" int mknodat (int dirfd, const char* path, mode_t mode, dev_t dev)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__,
         std::string_view { std::to_string (dirfd) },
         path);
@@ -695,7 +695,7 @@ extern "C" int mknodat (int dirfd, const char* path, mode_t mode, dev_t dev)
 extern "C" ssize_t getxattr (const char* path, const char* name, void* value, size_t size)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__, path, name);
 #endif
 
@@ -716,7 +716,7 @@ extern "C" ssize_t getxattr (const char* path, const char* name, void* value, si
 extern "C" ssize_t lgetxattr (const char* path, const char* name, void* value, size_t size)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__, path, name);
 #endif
 
@@ -737,7 +737,7 @@ extern "C" ssize_t lgetxattr (const char* path, const char* name, void* value, s
 extern "C" ssize_t fgetxattr (int fd, const char* name, void* value, size_t size)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__,
         std::string_view { std::to_string (fd) },
         name);
@@ -763,7 +763,7 @@ extern "C" int
 setxattr (const char* path, const char* name, const void* value, size_t size, int flags)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__, path, name);
 #endif
 
@@ -786,7 +786,7 @@ extern "C" int
 lsetxattr (const char* path, const char* name, const void* value, size_t size, int flags)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__, path, name);
 #endif
 
@@ -808,7 +808,7 @@ lsetxattr (const char* path, const char* name, const void* value, size_t size, i
 extern "C" int fsetxattr (int fd, const char* name, const void* value, size_t size, int flags)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__,
         std::string_view { std::to_string (fd) },
         name);
@@ -831,7 +831,7 @@ extern "C" int fsetxattr (int fd, const char* name, const void* value, size_t si
 extern "C" ssize_t listxattr (const char* path, char* list, size_t size)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__, path);
 #endif
 
@@ -851,7 +851,7 @@ extern "C" ssize_t listxattr (const char* path, char* list, size_t size)
 extern "C" ssize_t llistxattr (const char* path, char* list, size_t size)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__, path);
 #endif
 
@@ -871,7 +871,7 @@ extern "C" ssize_t llistxattr (const char* path, char* list, size_t size)
 extern "C" ssize_t flistxattr (int fd, char* list, size_t size)
 {
 // detailed logging message
-#ifdef OPTION_DETAILED_LOGGING
+#if OPTION_DETAILED_LOGGING
     m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
 #endif
 
