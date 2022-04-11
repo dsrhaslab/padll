@@ -22,6 +22,7 @@ class MountPointDifferentiationTest {
 
 private:
     FILE* m_fd { stdout };
+    // void* m_lib_link { dlopen("libc.so.6", RTLD_LAZY) };
 
     void
     performance_report (const std::string& header, const int& operations, const long& elapsed_time)
@@ -61,16 +62,14 @@ private:
 
             if (create_fd) {
                 // open file and get file descriptor
-                // auto fd = ::open (path_to_file.c_str (), O_CREAT, 0666);
+                // BUG: use pointer to libc function, rather than RTLD_NEXT
                 auto fd = ((libc_open_variadic_t)dlsym (RTLD_NEXT,
                     "open")) (path_to_file.c_str (), O_CREAT, 0666);
 
                 // check if file was created
                 if (fd == -1) {
                     std::fprintf (this->m_fd,
-                        "Error (create_mount_point_entry): %s - %s\n",
-                        strerror (errno),
-                        path_to_file.c_str ());
+                        "Error (%s): %s - %s\n", __func__, strerror (errno), path_to_file.c_str ());
                     return;
                 }
 
@@ -81,12 +80,11 @@ private:
                 file_identifiers->emplace_back (fd);
             } else {
                 // open file and get file pointer
-                auto f_ptr = ::fopen (path_to_file.c_str (), "w");
+                // BUG: use pointer to libc function, rather than RTLD_NEXT
+                auto f_ptr = ((libc_fopen_t)dlsym (RTLD_NEXT, "fopen")) (path_to_file.c_str (), "w");
                 // check if file was created
                 if (f_ptr == nullptr) {
-                    std::fprintf (this->m_fd,
-                        "Error (create_mount_point_entry): %s\n",
-                        strerror (errno));
+                    std::fprintf (this->m_fd, "Error (%s): %s\n", __func__, strerror (errno));
                     return;
                 }
 
@@ -99,9 +97,7 @@ private:
 
             // check if entry was created
             if (!result) {
-                std::fprintf (this->m_fd,
-                    "Error (create_mount_point_entry): %s\n",
-                    strerror (errno));
+                std::fprintf (this->m_fd, "Error (%s): %s\n", __func__, strerror (errno));
             }
         }
     }
@@ -142,7 +138,7 @@ private:
                 }
                 successful_ops++;
             } else {
-                std::fprintf (this->m_fd, "Error (get_mount_point_entry): %s\n", strerror (errno));
+                std::fprintf (this->m_fd, "Error (%s): %s\n", __func__, strerror (errno));
             }
         }
 
@@ -176,7 +172,7 @@ private:
 
                 // print error message if remote went wrong
                 if (!return_value && print_debug_info) {
-                    std::fprintf (this->m_fd, "Error (delete_mount_point_entry): %d\n", fd);
+                    std::fprintf (this->m_fd, "Error (%s): %d\n", __func__, fd);
                 }
             } else {
                 auto f_ptr = std::get<FILE*> (file_identifiers[index]);
@@ -184,16 +180,14 @@ private:
 
                 // print error message if remote went wrong
                 if (!return_value && print_debug_info) {
-                    std::fprintf (this->m_fd,
-                        "Error (delete_mount_point_entry): %p\n",
-                        (void*)f_ptr);
+                    std::fprintf (this->m_fd, "Error (%s): %p\n", __func__, (void*)f_ptr);
                 }
             }
 
             if (return_value) {
                 successful_ops++;
                 if (print_debug_info) {
-                    std::fprintf (this->m_fd, "Success (delete_mount_point_entry)\n");
+                    std::fprintf (this->m_fd, "Success (%s)\n", __func__);
                 }
             }
         }
@@ -223,7 +217,7 @@ public:
     void test_extract_mount_point (MountPointTable* table_ptr)
     {
         std::fprintf (this->m_fd, "------------------\n");
-        std::fprintf (this->m_fd, "test_extract_mount_point:\n");
+        std::fprintf (this->m_fd, "%s:\n", __func__);
 
         std::vector<std::string_view> file_paths { "/home/user/file1",
             "/local/file2",
@@ -245,7 +239,7 @@ public:
     void test_register_mount_point_type (MountPointTable* table_ptr)
     {
         std::fprintf (this->m_fd, "------------------\n");
-        std::fprintf (this->m_fd, "test_register_mount_point_type:\n");
+        std::fprintf (this->m_fd, "%s:\n", __func__);
         // register operations is conducted on initialize (which is executed in the constructor)
 
         std::stringstream stream;
@@ -296,9 +290,12 @@ public:
                         const std::string& f_path,
                         const int& f_num_files,
                         std::vector<std::variant<int, FILE*>>* f_file_ptrs) {
+            // log message
             std::stringstream stream;
-            stream << "\t" << get_id () << ": test_create_mount_point_entry" << std::endl;
+            stream << __func__ << "(" << get_id () << ")" << std::endl;
             std::fprintf (this->m_fd, "%s", stream.str ().c_str ());
+
+            // execute create_mount_point_entry
             this->create_mount_point_entry (f_table_ptr,
                 f_create_fd,
                 f_path,
@@ -307,18 +304,22 @@ public:
         };
 
         // create vector of threads and reserve space for num_threads
-        std::vector<std::thread> threads;
+        std::vector<std::thread> threads {};
         threads.reserve (num_threads);
 
         auto start = std::chrono::high_resolution_clock::now ();
         // create threads
         for (int i = 0; i < num_threads; i++) {
-            threads[i] = std::thread (func, table_ptr, create_fd, path, num_files, file_ptrs);
+            threads.emplace_back (std::thread (func, table_ptr, create_fd, path, num_files, file_ptrs));
         }
 
         // join threads
         for (int i = 0; i < num_threads; i++) {
+            std::stringstream stream;
+            stream << __func__ << "(" << get_id () << "): joining thread-" << i << " (" << threads[i].get_id() << ")" << std::endl;
+            // join thread
             threads[i].join ();
+            std::fprintf (this->m_fd, "%s\n", stream.str ().c_str ());
         }
 
         // calculate elapsed time
@@ -352,8 +353,9 @@ public:
                         const bool& f_use_fd,
                         const std::vector<std::variant<int, FILE*>>& f_file_ptrs,
                         const bool& f_print_debug_info) {
+            // log message
             std::stringstream stream;
-            stream << "\t" << get_id () << ": test_get_mount_point_entry" << std::endl;
+            stream << __func__ << "(" << get_id () << ")" << std::endl;
             std::fprintf (this->m_fd, "%s", stream.str ().c_str ());
 
             // execute get_mount_point_entry routine
@@ -367,12 +369,16 @@ public:
         auto start = std::chrono::high_resolution_clock::now ();
         // create threads
         for (int i = 0; i < num_threads; i++) {
-            threads[i] = std::thread (func, table_ptr, use_fd, file_ptrs, print_debug_info);
+            threads.emplace_back (std::thread (func, table_ptr, use_fd, file_ptrs, print_debug_info));
         }
 
         // join threads
         for (int i = 0; i < num_threads; i++) {
+            std::stringstream stream;
+            stream << __func__ << "(" << get_id () << "): joining thread-" << i << " (" << threads[i].get_id() << ")" << std::endl;
+            // join thread
             threads[i].join ();
+            std::fprintf (this->m_fd, "%s\n", stream.str ().c_str ());
         }
 
         // calculate elapsed time
@@ -399,8 +405,9 @@ public:
                         const bool& f_create_fd,
                         const std::vector<std::variant<int, FILE*>>& f_file_ptrs,
                         const bool& f_print_debug_info) {
+            // log message
             std::stringstream stream;
-            stream << "\t" << get_id () << ": test_remove_mount_point_entry" << std::endl;
+            stream << __func__ << "(" << get_id () << ")" << std::endl;
             std::fprintf (this->m_fd, "%s", stream.str ().c_str ());
 
             // execute delete_mount_point_entry routine
@@ -417,12 +424,16 @@ public:
         auto start = std::chrono::high_resolution_clock::now ();
         // create threads
         for (int i = 0; i < num_threads; i++) {
-            threads[i] = std::thread (func, table_ptr, create_fd, file_ptrs, print_debug_info);
+            threads.emplace_back (std::thread (func, table_ptr, create_fd, file_ptrs, print_debug_info));
         }
 
         // join threads
         for (int i = 0; i < num_threads; i++) {
+            std::stringstream stream;
+            stream << __func__ << "(" << get_id () << "): joining thread-" << i << " (" << threads[i].get_id() << ")" << std::endl;
+            // join thread
             threads[i].join ();
+            std::fprintf (this->m_fd, "%s\n", stream.str ().c_str ());
         }
 
         // calculate elapsed time
@@ -473,7 +484,7 @@ int main (int argc, char** argv)
 
     // open file to write the logging results
     if (argc > 1) {
-        // fd = ::fopen (argv[1], "w");
+        // BUG: use pointer to libc function, rather than RTLD_NEXT
         fd = ((padll::headers::libc_fopen_t)dlsym (RTLD_NEXT,
             "fopen")) (argv[1], "w");
 

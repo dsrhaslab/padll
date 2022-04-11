@@ -62,6 +62,7 @@ void Log::initialize ()
     // bypass spdlog to prevent recursive dependency and/or null pointers to libc functions
     if (this->m_is_ld_preloaded && !this->m_log_file_path.empty ()) {
         // open file using dlsym'ed close
+        // BUG: use pointer to libc function, rather than RTLD_NEXT
         this->m_fd = ((libc_open_variadic_t)dlsym (RTLD_NEXT,
             "open")) (m_log_file_path.c_str (), O_CREAT | O_WRONLY | O_APPEND, 0666);
 
@@ -80,6 +81,7 @@ void Log::cleanup ()
     std::lock_guard guard (this->m_lock);
     if (this->m_fd != STDOUT_FILENO && this->m_basic_logger.use_count () == 0) {
         // close file descriptor using dlsym'ed close
+        // BUG: use pointer to libc function, rather than RTLD_NEXT
         auto return_value = ((libc_close_t)dlsym (RTLD_NEXT, "close")) (this->m_fd);
 
         // verify return_value
@@ -126,6 +128,7 @@ std::string Log::create_formatted_debug_message (const std::string& message) con
 // dlsym_write_message call.
 ssize_t Log::dlsym_write_message (int fd, const std::string& message) const
 {
+    // BUG: use pointer to libc function, rather than RTLD_NEXT
     return ((libc_write_t)dlsym (RTLD_NEXT, "write")) (fd, message.c_str (), message.size ());
 }
 
