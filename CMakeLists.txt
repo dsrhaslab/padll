@@ -92,18 +92,14 @@ target_sources(
 # ---------------------------------------------------------------------------- #
 # paio -- Paio library
 
-if (NOT ABCI_DEPLOYMENT)
-    message(STATUS "Detecting local deployment")
-    FetchContent_Declare(paio
-            GIT_REPOSITORY  https://github.com/rgmacedo/paio.git
-            GIT_TAG         origin/rgmacedo_arch
-            )
+message(STATUS "Installing PAIO data plane library")
 
-    FetchContent_MakeAvailable(paio)
-    target_link_libraries(padll paio)
-else()
+if (ABCI_DEPLOYMENT)
     message(STATUS "Detecting ABCI deployment")
     find_library(PAIO_LIBRARY paio HINTS /home/acb11912na/db/paio/build)
+    target_link_libraries(padll ${PAIO_LIBRARY})
+else()
+    find_library(PAIO_LIBRARY paio HINTS /home/gsd/hpdc22/paio/build)
     target_link_libraries(padll ${PAIO_LIBRARY})
 endif()
 
