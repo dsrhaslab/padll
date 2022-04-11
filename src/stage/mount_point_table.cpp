@@ -8,19 +8,31 @@
 namespace padll::stage {
 
 // MountPointTable default constructor.
-MountPointTable::MountPointTable ()
+MountPointTable::MountPointTable () :
+    m_log { std::make_shared<Log> (option_default_enable_debug_level, false, std::string { option_default_log_path } ) }
 {
     // logging message
-    std::printf ("MountPointTable default constructor.\n");
+    std::stringstream stream;
+    stream << "MountPointTable default constructor ";
+    stream << "(" << static_cast<void*> (this->m_log.get()) << ")";
+    
+    //write logging message
+    this->m_log->log_info (stream.str ());
     // initialize mount point table with predefined workflows
     this->initialize ();
 }
 
 // MountPointTable parameterized constructor.
-MountPointTable::MountPointTable (const std::string& value)
+MountPointTable::MountPointTable (std::shared_ptr<Log> log_ptr) :
+    m_log { log_ptr }
 {
     // logging message
-    std::printf ("MountPointTable parameterized constructor: %s\n", value.c_str ());
+    std::stringstream stream;
+    stream << "MountPointTable parameterized constructor ";
+    stream << "(" << static_cast<void*> (this->m_log.get()) << ")";
+    
+    //write logging message
+    this->m_log->log_info (stream.str ());
     // initialize mount point table with predefined workflows
     this->initialize ();
 }
@@ -28,8 +40,8 @@ MountPointTable::MountPointTable (const std::string& value)
 // MountPointTable default destructor.
 MountPointTable::~MountPointTable ()
 {
-    // logging message
-    std::printf ("MountPointTable destructor.");
+    // create logging message
+    this->m_log->log_info ("MountPointTable default destructor.");
 }
 
 // initialize call. (...)

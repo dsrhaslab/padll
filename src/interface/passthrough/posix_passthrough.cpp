@@ -47,10 +47,21 @@ PosixPassthrough::PosixPassthrough (const std::string& lib_name, std::shared_ptr
 PosixPassthrough::~PosixPassthrough ()
 {
     // create logging message
-    std::stringstream stream;
-    stream << "PosixPassthrough default destructor ";
-    stream << "(" << (void*)this->m_log.get () << ")";
-    this->m_log->log_info (stream.str ());
+    this->m_log->log_info ("LdPreloadedPosix default destructor.");
+
+    // log LdPreloadedPosix statistic counters
+    if (option_default_table_format) {
+        // print to stdout metadata-based statistics in tabular format
+        this->m_metadata_stats.tabulate ();
+        // print to stdout data-based statistics in tabular format
+        this->m_data_stats.tabulate ();
+        // print to stdout directory-based statistics in tabular format
+        this->m_dir_stats.tabulate ();
+        // print to stdout extended attributes based statistics in tabular format
+        this->m_ext_attr_stats.tabulate ();
+    } else {
+        this->m_log->log_info (this->to_string ());
+    }
 
     // validate if library handle is valid and close dynamic linking.
     // It decrements the reference count on the dynamically loaded shared object, referred to

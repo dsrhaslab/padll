@@ -17,7 +17,7 @@ LdPreloadedPosix::LdPreloadedPosix () :
     // create logging message
     std::stringstream stream;
     stream << "LdPreloadedPosix default constructor ";
-    stream << "(" << (void*)this->m_log.get () << ")";
+    stream << "(" << static_cast<void*>(this->m_log.get ()) << ")";
 
     // write debug logging message
     this->m_log->log_info (stream.str ());
@@ -29,13 +29,12 @@ LdPreloadedPosix::LdPreloadedPosix (const std::string& lib,
     std::shared_ptr<Log> log_ptr) :
     m_log { log_ptr },
     m_dlsym_hook { lib, this->m_log },
-    m_collect { stat_collection },
-    m_mount_point_table { "ld-preloaded-posix-" + lib }
+    m_collect { stat_collection }
 {
     // create logging message
     std::stringstream stream;
     stream << "LdPreloadedPosix parameterized constructor ";
-    stream << "(" << (void*)this->m_log.get () << ")";
+    stream << "(" << static_cast<void*>(this->m_log.get ()) << ")";
 
     // write debug logging message
     this->m_log->log_info (stream.str ());

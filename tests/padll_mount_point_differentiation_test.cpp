@@ -476,7 +476,7 @@ int main (int argc, char** argv)
     }
 
     tests::MountPointDifferentiationTest test { fd };
-    MountPointTable mount_point_table { "test" };
+    MountPointTable mount_point_table { };
     int num_threads = 1;
     int num_files = 100;
     bool use_fd = true;
