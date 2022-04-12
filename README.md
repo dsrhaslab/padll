@@ -8,7 +8,17 @@ PADLL stands for <b><ins>P</ins></b>rogrammable and <b><ins>A</ins></b>daptable 
 
 Tutorial to install and test padll.
 
-1. <b>Set up padll</b>
+<b>0. Install dependencies</b>
+```shell
+# Install PAIO data plane framework
+$ cd /path/to/dir
+$ git clone https://github.com/dsrhaslab/paio.git
+$ cd paio; mkdir build; cd build
+$ cmake ..; cmake --build .
+$ export CPATH="/path/to/dir/paio/include:${CPATH}"
+```
+
+<b>1. Set up padll</b>
 ```shell
 $ cd padll; mkdir build; cd build;
 $ cmake ..
@@ -16,14 +26,14 @@ $ cmake --build .
 $ export PATH_PADLL=$PWD
 ```
 
-2. <b>Setup microbenchmark</b>
+<b>2. Setup microbenchmark</b>
 ```shell
 $ cd padll/tests/posix
 $ g++ simple_test.cpp -o simple_test
 $ cd ..
 ```
 
-3. <b>Run microbenchmark</b>
+<b>3. Run microbenchmark</b>
 ```shell
 $ cd padll
 $ LD_PRELOAD=$PATH_PADLL/libpadll.so ./tests/posix/simple_test
