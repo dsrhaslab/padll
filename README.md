@@ -12,7 +12,7 @@ Tutorial to install and test padll.
 ```shell
 # Install PAIO data plane framework
 $ cd /path/to/dir
-$ git clone https://github.com/dsrhaslab/paio.git
+$ git clone https://github.com/rgmacedo/paio.git	# update to dsrhaslab/paio
 $ cd paio
 $ git checkout rgmacedo/padll
 $ mkdir build; cd build
