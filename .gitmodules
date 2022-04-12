@@ -1,3 +1,3 @@
-[submodule "paio/paio-for-padll"]
-	path = paio/paio-for-padll
+[submodule "sub/paio-for-padll"]
+	path = sub/paio-for-padll
 	url = https://github.com/rgmacedo/paio-for-padll.git
