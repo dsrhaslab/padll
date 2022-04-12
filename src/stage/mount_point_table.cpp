@@ -69,14 +69,6 @@ bool MountPointTable::create_mount_point_entry (const int& fd,
     // lock_guard over shared_timed_mutex (write_lock)
     std::lock_guard write_lock (this->m_fd_shared_lock);
 
-    if (auto iterator = this->m_file_descriptors_table.find (fd);
-        iterator != this->m_file_descriptors_table.end ()) {
-        // submit error message to the logging facility
-        this->m_log->log_error ("File descriptor " + std::to_string (fd) + " already exists.");
-
-        return false;
-    }
-
     // create entry for the 'fd' file descriptor
     auto [iter, inserted] = this->m_file_descriptors_table.emplace (
         std::make_pair (fd, std::make_unique<MountPointEntry> (path, mount_point)));
@@ -85,12 +77,10 @@ bool MountPointTable::create_mount_point_entry (const int& fd,
     if (!inserted) {
         // submit error message to the logging facility
         this->m_log->log_error (
-            "File descriptor " + std::to_string (fd) + " could not be inserted.");
-
-        return false;
+            "File descriptor " + std::to_string (fd) + " could not be inserted (already exists).");
     }
 
-    return true;
+    return inserted;
 }
 
 // create_mount_point_entry call. (...)
@@ -101,16 +91,6 @@ bool MountPointTable::create_mount_point_entry (FILE* file_ptr,
     // lock_guard over shared_timed_mutex (write_lock)
     std::lock_guard write_lock (this->m_fptr_shared_lock);
 
-    if (auto iterator = this->m_file_ptr_table.find (file_ptr);
-        iterator != this->m_file_ptr_table.end ()) {
-        std::stringstream stream;
-        stream << "File descriptor " << file_ptr << " already exists.";
-        // submit error message to the logging facility
-        this->m_log->log_error (stream.str ());
-
-        return false;
-    }
-
     // create entry for the 'file_ptr' file pointer
     auto [iter, inserted] = this->m_file_ptr_table.emplace (
         std::make_pair (file_ptr, std::make_unique<MountPointEntry> (path, mount_point)));
@@ -118,14 +98,12 @@ bool MountPointTable::create_mount_point_entry (FILE* file_ptr,
     // check if the insertion was successful
     if (!inserted) {
         std::stringstream stream;
-        stream << "File pointer " << file_ptr << " could not be inserted.";
+        stream << "File pointer " << file_ptr << " could not be inserted (already exists).";
         // submit error message to the logging facility
         this->m_log->log_error (stream.str ());
-
-        return false;
     }
 
-    return true;
+    return inserted;
 }
 
 // get_mount_point_entry call. (...)

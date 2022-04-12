@@ -51,7 +51,8 @@ private:
         const bool& create_fd,
         const std::string& path,
         const int& num_files,
-        std::vector<std::variant<int, FILE*>>* file_identifiers)
+        std::vector<std::variant<int, FILE*>>* file_identifiers,
+        const bool& retry_after_create)
     {
         for (int i = 0; i < num_files; i++) {
             auto rand_file = static_cast<int> (random () % num_files);
@@ -86,6 +87,11 @@ private:
 
                 // add file descriptor to vector
                 file_identifiers->emplace_back (fd);
+
+                // retry createing the same mount point entry
+                if (retry_after_create) {
+                    result = table_ptr->create_mount_point_entry (fd, path_to_file, mount_point);
+                }
             } else {
 // open file and get file pointer
 #ifdef __linux__
@@ -107,6 +113,11 @@ private:
 
                 // add file pointer to vector
                 file_identifiers->emplace_back (f_ptr);
+                
+                // retry createing the same mount point entry
+                if (retry_after_create) {
+                    result = table_ptr->create_mount_point_entry (f_ptr, path_to_file, mount_point);
+                }
             }
 
             // check if entry was created
@@ -301,6 +312,7 @@ public:
         const std::string& path,
         const int& num_files,
         std::vector<std::variant<int, FILE*>>* file_ptrs,
+        const bool& retry_after_create,
         const bool& print_debug_info)
     {
         // create lambda function for each thread to execute
@@ -308,7 +320,8 @@ public:
                         const bool& f_create_fd,
                         const std::string& f_path,
                         const int& f_num_files,
-                        std::vector<std::variant<int, FILE*>>* f_file_ptrs) {
+                        std::vector<std::variant<int, FILE*>>* f_file_ptrs,
+                        const bool& f_retry_after_create) {
             // log message
             std::stringstream stream;
             stream << __func__ << "(" << get_id () << ")" << std::endl;
@@ -319,7 +332,8 @@ public:
                 f_create_fd,
                 f_path,
                 f_num_files,
-                f_file_ptrs);
+                f_file_ptrs,
+                f_retry_after_create);
         };
 
         // create vector of threads and reserve space for num_threads
@@ -330,7 +344,7 @@ public:
         // create threads
         for (int i = 0; i < num_threads; i++) {
             threads.emplace_back (
-                std::thread (func, table_ptr, create_fd, path, num_files, file_ptrs));
+                std::thread (func, table_ptr, create_fd, path, num_files, file_ptrs, retry_after_create));
         }
 
         // join threads
@@ -523,6 +537,7 @@ int main (int argc, char** argv)
     int num_files = 100;
     bool use_fd = true;
     bool print_debug_info = true;
+    bool retry_after_create = true;
 
     // test.test_register_mount_point_type (&mount_point_table);
     // test.test_extract_mount_point (&mount_point_table);
@@ -537,7 +552,8 @@ int main (int argc, char** argv)
             "/tmp/file-fd-",
             num_files,
             &file_identifiers_list,
-            print_debug_info);
+            print_debug_info,
+            retry_after_create);
 
         test.test_get_mount_point_entry (&mount_point_table,
             use_fd,
@@ -557,7 +573,8 @@ int main (int argc, char** argv)
             "/tmp/file-ptr-",
             num_files,
             &file_identifiers_list,
-            print_debug_info);
+            print_debug_info,
+            retry_after_create);
         test.test_get_mount_point_entry (&mount_point_table,
             use_fd,
             num_threads,
