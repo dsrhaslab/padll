@@ -294,20 +294,24 @@ int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags, mode
     // hook POSIX open operation to m_metadata_operations.m_open_var
     this->m_dlsym_hook.hook_posix_open_var (m_metadata_operations.m_open_var);
 
+    // extract mountpoint and pick workflow-id
+    auto [mountpoint, workflow_id] = this->m_mount_point_table.pick_workflow_id (path);
+
     // enforce open request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
+    this->m_stage->enforce_request (workflow_id,
         static_cast<int> (paio::core::POSIX::open),
         static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX open operation
-    int result = m_metadata_operations.m_open_var (path, flags, mode);
+    int fd = m_metadata_operations.m_open_var (path, flags, mode);
 
-    // TODO: create_mount_point_entry
+    // create_mount_point_entry
+    this->m_mount_point_table.create_mount_point_entry (fd, path, mountpoint);
 
     // update statistic entry
     if (this->m_collect) {
-        if (result >= 0) {
+        if (fd >= 0) {
             this->m_metadata_stats.update_statistic_entry (
                 static_cast<int> (Metadata::open_variadic),
                 1,
@@ -318,7 +322,7 @@ int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags, mode
         }
     }
 
-    return result;
+    return fd;
 }
 
 // ld_preloaded_posix_open call.
@@ -327,20 +331,24 @@ int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags)
     // hook POSIX open operation to m_metadata_operations.m_open
     this->m_dlsym_hook.hook_posix_open (m_metadata_operations.m_open);
 
+    // extract mountpoint and pick workflow-id
+    auto [mountpoint, workflow_id] = this->m_mount_point_table.pick_workflow_id (path);
+
     // enforce open request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
+    this->m_stage->enforce_request (workflow_id,
         static_cast<int> (paio::core::POSIX::open),
         static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX open operation
-    int result = m_metadata_operations.m_open (path, flags);
+    int fd = m_metadata_operations.m_open (path, flags);
 
-    // TODO: create_mount_point_entry
+    // create_mount_point_entry
+    this->m_mount_point_table.create_mount_point_entry (fd, path, mountpoint);
 
     // update statistic entry
     if (this->m_collect) {
-        if (result >= 0) {
+        if (fd >= 0) {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::open), 1, 0);
         } else {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::open),
@@ -350,7 +358,7 @@ int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags)
         }
     }
 
-    return result;
+    return fd;
 }
 
 // ld_preloaded_posix_creat call.
@@ -359,20 +367,24 @@ int LdPreloadedPosix::ld_preloaded_posix_creat (const char* path, mode_t mode)
     // hook POSIX creat operation to m_metadata_operations.m_creat
     this->m_dlsym_hook.hook_posix_creat (m_metadata_operations.m_creat);
 
+    // extract mountpoint and pick workflow-id
+    auto [mountpoint, workflow_id] = this->m_mount_point_table.pick_workflow_id (path);
+
     // enforce creat request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
+    this->m_stage->enforce_request (workflow_id,
         static_cast<int> (paio::core::POSIX::creat),
         static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX creat operation
-    int result = m_metadata_operations.m_creat (path, mode);
+    int fd = m_metadata_operations.m_creat (path, mode);
 
-    // TODO: create_mount_point_entry
+    // create_mount_point_entry
+    this->m_mount_point_table.create_mount_point_entry (fd, path, mountpoint);
 
     // update statistic entry
     if (this->m_collect) {
-        if (result >= 0) {
+        if (fd >= 0) {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::creat),
                 1,
                 0);
@@ -384,7 +396,7 @@ int LdPreloadedPosix::ld_preloaded_posix_creat (const char* path, mode_t mode)
         }
     }
 
-    return result;
+    return fd;
 }
 
 // ld_preloaded_posix_creat64 call.
@@ -393,20 +405,24 @@ int LdPreloadedPosix::ld_preloaded_posix_creat64 (const char* path, mode_t mode)
     // hook POSIX creat64 operation to m_metadata_operations.m_creat64
     this->m_dlsym_hook.hook_posix_creat64 (m_metadata_operations.m_creat64);
 
+    // extract mountpoint and pick workflow-id
+    auto [mountpoint, workflow_id] = this->m_mount_point_table.pick_workflow_id (path);
+
     // enforce creat64 request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
+    this->m_stage->enforce_request (workflow_id,
         static_cast<int> (paio::core::POSIX::creat64),
         static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX creat64 operation
-    int result = m_metadata_operations.m_creat64 (path, mode);
+    int fd = m_metadata_operations.m_creat64 (path, mode);
 
-    // TODO: create_mount_point_entry
+    // create_mount_point_entry
+    this->m_mount_point_table.create_mount_point_entry (fd, path, mountpoint);
 
     // update statistic entry
     if (this->m_collect) {
-        if (result >= 0) {
+        if (fd >= 0) {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::creat64),
                 1,
                 0);
@@ -418,7 +434,7 @@ int LdPreloadedPosix::ld_preloaded_posix_creat64 (const char* path, mode_t mode)
         }
     }
 
-    return result;
+    return fd;
 }
 
 // ld_preloaded_posix_openat call.
@@ -430,20 +446,24 @@ int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd,
     // hook POSIX openat variadic operation to m_metadata_operations.m_openat_var
     this->m_dlsym_hook.hook_posix_openat_var (m_metadata_operations.m_openat_var);
 
+    // extract mountpoint and pick workflow-id
+    auto [mountpoint, workflow_id] = this->m_mount_point_table.pick_workflow_id (path);
+
     // enforce openat request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
+    this->m_stage->enforce_request (workflow_id,
         static_cast<int> (paio::core::POSIX::openat),
         static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX openat operation
-    int result = m_metadata_operations.m_openat_var (dirfd, path, flags, mode);
+    int fd = m_metadata_operations.m_openat_var (dirfd, path, flags, mode);
 
-    // TODO: create_mount_point_entry
+    // create_mount_point_entry
+    this->m_mount_point_table.create_mount_point_entry (fd, path, mountpoint);
 
     // update statistic entry
     if (this->m_collect) {
-        if (result >= 0) {
+        if (fd >= 0) {
             this->m_metadata_stats.update_statistic_entry (
                 static_cast<int> (Metadata::openat_variadic),
                 1,
@@ -454,7 +474,7 @@ int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd,
         }
     }
 
-    return result;
+    return fd;
 }
 
 // ld_preloaded_posix_openat call.
@@ -463,20 +483,24 @@ int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd, const char* path, in
     // hook POSIX openat operation to m_metadata_operations.m_openat
     this->m_dlsym_hook.hook_posix_openat (m_metadata_operations.m_openat);
 
+    // extract mountpoint and pick workflow-id
+    auto [mountpoint, workflow_id] = this->m_mount_point_table.pick_workflow_id (path);
+
     // enforce openat request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
+    this->m_stage->enforce_request (workflow_id,
         static_cast<int> (paio::core::POSIX::openat),
         static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX openat operation
-    int result = m_metadata_operations.m_openat (dirfd, path, flags);
+    int fd = m_metadata_operations.m_openat (dirfd, path, flags);
 
-    // TODO: create_mount_point_entry
+    // create_mount_point_entry
+    this->m_mount_point_table.create_mount_point_entry (fd, path, mountpoint);
 
     // update statistic entry
     if (this->m_collect) {
-        if (result >= 0) {
+        if (fd >= 0) {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::openat),
                 1,
                 0);
@@ -488,7 +512,7 @@ int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd, const char* path, in
         }
     }
 
-    return result;
+    return fd;
 }
 
 // ld_preloaded_posix_open64 call. (...)
@@ -497,20 +521,24 @@ int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags, mo
     // hook POSIX open64_var operation to m_metadata_operations.m_open64_var
     this->m_dlsym_hook.hook_posix_open64_variadic (m_metadata_operations.m_open64_var);
 
+    // extract mountpoint and pick workflow-id
+    auto [mountpoint, workflow_id] = this->m_mount_point_table.pick_workflow_id (path);
+
     // enforce open64 request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
+    this->m_stage->enforce_request (workflow_id,
         static_cast<int> (paio::core::POSIX::open64),
         static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX open64 operation
-    int result = m_metadata_operations.m_open64_var (path, flags, mode);
+    int fd = m_metadata_operations.m_open64_var (path, flags, mode);
 
-    // TODO: create_mount_point_entry
+    // create_mount_point_entry
+    this->m_mount_point_table.create_mount_point_entry (fd, path, mountpoint);
 
     // update statistic entry
     if (this->m_collect) {
-        if (result >= 0) {
+        if (fd >= 0) {
             this->m_metadata_stats.update_statistic_entry (
                 static_cast<int> (Metadata::open64_variadic),
                 1,
@@ -521,7 +549,7 @@ int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags, mo
         }
     }
 
-    return result;
+    return fd;
 }
 
 // ld_preloaded_posix_open64 call. (...)
@@ -530,20 +558,24 @@ int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags)
     // hook POSIX open64 operation to m_metadata_operations.m_open64
     this->m_dlsym_hook.hook_posix_open64 (m_metadata_operations.m_open64);
 
+    // extract mountpoint and pick workflow-id
+    auto [mountpoint, workflow_id] = this->m_mount_point_table.pick_workflow_id (path);
+
     // enforce open64 request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
+    this->m_stage->enforce_request (workflow_id,
         static_cast<int> (paio::core::POSIX::open64),
         static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX open64 operation
-    int result = m_metadata_operations.m_open64 (path, flags);
+    int fd = m_metadata_operations.m_open64 (path, flags);
 
-    // TODO: create_mount_point_entry
+    // create_mount_point_entry
+    this->m_mount_point_table.create_mount_point_entry (fd, path, mountpoint);
 
     // update statistic entry
     if (this->m_collect) {
-        if (result >= 0) {
+        if (fd >= 0) {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::open64),
                 1,
                 0);
@@ -555,7 +587,7 @@ int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags)
         }
     }
 
-    return result;
+    return fd;
 }
 
 // ld_preloaded_posix_close call.
@@ -619,9 +651,12 @@ int LdPreloadedPosix::ld_preloaded_posix_statfs (const char* path, struct statfs
 {
     // hook POSIX statfs operation to m_metadata_operations.m_statfs
     this->m_dlsym_hook.hook_posix_statfs (m_metadata_operations.m_statfs);
+    
+    // extract mountpoint and pick workflow-id
+    auto [mountpoint, workflow_id] = this->m_mount_point_table.pick_workflow_id (path);
 
     // enforce statfs request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
+    this->m_stage->enforce_request (workflow_id,
         static_cast<int> (paio::core::POSIX::statfs),
         static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
@@ -684,8 +719,11 @@ int LdPreloadedPosix::ld_preloaded_posix_statfs64 (const char* path, struct stat
     // hook POSIX statfs64 operation to m_metadata_operations.m_statfs64
     this->m_dlsym_hook.hook_posix_statfs64 (m_metadata_operations.m_statfs64);
 
+    // extract mountpoint and pick workflow-id
+    auto [mountpoint, workflow_id] = this->m_mount_point_table.pick_workflow_id (path);
+
     // enforce statfs64 request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
+    this->m_stage->enforce_request (workflow_id,
         static_cast<int> (paio::core::POSIX::statfs64),
         static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
@@ -748,8 +786,11 @@ int LdPreloadedPosix::ld_preloaded_posix_unlink (const char* path)
     // hook POSIX unlink operation to m_metadata_operations.m_unlink
     this->m_dlsym_hook.hook_posix_unlink (m_metadata_operations.m_unlink);
 
+    // extract mountpoint and pick workflow-id
+    auto [mountpoint, workflow_id] = this->m_mount_point_table.pick_workflow_id (path);
+
     // enforce unlink request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
+    this->m_stage->enforce_request (workflow_id,
         static_cast<int> (paio::core::POSIX::unlink),
         static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
@@ -782,8 +823,11 @@ int LdPreloadedPosix::ld_preloaded_posix_unlinkat (int dirfd, const char* pathna
     // hook POSIX unlinkat operation to m_metadata_operations.m_unlinkat
     this->m_dlsym_hook.hook_posix_unlinkat (m_metadata_operations.m_unlinkat);
 
+    // extract mountpoint and pick workflow-id
+    auto [mountpoint, workflow_id] = this->m_mount_point_table.pick_workflow_id (pathname);
+
     // enforce unlinkat request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (pathname),
+    this->m_stage->enforce_request (workflow_id,
         static_cast<int> (paio::core::POSIX::unlinkat),
         static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
@@ -816,8 +860,11 @@ int LdPreloadedPosix::ld_preloaded_posix_rename (const char* old_path, const cha
     // hook POSIX rename operation to m_metadata_operations.m_rename
     this->m_dlsym_hook.hook_posix_rename (m_metadata_operations.m_rename);
 
+    // extract mountpoint and pick workflow-id
+    auto [mountpoint, workflow_id] = this->m_mount_point_table.pick_workflow_id (new_path);
+
     // enforce rename request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (new_path),
+    this->m_stage->enforce_request (workflow_id,
         static_cast<int> (paio::core::POSIX::rename),
         static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
@@ -854,8 +901,11 @@ int LdPreloadedPosix::ld_preloaded_posix_renameat (int olddirfd,
     // hook POSIX renameat operation to m_metadata_operations.m_renameat
     this->m_dlsym_hook.hook_posix_renameat (m_metadata_operations.m_renameat);
 
+    // extract mountpoint and pick workflow-id
+    auto [mountpoint, workflow_id] = this->m_mount_point_table.pick_workflow_id (new_path);
+    
     // enforce renameat request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (new_path),
+    this->m_stage->enforce_request (workflow_id,
         static_cast<int> (paio::core::POSIX::renameat),
         static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
@@ -889,20 +939,24 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_fopen (const char* pathname, const ch
     // hook POSIX fopen operation to m_metadata_operations.m_fopen
     this->m_dlsym_hook.hook_posix_fopen (m_metadata_operations.m_fopen);
 
+    // extract mountpoint and pick workflow-id
+    auto [mountpoint, workflow_id] = this->m_mount_point_table.pick_workflow_id (pathname);
+
     // enforce fopen request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (pathname),
+    this->m_stage->enforce_request (workflow_id,
         static_cast<int> (paio::core::POSIX::fopen),
         static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX fopen operation
-    FILE* result = m_metadata_operations.m_fopen (pathname, mode);
+    FILE* fptr = m_metadata_operations.m_fopen (pathname, mode);
 
-    // TODO: create_mount_point_entry
+    // create_mount_point_entry
+    this->m_mount_point_table.create_mount_point_entry (fptr, pathname, mountpoint);
 
     // update statistic entry
     if (this->m_collect) {
-        if (result != nullptr) {
+        if (fptr != nullptr) {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fopen),
                 1,
                 0);
@@ -914,7 +968,7 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_fopen (const char* pathname, const ch
         }
     }
 
-    return result;
+    return fptr;
 }
 
 // ld_preloaded_posix_fopen64 call. (...)
@@ -923,20 +977,24 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_fopen64 (const char* pathname, const 
     // hook POSIX fopen64 operation to m_metadata_operations.m_fopen64
     this->m_dlsym_hook.hook_posix_fopen64 (m_metadata_operations.m_fopen64);
 
+    // extract mountpoint and pick workflow-id
+    auto [mountpoint, workflow_id] = this->m_mount_point_table.pick_workflow_id (pathname);
+
     // enforce fopen64 request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (pathname),
+    this->m_stage->enforce_request (workflow_id,
         static_cast<int> (paio::core::POSIX::fopen64),
         static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX fopen64 operation
-    FILE* result = m_metadata_operations.m_fopen64 (pathname, mode);
+    FILE* fptr = m_metadata_operations.m_fopen64 (pathname, mode);
 
-    // TODO: create_mount_point_entry
+    // create_mount_point_entry
+    this->m_mount_point_table.create_mount_point_entry (fptr, pathname, mountpoint);
 
     // update statistic entry
     if (this->m_collect) {
-        if (result != nullptr) {
+        if (fptr != nullptr) {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fopen64),
                 1,
                 0);
@@ -948,7 +1006,7 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_fopen64 (const char* pathname, const 
         }
     }
 
-    return result;
+    return fptr;
 }
 
 // ld_preloaded_posix_fclose call. (...)
@@ -991,8 +1049,11 @@ int LdPreloadedPosix::ld_preloaded_posix_mkdir (const char* path, mode_t mode)
     // hook POSIX mkdir operation to m_directory_operations.m_mkdir
     this->m_dlsym_hook.hook_posix_mkdir (m_directory_operations.m_mkdir);
 
+    // extract mountpoint and pick workflow-id
+    auto [mountpoint, workflow_id] = this->m_mount_point_table.pick_workflow_id (path);
+
     // enforce mkdir request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
+    this->m_stage->enforce_request (workflow_id,
         static_cast<int> (paio::core::POSIX::mkdir),
         static_cast<int> (paio::core::POSIX_META::dir_op),
         1);
@@ -1018,8 +1079,11 @@ int LdPreloadedPosix::ld_preloaded_posix_mkdirat (int dirfd, const char* path, m
     // hook POSIX mkdirat operation to m_directory_operations.m_mkdirat
     this->m_dlsym_hook.hook_posix_mkdirat (m_directory_operations.m_mkdirat);
 
+    // extract mountpoint and pick workflow-id
+    auto [mountpoint, workflow_id] = this->m_mount_point_table.pick_workflow_id (path);
+
     // enforce mkdirat request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
+    this->m_stage->enforce_request (workflow_id,
         static_cast<int> (paio::core::POSIX::mkdirat),
         static_cast<int> (paio::core::POSIX_META::dir_op),
         1);
@@ -1048,8 +1112,11 @@ int LdPreloadedPosix::ld_preloaded_posix_rmdir (const char* path)
     // hook POSIX rmdir operation to m_directory_operations.m_rmdir
     this->m_dlsym_hook.hook_posix_rmdir (m_directory_operations.m_rmdir);
 
+    // extract mountpoint and pick workflow-id
+    auto [mountpoint, workflow_id] = this->m_mount_point_table.pick_workflow_id (path);
+
     // enforce rmdir request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
+    this->m_stage->enforce_request (workflow_id,
         static_cast<int> (paio::core::POSIX::rmdir),
         static_cast<int> (paio::core::POSIX_META::dir_op),
         1);
@@ -1078,8 +1145,11 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_getxattr (const char* path,
     // hook POSIX getxattr operation to m_extattr_operations.m_getxattr
     this->m_dlsym_hook.hook_posix_getxattr (m_extattr_operations.m_getxattr);
 
+    // extract mountpoint and pick workflow-id
+    auto [mountpoint, workflow_id] = this->m_mount_point_table.pick_workflow_id (path);
+
     // enforce getxattr request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
+    this->m_stage->enforce_request (workflow_id,
         static_cast<int> (paio::core::POSIX::getxattr),
         static_cast<int> (paio::core::POSIX_META::ext_attr_op),
         1);
@@ -1112,8 +1182,11 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_lgetxattr (const char* path,
     // hook POSIX lgetxattr operation to m_extattr_operations.m_lgetxattr
     this->m_dlsym_hook.hook_posix_lgetxattr (m_extattr_operations.m_lgetxattr);
 
+    // extract mountpoint and pick workflow-id
+    auto [mountpoint, workflow_id] = this->m_mount_point_table.pick_workflow_id (path);
+
     // enforce lgetxattr request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
+    this->m_stage->enforce_request (workflow_id,
         static_cast<int> (paio::core::POSIX::lgetxattr),
         static_cast<int> (paio::core::POSIX_META::ext_attr_op),
         1);
@@ -1179,8 +1252,11 @@ int LdPreloadedPosix::ld_preloaded_posix_setxattr (const char* path,
     // hook POSIX setxattr operation to m_extattr_operations.m_setxattr
     this->m_dlsym_hook.hook_posix_setxattr (m_extattr_operations.m_setxattr);
 
+    // extract mountpoint and pick workflow-id
+    auto [mountpoint, workflow_id] = this->m_mount_point_table.pick_workflow_id (path);
+
     // enforce setxattr request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
+    this->m_stage->enforce_request (workflow_id,
         static_cast<int> (paio::core::POSIX::setxattr),
         static_cast<int> (paio::core::POSIX_META::ext_attr_op),
         1);
@@ -1214,8 +1290,11 @@ int LdPreloadedPosix::ld_preloaded_posix_lsetxattr (const char* path,
     // hook POSIX lsetxattr operation to m_extattr_operations.m_lsetxattr
     this->m_dlsym_hook.hook_posix_lsetxattr (m_extattr_operations.m_lsetxattr);
 
+    // extract mountpoint and pick workflow-id
+    auto [mountpoint, workflow_id] = this->m_mount_point_table.pick_workflow_id (path);
+
     // enforce lsetxattr request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
+    this->m_stage->enforce_request (workflow_id,
         static_cast<int> (paio::core::POSIX::lsetxattr),
         static_cast<int> (paio::core::POSIX_META::ext_attr_op),
         1);
@@ -1280,8 +1359,11 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_listxattr (const char* path, char* 
     // hook POSIX listxattr operation to m_extattr_operations.m_listxattr
     this->m_dlsym_hook.hook_posix_listxattr (m_extattr_operations.m_listxattr);
 
+    // extract mountpoint and pick workflow-id
+    auto [mountpoint, workflow_id] = this->m_mount_point_table.pick_workflow_id (path);
+
     // enforce listxattr request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
+    this->m_stage->enforce_request (workflow_id,
         static_cast<int> (paio::core::POSIX::listxattr),
         static_cast<int> (paio::core::POSIX_META::ext_attr_op),
         1);
@@ -1311,8 +1393,11 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_llistxattr (const char* path, char*
     // hook POSIX llistxattr operation to m_extattr_operations.m_llistxattr
     this->m_dlsym_hook.hook_posix_llistxattr (m_extattr_operations.m_llistxattr);
 
+    // extract mountpoint and pick workflow-id
+    auto [mountpoint, workflow_id] = this->m_mount_point_table.pick_workflow_id (path);
+
     // enforce llistxattr request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
+    this->m_stage->enforce_request (workflow_id,
         static_cast<int> (paio::core::POSIX::llistxattr),
         static_cast<int> (paio::core::POSIX_META::ext_attr_op),
         1);

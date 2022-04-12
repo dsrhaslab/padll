@@ -116,7 +116,7 @@ const MountPointEntry* MountPointTable::get_mount_point_entry (const int& key)
     auto iterator = this->m_file_descriptors_table.find (key);
     // check if the entry exists
     if (iterator == this->m_file_descriptors_table.end ()) {
-        this->m_log->log_error ("Mount point entry does not exist.");
+        this->m_log->log_error ("Mount point entry does not exist (" + std::to_string (key) + ").");
         return nullptr;
     } else {
         // return pointer to entry's value
@@ -218,7 +218,7 @@ MountPoint MountPointTable::extract_mount_point (const std::string_view& path) c
 }
 
 // pick_workflow_id call. (...)
-uint32_t MountPointTable::pick_workflow_id (const std::string_view& path) const
+std::pair<MountPoint, uint32_t> MountPointTable::pick_workflow_id (const std::string_view& path) const
 {
     // extract mount point of the given path
     auto namespace_type = (!option_mount_point_differentiation)
@@ -233,7 +233,7 @@ uint32_t MountPointTable::pick_workflow_id (const std::string_view& path) const
         this->m_log->log_error ("Error while selecting workflow id.");
     }
 
-    return workflow_id;
+    return std::make_pair (namespace_type, workflow_id);
 }
 
 // pick_workflow_id call. (...)
