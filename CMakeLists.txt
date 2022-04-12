@@ -17,12 +17,13 @@ option(ABCI_DEPLOYMENT "Install PADLL in ABCI supercomputer" OFF)
 
 # Setup the basic C++ Compiler flags
 if (APPLE)
-    message(STATUS "Detecting Apple")
+message(STATUS "Detecting Local Environment (apple-clang)")
+    option(IS_LOCAL "Install PADLL in local setup" ON)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -fPIC")
 endif (APPLE)
 
 if (UNIX AND NOT APPLE)
-    message(STATUS "Detecting UNIX (!Apple)")
+    message(STATUS "Detecting UNIX")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -pthread -fPIC -Wl,--no-as-needed -ldl")
 endif ()
 
@@ -99,7 +100,14 @@ if (ABCI_DEPLOYMENT)
     find_library(PAIO_LIBRARY paio HINTS /home/acb11912na/db/paio/build)
     target_link_libraries(padll ${PAIO_LIBRARY})
 else()
-    find_library(PAIO_LIBRARY paio HINTS /home/gsd/hpdc22/paio/build)
+    if (NOT IS_LOCAL)
+        message(STATUS "Finding PAIO in deployment server")
+        find_library(PAIO_LIBRARY paio HINTS /home/gsd/hpdc22/paio/build)
+    else ()
+        message(STATUS "Finding PAIO in local server")
+        find_library(PAIO_LIBRARY paio HINTS /Users/ricardomacedo/Projects/sds-data-plane/paio/build)
+    endif ()
+
     target_link_libraries(padll ${PAIO_LIBRARY})
 endif()
 
