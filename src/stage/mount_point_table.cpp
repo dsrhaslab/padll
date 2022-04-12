@@ -262,11 +262,20 @@ uint32_t MountPointTable::pick_workflow_id (const std::string_view& path) const
 uint32_t MountPointTable::pick_workflow_id (const int& fd)
 {
     // get mount point of the given file descriptor
-    auto mount_point = this->get_mount_point_entry (fd)->get_mount_point ();
-
-    // select  workflow identifier
+    auto mount_point_entry = this->get_mount_point_entry (fd);
+    
+    // BUG: Reported defects -@rgmacedo at 4/12/2022, 1:38:18 PM
+    // This will only work if all file descriptors are registered ...; in the future support the option to no 'LD_PRELOAD' open calls, but register the MountPointEntry for 'LD_PRELOADED' read and write calls
+    auto mount_point = (mount_point_entry == nullptr) 
+        ? MountPoint::kNone
+        : mount_point_entry->get_mount_point ();
+    // FIXME: Needing refactor or cleanup -@rgmacedo at 4/12/2022, 1:41:31 PM
+    // Uncomment the next line
+    // auto mount_point = (mount_point_entry->get_mount_point ();
+ 
+    // select workflow identifier
     auto workflow_id = this->select_workflow_id (mount_point);
-
+ 
     // verify if the workflow identifier was not found
     if (workflow_id == static_cast<uint32_t> (-1)) {
         this->m_log->log_error ("Error while selecting workflow id.");

@@ -65,7 +65,7 @@ constexpr bool option_default_statistic_collection { true };
  * option_mount_point_differentiation:
  *  all operations are considered with the same set of workflow identifiers
  */
-constexpr bool option_mount_point_differentiation { true };
+constexpr bool option_mount_point_differentiation { false };
 
 /**
  * option_check_local_mount_point_first:
@@ -110,7 +110,7 @@ constexpr std::string_view option_default_log_path { "/tmp/padll-info" };
  * option_default_detailed_logging:
  */
 // constexpr bool option_default_detailed_logging { true };
-#define OPTION_DETAILED_LOGGING false
+#define OPTION_DETAILED_LOGGING true
 
 /**
  * option_default_table_format:

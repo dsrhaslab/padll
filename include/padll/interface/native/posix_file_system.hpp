@@ -49,7 +49,7 @@ ptr::PosixPassthrough m_posix_passthrough { std::string (option_library_name), m
  */
 static __attribute__ ((constructor)) void init_method ()
 {
-    std::printf ("PosixFileSystem constructor\n");
+    std::printf ("PosixFileSystem constructor (%d, %d)\n", ::getpid (), getppid ());
     std::this_thread::sleep_for (std::chrono::seconds (1));
 }
 
@@ -59,7 +59,7 @@ static __attribute__ ((constructor)) void init_method ()
  */
 static __attribute__ ((destructor)) void destroy_method ()
 {
-    std::printf ("PosixFileSystem destructor\n");
+    std::printf ("PosixFileSystem destructor (%d, %d)\n", ::getpid (), getppid ());
 }
 
 /**
