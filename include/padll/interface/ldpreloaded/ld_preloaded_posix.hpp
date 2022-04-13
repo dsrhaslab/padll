@@ -53,6 +53,11 @@ private:
     std::unique_ptr<DataPlaneStage> m_stage { std::make_unique<DataPlaneStage> () };
     MountPointTable m_mount_point_table { this->m_log };
 
+    /**
+     * enforce_request:
+     */
+    [[nodiscard]] bool enforce_request (const std::string_view& function_name, const uint32_t& workflow_id, const int& operation_type, const int& operation_context, const int& payload);
+
 public:
     /**
      * LdPreloadedPosix default constructor.

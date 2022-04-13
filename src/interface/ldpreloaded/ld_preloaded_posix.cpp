@@ -124,6 +124,23 @@ std::string LdPreloadedPosix::to_string ()
     return stream.str ();
 }
 
+// enforce_request call. (...)
+[[nodiscard]] bool LdPreloadedPosix::enforce_request (const std::string_view& function_name, const uint32_t& workflow_id, const int& operation_type, const int& operation_context, const int& payload)
+{
+    // validate if workflow-id is valid
+    auto is_valid = (workflow_id != static_cast<uint32_t> (-1));
+
+    if (is_valid) {
+        // enforce read request to PAIO data plane stage
+        this->m_stage->enforce_request (workflow_id, operation_type, operation_context, payload);
+    } else {
+        // temporarily create logging message
+        this->m_log->log_error (std::string { function_name } + ": operation bypassed.");
+    }
+
+    return is_valid;
+}
+
 // ld_preloaded_posix_read call.
 ssize_t LdPreloadedPosix::ld_preloaded_posix_read (int fd, void* buf, size_t counter)
 {
@@ -133,25 +150,14 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_read (int fd, void* buf, size_t cou
     // select workflow-id to submit I/O request
     auto workflow_id = this->m_mount_point_table.pick_workflow_id (fd);
 
-    // validate if workflow-id is valid
-    auto is_valid = (workflow_id != static_cast<uint32_t> (-1));
-
-    if (is_valid) {
-        // enforce read request to PAIO data plane stage
-        this->m_stage->enforce_request (workflow_id,
-            static_cast<int> (paio::core::POSIX::read),
-            static_cast<int> (paio::core::POSIX_META::data_op),
-            counter);
-    } else {
-        this->m_log->log_error (std::string {__func__} + ": operation bypassed.");
-    }
+    // enforce read request to PAIO data plane stage
+    auto enforced = this->enforce_request (__func__, workflow_id, static_cast<int> (paio::core::POSIX::read), static_cast<int> (paio::core::POSIX_META::data_op), counter);
 
     // perform original POSIX read operation
     ssize_t result = m_data_operations.m_read (fd, buf, counter);
 
-
     // update statistic entry
-    if (this->m_collect && is_valid) {
+    if (this->m_collect && enforced) {
         if (result >= 0) {
             this->m_data_stats.update_statistic_entry (static_cast<int> (Data::read), 1, result);
         } else {
@@ -168,17 +174,17 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_write (int fd, const void* buf, siz
     // hook POSIX write operation to m_data_operations.m_write
     this->m_dlsym_hook.hook_posix_write (m_data_operations.m_write);
 
+    // select workflow-id to submit I/O request
+    auto workflow_id = this->m_mount_point_table.pick_workflow_id (fd);
+
     // enforce write request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::core::POSIX::write),
-        static_cast<int> (paio::core::POSIX_META::data_op),
-        counter);
+    auto enforced = this->enforce_request (__func__, workflow_id, static_cast<int> (paio::core::POSIX::write), static_cast<int> (paio::core::POSIX_META::data_op), counter);
 
     // perform original POSIX write operation
     ssize_t result = m_data_operations.m_write (fd, buf, counter);
 
     // update statistic entry
-    if (this->m_collect) {
+    if (this->m_collect && enforced) {
         if (result >= 0) {
             this->m_data_stats.update_statistic_entry (static_cast<int> (Data::write), 1, result);
         } else {
@@ -195,17 +201,17 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_pread (int fd, void* buf, size_t co
     // hook POSIX pread operation to m_data_operations.m_pread
     this->m_dlsym_hook.hook_posix_pread (m_data_operations.m_pread);
 
+    // select workflow-id to submit I/O request
+    auto workflow_id = this->m_mount_point_table.pick_workflow_id (fd);
+
     // enforce pread request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::core::POSIX::pread),
-        static_cast<int> (paio::core::POSIX_META::data_op),
-        counter);
+    auto enforced = this->enforce_request (__func__, workflow_id, static_cast<int> (paio::core::POSIX::pread), static_cast<int> (paio::core::POSIX_META::data_op), counter);
 
     // perform original POSIX pread operation
     ssize_t result = m_data_operations.m_pread (fd, buf, counter, offset);
 
     // update statistic entry
-    if (this->m_collect) {
+    if (this->m_collect && enforced) {
         if (result >= 0) {
             this->m_data_stats.update_statistic_entry (static_cast<int> (Data::pread), 1, result);
         } else {
@@ -223,17 +229,17 @@ LdPreloadedPosix::ld_preloaded_posix_pwrite (int fd, const void* buf, size_t cou
     // hook POSIX pwrite operation to m_data_operations.m_pwrite
     this->m_dlsym_hook.hook_posix_pwrite (m_data_operations.m_pwrite);
 
+    // select workflow-id to submit I/O request
+    auto workflow_id = this->m_mount_point_table.pick_workflow_id (fd);
+
     // enforce pwrite request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::core::POSIX::pwrite),
-        static_cast<int> (paio::core::POSIX_META::data_op),
-        counter);
+    auto enforced = this->enforce_request (__func__, workflow_id, static_cast<int> (paio::core::POSIX::pwrite), static_cast<int> (paio::core::POSIX_META::data_op), counter);
 
     // perform original POSIX pwrite operation
     ssize_t result = m_data_operations.m_pwrite (fd, buf, counter, offset);
 
     // update statistic entry
-    if (this->m_collect) {
+    if (this->m_collect && enforced) {
         if (result >= 0) {
             this->m_data_stats.update_statistic_entry (static_cast<int> (Data::pwrite), 1, result);
         } else {
@@ -252,17 +258,17 @@ LdPreloadedPosix::ld_preloaded_posix_pread64 (int fd, void* buf, size_t counter,
     // hook POSIX pread64 operation to m_data_operations.m_pread64
     this->m_dlsym_hook.hook_posix_pread64 (m_data_operations.m_pread64);
 
+    // select workflow-id to submit I/O request
+    auto workflow_id = this->m_mount_point_table.pick_workflow_id (fd);
+
     // enforce pread64 request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::core::POSIX::pread64),
-        static_cast<int> (paio::core::POSIX_META::data_op),
-        counter);
+    auto enforced = this->enforce_request (__func__, workflow_id, static_cast<int> (paio::core::POSIX::pread64), static_cast<int> (paio::core::POSIX_META::data_op), counter);
 
     // perform original POSIX pread64 operation
     ssize_t result = m_data_operations.m_pread64 (fd, buf, counter, offset);
 
     // update statistic entry
-    if (this->m_collect) {
+    if (this->m_collect && enforced) {
         if (result >= 0) {
             this->m_data_stats.update_statistic_entry (static_cast<int> (Data::pread64), 1, result);
         } else {
@@ -284,17 +290,17 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_pwrite64 (int fd,
     // hook POSIX pwrite64 operation to m_data_operations.m_pwrite64
     this->m_dlsym_hook.hook_posix_pwrite64 (m_data_operations.m_pwrite64);
 
+    // select workflow-id to submit I/O request
+    auto workflow_id = this->m_mount_point_table.pick_workflow_id (fd);
+
     // enforce pwrite64 request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::core::POSIX::pwrite64),
-        static_cast<int> (paio::core::POSIX_META::data_op),
-        counter);
+    auto enforced = this->enforce_request (__func__, workflow_id, static_cast<int> (paio::core::POSIX::pwrite64), static_cast<int> (paio::core::POSIX_META::data_op), counter);
 
     // perform original POSIX pwrite64 operation
     ssize_t result = m_data_operations.m_pwrite64 (fd, buf, counter, offset);
 
     // update statistic entry
-    if (this->m_collect) {
+    if (this->m_collect && enforced) {
         if (result >= 0) {
             this->m_data_stats.update_statistic_entry (static_cast<int> (Data::pwrite64),
                 1,
