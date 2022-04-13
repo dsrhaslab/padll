@@ -147,10 +147,12 @@ private:
             const MountPointEntry* entry;
             if (use_file_descriptor) {
                 auto fd = std::get<int> (file_identifiers[index]);
-                entry = table_ptr->get_mount_point_entry (fd);
+                auto [return_value, entry_ptr] = table_ptr->get_mount_point_entry (fd);
+                entry = std::move (entry_ptr);
             } else {
                 auto f_ptr = std::get<FILE*> (file_identifiers[index]);
-                entry = table_ptr->get_mount_point_entry (f_ptr);
+                auto [return_value, entry_ptr] = table_ptr->get_mount_point_entry (f_ptr);
+                entry = std::move (entry_ptr);
             }
 
             if (entry != nullptr) {
@@ -273,7 +275,7 @@ public:
         // register operations is conducted on initialize (which is executed in the constructor)
 
         std::stringstream stream;
-        if (option_mount_point_differentiation) {
+        if (option_mount_point_differentiation_enabled) {
             // FIXME: Needing refactor or cleanup -@gsd at 4/13/2022, 2:22:01 PM
             // Do not consider right now differentiation between local and remote mountpoints.
             // stream << "\tLocal workflows: ";

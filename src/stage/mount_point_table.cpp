@@ -47,7 +47,7 @@ MountPointTable::~MountPointTable ()
 void MountPointTable::initialize ()
 {
     // if mount point differentiation is enabled, register local and remote workflows
-    if (option_mount_point_differentiation) {
+    if (option_mount_point_differentiation_enabled) {
         // FIXME: Needing refactor or cleanup -@gsd at 4/13/2022, 2:14:55 PM
         // Do not consider right now differentiation between local and remote mount points.
         
@@ -111,7 +111,7 @@ bool MountPointTable::create_mount_point_entry (FILE* file_ptr,
 }
 
 // get_mount_point_entry call. (...)
-const MountPointEntry* MountPointTable::get_mount_point_entry (const int& key)
+const std::pair<bool, MountPointEntry*> MountPointTable::get_mount_point_entry (const int& key)
 {
     // shared_lock over shared_timed_mutex (read_lock)
     std::shared_lock read_lock (this->m_fd_shared_lock);
@@ -121,15 +121,15 @@ const MountPointEntry* MountPointTable::get_mount_point_entry (const int& key)
     // check if the entry exists
     if (iterator == this->m_file_descriptors_table.end ()) {
         this->m_log->log_error ("Mount point entry does not exist (" + std::to_string (key) + ").");
-        return nullptr;
+        return std::make_pair (false, nullptr);
     } else {
         // return pointer to entry's value
-        return iterator->second.get ();
+        return std::make_pair (false, iterator->second.get ());
     }
 }
 
 // get_mount_point_entry call. (...)
-const MountPointEntry* MountPointTable::get_mount_point_entry (FILE* key)
+const std::pair<bool, MountPointEntry*> MountPointTable::get_mount_point_entry (FILE* key)
 {
     // shared_lock over shared_time_mutex (read_lock)
     std::shared_lock read_lock (this->m_fptr_shared_lock);
@@ -139,10 +139,10 @@ const MountPointEntry* MountPointTable::get_mount_point_entry (FILE* key)
     // check if the entry exists
     if (iterator == this->m_file_ptr_table.end ()) {
         this->m_log->log_error ("Mount point entry does not exist.");
-        return nullptr;
+        return std::make_pair (false, nullptr);
     } else {
         // return pointer to entry's value
-        return iterator->second.get ();
+        return std::make_pair (false, iterator->second.get ());
     }
 }
 
@@ -217,19 +217,20 @@ void MountPointTable::register_mount_point_type (const MountPoint& type,
 MountPoint MountPointTable::extract_mount_point (const std::string_view& path) const
 {
     // get namespace type
-    return (!option_mount_point_differentiation) ? MountPoint::kNone
-                                                 : this->extract_mount_point_from_path (path);
+    return (!option_mount_point_differentiation_enabled) 
+        ? MountPoint::kNone
+        : this->extract_mount_point_from_path (path);
 }
 
 // pick_workflow_id call. (...)
 std::pair<MountPoint, uint32_t> MountPointTable::pick_workflow_id (const std::string_view& path) const
 {
     // extract mount point of the given path
-    auto namespace_type = (!option_mount_point_differentiation)
+    auto namespace_type = (!option_mount_point_differentiation_enabled)
         ? MountPoint::kNone
         : this->extract_mount_point_from_path (path);
 
-    // select  workflow identifier
+    // select workflow identifier
     auto workflow_id = this->select_workflow_id (namespace_type);
 
     // verify if the workflow identifier was not found
@@ -243,24 +244,23 @@ std::pair<MountPoint, uint32_t> MountPointTable::pick_workflow_id (const std::st
 // pick_workflow_id call. (...)
 uint32_t MountPointTable::pick_workflow_id (const int& fd)
 {
-    // get mount point of the given file descriptor
-    auto mount_point_entry = this->get_mount_point_entry (fd);
-    
-    // BUG: Reported defects -@rgmacedo at 4/12/2022, 1:38:18 PM
-    // This will only work if all file descriptors are registered ...; in the future support the option to no 'LD_PRELOAD' open calls, but register the MountPointEntry for 'LD_PRELOADED' read and write calls
-    auto mount_point = (mount_point_entry == nullptr) 
-        ? MountPoint::kNone
-        : mount_point_entry->get_mount_point ();
-    // FIXME: Needing refactor or cleanup -@rgmacedo at 4/12/2022, 1:41:31 PM
-    // Uncomment the next line
-    // auto mount_point = (mount_point_entry->get_mount_point ();
- 
-    // select workflow identifier
-    auto workflow_id = this->select_workflow_id (mount_point);
- 
-    // verify if the workflow identifier was not found
-    if (workflow_id == static_cast<uint32_t> (-1)) {
-        this->m_log->log_error ("Error while selecting workflow id.");
+    uint32_t workflow_id = static_cast<uint32_t> (-1);
+    // get MountPointEntry of the given file descriptor
+    auto [return_value, entry_ptr] = this->get_mount_point_entry (fd);
+
+    // check if the mount point entry was found
+    if (return_value) {
+        // BUG: Reported defects -@rgmacedo at 4/12/2022, 1:38:18 PM
+        // This will only work if all file descriptors are registered ...; in the future support the option to no 'LD_PRELOAD' open calls, but register the MountPointEntry for 'LD_PRELOADED' read and write calls
+        // get mount_point
+        auto mount_point = entry_ptr->get_mount_point (); 
+        
+        // select workflow-id
+        workflow_id = this->select_workflow_id (mount_point);
+        // verify if the workflow identifier was not found
+        if (workflow_id == static_cast<uint32_t> (-1)) {
+            this->m_log->log_error ("Error while selecting workflow id.");
+        }
     }
 
     return workflow_id;
@@ -269,15 +269,21 @@ uint32_t MountPointTable::pick_workflow_id (const int& fd)
 // pick_workflow_id call. (...)
 uint32_t MountPointTable::pick_workflow_id (FILE* file_ptr)
 {
-    // get mount point of the give file pointer
-    auto mount_point = this->get_mount_point_entry (file_ptr)->get_mount_point ();
-
-    // select  workflow identifier
-    auto workflow_id = this->select_workflow_id (mount_point);
-
-    // verify if the workflow identifier was not found
-    if (static_cast<uint32_t> (-1)) {
-        this->m_log->log_error ("Error while selecting workflow id.");
+    uint32_t workflow_id = static_cast<uint32_t> (-1);
+    // get MountPointEntry of the give file pointer
+    auto [return_value, entry_ptr] = this->get_mount_point_entry (file_ptr);
+    
+    // check if the mount point entry was found
+    if (return_value) {
+        // get mount_point
+        auto mount_point = entry_ptr->get_mount_point ();
+        
+        // select workflow-id
+        workflow_id = this->select_workflow_id (mount_point);
+        // verify if the workflow identifier was not found
+        if (workflow_id == static_cast<uint32_t> (-1)) {
+            this->m_log->log_error ("Error while selecting workflow id.");
+        }
     }
 
     return workflow_id;
@@ -324,7 +330,7 @@ MountPoint MountPointTable::extract_mount_point_from_path (const std::string_vie
 {
     auto return_value = MountPoint::kNone;
 
-    if (option_mount_point_differentiation) {
+    if (option_mount_point_differentiation_enabled) {
         return_value = compare_first_with_remote_mount_point (path);
         // FIXME: Needing refactor or cleanup -@gsd at 4/13/2022, 2:20:39 PM
         // Do not consider right now differentiation between local and remote mountpoints.
@@ -334,7 +340,7 @@ MountPoint MountPointTable::extract_mount_point_from_path (const std::string_vie
 
         // if the mount point is not found, create debug message
         if (return_value == MountPoint::kNone) {
-            this->m_log->log_error ("Extracted path does not belong to any mount point.");
+            this->m_log->log_error ("Extracted path does not belong to any defined mountpoint.");
         }
     }
 
@@ -346,7 +352,7 @@ uint32_t MountPointTable::select_workflow_id (const MountPoint& namespace_name) 
 {
     // get iterator to the mount point entry
     auto iterator = this->m_mount_point_workflows.find (namespace_name);
-    uint32_t return_value = -1;
+    uint32_t return_value = static_cast<uint32_t> (-1);
 
     // if the namespace exists, pick a random workflow
     if (iterator != this->m_mount_point_workflows.end ()) {

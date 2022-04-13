@@ -130,17 +130,28 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_read (int fd, void* buf, size_t cou
     // hook POSIX read operation to m_data_operations.m_read
     this->m_dlsym_hook.hook_posix_read (m_data_operations.m_read);
 
-    // enforce read request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
-        static_cast<int> (paio::core::POSIX::read),
-        static_cast<int> (paio::core::POSIX_META::data_op),
-        counter);
+    // select workflow-id to submit I/O request
+    auto workflow_id = this->m_mount_point_table.pick_workflow_id (fd);
+
+    // validate if workflow-id is valid
+    auto is_valid = (workflow_id != static_cast<uint32_t> (-1));
+
+    if (is_valid) {
+        // enforce read request to PAIO data plane stage
+        this->m_stage->enforce_request (workflow_id,
+            static_cast<int> (paio::core::POSIX::read),
+            static_cast<int> (paio::core::POSIX_META::data_op),
+            counter);
+    } else {
+        this->m_log->log_error (std::string {__func__} + ": operation bypassed.");
+    }
 
     // perform original POSIX read operation
     ssize_t result = m_data_operations.m_read (fd, buf, counter);
 
+
     // update statistic entry
-    if (this->m_collect) {
+    if (this->m_collect && is_valid) {
         if (result >= 0) {
             this->m_data_stats.update_statistic_entry (static_cast<int> (Data::read), 1, result);
         } else {

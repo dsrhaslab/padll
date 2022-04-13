@@ -64,10 +64,10 @@ constexpr std::string_view option_library_name { "libc.so.6" };
 constexpr bool option_default_statistic_collection { true };
 
 /**
- * option_mount_point_differentiation:
+ * option_mount_point_differentiation_enabled:
  *  all operations are considered with the same set of workflow identifiers
  */
-constexpr bool option_mount_point_differentiation { true };
+constexpr bool option_mount_point_differentiation_enabled { true };
 
 /**
  * option_check_local_mount_point_first:
