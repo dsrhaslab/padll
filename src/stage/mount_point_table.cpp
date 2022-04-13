@@ -48,10 +48,14 @@ void MountPointTable::initialize ()
 {
     // if mount point differentiation is enabled, register local and remote workflows
     if (option_mount_point_differentiation) {
+        // FIXME: Needing refactor or cleanup -@gsd at 4/13/2022, 2:14:55 PM
+        // Do not consider right now differentiation between local and remote mount points.
+        
         // register local mount point workflows
-        this->register_mount_point_type (MountPoint::kLocal,
-            this->m_default_workflows.default_local_mount_point_workflows);
+        // this->register_mount_point_type (MountPoint::kLocal,
+        //     this->m_default_workflows.default_local_mount_point_workflows);
         // register remote mount point workflows
+        
         this->register_mount_point_type (MountPoint::kRemote,
             this->m_default_workflows.default_remote_mount_point_workflows);
     } else {
@@ -279,21 +283,23 @@ uint32_t MountPointTable::pick_workflow_id (FILE* file_ptr)
     return workflow_id;
 }
 
+// FIXME: Needing refactor or cleanup -@gsd at 4/13/2022, 2:18:55 PM
+// Do not consider right now differentiation between local and remote mountpoints.
 // compare_first_with_local_mount_point call. (...)
-MountPoint compare_first_with_local_mount_point (const std::string_view& path)
-{
-    auto return_value = MountPoint::kNone;
+// MountPoint compare_first_with_local_mount_point (const std::string_view& path)
+// {
+//     auto return_value = MountPoint::kNone;
 
-    // check if the path is in local mount point
-    if (path.find (option_default_local_mount_point) != std::string::npos) {
-        return_value = MountPoint::kLocal;
+//     // check if the path is in local mount point
+//     if (path.find (option_default_local_mount_point) != std::string::npos) {
+//         return_value = MountPoint::kLocal;
 
-    } else if (path.find (option_default_remote_mount_point) != std::string::npos) {
-        return_value = MountPoint::kRemote;
-    }
+//     } else if (path.find (option_default_remote_mount_point) != std::string::npos) {
+//         return_value = MountPoint::kRemote;
+//     }
 
-    return return_value;
-}
+//     return return_value;
+// }
 
 // compare_first_with_remote_mount_point call. (...)
 MountPoint compare_first_with_remote_mount_point (const std::string_view& path)
@@ -303,9 +309,12 @@ MountPoint compare_first_with_remote_mount_point (const std::string_view& path)
     // check if the path is in remote mount point
     if (path.find (option_default_remote_mount_point) != std::string::npos) {
         return_value = MountPoint::kRemote;
-    } else if (path.find (option_default_local_mount_point) != std::string::npos) {
-        return_value = MountPoint::kLocal;
-    }
+    } 
+    // FIXME: Needing refactor or cleanup -@gsd at 4/13/2022, 2:19:53 PM
+    // Do not consider right now differentiation between local and remote mountpoints.
+    // else if (path.find (option_default_local_mount_point) != std::string::npos) {
+    //     return_value = MountPoint::kLocal;
+    // }
 
     return return_value;
 }
@@ -316,9 +325,12 @@ MountPoint MountPointTable::extract_mount_point_from_path (const std::string_vie
     auto return_value = MountPoint::kNone;
 
     if (option_mount_point_differentiation) {
-        return_value = option_check_local_mount_point_first
-            ? compare_first_with_local_mount_point (path)
-            : compare_first_with_remote_mount_point (path);
+        return_value = compare_first_with_remote_mount_point (path);
+        // FIXME: Needing refactor or cleanup -@gsd at 4/13/2022, 2:20:39 PM
+        // Do not consider right now differentiation between local and remote mountpoints.
+        // return_value = option_check_local_mount_point_first
+        //     ? compare_first_with_local_mount_point (path)
+        //     : compare_first_with_remote_mount_point (path);
 
         // if the mount point is not found, create debug message
         if (return_value == MountPoint::kNone) {

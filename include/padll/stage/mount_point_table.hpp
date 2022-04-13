@@ -33,8 +33,10 @@ public:
         4000,
         5000,
         6000 };
-    const std::vector<uint32_t> default_remote_mount_point_workflows { 4000, 5000, 6000 };
-    const std::vector<uint32_t> default_local_mount_point_workflows { 1000, 2000, 3000 };
+    const std::vector<uint32_t> default_remote_mount_point_workflows { 1000, 2000, 3000 };
+    // FIXME: Needing refactor or cleanup -@gsd at 4/13/2022, 2:14:08 PM
+    // Do not consider right now differentiation between local and remote mount points.
+    // const std::vector<uint32_t> default_local_mount_point_workflows { 4000, 5000, 6000 };
 };
 
 class MountPointTable {

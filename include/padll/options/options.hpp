@@ -38,8 +38,10 @@ constexpr std::string_view mount_point_to_string (const MountPoint& mount_point)
     switch (mount_point) {
         case MountPoint::kNone:
             return "kNone";
-        case MountPoint::kLocal:
-            return "kLocal";
+        // FIXME: Needing refactor or cleanup -@gsd at 4/13/2022, 2:39:45 PM
+        // Do not consider right now differentiation between local and remote mount points. 
+        // case MountPoint::kLocal:
+        //     return "kLocal";
         case MountPoint::kRemote:
             return "kRemote";
         default:
@@ -65,27 +67,32 @@ constexpr bool option_default_statistic_collection { true };
  * option_mount_point_differentiation:
  *  all operations are considered with the same set of workflow identifiers
  */
-constexpr bool option_mount_point_differentiation { false };
+constexpr bool option_mount_point_differentiation { true };
 
 /**
  * option_check_local_mount_point_first:
  *  if option_mount_point_differentiation = true, first check if the path to be extracted is in the
  *  local mount point. If not, check if it is in the remote mount point.
+ * FIXME: Needing refactor or cleanup -@gsd at 4/13/2022, 2:39:45 PM
+ * Do not consider right now differentiation between local and remote mount points. 
  */
-constexpr bool option_check_local_mount_point_first { true };
+// constexpr bool option_check_local_mount_point_first { true };
 
 /**
  * option_default_local_mount_point:
  *  operations will pick from a selected set of workflow identifiers
+ * FIXME: Needing refactor or cleanup -@gsd at 4/13/2022, 2:16:25 PM
+ * Do not consider right now differentiation between local and remote mount points. 
  */
 // constexpr std::string_view option_default_local_mount_point { "/local" };
-constexpr std::string_view option_default_local_mount_point { "/tmp" };
+// constexpr std::string_view option_default_local_mount_point { "/tmp" };
 
 /**
  * option_default_remote_mount_point:
  *  operations will pick from a selected set of workflow identifiers
  */
-constexpr std::string_view option_default_remote_mount_point { "/home" };
+// constexpr std::string_view option_default_remote_mount_point { "/home" };
+constexpr std::string_view option_default_remote_mount_point { "/" };
 
 /***************************************************************************************************
  * Log configuration

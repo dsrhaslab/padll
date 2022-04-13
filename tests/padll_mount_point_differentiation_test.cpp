@@ -274,12 +274,14 @@ public:
 
         std::stringstream stream;
         if (option_mount_point_differentiation) {
-            stream << "\tLocal workflows: ";
-            for (auto& elem :
-                table_ptr->get_default_workflows ().default_local_mount_point_workflows) {
-                stream << elem << " ";
-            }
-            stream << std::endl;
+            // FIXME: Needing refactor or cleanup -@gsd at 4/13/2022, 2:22:01 PM
+            // Do not consider right now differentiation between local and remote mountpoints.
+            // stream << "\tLocal workflows: ";
+            // for (auto& elem :
+            //     table_ptr->get_default_workflows ().default_local_mount_point_workflows) {
+            //     stream << elem << " ";
+            // }
+            // stream << std::endl;
 
             stream << "\tRemote workflows: ";
             for (auto& elem :
