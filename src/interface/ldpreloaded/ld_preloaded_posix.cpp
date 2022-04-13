@@ -650,8 +650,12 @@ int LdPreloadedPosix::ld_preloaded_posix_close (int fd)
     // hook POSIX close operation to m_metadata_operations.m_close
     this->m_dlsym_hook.hook_posix_close (m_metadata_operations.m_close);
 
+    // select workflow-id to submit I/O request
+    auto workflow_id = this->m_mount_point_table.pick_workflow_id (fd);
+
     // enforce close request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
+    auto enforced = this->enforce_request (__func__,
+        workflow_id,
         static_cast<int> (paio::core::POSIX::close),
         static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
@@ -662,7 +666,7 @@ int LdPreloadedPosix::ld_preloaded_posix_close (int fd)
     // TODO: remove_mount_point_entry
 
     // update statistic entry
-    if (this->m_collect) {
+    if (this->m_collect && enforced) {
         if (result == 0) {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::close),
                 1,
@@ -741,8 +745,12 @@ int LdPreloadedPosix::ld_preloaded_posix_fstatfs (int fd, struct statfs* buf)
     // hook POSIX fstatfs operation to m_metadata_operations.m_fstatfs
     this->m_dlsym_hook.hook_posix_fstatfs (m_metadata_operations.m_fstatfs);
 
+    // select workflow-id to submit I/O request
+    auto workflow_id = this->m_mount_point_table.pick_workflow_id (fd);
+
     // enforce fstatfs request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
+    auto enforced = this->enforce_request (__func__,
+        workflow_id,
         static_cast<int> (paio::core::POSIX::fstatfs),
         static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
@@ -751,7 +759,7 @@ int LdPreloadedPosix::ld_preloaded_posix_fstatfs (int fd, struct statfs* buf)
     int result = m_metadata_operations.m_fstatfs (fd, buf);
 
     // update statistic entry
-    if (this->m_collect) {
+    if (this->m_collect && enforced) {
         if (result == 0) {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fstatfs),
                 1,
@@ -808,8 +816,12 @@ int LdPreloadedPosix::ld_preloaded_posix_fstatfs64 (int fd, struct statfs64* buf
     // hook POSIX fstatfs64 operation to m_metadata_operations.m_fstatfs64
     this->m_dlsym_hook.hook_posix_fstatfs64 (m_metadata_operations.m_fstatfs64);
 
+    // select workflow-id to submit I/O request
+    auto workflow_id = this->m_mount_point_table.pick_workflow_id (fd);
+
     // enforce fstatfs64 request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
+    auto enforced = this->enforce_request (__func__,
+        workflow_id,
         static_cast<int> (paio::core::POSIX::fstatfs64),
         static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
@@ -818,7 +830,7 @@ int LdPreloadedPosix::ld_preloaded_posix_fstatfs64 (int fd, struct statfs64* buf
     int result = m_metadata_operations.m_fstatfs64 (fd, buf);
 
     // update statistic entry
-    if (this->m_collect) {
+    if (this->m_collect && enforced) {
         if (result == 0) {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fstatfs64),
                 1,
@@ -1271,8 +1283,12 @@ LdPreloadedPosix::ld_preloaded_posix_fgetxattr (int fd, const char* name, void* 
     // hook POSIX fgetxattr operation to m_extattr_operations.m_fgetxattr
     this->m_dlsym_hook.hook_posix_fgetxattr (m_extattr_operations.m_fgetxattr);
 
+    // select workflow-id to submit I/O request
+    auto workflow_id = this->m_mount_point_table.pick_workflow_id (fd);
+
     // enforce fgetxattr request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
+    auto enforced = this->enforce_request (__func__,
+        workflow_id,
         static_cast<int> (paio::core::POSIX::fgetxattr),
         static_cast<int> (paio::core::POSIX_META::ext_attr_op),
         1);
@@ -1281,7 +1297,7 @@ LdPreloadedPosix::ld_preloaded_posix_fgetxattr (int fd, const char* name, void* 
     ssize_t result = m_extattr_operations.m_fgetxattr (fd, name, value, size);
 
     // update statistic entry
-    if (this->m_collect) {
+    if (this->m_collect && enforced) {
         if (result != -1) {
             this->m_ext_attr_stats.update_statistic_entry (
                 static_cast<int> (ExtendedAttributes::fgetxattr),
@@ -1382,8 +1398,12 @@ int LdPreloadedPosix::ld_preloaded_posix_fsetxattr (int fd,
     // hook POSIX fsetxattr operation to m_extattr_operations.m_fsetxattr
     this->m_dlsym_hook.hook_posix_fsetxattr (m_extattr_operations.m_fsetxattr);
 
+    // select workflow-id to submit I/O request
+    auto workflow_id = this->m_mount_point_table.pick_workflow_id (fd);
+
     // enforce fsetxattr request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
+    auto enforced = this->enforce_request (__func__,
+        workflow_id,
         static_cast<int> (paio::core::POSIX::fsetxattr),
         static_cast<int> (paio::core::POSIX_META::ext_attr_op),
         1);
@@ -1392,7 +1412,7 @@ int LdPreloadedPosix::ld_preloaded_posix_fsetxattr (int fd,
     int result = m_extattr_operations.m_fsetxattr (fd, name, value, size, flags);
 
     // update statistic entry
-    if (this->m_collect) {
+    if (this->m_collect && enforced) {
         if (result != -1) {
             this->m_ext_attr_stats.update_statistic_entry (
                 static_cast<int> (ExtendedAttributes::fsetxattr),
@@ -1484,8 +1504,12 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_flistxattr (int fd, char* list, siz
     // hook POSIX flistxattr operation to m_extattr_operations.m_flistxattr
     this->m_dlsym_hook.hook_posix_flistxattr (m_extattr_operations.m_flistxattr);
 
+    // select workflow-id to submit I/O request
+    auto workflow_id = this->m_mount_point_table.pick_workflow_id (fd);
+
     // enforce flistxattr request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (fd),
+    auto enforced = this->enforce_request (__func__,
+        workflow_id,
         static_cast<int> (paio::core::POSIX::flistxattr),
         static_cast<int> (paio::core::POSIX_META::ext_attr_op),
         1);
@@ -1494,7 +1518,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_flistxattr (int fd, char* list, siz
     ssize_t result = m_extattr_operations.m_flistxattr (fd, list, size);
 
     // update statistic entry
-    if (this->m_collect) {
+    if (this->m_collect && enforced) {
         if (result != -1) {
             this->m_ext_attr_stats.update_statistic_entry (
                 static_cast<int> (ExtendedAttributes::flistxattr),
