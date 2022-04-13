@@ -56,7 +56,11 @@ private:
     /**
      * enforce_request:
      */
-    [[nodiscard]] bool enforce_request (const std::string_view& function_name, const uint32_t& workflow_id, const int& operation_type, const int& operation_context, const int& payload);
+    [[nodiscard]] bool enforce_request (const std::string_view& function_name,
+        const uint32_t& workflow_id,
+        const int& operation_type,
+        const int& operation_context,
+        const int& payload);
 
 public:
     /**
@@ -517,7 +521,6 @@ public:
      * @param protocol
      */
     int ld_preloaded_posix_socket (int domain, int type, int protocol);
-
 };
 } // namespace padll::interface::ldpreloaded
 

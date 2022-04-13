@@ -125,7 +125,11 @@ std::string LdPreloadedPosix::to_string ()
 }
 
 // enforce_request call. (...)
-[[nodiscard]] bool LdPreloadedPosix::enforce_request (const std::string_view& function_name, const uint32_t& workflow_id, const int& operation_type, const int& operation_context, const int& payload)
+[[nodiscard]] bool LdPreloadedPosix::enforce_request (const std::string_view& function_name,
+    const uint32_t& workflow_id,
+    const int& operation_type,
+    const int& operation_context,
+    const int& payload)
 {
     // validate if workflow-id is valid
     auto is_valid = (workflow_id != static_cast<uint32_t> (-1));
@@ -151,7 +155,11 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_read (int fd, void* buf, size_t cou
     auto workflow_id = this->m_mount_point_table.pick_workflow_id (fd);
 
     // enforce read request to PAIO data plane stage
-    auto enforced = this->enforce_request (__func__, workflow_id, static_cast<int> (paio::core::POSIX::read), static_cast<int> (paio::core::POSIX_META::data_op), counter);
+    auto enforced = this->enforce_request (__func__,
+        workflow_id,
+        static_cast<int> (paio::core::POSIX::read),
+        static_cast<int> (paio::core::POSIX_META::data_op),
+        counter);
 
     // perform original POSIX read operation
     ssize_t result = m_data_operations.m_read (fd, buf, counter);
@@ -178,7 +186,11 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_write (int fd, const void* buf, siz
     auto workflow_id = this->m_mount_point_table.pick_workflow_id (fd);
 
     // enforce write request to PAIO data plane stage
-    auto enforced = this->enforce_request (__func__, workflow_id, static_cast<int> (paio::core::POSIX::write), static_cast<int> (paio::core::POSIX_META::data_op), counter);
+    auto enforced = this->enforce_request (__func__,
+        workflow_id,
+        static_cast<int> (paio::core::POSIX::write),
+        static_cast<int> (paio::core::POSIX_META::data_op),
+        counter);
 
     // perform original POSIX write operation
     ssize_t result = m_data_operations.m_write (fd, buf, counter);
@@ -205,7 +217,11 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_pread (int fd, void* buf, size_t co
     auto workflow_id = this->m_mount_point_table.pick_workflow_id (fd);
 
     // enforce pread request to PAIO data plane stage
-    auto enforced = this->enforce_request (__func__, workflow_id, static_cast<int> (paio::core::POSIX::pread), static_cast<int> (paio::core::POSIX_META::data_op), counter);
+    auto enforced = this->enforce_request (__func__,
+        workflow_id,
+        static_cast<int> (paio::core::POSIX::pread),
+        static_cast<int> (paio::core::POSIX_META::data_op),
+        counter);
 
     // perform original POSIX pread operation
     ssize_t result = m_data_operations.m_pread (fd, buf, counter, offset);
@@ -233,7 +249,11 @@ LdPreloadedPosix::ld_preloaded_posix_pwrite (int fd, const void* buf, size_t cou
     auto workflow_id = this->m_mount_point_table.pick_workflow_id (fd);
 
     // enforce pwrite request to PAIO data plane stage
-    auto enforced = this->enforce_request (__func__, workflow_id, static_cast<int> (paio::core::POSIX::pwrite), static_cast<int> (paio::core::POSIX_META::data_op), counter);
+    auto enforced = this->enforce_request (__func__,
+        workflow_id,
+        static_cast<int> (paio::core::POSIX::pwrite),
+        static_cast<int> (paio::core::POSIX_META::data_op),
+        counter);
 
     // perform original POSIX pwrite operation
     ssize_t result = m_data_operations.m_pwrite (fd, buf, counter, offset);
@@ -262,7 +282,11 @@ LdPreloadedPosix::ld_preloaded_posix_pread64 (int fd, void* buf, size_t counter,
     auto workflow_id = this->m_mount_point_table.pick_workflow_id (fd);
 
     // enforce pread64 request to PAIO data plane stage
-    auto enforced = this->enforce_request (__func__, workflow_id, static_cast<int> (paio::core::POSIX::pread64), static_cast<int> (paio::core::POSIX_META::data_op), counter);
+    auto enforced = this->enforce_request (__func__,
+        workflow_id,
+        static_cast<int> (paio::core::POSIX::pread64),
+        static_cast<int> (paio::core::POSIX_META::data_op),
+        counter);
 
     // perform original POSIX pread64 operation
     ssize_t result = m_data_operations.m_pread64 (fd, buf, counter, offset);
@@ -294,7 +318,11 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_pwrite64 (int fd,
     auto workflow_id = this->m_mount_point_table.pick_workflow_id (fd);
 
     // enforce pwrite64 request to PAIO data plane stage
-    auto enforced = this->enforce_request (__func__, workflow_id, static_cast<int> (paio::core::POSIX::pwrite64), static_cast<int> (paio::core::POSIX_META::data_op), counter);
+    auto enforced = this->enforce_request (__func__,
+        workflow_id,
+        static_cast<int> (paio::core::POSIX::pwrite64),
+        static_cast<int> (paio::core::POSIX_META::data_op),
+        counter);
 
     // perform original POSIX pwrite64 operation
     ssize_t result = m_data_operations.m_pwrite64 (fd, buf, counter, offset);
@@ -677,7 +705,7 @@ int LdPreloadedPosix::ld_preloaded_posix_statfs (const char* path, struct statfs
 {
     // hook POSIX statfs operation to m_metadata_operations.m_statfs
     this->m_dlsym_hook.hook_posix_statfs (m_metadata_operations.m_statfs);
-    
+
     // extract mountpoint and pick workflow-id
     auto [mountpoint, workflow_id] = this->m_mount_point_table.pick_workflow_id (path);
 
@@ -929,7 +957,7 @@ int LdPreloadedPosix::ld_preloaded_posix_renameat (int olddirfd,
 
     // extract mountpoint and pick workflow-id
     auto [mountpoint, workflow_id] = this->m_mount_point_table.pick_workflow_id (new_path);
-    
+
     // enforce renameat request to PAIO data plane stage
     this->m_stage->enforce_request (workflow_id,
         static_cast<int> (paio::core::POSIX::renameat),
@@ -1492,19 +1520,21 @@ int LdPreloadedPosix::ld_preloaded_posix_socket (int domain, int type, int proto
 
     // perform original POSIX socket operation
     int fd = m_special_operations.m_socket (domain, type, protocol);
-    this->m_log->log_debug (std::string {__func__} + ": fd = " + std::to_string (fd));
+    this->m_log->log_debug (std::string { __func__ } + ": fd = " + std::to_string (fd));
 
     // update statistic entry
     if (this->m_collect) {
         if (fd != -1) {
             this->m_special_stats.update_statistic_entry (static_cast<int> (Special::socket), 1, 0);
         } else {
-            this->m_special_stats.update_statistic_entry (static_cast<int> (Special::socket), 1, 0, 1);
+            this->m_special_stats.update_statistic_entry (static_cast<int> (Special::socket),
+                1,
+                0,
+                1);
         }
     }
 
     return fd;
-
 }
 
 } // namespace padll::interface::ldpreloaded

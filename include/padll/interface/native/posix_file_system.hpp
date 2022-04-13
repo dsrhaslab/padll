@@ -881,7 +881,6 @@ extern "C" ssize_t flistxattr (int fd, char* list, size_t size)
 }
 #endif
 
-
 /**
  * socket:
  */
@@ -901,7 +900,9 @@ extern "C" int fcntl (int fd, int cmd, ...)
 {
 // detailed logging message
 #if OPTION_DETAILED_LOGGING
-    m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) }, std::string_view { std::to_string (cmd) });
+    m_logger_ptr->create_routine_log_message (__func__,
+        std::string_view { std::to_string (fd) },
+        std::string_view { std::to_string (cmd) });
 #endif
 
     va_list ap;
@@ -917,7 +918,7 @@ extern "C" int fcntl (int fd, int cmd, ...)
         case F_GETFD:
         case F_GETFL:
         case F_GETOWN:
-            
+
             m_logger_ptr->log_debug ("fcntl simple call : " + std::to_string (result));
             break;
 

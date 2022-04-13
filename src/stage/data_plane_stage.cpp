@@ -88,12 +88,13 @@ void DataPlaneStage::enforce_request (const uint32_t& workflow_id,
 
         // submit request through posix_base
         this->m_posix_instance->posix_base (nullptr, operation_size, context_obj);
-    } 
+    }
 
     // NOTE: Needs discussion or investigation -@gsd at 4/12/2022, 3:00:39 PM
     // This is only for initial debugging
     std::stringstream message;
-    message << __func__ << "(" << workflow_id << ", " << operation_type << ", " << operation_context << ", " << operation_size << ")";
+    message << __func__ << "(" << workflow_id << ", " << operation_type << ", " << operation_context
+            << ", " << operation_size << ")";
     this->m_log->log_debug (message.str ());
 }
 

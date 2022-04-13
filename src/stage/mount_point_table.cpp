@@ -50,12 +50,12 @@ void MountPointTable::initialize ()
     if (option_mount_point_differentiation_enabled) {
         // FIXME: Needing refactor or cleanup -@gsd at 4/13/2022, 2:14:55 PM
         // Do not consider right now differentiation between local and remote mount points.
-        
+
         // register local mount point workflows
         // this->register_mount_point_type (MountPoint::kLocal,
         //     this->m_default_workflows.default_local_mount_point_workflows);
         // register remote mount point workflows
-        
+
         this->register_mount_point_type (MountPoint::kRemote,
             this->m_default_workflows.default_remote_mount_point_workflows);
     } else {
@@ -217,13 +217,14 @@ void MountPointTable::register_mount_point_type (const MountPoint& type,
 MountPoint MountPointTable::extract_mount_point (const std::string_view& path) const
 {
     // get namespace type
-    return (!option_mount_point_differentiation_enabled) 
+    return (!option_mount_point_differentiation_enabled)
         ? MountPoint::kNone
         : this->extract_mount_point_from_path (path);
 }
 
 // pick_workflow_id call. (...)
-std::pair<MountPoint, uint32_t> MountPointTable::pick_workflow_id (const std::string_view& path) const
+std::pair<MountPoint, uint32_t> MountPointTable::pick_workflow_id (
+    const std::string_view& path) const
 {
     // extract mount point of the given path
     auto namespace_type = (!option_mount_point_differentiation_enabled)
@@ -251,10 +252,11 @@ uint32_t MountPointTable::pick_workflow_id (const int& fd)
     // check if the mount point entry was found
     if (return_value) {
         // BUG: Reported defects -@rgmacedo at 4/12/2022, 1:38:18 PM
-        // This will only work if all file descriptors are registered ...; in the future support the option to no 'LD_PRELOAD' open calls, but register the MountPointEntry for 'LD_PRELOADED' read and write calls
-        // get mount_point
-        auto mount_point = entry_ptr->get_mount_point (); 
-        
+        // This will only work if all file descriptors are registered ...; in the future support the
+        // option to no 'LD_PRELOAD' open calls, but register the MountPointEntry for 'LD_PRELOADED'
+        // read and write calls get mount_point
+        auto mount_point = entry_ptr->get_mount_point ();
+
         // select workflow-id
         workflow_id = this->select_workflow_id (mount_point);
         // verify if the workflow identifier was not found
@@ -272,12 +274,12 @@ uint32_t MountPointTable::pick_workflow_id (FILE* file_ptr)
     uint32_t workflow_id = static_cast<uint32_t> (-1);
     // get MountPointEntry of the give file pointer
     auto [return_value, entry_ptr] = this->get_mount_point_entry (file_ptr);
-    
+
     // check if the mount point entry was found
     if (return_value) {
         // get mount_point
         auto mount_point = entry_ptr->get_mount_point ();
-        
+
         // select workflow-id
         workflow_id = this->select_workflow_id (mount_point);
         // verify if the workflow identifier was not found
@@ -315,7 +317,7 @@ MountPoint compare_first_with_remote_mount_point (const std::string_view& path)
     // check if the path is in remote mount point
     if (path.find (option_default_remote_mount_point) != std::string::npos) {
         return_value = MountPoint::kRemote;
-    } 
+    }
     // FIXME: Needing refactor or cleanup -@gsd at 4/13/2022, 2:19:53 PM
     // Do not consider right now differentiation between local and remote mountpoints.
     // else if (path.find (option_default_local_mount_point) != std::string::npos) {

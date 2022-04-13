@@ -1079,7 +1079,10 @@ int PosixPassthrough::passthrough_posix_socket (int domain, int type, int protoc
         if (result != -1) {
             this->m_special_stats.update_statistic_entry (static_cast<int> (Special::socket), 1, 0);
         } else {
-            this->m_special_stats.update_statistic_entry (static_cast<int> (Special::socket), 1, 0, 1);
+            this->m_special_stats.update_statistic_entry (static_cast<int> (Special::socket),
+                1,
+                0,
+                1);
         }
     }
 

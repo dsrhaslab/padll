@@ -113,7 +113,7 @@ private:
 
                 // add file pointer to vector
                 file_identifiers->emplace_back (f_ptr);
-                
+
                 // retry createing the same mount point entry
                 if (retry_after_create) {
                     result = table_ptr->create_mount_point_entry (f_ptr, path_to_file, mount_point);
@@ -347,8 +347,13 @@ public:
         auto start = std::chrono::high_resolution_clock::now ();
         // create threads
         for (int i = 0; i < num_threads; i++) {
-            threads.emplace_back (
-                std::thread (func, table_ptr, create_fd, path, num_files, file_ptrs, retry_after_create));
+            threads.emplace_back (std::thread (func,
+                table_ptr,
+                create_fd,
+                path,
+                num_files,
+                file_ptrs,
+                retry_after_create));
         }
 
         // join threads

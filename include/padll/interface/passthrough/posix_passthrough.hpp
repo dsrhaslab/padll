@@ -555,7 +555,6 @@ public:
      * @param protocol
      */
     int passthrough_posix_socket (int domain, int type, int protocol);
-
 };
 } // namespace padll::interface::passthrough
 #endif // PADLL_POSIX_PASSTHROUGH_H
