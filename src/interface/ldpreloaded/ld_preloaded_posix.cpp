@@ -56,6 +56,8 @@ LdPreloadedPosix::~LdPreloadedPosix ()
         this->m_dir_stats.tabulate ();
         // print to stdout extended attributes based statistics in tabular format
         this->m_ext_attr_stats.tabulate ();
+        // print to stdout special calls based statistics in tabular format
+        this->m_special_stats.tabulate ();
     } else {
         this->m_log->log_info (this->to_string ());
     }
@@ -84,6 +86,9 @@ StatisticEntry LdPreloadedPosix::get_statistic_entry (const OperationType& opera
         case OperationType::ext_attr_calls:
             return this->m_ext_attr_stats.get_statistic_entry (operation_entry);
 
+        case OperationType::special_calls:
+            return this->m_special_stats.get_statistic_entry (operation_entry);
+
         default:
             return StatisticEntry {};
     }
@@ -111,6 +116,10 @@ std::string LdPreloadedPosix::to_string ()
     stream << "LdPreloadedPosix::Extended attributes statistics (" << pid << ", " << ppid << ")\n";
     stream << "-------------------------------------------------------------------\n";
     stream << this->m_ext_attr_stats.to_string () << "\n";
+
+    stream << "LdPreloadedPosix::Special calls statistics (" << pid << ", " << ppid << ")\n";
+    stream << "-------------------------------------------------------------------\n";
+    stream << this->m_special_stats.to_string () << "\n";
 
     return stream.str ();
 }
@@ -1456,6 +1465,29 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_flistxattr (int fd, char* list, siz
     }
 
     return result;
+}
+
+// ld_preloaded_posix_socket call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_socket (int domain, int type, int protocol)
+{
+    // hook POSIX socket operation to m_special_operations.m_socket
+    this->m_dlsym_hook.hook_posix_socket (m_special_operations.m_socket);
+
+    // perform original POSIX socket operation
+    int fd = m_special_operations.m_socket (domain, type, protocol);
+    this->m_log->log_debug (std::string {__func__} + ": fd = " + std::to_string (fd));
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (fd != -1) {
+            this->m_special_stats.update_statistic_entry (static_cast<int> (Special::socket), 1, 0);
+        } else {
+            this->m_special_stats.update_statistic_entry (static_cast<int> (Special::socket), 1, 0, 1);
+        }
+    }
+
+    return fd;
+
 }
 
 } // namespace padll::interface::ldpreloaded

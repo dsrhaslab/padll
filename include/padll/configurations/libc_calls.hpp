@@ -63,9 +63,14 @@ struct PosixMetadataCalls {
     bool padll_intercept_fclose = false;
 };
 
+struct PosixSpecialCalls {
+    bool padll_intercept_socket = true;
+};
+
 const static PosixDataCalls posix_data_calls;
 const static PosixDirectoryCalls posix_directory_calls;
 const static PosixExtendedAttributesCalls posix_extended_attributes_calls;
 const static PosixMetadataCalls posix_metadata_calls;
+const static PosixSpecialCalls posix_special_calls;
 
 #endif // PADLL_LIBC_CALLS_HPP

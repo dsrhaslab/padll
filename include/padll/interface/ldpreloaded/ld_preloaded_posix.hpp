@@ -38,6 +38,7 @@ private:
     libc_data m_data_operations {};
     libc_directory m_directory_operations {};
     libc_extattr m_extattr_operations {};
+    libc_special m_special_operations {};
     std::shared_ptr<Log> m_log { nullptr };
     DlsymHookLibc m_dlsym_hook {};
 
@@ -46,6 +47,7 @@ private:
     Statistics m_data_stats { "data", OperationType::data_calls };
     Statistics m_dir_stats { "directory", OperationType::directory_calls };
     Statistics m_ext_attr_stats { "ext-attr", OperationType::ext_attr_calls };
+    Statistics m_special_stats { "special", OperationType::special_calls };
 
     // data plane stage configurations
     std::unique_ptr<DataPlaneStage> m_stage { std::make_unique<DataPlaneStage> () };
@@ -502,6 +504,15 @@ public:
      * @return
      */
     ssize_t ld_preloaded_posix_flistxattr (int fd, char* list, size_t size);
+
+    /**
+     * ld_preloaded_posix_socket:
+     * @param domain
+     * @param type
+     * @param protocol
+     */
+    int ld_preloaded_posix_socket (int domain, int type, int protocol);
+
 };
 } // namespace padll::interface::ldpreloaded
 

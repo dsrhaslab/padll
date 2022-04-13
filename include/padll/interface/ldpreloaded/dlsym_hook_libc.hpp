@@ -983,6 +983,26 @@ public:
             flistxattr_ptr = (libc_flistxattr_t)dlsym (this->m_lib_handle, "flistxattr");
         }
     }
+
+    /**
+     * hook_posix_socket:
+     * @param socket_ptr
+     */
+    void hook_posix_socket (libc_socket_t& socket_ptr)
+    {
+        // validate function and library handle pointers
+        if (!socket_ptr && !this->m_lib_handle) {
+            // open library handle, and assign the operation pointer through m_lib_handle if the
+            // open was successful, or through the next operation link.
+            (this->dlopen_library_handle ())
+                ? socket_ptr = (libc_socket_t)dlsym (this->m_lib_handle, "socket")
+                : socket_ptr = (libc_socket_t)dlsym (RTLD_NEXT, "socket");
+
+            // in case the library handle pointer is valid, assign the operation pointer
+        } else if (!socket_ptr) {
+            socket_ptr = (libc_socket_t)dlsym (this->m_lib_handle, "socket");
+        }
+    }
 };
 
 } // namespace padll::interface::ldpreloaded

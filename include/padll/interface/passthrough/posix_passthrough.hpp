@@ -35,6 +35,7 @@ private:
     Statistics m_data_stats { "data", OperationType::data_calls };
     Statistics m_dir_stats { "directory", OperationType::directory_calls };
     Statistics m_ext_attr_stats { "ext-attr", OperationType::ext_attr_calls };
+    Statistics m_special_stats { "special", OperationType::special_calls };
 
     /**
      * initialize:
@@ -546,6 +547,15 @@ public:
      * @return
      */
     ssize_t passthrough_posix_flistxattr (int fd, char* list, size_t size);
+
+    /**
+     * passthrough_posix_socket:
+     * @param domain
+     * @param type
+     * @param protocol
+     */
+    int passthrough_posix_socket (int domain, int type, int protocol);
+
 };
 } // namespace padll::interface::passthrough
 #endif // PADLL_POSIX_PASSTHROUGH_H

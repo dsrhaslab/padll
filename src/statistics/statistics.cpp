@@ -71,6 +71,17 @@ void Statistics::initialize (const OperationType& operation_type)
             break;
         }
 
+        case OperationType::special_calls: {
+            // assign size of statistics container
+            this->m_stats_size = Special::_size ();
+            // retrieves all ExtendedAttributes operations' names in order
+            for (Special elem : Special::_values ()) {
+                this->m_statistic_entries.emplace_back (elem._to_string ());
+            }
+
+            break;
+        }
+
         default:
             break;
     }

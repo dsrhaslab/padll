@@ -881,4 +881,20 @@ extern "C" ssize_t flistxattr (int fd, char* list, size_t size)
 }
 #endif
 
+
+/**
+ * socket:
+ */
+extern "C" int socket (int domain, int type, int protocol)
+{
+// detailed logging message
+#if OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (-1) });
+#endif
+
+    return (posix_special_calls.padll_intercept_socket)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_socket (domain, type, protocol)
+        : m_posix_passthrough.passthrough_posix_socket (domain, type, protocol);
+}
+
 #endif // PADLL_POSIX_FILE_SYSTEM_H

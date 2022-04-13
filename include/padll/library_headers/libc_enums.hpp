@@ -18,7 +18,8 @@ BETTER_ENUM (OperationType,
     metadata_calls = 1,
     data_calls = 2,
     directory_calls = 3,
-    ext_attr_calls = 4)
+    ext_attr_calls = 4,
+    special_calls = 5)
 
 /**
  * Metadata Definitions.
@@ -83,6 +84,11 @@ BETTER_ENUM (ExtendedAttributes,
     listxattr = 7,
     llistxattr = 8,
     flistxattr = 9)
+
+/**
+ * Special POSIX calls definitions.
+ */
+BETTER_ENUM (Special, int , no_op = 0, socket = 1)
 
 } // namespace padll::headers
 

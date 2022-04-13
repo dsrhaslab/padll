@@ -59,6 +59,8 @@ PosixPassthrough::~PosixPassthrough ()
         this->m_dir_stats.tabulate ();
         // print to stdout extended attributes based statistics in tabular format
         this->m_ext_attr_stats.tabulate ();
+        // print to stdout special calls based statistics in tabular format
+        this->m_special_stats.tabulate ();
     } else {
         this->m_log->log_info (this->to_string ());
     }
@@ -92,6 +94,9 @@ std::string PosixPassthrough::to_string ()
     stream << "PosixPassthrough::Directory statistics (" << pid << ", " << ppid << ")\n";
     stream << "-----------------------------------------------------------\n";
     stream << this->m_dir_stats.to_string () << "\n";
+    stream << "PosixPassthrough::Special calls statistics (" << pid << ", " << ppid << ")\n";
+    stream << "-----------------------------------------------------------\n";
+    stream << this->m_special_stats.to_string () << "\n";
 
     return stream.str ();
 }
@@ -143,6 +148,9 @@ StatisticEntry PosixPassthrough::get_statistic_entry (const OperationType& opera
 
         case OperationType::ext_attr_calls:
             return this->m_ext_attr_stats.get_statistic_entry (operation_entry);
+
+        case OperationType::special_calls:
+            return this->m_special_stats.get_statistic_entry (operation_entry);
 
         default:
             return StatisticEntry {};
@@ -1055,6 +1063,23 @@ ssize_t PosixPassthrough::passthrough_posix_flistxattr (int fd, char* list, size
                 1,
                 0,
                 1);
+        }
+    }
+
+    return result;
+}
+
+// passthrough_posix_socket call. (...)
+int PosixPassthrough::passthrough_posix_socket (int domain, int type, int protocol)
+{
+    int result = ((libc_socket_t)dlsym (RTLD_NEXT, "socket")) (domain, type, protocol);
+
+    // update statistic entry
+    if (this->m_collect) {
+        if (result != -1) {
+            this->m_special_stats.update_statistic_entry (static_cast<int> (Special::socket), 1, 0);
+        } else {
+            this->m_special_stats.update_statistic_entry (static_cast<int> (Special::socket), 1, 0, 1);
         }
     }
 
