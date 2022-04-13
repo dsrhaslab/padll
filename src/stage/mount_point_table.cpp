@@ -111,7 +111,7 @@ bool MountPointTable::create_mount_point_entry (FILE* file_ptr,
 }
 
 // get_mount_point_entry call. (...)
-const std::pair<bool, MountPointEntry*> MountPointTable::get_mount_point_entry (const int& key)
+std::pair<bool, MountPointEntry*> MountPointTable::get_mount_point_entry (const int& key)
 {
     // shared_lock over shared_timed_mutex (read_lock)
     std::shared_lock read_lock (this->m_fd_shared_lock);
@@ -129,7 +129,7 @@ const std::pair<bool, MountPointEntry*> MountPointTable::get_mount_point_entry (
 }
 
 // get_mount_point_entry call. (...)
-const std::pair<bool, MountPointEntry*> MountPointTable::get_mount_point_entry (FILE* key)
+std::pair<bool, MountPointEntry*> MountPointTable::get_mount_point_entry (FILE* key)
 {
     // shared_lock over shared_time_mutex (read_lock)
     std::shared_lock read_lock (this->m_fptr_shared_lock);
@@ -245,7 +245,7 @@ std::pair<MountPoint, uint32_t> MountPointTable::pick_workflow_id (
 // pick_workflow_id call. (...)
 uint32_t MountPointTable::pick_workflow_id (const int& fd)
 {
-    uint32_t workflow_id = static_cast<uint32_t> (-1);
+    auto workflow_id = static_cast<uint32_t> (-1);
     // get MountPointEntry of the given file descriptor
     auto [return_value, entry_ptr] = this->get_mount_point_entry (fd);
 
@@ -271,7 +271,7 @@ uint32_t MountPointTable::pick_workflow_id (const int& fd)
 // pick_workflow_id call. (...)
 uint32_t MountPointTable::pick_workflow_id (FILE* file_ptr)
 {
-    uint32_t workflow_id = static_cast<uint32_t> (-1);
+    auto workflow_id = static_cast<uint32_t> (-1);
     // get MountPointEntry of the give file pointer
     auto [return_value, entry_ptr] = this->get_mount_point_entry (file_ptr);
 
@@ -354,7 +354,7 @@ uint32_t MountPointTable::select_workflow_id (const MountPoint& namespace_name) 
 {
     // get iterator to the mount point entry
     auto iterator = this->m_mount_point_workflows.find (namespace_name);
-    uint32_t return_value = static_cast<uint32_t> (-1);
+    auto return_value = static_cast<uint32_t> (-1);
 
     // if the namespace exists, pick a random workflow
     if (iterator != this->m_mount_point_workflows.end ()) {

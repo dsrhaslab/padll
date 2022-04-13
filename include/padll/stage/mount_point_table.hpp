@@ -150,14 +150,14 @@ public:
      * @param key
      * @return
      */
-    [[nodiscard]] const std::pair<bool, MountPointEntry*> get_mount_point_entry (const int& key);
+    [[nodiscard]] std::pair<bool, MountPointEntry*> get_mount_point_entry (const int& key);
 
     /**
      * get_mount_point_entry:
      * @param key
      * @return
      */
-    [[nodiscard]] const std::pair<bool, MountPointEntry*> get_mount_point_entry (FILE* key);
+    [[nodiscard]] std::pair<bool, MountPointEntry*> get_mount_point_entry (FILE* key);
 
     /**
      * remove_mount_point_entry:
