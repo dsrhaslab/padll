@@ -65,6 +65,7 @@ struct PosixMetadataCalls {
 
 struct PosixSpecialCalls {
     bool padll_intercept_socket = true;
+    bool padll_intercept_fcntl = false;
 };
 
 const static PosixDataCalls posix_data_calls;

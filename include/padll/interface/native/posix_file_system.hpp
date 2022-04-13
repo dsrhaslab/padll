@@ -897,4 +897,45 @@ extern "C" int socket (int domain, int type, int protocol)
         : m_posix_passthrough.passthrough_posix_socket (domain, type, protocol);
 }
 
+extern "C" int fcntl (int fd, int cmd, ...)
+{
+// detailed logging message
+#if OPTION_DETAILED_LOGGING
+    m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) }, std::string_view { std::to_string (cmd) });
+#endif
+
+    va_list ap;
+    void* arg;
+    va_start (ap, cmd);
+    arg = va_arg (ap, void*);
+    va_end (ap);
+
+    // submit fcntl call to libc
+    int result = ((libc_fcntl_t)dlsym (RTLD_NEXT, "fcntl")) (fd, cmd, arg);
+
+    switch (cmd) {
+        case F_GETFD:
+        case F_GETFL:
+        case F_GETOWN:
+            
+            m_logger_ptr->log_debug ("fcntl simple call : " + std::to_string (result));
+            break;
+
+        case F_DUPFD:
+        case F_SETFD:
+            m_logger_ptr->log_debug ("fcntl advanced call : " + std::to_string (result));
+            break;
+
+        case F_SETFL:
+            m_logger_ptr->log_debug ("fcntl-FSETFL : " + std::to_string (result));
+            break;
+
+        default:
+            m_logger_ptr->log_debug ("Unsupported fcntl() command: " + std::to_string (cmd));
+            break;
+    }
+
+    return result;
+}
+
 #endif // PADLL_POSIX_FILE_SYSTEM_H

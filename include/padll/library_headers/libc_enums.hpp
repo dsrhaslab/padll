@@ -88,7 +88,7 @@ BETTER_ENUM (ExtendedAttributes,
 /**
  * Special POSIX calls definitions.
  */
-BETTER_ENUM (Special, int , no_op = 0, socket = 1)
+BETTER_ENUM (Special, int , no_op = 0, socket = 1, fcntl = 2)
 
 } // namespace padll::headers
 

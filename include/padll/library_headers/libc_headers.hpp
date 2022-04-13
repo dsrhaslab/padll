@@ -160,9 +160,11 @@ struct libc_extattr {
  * Special POSIX calls supported by PADLL for well functioning.
  */
 using libc_socket_t = int (*) (int, int, int);
+using libc_fcntl_t = int (*) (int, int, void*);
 
 struct libc_special {
     libc_socket_t m_socket { nullptr };
+    libc_fcntl_t m_fcntl { nullptr };
 };
 
 } // namespace padll::headers
