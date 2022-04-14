@@ -113,12 +113,12 @@ bool MountPointTable::create_mount_point_entry (const int& fd,
     // check if the insertion was successful
     if (!inserted) {
         // replace key-value pair in file_descriptors_table
-        this->m_file_descriptors_table.at (fd) = std::make_unique<MountPointEntry> (path, mount_point);
-        // submit error message to the logging facility
-        #if OPTION_DETAILED_LOGGING
-        this->m_log->log_error (
-            "Replacing value at file descriptor " + std::to_string (fd) + ".");
-        #endif
+        this->m_file_descriptors_table.at (fd)
+            = std::make_unique<MountPointEntry> (path, mount_point);
+// submit error message to the logging facility
+#if OPTION_DETAILED_LOGGING
+        this->m_log->log_error ("Replacing value at file descriptor " + std::to_string (fd) + ".");
+#endif
     }
 
     return inserted;
@@ -144,15 +144,16 @@ bool MountPointTable::create_mount_point_entry (FILE* file_ptr,
     // check if the insertion was successful
     if (!inserted) {
         // replace key-value pair in file_ptr_table
-        this->m_file_ptr_table.at (file_ptr) = std::make_unique<MountPointEntry> (path, mount_point);
+        this->m_file_ptr_table.at (file_ptr)
+            = std::make_unique<MountPointEntry> (path, mount_point);
 
-        // submit error message to the logging facility
-        #if OPTION_DETAILED_LOGGING
+// submit error message to the logging facility
+#if OPTION_DETAILED_LOGGING
         std::stringstream stream;
         stream << "Replacing value at file pointer " << file_ptr << ".";
         // submit error message to the logging facility
         this->m_log->log_error (stream.str ());
-        #endif
+#endif
     }
 
     return inserted;
