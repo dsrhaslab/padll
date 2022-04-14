@@ -1191,6 +1191,74 @@ int LdPreloadedPosix::ld_preloaded_posix_mkdirat (int dirfd, const char* path, m
     return result;
 }
 
+// ld_preloaded_posix_mknod call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_mknod (const char* path, mode_t mode, dev_t dev)
+{
+    // hook POSIX mknod operation to m_directory_operations.m_mknod
+    this->m_dlsym_hook.hook_posix_mknod (m_directory_operations.m_mknod);
+
+    // extract mountpoint and pick workflow-id
+    auto [mountpoint, workflow_id] = this->m_mount_point_table.pick_workflow_id (path);
+
+    // enforce mknod request to PAIO data plane stage
+    auto enforced = this->enforce_request (__func__,
+        workflow_id,
+        static_cast<int> (paio::core::POSIX::mknod),
+        static_cast<int> (paio::core::POSIX_META::dir_op),
+        1);
+
+    // perform original POSIX mknod operation
+    int result = m_directory_operations.m_mknod (path, mode, dev);
+
+    // update statistic entry
+    if (this->m_collect && enforced) {
+        if (result == 0) {
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::mknod), 1, 0);
+        } else {
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::mknod), 1, 0, 1);
+        }
+    }
+
+    return result;
+}
+
+// ld_preloaded_posix_mknodat call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_mknodat (int dirfd,
+    const char* path,
+    mode_t mode,
+    dev_t dev)
+{
+    // hook POSIX mknodat operation to m_directory_operations.m_mknodat
+    this->m_dlsym_hook.hook_posix_mknodat (m_directory_operations.m_mknodat);
+
+    // extract mountpoint and pick workflow-id
+    auto [mountpoint, workflow_id] = this->m_mount_point_table.pick_workflow_id (path);
+
+    // enforce mknodat request to PAIO data plane stage
+    auto enforced = this->enforce_request (__func__,
+        workflow_id,
+        static_cast<int> (paio::core::POSIX::mknodat),
+        static_cast<int> (paio::core::POSIX_META::dir_op),
+        1);
+
+    // perform original POSIX mknod operation
+    int result = m_directory_operations.m_mknodat (dirfd, path, mode, dev);
+
+    // update statistic entry
+    if (this->m_collect && enforced) {
+        if (result == 0) {
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::mknodat), 1, 0);
+        } else {
+            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::mknodat),
+                1,
+                0,
+                1);
+        }
+    }
+
+    return result;
+}
+
 // ld_preloaded_posix_rmdir call. (...)
 int LdPreloadedPosix::ld_preloaded_posix_rmdir (const char* path)
 {
