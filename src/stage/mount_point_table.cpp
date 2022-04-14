@@ -98,13 +98,13 @@ bool MountPointTable::create_mount_point_entry (const int& fd,
     const std::string& path,
     const MountPoint& mount_point)
 {
-    // lock_guard over shared_timed_mutex (write_lock)
-    std::lock_guard write_lock (this->m_fd_shared_lock);
-
     // check if key is a reserved or inexistent file descriptor
     if (!this->is_file_descriptor_valid (fd)) {
         return false;
     }
+
+    // lock_guard over shared_timed_mutex (write_lock)
+    std::lock_guard write_lock (this->m_fd_shared_lock);
 
     // create entry for the 'fd' file descriptor
     auto [iter, inserted] = this->m_file_descriptors_table.emplace (
@@ -125,13 +125,13 @@ bool MountPointTable::create_mount_point_entry (FILE* file_ptr,
     const std::string& path,
     const MountPoint& mount_point)
 {
-    // lock_guard over shared_timed_mutex (write_lock)
-    std::lock_guard write_lock (this->m_fptr_shared_lock);
-
     // check if key is a reserved or inexistent file descriptor
     if (!this->is_file_pointer_valid (file_ptr)) {
         return false;
     }
+
+    // lock_guard over shared_timed_mutex (write_lock)
+    std::lock_guard write_lock (this->m_fptr_shared_lock);
 
     // create entry for the 'file_ptr' file pointer
     auto [iter, inserted] = this->m_file_ptr_table.emplace (
@@ -151,13 +151,13 @@ bool MountPointTable::create_mount_point_entry (FILE* file_ptr,
 // get_mount_point_entry call. (...)
 std::pair<bool, MountPointEntry*> MountPointTable::get_mount_point_entry (const int& key)
 {
-    // shared_lock over shared_timed_mutex (read_lock)
-    std::shared_lock read_lock (this->m_fd_shared_lock);
-
     // check if key is a reserved or inexistent file descriptor
     if (!this->is_file_descriptor_valid (key)) {
         return std::make_pair (false, nullptr);
     }
+
+    // shared_lock over shared_timed_mutex (read_lock)
+    std::shared_lock read_lock (this->m_fd_shared_lock);
 
     // get the entry for the 'key' file descriptor
     auto iterator = this->m_file_descriptors_table.find (key);
@@ -174,13 +174,13 @@ std::pair<bool, MountPointEntry*> MountPointTable::get_mount_point_entry (const 
 // get_mount_point_entry call. (...)
 std::pair<bool, MountPointEntry*> MountPointTable::get_mount_point_entry (FILE* key)
 {
-    // shared_lock over shared_time_mutex (read_lock)
-    std::shared_lock read_lock (this->m_fptr_shared_lock);
-
     // check if key is a reserved or inexistent file descriptor
     if (!this->is_file_pointer_valid (key)) {
         return std::make_pair (false, nullptr);
     }
+
+    // shared_lock over shared_time_mutex (read_lock)
+    std::shared_lock read_lock (this->m_fptr_shared_lock);
 
     // get the entry for the 'key' file pointer
     auto iterator = this->m_file_ptr_table.find (key);
@@ -199,13 +199,13 @@ std::pair<bool, MountPointEntry*> MountPointTable::get_mount_point_entry (FILE* 
 //  descriptor referring to it is closed
 bool MountPointTable::remove_mount_point_entry (const int& key)
 {
-    // lock_guard over shared_timed_mutex (write_lock)
-    std::lock_guard write_lock (this->m_fd_shared_lock);
-
     // check if key is a reserved or inexistent file descriptor
     if (!this->is_file_descriptor_valid (key)) {
         return false;
     }
+
+    // lock_guard over shared_timed_mutex (write_lock)
+    std::lock_guard write_lock (this->m_fd_shared_lock);
 
     // remove entry for the 'key' file descriptor and check if the removal was successful
     if (this->m_file_descriptors_table.erase (key) == 0) {
@@ -224,13 +224,13 @@ bool MountPointTable::remove_mount_point_entry (const int& key)
 //  descriptor referring to it is closed
 bool MountPointTable::remove_mount_point_entry (FILE* key)
 {
-    // lock_guard over shared_timed_mutex (write_lock)
-    std::lock_guard write_lock (this->m_fptr_shared_lock);
-
     // check if key is a reserved or inexistent file descriptor
     if (!this->is_file_pointer_valid (key)) {
         return false;
     }
+
+    // lock_guard over shared_timed_mutex (write_lock)
+    std::lock_guard write_lock (this->m_fptr_shared_lock);
 
     // check if the removal was successful
     if (this->m_file_ptr_table.erase (key) == 0) {
