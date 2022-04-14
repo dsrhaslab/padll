@@ -138,8 +138,10 @@ std::string LdPreloadedPosix::to_string ()
         // enforce read request to PAIO data plane stage
         this->m_stage->enforce_request (workflow_id, operation_type, operation_context, payload);
     } else {
-        // temporarily create logging message
+// create logging message    
+#if OPTION_DETAILED_LOGGING
         this->m_log->log_error (std::string { function_name } + ": operation bypassed.");
+#endif
     }
 
     return is_valid;
@@ -1097,8 +1099,12 @@ int LdPreloadedPosix::ld_preloaded_posix_fclose (FILE* stream)
     // hook POSIX fclose operation to m_metadata_operations.m_fclose
     this->m_dlsym_hook.hook_posix_fclose (m_metadata_operations.m_fclose);
 
-    // enforce fclose request to PAIO data plane stage
-    this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (stream),
+    // select workflow-id to submit I/O request
+    auto workflow_id = this->m_mount_point_table.pick_workflow_id (stream);
+
+    // enforce fstatfs request to PAIO data plane stage
+    auto enforced = this->enforce_request (__func__,
+        workflow_id,
         static_cast<int> (paio::core::POSIX::fclose),
         static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
@@ -1109,7 +1115,7 @@ int LdPreloadedPosix::ld_preloaded_posix_fclose (FILE* stream)
     // TODO: remove_mount_point_entry
 
     // update statistic entry
-    if (this->m_collect) {
+    if (this->m_collect && enforced) {
         if (result == 0) {
             this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fclose),
                 1,
