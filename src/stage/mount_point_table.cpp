@@ -252,6 +252,36 @@ bool MountPointTable::remove_mount_point_entry (FILE* key)
     return true;
 }
 
+// replace_file_descriptor call. (...)
+bool MountPointTable::replace_file_descriptor (const int& old_fd, const int& new_fd)
+{
+    // check if old_fd and new_fd belong to reserved or inexistent file descriptors
+    if (!this->is_file_descriptor_valid (old_fd) || !this->is_file_descriptor_valid (new_fd)) {
+        return false;
+    }
+
+    // lock_guard over shared_timed_mutex (write_lock)
+    std::lock_guard write_lock (this->m_fd_shared_lock);
+
+    // get the entry for the 'old_fd' file descriptor
+    auto iterator = this->m_file_descriptors_table.find (old_fd);
+
+    // check if the entry exists
+    if (iterator == this->m_file_descriptors_table.end ()) {
+        this->m_log->log_error ("Cannot replace file descriptor " + std::to_string (old_fd) + ".");
+        return false;
+    } else {
+        // extract key-value pair from file_descriptors_table
+        auto node_entry = this->m_file_descriptors_table.extract (iterator);
+        // replace node_entry's key with new_fd
+        node_entry.key () = new_fd;
+        // insert node_entry into file_descriptors_table
+        this->m_file_descriptors_table.insert (std::move (node_entry));
+
+        return true;
+    }
+}
+
 // register_mount_point_type call. (...)
 void MountPointTable::register_mount_point_type (const MountPoint& type,
     const std::vector<uint32_t>& workflows)

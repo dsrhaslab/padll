@@ -1600,21 +1600,32 @@ int LdPreloadedPosix::ld_preloaded_posix_fcntl (int fd, int cmd, void* arg)
     // perform original POSIX fcntl operation
     int result_value = m_special_operations.m_fcntl (fd, cmd, arg);
 
-// detailed logging message
-#if OPTION_DETAILED_LOGGING
     switch (cmd) {
         case F_DUPFD:
-        case F_DUPFD_CLOEXEC:
-            this->m_log->log_debug (std::string { __func__ } + " duplicated file descriptor " +
-                std::to_string (fd) + " to " + std::to_string (result_value));
-        break;
-
-        default:
-            this->m_log->log_debug (std::string { __func__ } + " : " + std::to_string (result_value) + ", " + std::to_string (cmd));
-        break;
-
-    }
+        case F_DUPFD_CLOEXEC: {
+// detailed logging message
+#if OPTION_DETAILED_LOGGING
+            this->m_log->log_debug (std::string { __func__ } + " duplicated file descriptor "
+                + std::to_string (fd) + " to " + std::to_string (result_value));
 #endif
+            // replace fd with entry in m_fd_table
+            auto replaced = this->m_mount_point_table.replace_file_descriptor (fd, result_value);
+
+            if (!replaced) {
+                this->m_log->log_error ("Error while replacing file descriptor.");
+            }
+            break;
+        }
+
+        default: {
+// detailed logging message
+#if OPTION_DETAILED_LOGGING
+            this->m_log->log_debug (std::string { __func__ } + " : " + std::to_string (result_value)
+                + ", " + std::to_string (cmd));
+#endif
+            break;
+        }
+    }
 
     // update statistic entry
     if (this->m_collect) {

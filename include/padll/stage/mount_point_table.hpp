@@ -186,6 +186,14 @@ public:
     bool remove_mount_point_entry (FILE* key);
 
     /**
+     * replace_file_descriptor:
+     * @param old_fd
+     * @oaram new_fd
+     * @return
+     */
+    [[nodiscard]] bool replace_file_descriptor (const int& old_fd, const int& new_fd);
+
+    /**
      * to_string:
      * @return
      */
