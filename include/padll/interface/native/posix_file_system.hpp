@@ -73,7 +73,9 @@ extern "C" ssize_t read (int fd, void* buf, size_t size)
 {
 // detailed logging message
 #if OPTION_DETAILED_LOGGING
-    m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
+    m_logger_ptr->create_routine_log_message (__func__,
+        std::string_view { std::to_string (fd) },
+        std::string_view { std::to_string (size) });
 #endif
 
     return (posix_data_calls.padll_intercept_read)
@@ -92,7 +94,9 @@ extern "C" ssize_t write (int fd, const void* buf, size_t size)
 {
 // detailed logging message
 #if OPTION_DETAILED_LOGGING
-    m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
+    m_logger_ptr->create_routine_log_message (__func__,
+        std::string_view { std::to_string (fd) },
+        std::string_view { std::to_string (size) });
 #endif
 
     return (posix_data_calls.padll_intercept_write)
@@ -112,7 +116,9 @@ extern "C" ssize_t pread (int fd, void* buf, size_t size, off_t offset)
 {
 // detailed logging message
 #if OPTION_DETAILED_LOGGING
-    m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
+    m_logger_ptr->create_routine_log_message (__func__,
+        std::string_view { std::to_string (fd) },
+        std::string_view { std::to_string (size) });
 #endif
 
     return (posix_data_calls.padll_intercept_pread)
@@ -132,7 +138,9 @@ extern "C" ssize_t pwrite (int fd, const void* buf, size_t size, off_t offset)
 {
 // detailed logging message
 #if OPTION_DETAILED_LOGGING
-    m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
+    m_logger_ptr->create_routine_log_message (__func__,
+        std::string_view { std::to_string (fd) },
+        std::string_view { std::to_string (size) });
 #endif
 
     return (posix_data_calls.padll_intercept_pwrite)
@@ -153,7 +161,9 @@ extern "C" ssize_t pread64 (int fd, void* buf, size_t size, off64_t offset)
 {
 // detailed logging message
 #if OPTION_DETAILED_LOGGING
-    m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
+    m_logger_ptr->create_routine_log_message (__func__,
+        std::string_view { std::to_string (fd) },
+        std::string_view { std::to_string (size) });
 #endif
 
     return (posix_data_calls.padll_intercept_pread64)
@@ -175,7 +185,9 @@ extern "C" ssize_t pwrite64 (int fd, const void* buf, size_t size, off64_t offse
 {
 // detailed logging message
 #if OPTION_DETAILED_LOGGING
-    m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
+    m_logger_ptr->create_routine_log_message (__func__,
+        std::string_view { std::to_string (fd) },
+        std::string_view { std::to_string (size) });
 #endif
 
     return (posix_data_calls.padll_intercept_pwrite64)
