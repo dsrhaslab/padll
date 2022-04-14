@@ -158,7 +158,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_read (int fd, void* buf, size_t cou
 
     // select workflow-id to submit I/O request
     auto workflow_id = this->m_mount_point_table.pick_workflow_id (fd);
-
+    this->m_log->log_error ("Workflow-id #5:" + std::to_string (workflow_id));
     // enforce read request to PAIO data plane stage
     auto enforced = this->enforce_request (__func__,
         workflow_id,

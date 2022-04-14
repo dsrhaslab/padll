@@ -307,6 +307,7 @@ std::pair<MountPoint, uint32_t> MountPointTable::pick_workflow_id (
 uint32_t MountPointTable::pick_workflow_id (const int& fd)
 {
     auto workflow_id = static_cast<uint32_t> (-1);
+    this->m_log->log_error ("Workflow-id #1:" + std::to_string (workflow_id));
     // get MountPointEntry of the given file descriptor
     auto [return_value, entry_ptr] = this->get_mount_point_entry (fd);
 
@@ -320,6 +321,7 @@ uint32_t MountPointTable::pick_workflow_id (const int& fd)
 
         // select workflow-id
         workflow_id = this->select_workflow_id (mount_point);
+        this->m_log->log_error ("Workflow-id #4:" + std::to_string (workflow_id));
         // verify if the workflow identifier was not found
         if (workflow_id == static_cast<uint32_t> (-1)) {
             this->m_log->log_error ("Error while selecting workflow id.");
@@ -417,13 +419,15 @@ uint32_t MountPointTable::select_workflow_id (const MountPoint& namespace_name) 
     auto iterator = this->m_mount_point_workflows.find (namespace_name);
     auto return_value = static_cast<uint32_t> (-1);
 
+    this->m_log->log_error ("Workflow-id #2:" + std::to_string (return_value));
     // if the namespace exists, pick a random workflow
     if (iterator != this->m_mount_point_workflows.end ()) {
         // generate random item to pick
         // TODO: we should use a better random number generator (e.g. mt19937)
         auto random_item = static_cast<int> (random () % iterator->second.size ());
         // return workflow identifier
-        return iterator->second.begin ()[random_item];
+        return_value = iterator->second.begin ()[random_item];
+        this->m_log->log_error ("Workflow-id #3:" + std::to_string (return_value));
     }
 
     // if the namespace entry is not found, return -1
