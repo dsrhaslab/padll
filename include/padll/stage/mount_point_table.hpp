@@ -77,6 +77,18 @@ private:
      */
     [[nodiscard]] uint32_t select_workflow_id (const MountPoint& mount_point) const;
 
+    /**
+     * is_file_descriptor_valid:
+     * @param fd
+     */
+    [[nodiscard]] bool is_file_descriptor_valid (const int& fd) const;
+
+    /**
+     * is_file_pointer_valid:
+     * @param fptr
+     */
+    [[nodiscard]] bool is_file_pointer_valid (const FILE* fptr) const;
+
 public:
     /**
      * MountPointTable default constructor.

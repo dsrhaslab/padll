@@ -138,7 +138,7 @@ std::string LdPreloadedPosix::to_string ()
         // enforce read request to PAIO data plane stage
         this->m_stage->enforce_request (workflow_id, operation_type, operation_context, payload);
     } else {
-// create logging message    
+// create logging message
 #if OPTION_DETAILED_LOGGING
         this->m_log->log_error (std::string { function_name } + ": operation bypassed.");
 #endif
