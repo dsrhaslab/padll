@@ -141,8 +141,8 @@ std::string LdPreloadedPosix::to_string ()
 // create logging message
 #if OPTION_DETAILED_LOGGING
         std::stringstream stream;
-        stream << function_name << ": operation bypassed (" << workflow_id << "," << is_valid
-               << ")";
+        stream << function_name << ": operation bypassed (" << static_cast<int> (workflow_id) << ","
+               << is_valid << ")";
         this->m_log->log_debug (stream.str ());
 #endif
     }
@@ -1570,7 +1570,7 @@ int LdPreloadedPosix::ld_preloaded_posix_socket (int domain, int type, int proto
 
     // perform original POSIX socket operation
     int fd = m_special_operations.m_socket (domain, type, protocol);
-    
+
 // detailed logging message
 #if OPTION_DETAILED_LOGGING
     this->m_log->log_debug (std::string { __func__ } + " : " + std::to_string (fd));
@@ -1589,6 +1589,24 @@ int LdPreloadedPosix::ld_preloaded_posix_socket (int domain, int type, int proto
     }
 
     return fd;
+}
+
+// ld_preloaded_posix_fcntl call. (...)
+int LdPreloadedPosix::ld_preloaded_posix_fcntl (int fd, int cmd, void* arg)
+{
+    // hook POSIX fcntl operation to m_special_operations.m_socket
+    this->m_dlsym_hook.hook_posix_fcntl (m_special_operations.m_fcntl);
+
+    // perform original POSIX fcntl operation
+    int result_value = m_special_operations.m_fcntl (fd, cmd, arg);
+
+// detailed logging message
+#if OPTION_DETAILED_LOGGING
+    this->m_log->log_debug (std::string { __func__ } + " : " + std::to_string (result_value) + ", "
+        + std::to_string (cmd));
+#endif
+
+    return result_value;
 }
 
 } // namespace padll::interface::ldpreloaded

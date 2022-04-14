@@ -898,7 +898,7 @@ extern "C" ssize_t flistxattr (int fd, char* list, size_t size)
  * @param domain
  * @param type
  * @param protocol
- * @return 
+ * @return
  */
 extern "C" int socket (int domain, int type, int protocol)
 {
@@ -933,7 +933,8 @@ extern "C" int fcntl (int fd, int cmd, ...)
     va_end (ap);
 
     // submit fcntl call to libc
-    int result = ((libc_fcntl_t)dlsym (RTLD_NEXT, "fcntl")) (fd, cmd, arg);
+    // int result = ((libc_fcntl_t)dlsym (RTLD_NEXT, "fcntl")) (fd, cmd, arg);
+    int result = m_ld_preloaded_posix.ld_preloaded_posix_fcntl (fd, cmd, arg);
 
     switch (cmd) {
         case F_GETFD:

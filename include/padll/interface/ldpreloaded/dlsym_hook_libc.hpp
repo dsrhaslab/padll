@@ -1003,6 +1003,26 @@ public:
             socket_ptr = (libc_socket_t)dlsym (this->m_lib_handle, "socket");
         }
     }
+
+    /**
+     * hook_posix_fcntl:
+     * @param fcntl_ptr
+     */
+    void hook_posix_fcntl (libc_fcntl_t& fcntl_ptr)
+    {
+        // validate function and library handle pointers
+        if (!fcntl_ptr && !this->m_lib_handle) {
+            // open library handle, and assign the operation pointer through m_lib_handle if the
+            // open was successful, or through the next operation link.
+            (this->dlopen_library_handle ())
+                ? fcntl_ptr = (libc_fcntl_t)dlsym (this->m_lib_handle, "fcntl")
+                : fcntl_ptr = (libc_fcntl_t)dlsym (RTLD_NEXT, "fcntl");
+
+            // in case the library handle pointer is valid, assign the operation pointer
+        } else if (!fcntl_ptr) {
+            fcntl_ptr = (libc_fcntl_t)dlsym (this->m_lib_handle, "fcntl");
+        }
+    }
 };
 
 } // namespace padll::interface::ldpreloaded

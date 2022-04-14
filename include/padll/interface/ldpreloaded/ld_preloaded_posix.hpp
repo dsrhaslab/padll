@@ -521,6 +521,15 @@ public:
      * @param protocol
      */
     int ld_preloaded_posix_socket (int domain, int type, int protocol);
+
+    /**
+     * ld_preloaded_posix_fcntl:
+     * @param fd
+     * @param cmd
+     * @param arg (void*)
+     * @return
+     */
+    int ld_preloaded_posix_fcntl (int fd, int cmd, void* arg);
 };
 } // namespace padll::interface::ldpreloaded
 
