@@ -670,8 +670,9 @@ extern "C" int mknod (const char* path, mode_t mode, dev_t dev)
     m_logger_ptr->create_routine_log_message (__func__, path);
 #endif
 
-    // TODO: redirect to ld_preloaded_posix as well
-    return m_posix_passthrough.passthrough_posix_mknod (path, mode, dev);
+    return (posix_directory_calls.padll_intercept_mknod)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_mknod (path, mode, dev)
+        : m_posix_passthrough.passthrough_posix_mknod (path, mode, dev);
 }
 
 /**
@@ -691,8 +692,9 @@ extern "C" int mknodat (int dirfd, const char* path, mode_t mode, dev_t dev)
         path);
 #endif
 
-    // TODO: redirect to ld_preloaded_posix as well
-    return m_posix_passthrough.passthrough_posix_mknodat (dirfd, path, mode, dev);
+    return (posix_directory_calls.padll_intercept_mknodat)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_mknodat (dirfd, path, mode, dev)
+        : m_posix_passthrough.passthrough_posix_mknodat (dirfd, path, mode, dev);
 }
 
 /**
