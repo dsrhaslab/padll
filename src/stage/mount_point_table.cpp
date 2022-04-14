@@ -156,6 +156,7 @@ std::pair<bool, MountPointEntry*> MountPointTable::get_mount_point_entry (const 
 {
     // check if key is a reserved or inexistent file descriptor
     if (!this->is_file_descriptor_valid (key)) {
+        this->m_log->log_error ("FD is not valid (" + std::to_string (key) + ").");
         return std::make_pair (false, nullptr);
     }
 
@@ -170,7 +171,7 @@ std::pair<bool, MountPointEntry*> MountPointTable::get_mount_point_entry (const 
         return std::make_pair (false, nullptr);
     } else {
         // return pointer to entry's value
-        return std::make_pair (false, iterator->second.get ());
+        return std::make_pair (true, iterator->second.get ());
     }
 }
 
@@ -193,7 +194,7 @@ std::pair<bool, MountPointEntry*> MountPointTable::get_mount_point_entry (FILE* 
         return std::make_pair (false, nullptr);
     } else {
         // return pointer to entry's value
-        return std::make_pair (false, iterator->second.get ());
+        return std::make_pair (true, iterator->second.get ());
     }
 }
 
