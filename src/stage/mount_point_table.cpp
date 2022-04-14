@@ -112,10 +112,13 @@ bool MountPointTable::create_mount_point_entry (const int& fd,
 
     // check if the insertion was successful
     if (!inserted) {
+        // replace key-value pair in file_descriptors_table
         this->m_file_descriptors_table.at (fd) = std::make_unique<MountPointEntry> (path, mount_point);
         // submit error message to the logging facility
+        #if OPTION_DETAILED_LOGGING
         this->m_log->log_error (
             "Replacing value at file descriptor " + std::to_string (fd) + ".");
+        #endif
     }
 
     return inserted;
@@ -140,12 +143,16 @@ bool MountPointTable::create_mount_point_entry (FILE* file_ptr,
 
     // check if the insertion was successful
     if (!inserted) {
+        // replace key-value pair in file_ptr_table
         this->m_file_ptr_table.at (file_ptr) = std::make_unique<MountPointEntry> (path, mount_point);
+
         // submit error message to the logging facility
+        #if OPTION_DETAILED_LOGGING
         std::stringstream stream;
         stream << "Replacing value at file pointer " << file_ptr << ".";
         // submit error message to the logging facility
         this->m_log->log_error (stream.str ());
+        #endif
     }
 
     return inserted;
@@ -156,7 +163,6 @@ std::pair<bool, MountPointEntry*> MountPointTable::get_mount_point_entry (const 
 {
     // check if key is a reserved or inexistent file descriptor
     if (!this->is_file_descriptor_valid (key)) {
-        this->m_log->log_error ("FD is not valid (" + std::to_string (key) + ").");
         return std::make_pair (false, nullptr);
     }
 
@@ -308,7 +314,6 @@ std::pair<MountPoint, uint32_t> MountPointTable::pick_workflow_id (
 uint32_t MountPointTable::pick_workflow_id (const int& fd)
 {
     auto workflow_id = static_cast<uint32_t> (-1);
-    this->m_log->log_error ("Workflow-id #1:" + std::to_string (workflow_id));
     // get MountPointEntry of the given file descriptor
     auto [return_value, entry_ptr] = this->get_mount_point_entry (fd);
 
@@ -322,7 +327,7 @@ uint32_t MountPointTable::pick_workflow_id (const int& fd)
 
         // select workflow-id
         workflow_id = this->select_workflow_id (mount_point);
-        this->m_log->log_error ("Workflow-id #4:" + std::to_string (workflow_id));
+
         // verify if the workflow identifier was not found
         if (workflow_id == static_cast<uint32_t> (-1)) {
             this->m_log->log_error ("Error while selecting workflow id.");
@@ -420,7 +425,6 @@ uint32_t MountPointTable::select_workflow_id (const MountPoint& namespace_name) 
     auto iterator = this->m_mount_point_workflows.find (namespace_name);
     auto return_value = static_cast<uint32_t> (-1);
 
-    this->m_log->log_error ("Workflow-id #2:" + std::to_string (return_value));
     // if the namespace exists, pick a random workflow
     if (iterator != this->m_mount_point_workflows.end ()) {
         // generate random item to pick
@@ -428,7 +432,6 @@ uint32_t MountPointTable::select_workflow_id (const MountPoint& namespace_name) 
         auto random_item = static_cast<int> (random () % iterator->second.size ());
         // return workflow identifier
         return_value = iterator->second.begin ()[random_item];
-        this->m_log->log_error ("Workflow-id #3:" + std::to_string (return_value));
     }
 
     // if the namespace entry is not found, return -1
