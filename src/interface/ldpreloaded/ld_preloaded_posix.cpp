@@ -142,7 +142,7 @@ std::string LdPreloadedPosix::to_string ()
 #if OPTION_DETAILED_LOGGING
         std::stringstream stream;
         stream << function_name << ": operation bypassed (" << static_cast<int> (workflow_id) << ","
-               << is_valid << ")";
+               << payload << ")";
         this->m_log->log_debug (stream.str ());
 #endif
     }
