@@ -135,7 +135,7 @@ std::string LdPreloadedPosix::to_string ()
     auto is_valid = (workflow_id != static_cast<uint32_t> (-1));
 
     if (is_valid) {
-        // enforce read request to PAIO data plane stage
+        // enforce request to PAIO data plane stage
         this->m_stage->enforce_request (workflow_id, operation_type, operation_context, payload);
     } else {
 // create logging message
@@ -143,8 +143,7 @@ std::string LdPreloadedPosix::to_string ()
         std::stringstream stream;
         stream << function_name << ": operation bypassed (" << workflow_id << "," << is_valid
                << ")";
-        // this->m_log->log_error (std::string { function_name } + ": operation bypassed.");
-        this->m_log->log_error (stream.str ());
+        this->m_log->log_debug (stream.str ());
 #endif
     }
 
@@ -677,7 +676,7 @@ int LdPreloadedPosix::ld_preloaded_posix_close (int fd)
     // perform original POSIX close operation
     int result = m_metadata_operations.m_close (fd);
 
-    // TODO: remove_mount_point_entry
+    // remove entry from MountPointTable
     this->m_mount_point_table.remove_mount_point_entry (fd);
 
     // update statistic entry
@@ -882,8 +881,6 @@ int LdPreloadedPosix::ld_preloaded_posix_unlink (const char* path)
     // perform original POSIX unlink operation
     int result = m_metadata_operations.m_unlink (path);
 
-    // TODO: remove_mount_point_entry
-
     // update statistic entry
     if (this->m_collect && enforced) {
         if (result == 0) {
@@ -920,8 +917,6 @@ int LdPreloadedPosix::ld_preloaded_posix_unlinkat (int dirfd, const char* pathna
     // perform original POSIX unlinkat operation
     int result = m_metadata_operations.m_unlinkat (dirfd, pathname, flags);
 
-    // TODO: remove_mount_point_entry
-
     // update statistic entry
     if (this->m_collect && enforced) {
         if (result == 0) {
@@ -957,9 +952,6 @@ int LdPreloadedPosix::ld_preloaded_posix_rename (const char* old_path, const cha
 
     // perform original POSIX rename operation
     int result = m_metadata_operations.m_rename (old_path, new_path);
-
-    // TODO: create_mount_point_entry (new_path)
-    // TODO: remove_mount_point_entry (old_path)
 
     // update statistic entry
     if (this->m_collect && enforced) {
@@ -999,9 +991,6 @@ int LdPreloadedPosix::ld_preloaded_posix_renameat (int olddirfd,
 
     // perform original POSIX renameat operation
     int result = m_metadata_operations.m_renameat (olddirfd, old_path, newdirfd, new_path);
-
-    // TODO: create_mount_point_entry (new_path)
-    // TODO: remove_mount_point_entry (old_path)
 
     // update statistic entry
     if (this->m_collect && enforced) {
@@ -1117,7 +1106,7 @@ int LdPreloadedPosix::ld_preloaded_posix_fclose (FILE* stream)
     // perform original POSIX fclose operation
     int result = m_metadata_operations.m_fclose (stream);
 
-    // TODO: remove_mount_point_entry
+    // remove entry from MountPointTable
     this->m_mount_point_table.remove_mount_point_entry (stream);
 
     // update statistic entry
@@ -1581,7 +1570,11 @@ int LdPreloadedPosix::ld_preloaded_posix_socket (int domain, int type, int proto
 
     // perform original POSIX socket operation
     int fd = m_special_operations.m_socket (domain, type, protocol);
-    this->m_log->log_debug (std::string { __func__ } + ": fd = " + std::to_string (fd));
+    
+// detailed logging message
+#if OPTION_DETAILED_LOGGING
+    this->m_log->log_debug (std::string { __func__ } + " : " + std::to_string (fd));
+#endif
 
     // update statistic entry
     if (this->m_collect) {

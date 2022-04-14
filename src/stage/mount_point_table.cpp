@@ -206,8 +206,6 @@ std::pair<bool, MountPointEntry*> MountPointTable::get_mount_point_entry (FILE* 
 }
 
 // remove_mount_point_entry call. (...)
-// BUG: for "unlink", this method does not work, since it only remove files until the last file
-//  descriptor referring to it is closed
 bool MountPointTable::remove_mount_point_entry (const int& key)
 {
     // check if key is a reserved or inexistent file descriptor
@@ -231,8 +229,6 @@ bool MountPointTable::remove_mount_point_entry (const int& key)
 }
 
 // remove_mount_point_entry call. (...)
-// BUG: for "unlink", this method does not work, since it only remove files until the last file
-//  descriptor referring to it is closed
 bool MountPointTable::remove_mount_point_entry (FILE* key)
 {
     // check if key is a reserved or inexistent file descriptor

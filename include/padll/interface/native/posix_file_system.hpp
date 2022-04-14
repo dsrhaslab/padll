@@ -895,6 +895,10 @@ extern "C" ssize_t flistxattr (int fd, char* list, size_t size)
 
 /**
  * socket:
+ * @param domain
+ * @param type
+ * @param protocol
+ * @return 
  */
 extern "C" int socket (int domain, int type, int protocol)
 {
@@ -908,6 +912,11 @@ extern "C" int socket (int domain, int type, int protocol)
         : m_posix_passthrough.passthrough_posix_socket (domain, type, protocol);
 }
 
+/**
+ * fcntl:
+ * @param fd
+ * @param cmd
+ */
 extern "C" int fcntl (int fd, int cmd, ...)
 {
 // detailed logging message
