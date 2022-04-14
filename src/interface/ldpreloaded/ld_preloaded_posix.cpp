@@ -674,6 +674,7 @@ int LdPreloadedPosix::ld_preloaded_posix_close (int fd)
     int result = m_metadata_operations.m_close (fd);
 
     // TODO: remove_mount_point_entry
+    this->m_mount_point_table.remove_mount_point_entry (fd);
 
     // update statistic entry
     if (this->m_collect && enforced) {
@@ -1113,6 +1114,7 @@ int LdPreloadedPosix::ld_preloaded_posix_fclose (FILE* stream)
     int result = m_metadata_operations.m_fclose (stream);
 
     // TODO: remove_mount_point_entry
+    this->m_mount_point_table.remove_mount_point_entry (stream);
 
     // update statistic entry
     if (this->m_collect && enforced) {
