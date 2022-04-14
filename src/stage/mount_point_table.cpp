@@ -112,9 +112,10 @@ bool MountPointTable::create_mount_point_entry (const int& fd,
 
     // check if the insertion was successful
     if (!inserted) {
+        this->m_file_descriptors_table.at (fd) = std::make_unique<MountPointEntry> (path, mount_point);
         // submit error message to the logging facility
         this->m_log->log_error (
-            "File descriptor " + std::to_string (fd) + " could not be inserted (already exists).");
+            "Replacing value at file descriptor " + std::to_string (fd) + ".");
     }
 
     return inserted;
@@ -139,8 +140,10 @@ bool MountPointTable::create_mount_point_entry (FILE* file_ptr,
 
     // check if the insertion was successful
     if (!inserted) {
+        this->m_file_ptr_table.at (file_ptr) = std::make_unique<MountPointEntry> (path, mount_point);
+        // submit error message to the logging facility
         std::stringstream stream;
-        stream << "File pointer " << file_ptr << " could not be inserted (already exists).";
+        stream << "Replacing value at file pointer " << file_ptr << ".";
         // submit error message to the logging facility
         this->m_log->log_error (stream.str ());
     }
