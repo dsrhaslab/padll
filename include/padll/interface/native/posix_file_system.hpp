@@ -932,31 +932,8 @@ extern "C" int fcntl (int fd, int cmd, ...)
     arg = va_arg (ap, void*);
     va_end (ap);
 
-    // submit fcntl call to libc
-    // int result = ((libc_fcntl_t)dlsym (RTLD_NEXT, "fcntl")) (fd, cmd, arg);
+    // submit fcntl call to ld_preloaded_posix
     int result = m_ld_preloaded_posix.ld_preloaded_posix_fcntl (fd, cmd, arg);
-
-    switch (cmd) {
-        case F_GETFD:
-        case F_GETFL:
-        case F_GETOWN:
-
-            m_logger_ptr->log_debug ("fcntl simple call : " + std::to_string (result));
-            break;
-
-        case F_DUPFD:
-        case F_SETFD:
-            m_logger_ptr->log_debug ("fcntl advanced call : " + std::to_string (result));
-            break;
-
-        case F_SETFL:
-            m_logger_ptr->log_debug ("fcntl-FSETFL : " + std::to_string (result));
-            break;
-
-        default:
-            m_logger_ptr->log_debug ("Unsupported fcntl() command: " + std::to_string (cmd));
-            break;
-    }
 
     return result;
 }
