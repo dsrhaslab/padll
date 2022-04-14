@@ -140,7 +140,10 @@ std::string LdPreloadedPosix::to_string ()
     } else {
 // create logging message
 #if OPTION_DETAILED_LOGGING
-        this->m_log->log_error (std::string { function_name } + ": operation bypassed.");
+        std::stringstream stream;
+        stream << function_name << ": operation bypassed (" << workflow_id << "," << is_valid << ")";
+        // this->m_log->log_error (std::string { function_name } + ": operation bypassed.");
+        this->m_log->log_error (stream.str ());
 #endif
     }
 
