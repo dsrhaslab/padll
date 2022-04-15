@@ -394,6 +394,25 @@ public:
     int ld_preloaded_posix_mkdirat (int dirfd, const char* path, mode_t mode);
 
     /**
+     * ld_preloaded_posix_mknod:
+     * @param path
+     * @param mode
+     * @param dev
+     * @return
+     */
+    int ld_preloaded_posix_mknod (const char* path, mode_t mode, dev_t dev);
+
+    /**
+     * ld_preloaded_posix_mknodat:
+     * @param dirfd
+     * @param path
+     * @param mode
+     * @param dev
+     * @return
+     */
+    int ld_preloaded_posix_mknodat (int dirfd, const char* path, mode_t mode, dev_t dev);
+
+    /**
      * ld_preloaded_posix_rmdir:
      *  https://linux.die.net/man/3/rmdir
      * @param path
