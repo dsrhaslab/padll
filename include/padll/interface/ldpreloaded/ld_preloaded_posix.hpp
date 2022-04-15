@@ -69,7 +69,7 @@ private:
      * @param enforced
      */
     void
-    update_statistic_entry_data (const int& operation, const ssize_t& result, const bool& enforced);
+    update_statistic_entry_data (const int& operation, const ssize_t& bytes, const bool& enforced);
 
     /**
      * update_statistic_entry_metadata:
@@ -88,7 +88,7 @@ private:
      * @param enforced
      */
     void
-    update_statistic_entry_dir (const int& operation, const long& result, const bool& enforced);
+    update_statistic_entry_dir (const int& operation, const int& result, const bool& enforced);
 
     /**
      * update_statistic_entry_ext_attr:
@@ -97,7 +97,7 @@ private:
      * @param enforced
      */
     void update_statistic_entry_ext_attr (const int& operation,
-        const long& result,
+        const ssize_t& bytes,
         const bool& enforced);
 
     /**
@@ -107,7 +107,7 @@ private:
      * @param enforced
      */
     void
-    update_statistic_entry_special (const int& operation, const long& result, const bool& enforced);
+    update_statistic_entry_special (const int& operation, const int& result, const bool& enforced);
 
     /**
      * update_staitistcs:

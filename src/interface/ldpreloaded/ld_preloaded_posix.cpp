@@ -178,11 +178,11 @@ void LdPreloadedPosix::update_statistic_entry_metadata (const int& operation,
 
 // update_statistic_entry_dir call. (...)
 void LdPreloadedPosix::update_statistic_entry_dir (const int& operation,
-    const long& result,
+    const int& result,
     const bool& enforced)
 {
     if (enforced) {
-        (result >= 0) ? this->m_dir_stats.update_statistic_entry (operation, 1, result)
+        (result == 0) ? this->m_dir_stats.update_statistic_entry (operation, 1, 0)
                       : this->m_dir_stats.update_statistic_entry (operation, 1, 0, 1);
     } else {
         this->m_dir_stats.update_bypassed_statistic_entry (operation, 1);
@@ -191,7 +191,7 @@ void LdPreloadedPosix::update_statistic_entry_dir (const int& operation,
 
 // update_statistic_entry_ext_attr call. (...)
 void LdPreloadedPosix::update_statistic_entry_ext_attr (const int& operation,
-    const long& result,
+    const ssize_t& result,
     const bool& enforced)
 {
     if (enforced) {
@@ -204,11 +204,11 @@ void LdPreloadedPosix::update_statistic_entry_ext_attr (const int& operation,
 
 // update_statistic_entry_special call. (...)
 void LdPreloadedPosix::update_statistic_entry_special (const int& operation,
-    const long& result,
+    const int& result,
     const bool& enforced)
 {
     if (enforced) {
-        (result >= 0) ? this->m_special_stats.update_statistic_entry (operation, 1, result)
+        (result >= 0) ? this->m_special_stats.update_statistic_entry (operation, 1, 0)
                       : this->m_special_stats.update_statistic_entry (operation, 1, 0, 1);
     } else {
         this->m_special_stats.update_bypassed_statistic_entry (operation, 1);
@@ -751,18 +751,10 @@ int LdPreloadedPosix::ld_preloaded_posix_statfs (const char* path, struct statfs
     int result = m_metadata_operations.m_statfs (path, buf);
 
     // update statistic entry
-    if (this->m_collect && enforced) {
-        if (result == 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::statfs),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::statfs),
-                1,
-                0,
-                1);
-        }
-    }
+    this->update_statistics (OperationType::metadata_calls,
+        static_cast<int> (Metadata::statfs),
+        result,
+        enforced);
 
     return result;
 }
@@ -787,18 +779,10 @@ int LdPreloadedPosix::ld_preloaded_posix_fstatfs (int fd, struct statfs* buf)
     int result = m_metadata_operations.m_fstatfs (fd, buf);
 
     // update statistic entry
-    if (this->m_collect && enforced) {
-        if (result == 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fstatfs),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fstatfs),
-                1,
-                0,
-                1);
-        }
-    }
+    this->update_statistics (OperationType::metadata_calls,
+        static_cast<int> (Metadata::fstatfs),
+        result,
+        enforced);
 
     return result;
 }
@@ -823,18 +807,10 @@ int LdPreloadedPosix::ld_preloaded_posix_statfs64 (const char* path, struct stat
     int result = m_metadata_operations.m_statfs64 (path, buf);
 
     // update statistic entry
-    if (this->m_collect && enforced) {
-        if (result == 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::statfs64),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::statfs64),
-                1,
-                0,
-                1);
-        }
-    }
+    this->update_statistics (OperationType::metadata_calls,
+        static_cast<int> (Metadata::statfs64),
+        result,
+        enforced);
 
     return result;
 }
@@ -859,18 +835,10 @@ int LdPreloadedPosix::ld_preloaded_posix_fstatfs64 (int fd, struct statfs64* buf
     int result = m_metadata_operations.m_fstatfs64 (fd, buf);
 
     // update statistic entry
-    if (this->m_collect && enforced) {
-        if (result == 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fstatfs64),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fstatfs64),
-                1,
-                0,
-                1);
-        }
-    }
+    this->update_statistics (OperationType::metadata_calls,
+        static_cast<int> (Metadata::fstatfs64),
+        result,
+        enforced);
 
     return result;
 }
@@ -895,18 +863,10 @@ int LdPreloadedPosix::ld_preloaded_posix_unlink (const char* path)
     int result = m_metadata_operations.m_unlink (path);
 
     // update statistic entry
-    if (this->m_collect && enforced) {
-        if (result == 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::unlink),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::unlink),
-                1,
-                0,
-                1);
-        }
-    }
+    this->update_statistics (OperationType::metadata_calls,
+        static_cast<int> (Metadata::unlink),
+        result,
+        enforced);
 
     return result;
 }
@@ -931,18 +891,10 @@ int LdPreloadedPosix::ld_preloaded_posix_unlinkat (int dirfd, const char* pathna
     int result = m_metadata_operations.m_unlinkat (dirfd, pathname, flags);
 
     // update statistic entry
-    if (this->m_collect && enforced) {
-        if (result == 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::unlinkat),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::unlinkat),
-                1,
-                0,
-                1);
-        }
-    }
+    this->update_statistics (OperationType::metadata_calls,
+        static_cast<int> (Metadata::unlinkat),
+        result,
+        enforced);
 
     return result;
 }
@@ -967,18 +919,10 @@ int LdPreloadedPosix::ld_preloaded_posix_rename (const char* old_path, const cha
     int result = m_metadata_operations.m_rename (old_path, new_path);
 
     // update statistic entry
-    if (this->m_collect && enforced) {
-        if (result == 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::rename),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::rename),
-                1,
-                0,
-                1);
-        }
-    }
+    this->update_statistics (OperationType::metadata_calls,
+        static_cast<int> (Metadata::rename),
+        result,
+        enforced);
 
     return result;
 }
@@ -1006,18 +950,10 @@ int LdPreloadedPosix::ld_preloaded_posix_renameat (int olddirfd,
     int result = m_metadata_operations.m_renameat (olddirfd, old_path, newdirfd, new_path);
 
     // update statistic entry
-    if (this->m_collect && enforced) {
-        if (result == 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::renameat),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::renameat),
-                1,
-                0,
-                1);
-        }
-    }
+    this->update_statistics (OperationType::metadata_calls,
+        static_cast<int> (Metadata::renameat),
+        result,
+        enforced);
 
     return result;
 }
@@ -1044,20 +980,15 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_fopen (const char* pathname, const ch
     // create_mount_point_entry
     this->m_mount_point_table.create_mount_point_entry (fptr, pathname, mountpoint);
 
+    // verify if fopen operation was successful
+    auto result = (fptr != nullptr) ? 0 : -1;
+    
     // update statistic entry
-    if (this->m_collect && enforced) {
-        if (fptr != nullptr) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fopen),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fopen),
-                1,
-                0,
-                1);
-        }
-    }
-
+    this->update_statistics (OperationType::metadata_calls,
+        static_cast<int> (Metadata::fopen),
+        result,
+        enforced);
+    
     return fptr;
 }
 
@@ -1083,19 +1014,14 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_fopen64 (const char* pathname, const 
     // create_mount_point_entry
     this->m_mount_point_table.create_mount_point_entry (fptr, pathname, mountpoint);
 
+    // verify if fopen operation was successful
+    auto result = (fptr != nullptr) ? 0 : -1;
+    
     // update statistic entry
-    if (this->m_collect && enforced) {
-        if (fptr != nullptr) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fopen64),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fopen64),
-                1,
-                0,
-                1);
-        }
-    }
+    this->update_statistics (OperationType::metadata_calls,
+        static_cast<int> (Metadata::fopen64),
+        result,
+        enforced);
 
     return fptr;
 }
@@ -1123,18 +1049,10 @@ int LdPreloadedPosix::ld_preloaded_posix_fclose (FILE* stream)
     this->m_mount_point_table.remove_mount_point_entry (stream);
 
     // update statistic entry
-    if (this->m_collect && enforced) {
-        if (result == 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fclose),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::fclose),
-                1,
-                0,
-                1);
-        }
-    }
+    this->update_statistics (OperationType::metadata_calls,
+        static_cast<int> (Metadata::fclose),
+        result,
+        enforced);
 
     return result;
 }
@@ -1159,13 +1077,10 @@ int LdPreloadedPosix::ld_preloaded_posix_mkdir (const char* path, mode_t mode)
     int result = m_directory_operations.m_mkdir (path, mode);
 
     // update statistic entry
-    if (this->m_collect && enforced) {
-        if (result == 0) {
-            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::mkdir), 1, 0);
-        } else {
-            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::mkdir), 1, 0, 1);
-        }
-    }
+    this->update_statistics (OperationType::directory_calls,
+        static_cast<int> (Directory::mkdir),
+        result,
+        enforced);
 
     return result;
 }
@@ -1190,16 +1105,10 @@ int LdPreloadedPosix::ld_preloaded_posix_mkdirat (int dirfd, const char* path, m
     int result = m_directory_operations.m_mkdirat (dirfd, path, mode);
 
     // update statistic entry
-    if (this->m_collect && enforced) {
-        if (result == 0) {
-            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::mkdirat), 1, 0);
-        } else {
-            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::mkdirat),
-                1,
-                0,
-                1);
-        }
-    }
+    this->update_statistics (OperationType::directory_calls,
+        static_cast<int> (Directory::mkdirat),
+        result,
+        enforced);
 
     return result;
 }
@@ -1224,13 +1133,10 @@ int LdPreloadedPosix::ld_preloaded_posix_mknod (const char* path, mode_t mode, d
     int result = m_directory_operations.m_mknod (path, mode, dev);
 
     // update statistic entry
-    if (this->m_collect && enforced) {
-        if (result == 0) {
-            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::mknod), 1, 0);
-        } else {
-            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::mknod), 1, 0, 1);
-        }
-    }
+    this->update_statistics (OperationType::directory_calls,
+        static_cast<int> (Directory::mknod),
+        result,
+        enforced);
 
     return result;
 }
@@ -1258,16 +1164,10 @@ int LdPreloadedPosix::ld_preloaded_posix_mknodat (int dirfd,
     int result = m_directory_operations.m_mknodat (dirfd, path, mode, dev);
 
     // update statistic entry
-    if (this->m_collect && enforced) {
-        if (result == 0) {
-            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::mknodat), 1, 0);
-        } else {
-            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::mknodat),
-                1,
-                0,
-                1);
-        }
-    }
+    this->update_statistics (OperationType::directory_calls,
+        static_cast<int> (Directory::mknodat),
+        result,
+        enforced);
 
     return result;
 }
@@ -1291,14 +1191,12 @@ int LdPreloadedPosix::ld_preloaded_posix_rmdir (const char* path)
     // perform original POSIX rmdir operation
     int result = m_directory_operations.m_rmdir (path);
 
+    
     // update statistic entry
-    if (this->m_collect && enforced) {
-        if (result == 0) {
-            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::rmdir), 1, 0);
-        } else {
-            this->m_dir_stats.update_statistic_entry (static_cast<int> (Directory::rmdir), 1, 0, 1);
-        }
-    }
+    this->update_statistics (OperationType::directory_calls,
+        static_cast<int> (Directory::rmdir),
+        result,
+        enforced);
 
     return result;
 }
@@ -1326,17 +1224,10 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_getxattr (const char* path,
     ssize_t result = m_extattr_operations.m_getxattr (path, name, value, size);
 
     // update statistic entry
-    if (this->m_collect && enforced) {
-        if (result != -1) {
-            this->m_ext_attr_stats.update_statistic_entry (
-                static_cast<int> (ExtendedAttributes::getxattr),
-                1,
-                0);
-        } else {
-            this->m_ext_attr_stats
-                .update_statistic_entry (static_cast<int> (ExtendedAttributes::getxattr), 1, 0, 1);
-        }
-    }
+    this->update_statistics (OperationType::ext_attr_calls,
+        static_cast<int> (ExtendedAttributes::getxattr),
+        result,
+        enforced);
 
     return result;
 }
@@ -1364,17 +1255,10 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_lgetxattr (const char* path,
     ssize_t result = m_extattr_operations.m_lgetxattr (path, name, value, size);
 
     // update statistic entry
-    if (this->m_collect && enforced) {
-        if (result != -1) {
-            this->m_ext_attr_stats.update_statistic_entry (
-                static_cast<int> (ExtendedAttributes::lgetxattr),
-                1,
-                0);
-        } else {
-            this->m_ext_attr_stats
-                .update_statistic_entry (static_cast<int> (ExtendedAttributes::lgetxattr), 1, 0, 1);
-        }
-    }
+    this->update_statistics (OperationType::ext_attr_calls,
+        static_cast<int> (ExtendedAttributes::lgetxattr),
+        result,
+        enforced);
 
     return result;
 }
@@ -1400,17 +1284,10 @@ LdPreloadedPosix::ld_preloaded_posix_fgetxattr (int fd, const char* name, void* 
     ssize_t result = m_extattr_operations.m_fgetxattr (fd, name, value, size);
 
     // update statistic entry
-    if (this->m_collect && enforced) {
-        if (result != -1) {
-            this->m_ext_attr_stats.update_statistic_entry (
-                static_cast<int> (ExtendedAttributes::fgetxattr),
-                1,
-                0);
-        } else {
-            this->m_ext_attr_stats
-                .update_statistic_entry (static_cast<int> (ExtendedAttributes::fgetxattr), 1, 0, 1);
-        }
-    }
+    this->update_statistics (OperationType::ext_attr_calls,
+        static_cast<int> (ExtendedAttributes::fgetxattr),
+        result,
+        enforced);
 
     return result;
 }
@@ -1439,17 +1316,10 @@ int LdPreloadedPosix::ld_preloaded_posix_setxattr (const char* path,
     int result = m_extattr_operations.m_setxattr (path, name, value, size, flags);
 
     // update statistic entry
-    if (this->m_collect && enforced) {
-        if (result != -1) {
-            this->m_ext_attr_stats.update_statistic_entry (
-                static_cast<int> (ExtendedAttributes::setxattr),
-                1,
-                0);
-        } else {
-            this->m_ext_attr_stats
-                .update_statistic_entry (static_cast<int> (ExtendedAttributes::setxattr), 1, 0, 1);
-        }
-    }
+    this->update_statistics (OperationType::ext_attr_calls,
+        static_cast<int> (ExtendedAttributes::setxattr),
+        result,
+        enforced);
 
     return result;
 }
@@ -1478,17 +1348,10 @@ int LdPreloadedPosix::ld_preloaded_posix_lsetxattr (const char* path,
     int result = m_extattr_operations.m_lsetxattr (path, name, value, size, flags);
 
     // update statistic entry
-    if (this->m_collect && enforced) {
-        if (result != -1) {
-            this->m_ext_attr_stats.update_statistic_entry (
-                static_cast<int> (ExtendedAttributes::lsetxattr),
-                1,
-                0);
-        } else {
-            this->m_ext_attr_stats
-                .update_statistic_entry (static_cast<int> (ExtendedAttributes::lsetxattr), 1, 0, 1);
-        }
-    }
+    this->update_statistics (OperationType::ext_attr_calls,
+        static_cast<int> (ExtendedAttributes::lsetxattr),
+        result,
+        enforced);
 
     return result;
 }
@@ -1517,17 +1380,10 @@ int LdPreloadedPosix::ld_preloaded_posix_fsetxattr (int fd,
     int result = m_extattr_operations.m_fsetxattr (fd, name, value, size, flags);
 
     // update statistic entry
-    if (this->m_collect && enforced) {
-        if (result != -1) {
-            this->m_ext_attr_stats.update_statistic_entry (
-                static_cast<int> (ExtendedAttributes::fsetxattr),
-                1,
-                0);
-        } else {
-            this->m_ext_attr_stats
-                .update_statistic_entry (static_cast<int> (ExtendedAttributes::fsetxattr), 1, 0, 1);
-        }
-    }
+    this->update_statistics (OperationType::ext_attr_calls,
+        static_cast<int> (ExtendedAttributes::fsetxattr),
+        result,
+        enforced);
 
     return result;
 }
@@ -1552,17 +1408,10 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_listxattr (const char* path, char* 
     ssize_t result = m_extattr_operations.m_listxattr (path, list, size);
 
     // update statistic entry
-    if (this->m_collect && enforced) {
-        if (result != -1) {
-            this->m_ext_attr_stats.update_statistic_entry (
-                static_cast<int> (ExtendedAttributes::listxattr),
-                1,
-                0);
-        } else {
-            this->m_ext_attr_stats
-                .update_statistic_entry (static_cast<int> (ExtendedAttributes::listxattr), 1, 0, 1);
-        }
-    }
+    this->update_statistics (OperationType::ext_attr_calls,
+        static_cast<int> (ExtendedAttributes::listxattr),
+        result,
+        enforced);
 
     return result;
 }
@@ -1587,20 +1436,10 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_llistxattr (const char* path, char*
     ssize_t result = m_extattr_operations.m_llistxattr (path, list, size);
 
     // update statistic entry
-    if (this->m_collect && enforced) {
-        if (result != -1) {
-            this->m_ext_attr_stats.update_statistic_entry (
-                static_cast<int> (ExtendedAttributes::llistxattr),
-                1,
-                0);
-        } else {
-            this->m_ext_attr_stats.update_statistic_entry (
-                static_cast<int> (ExtendedAttributes::llistxattr),
-                1,
-                0,
-                1);
-        }
-    }
+    this->update_statistics (OperationType::ext_attr_calls,
+        static_cast<int> (ExtendedAttributes::llistxattr),
+        result,
+        enforced);
 
     return result;
 }
@@ -1625,20 +1464,10 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_flistxattr (int fd, char* list, siz
     ssize_t result = m_extattr_operations.m_flistxattr (fd, list, size);
 
     // update statistic entry
-    if (this->m_collect && enforced) {
-        if (result != -1) {
-            this->m_ext_attr_stats.update_statistic_entry (
-                static_cast<int> (ExtendedAttributes::flistxattr),
-                1,
-                0);
-        } else {
-            this->m_ext_attr_stats.update_statistic_entry (
-                static_cast<int> (ExtendedAttributes::flistxattr),
-                1,
-                0,
-                1);
-        }
-    }
+    this->update_statistics (OperationType::ext_attr_calls,
+        static_cast<int> (ExtendedAttributes::flistxattr),
+        result,
+        enforced);
 
     return result;
 }
@@ -1658,16 +1487,10 @@ int LdPreloadedPosix::ld_preloaded_posix_socket (int domain, int type, int proto
 #endif
 
     // update statistic entry
-    if (this->m_collect) {
-        if (fd != -1) {
-            this->m_special_stats.update_statistic_entry (static_cast<int> (Special::socket), 1, 0);
-        } else {
-            this->m_special_stats.update_statistic_entry (static_cast<int> (Special::socket),
-                1,
-                0,
-                1);
-        }
-    }
+    this->update_statistics (OperationType::special_calls,
+        static_cast<int> (Special::socket),
+        fd,
+        false);
 
     return fd;
 }
@@ -1709,16 +1532,10 @@ int LdPreloadedPosix::ld_preloaded_posix_fcntl (int fd, int cmd, void* arg)
     }
 
     // update statistic entry
-    if (this->m_collect) {
-        if (fd != -1) {
-            this->m_special_stats.update_statistic_entry (static_cast<int> (Special::fcntl), 1, 0);
-        } else {
-            this->m_special_stats.update_statistic_entry (static_cast<int> (Special::fcntl),
-                1,
-                0,
-                1);
-        }
-    }
+    this->update_statistics (OperationType::special_calls,
+        static_cast<int> (Special::fcntl),
+        result_value,
+        false);
 
     return result_value;
 }
