@@ -68,7 +68,8 @@ private:
      * @param result
      * @param enforced
      */
-    void update_statistic_entry_data (const int& operation, const long& result, const bool& enforced);
+    void
+    update_statistic_entry_data (const int& operation, const long& result, const bool& enforced);
 
     /**
      * update_statistic_entry_metadata:
@@ -76,7 +77,9 @@ private:
      * @param result
      * @param enforced
      */
-    void update_statistic_entry_metadata (const int& operation, const long& result, const bool& enforced);
+    void update_statistic_entry_metadata (const int& operation,
+        const long& result,
+        const bool& enforced);
 
     /**
      * update_statistic_entry_dir:
@@ -84,7 +87,8 @@ private:
      * @param result
      * @param enforced
      */
-    void update_statistic_entry_dir (const int& operation, const long& result, const bool& enforced);
+    void
+    update_statistic_entry_dir (const int& operation, const long& result, const bool& enforced);
 
     /**
      * update_statistic_entry_ext_attr:
@@ -92,7 +96,9 @@ private:
      * @param result
      * @param enforced
      */
-    void update_statistic_entry_ext_attr (const int& operation, const long& result, const bool& enforced);
+    void update_statistic_entry_ext_attr (const int& operation,
+        const long& result,
+        const bool& enforced);
 
     /**
      * update_statistic_entry_special:
@@ -100,7 +106,8 @@ private:
      * @param result
      * @param enforced
      */
-    void update_statistic_entry_special (const int& operation, const long& result, const bool& enforced);
+    void
+    update_statistic_entry_special (const int& operation, const long& result, const bool& enforced);
 
     /**
      * update_staitistcs:
@@ -109,7 +116,10 @@ private:
      * @param result
      * @param enforced
      */
-    void update_statistics (const OperationType& operation_type, const int& operation,  const long& result, const bool& enforced);
+    void update_statistics (const OperationType& operation_type,
+        const int& operation,
+        const long& result,
+        const bool& enforced);
 
 public:
     /**

@@ -81,8 +81,8 @@ public:
     [[nodiscard]] uint64_t get_error_counter ();
 
     /**
-     * get_bypass_counter: Get the total number of bypassed operations registered (counted) at the StatisticEntry object.
-     * This method is thread-safe.
+     * get_bypass_counter: Get the total number of bypassed operations registered (counted) at the
+     * StatisticEntry object. This method is thread-safe.
      * @return Returns a copy of the m_bypass_counter parameter.
      */
     [[nodiscard]] uint64_t get_bypass_counter ();

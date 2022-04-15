@@ -151,67 +151,75 @@ std::string LdPreloadedPosix::to_string ()
 }
 
 // update_statistic_entry_data call. (...)
-void LdPreloadedPosix::update_statistic_entry_data (const int& operation, const long& result, const bool& enforced)
+void LdPreloadedPosix::update_statistic_entry_data (const int& operation,
+    const long& result,
+    const bool& enforced)
 {
     if (enforced) {
-        (result >= 0) 
-            ? this->m_data_stats.update_statistic_entry (operation, 1, result)
-            : this->m_data_stats.update_statistic_entry (operation, 1, 0, 1);
+        (result >= 0) ? this->m_data_stats.update_statistic_entry (operation, 1, result)
+                      : this->m_data_stats.update_statistic_entry (operation, 1, 0, 1);
     } else {
         this->m_data_stats.update_bypassed_statistic_entry (operation, 1);
     }
 }
 
 // update_statistic_entry_metadata call. (...)
-void LdPreloadedPosix::update_statistic_entry_metadata (const int& operation, const long& result, const bool& enforced)
+void LdPreloadedPosix::update_statistic_entry_metadata (const int& operation,
+    const long& result,
+    const bool& enforced)
 {
     if (enforced) {
-        (result >= 0) 
-            ? this->m_metadata_stats.update_statistic_entry (operation, 1, result)
-            : this->m_metadata_stats.update_statistic_entry (operation, 1, 0, 1);
+        (result >= 0) ? this->m_metadata_stats.update_statistic_entry (operation, 1, result)
+                      : this->m_metadata_stats.update_statistic_entry (operation, 1, 0, 1);
     } else {
         this->m_metadata_stats.update_bypassed_statistic_entry (operation, 1);
     }
 }
 
 // update_statistic_entry_dir call. (...)
-void LdPreloadedPosix::update_statistic_entry_dir (const int& operation, const long& result, const bool& enforced)
+void LdPreloadedPosix::update_statistic_entry_dir (const int& operation,
+    const long& result,
+    const bool& enforced)
 {
     if (enforced) {
-        (result >= 0) 
-            ? this->m_dir_stats.update_statistic_entry (operation, 1, result)
-            : this->m_dir_stats.update_statistic_entry (operation, 1, 0, 1);
+        (result >= 0) ? this->m_dir_stats.update_statistic_entry (operation, 1, result)
+                      : this->m_dir_stats.update_statistic_entry (operation, 1, 0, 1);
     } else {
         this->m_dir_stats.update_bypassed_statistic_entry (operation, 1);
     }
 }
 
 // update_statistic_entry_ext_attr call. (...)
-void LdPreloadedPosix::update_statistic_entry_ext_attr (const int& operation, const long& result, const bool& enforced)
+void LdPreloadedPosix::update_statistic_entry_ext_attr (const int& operation,
+    const long& result,
+    const bool& enforced)
 {
     if (enforced) {
-        (result >= 0) 
-            ? this->m_ext_attr_stats.update_statistic_entry (operation, 1, result)
-            : this->m_ext_attr_stats.update_statistic_entry (operation, 1, 0, 1);
+        (result >= 0) ? this->m_ext_attr_stats.update_statistic_entry (operation, 1, result)
+                      : this->m_ext_attr_stats.update_statistic_entry (operation, 1, 0, 1);
     } else {
         this->m_ext_attr_stats.update_bypassed_statistic_entry (operation, 1);
     }
 }
 
 // update_statistic_entry_special call. (...)
-void LdPreloadedPosix::update_statistic_entry_special (const int& operation, const long& result, const bool& enforced)
+void LdPreloadedPosix::update_statistic_entry_special (const int& operation,
+    const long& result,
+    const bool& enforced)
 {
     if (enforced) {
-        (result >= 0) 
-            ? this->m_special_stats.update_statistic_entry (operation, 1, result)
-            : this->m_special_stats.update_statistic_entry (operation, 1, 0, 1);
+        (result >= 0) ? this->m_special_stats.update_statistic_entry (operation, 1, result)
+                      : this->m_special_stats.update_statistic_entry (operation, 1, 0, 1);
     } else {
         this->m_special_stats.update_bypassed_statistic_entry (operation, 1);
     }
 }
 
 // update_statistics call. (...)
-void LdPreloadedPosix::update_statistics (const OperationType& operation_type, const int& operation,  const long& result, const bool& enforced)
+void LdPreloadedPosix::update_statistics (const OperationType& operation_type,
+    const int& operation,
+    const long& result,
+    const bool& enforced)
 {
     if (this->m_collect) {
         switch (operation_type) {
@@ -261,7 +269,10 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_read (int fd, void* buf, size_t cou
     ssize_t result = m_data_operations.m_read (fd, buf, counter);
 
     // update statistic entry
-    this->update_statistics (OperationType::data_calls, static_cast<int> (paio::core::POSIX::read), result, enforced);
+    this->update_statistics (OperationType::data_calls,
+        static_cast<int> (paio::core::POSIX::read),
+        result,
+        enforced);
 
     return result;
 }
@@ -286,7 +297,10 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_write (int fd, const void* buf, siz
     ssize_t result = m_data_operations.m_write (fd, buf, counter);
 
     // update statistic entry
-    this->update_statistics (OperationType::data_calls, static_cast<int> (paio::core::POSIX::write), result, enforced);
+    this->update_statistics (OperationType::data_calls,
+        static_cast<int> (paio::core::POSIX::write),
+        result,
+        enforced);
 
     return result;
 }
@@ -311,7 +325,10 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_pread (int fd, void* buf, size_t co
     ssize_t result = m_data_operations.m_pread (fd, buf, counter, offset);
 
     // update statistic entry
-    this->update_statistics (OperationType::data_calls, static_cast<int> (paio::core::POSIX::pread), result, enforced);
+    this->update_statistics (OperationType::data_calls,
+        static_cast<int> (paio::core::POSIX::pread),
+        result,
+        enforced);
 
     return result;
 }
@@ -337,7 +354,10 @@ LdPreloadedPosix::ld_preloaded_posix_pwrite (int fd, const void* buf, size_t cou
     ssize_t result = m_data_operations.m_pwrite (fd, buf, counter, offset);
 
     // update statistic entry
-    this->update_statistics (OperationType::data_calls, static_cast<int> (paio::core::POSIX::pwrite), result, enforced);
+    this->update_statistics (OperationType::data_calls,
+        static_cast<int> (paio::core::POSIX::pwrite),
+        result,
+        enforced);
 
     return result;
 }
@@ -364,7 +384,10 @@ LdPreloadedPosix::ld_preloaded_posix_pread64 (int fd, void* buf, size_t counter,
     ssize_t result = m_data_operations.m_pread64 (fd, buf, counter, offset);
 
     // update statistic entry
-    this->update_statistics (OperationType::data_calls, static_cast<int> (paio::core::POSIX::pread64), result, enforced);
+    this->update_statistics (OperationType::data_calls,
+        static_cast<int> (paio::core::POSIX::pread64),
+        result,
+        enforced);
 
     return result;
 }
@@ -394,7 +417,10 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_pwrite64 (int fd,
     ssize_t result = m_data_operations.m_pwrite64 (fd, buf, counter, offset);
 
     // update statistic entry
-    this->update_statistics (OperationType::data_calls, static_cast<int> (paio::core::POSIX::pwrite64), result, enforced);
+    this->update_statistics (OperationType::data_calls,
+        static_cast<int> (paio::core::POSIX::pwrite64),
+        result,
+        enforced);
 
     return result;
 }
