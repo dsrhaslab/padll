@@ -6,7 +6,7 @@
 #ifndef PADLL_LIBC_ENUMS_HPP
 #define PADLL_LIBC_ENUMS_HPP
 
-#include <padll/thrid_party/enum.h>
+#include <padll/third_party/enum.h>
 
 namespace padll::headers {
 

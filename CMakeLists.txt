@@ -72,8 +72,9 @@ target_sources(
     ${PROJECT_SOURCE_DIR}/include/padll/statistics/statistic_entry.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/statistics/statistics.hpp
     ${PROJECT_SOURCE_DIR}/include/padll/utils/log.hpp
-    ${PROJECT_SOURCE_DIR}/include/padll/thrid_party/enum.h
-    ${PROJECT_SOURCE_DIR}/include/padll/thrid_party/tabulate.hpp
+    ${PROJECT_SOURCE_DIR}/include/padll/third_party/enum.h
+    ${PROJECT_SOURCE_DIR}/include/padll/third_party/tabulate.hpp
+    ${PROJECT_SOURCE_DIR}/include/padll/third_party/xoshiro.hpp
 )
 
 target_sources(
@@ -168,8 +169,9 @@ if (PADLL_BUILD_TESTS)
         add_test(NAME "${test_target_name}" COMMAND "${test_target_name}")
     endfunction(padll_test)
 
-    padll_test("tests/padll_statistics_test.cpp" "statistics_test")
     padll_test("tests/padll_mount_point_differentiation_test.cpp" "mountpoint_test")
+    padll_test("tests/padll_statistics_test.cpp" "statistics_test")
+    padll_test("tests/padll_xoshiro_test.cpp" "xoshiro_bench")
 
 endif (PADLL_BUILD_TESTS)
 
