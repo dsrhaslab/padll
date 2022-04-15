@@ -101,6 +101,15 @@ public:
         const uint64_t& byte_value,
         const uint64_t& error_value);
 
+
+    /**
+     * update_bypassed_statistic_entry: updatethe bypassed operation counter of a specific StatisticEntry of the m_statistics_entries container.
+     * @param operation_type Defines the operation entry to be registered.
+     * @param bypassed_value Defines the value to be incremented in the operation counter.
+     */
+    void update_bypassed_statistic_entry (const int& operation_type,
+        const uint64_t& bypassed_value);
+    
     /**
      * get_stats_identifier_call: get the identifier of the Statistics object.
      * @return Returns a copy of the m_stats_identifier parameter.
