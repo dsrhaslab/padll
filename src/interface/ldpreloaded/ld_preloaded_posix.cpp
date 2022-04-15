@@ -157,7 +157,7 @@ void LdPreloadedPosix::update_statistic_entry_data (const int& operation,
 {
     if (enforced) {
         (bytes >= 0) ? this->m_data_stats.update_statistic_entry (operation, 1, bytes)
-                      : this->m_data_stats.update_statistic_entry (operation, 1, 0, 1);
+                     : this->m_data_stats.update_statistic_entry (operation, 1, 0, 1);
     } else {
         this->m_data_stats.update_bypassed_statistic_entry (operation, 1);
     }
@@ -427,7 +427,12 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_pwrite64 (int fd,
 #endif
 
 // ld_preloaded_posix_mmap call.
-void* LdPreloadedPosix::ld_preloaded_posix_mmap (void* addr, size_t lenght, int prot, int flags, int fd, off_t offset)
+void* LdPreloadedPosix::ld_preloaded_posix_mmap (void* addr,
+    size_t lenght,
+    int prot,
+    int flags,
+    int fd,
+    off_t offset)
 {
     // hook POSIX mmap operation to m_data_operations.m_mmap
     this->m_dlsym_hook.hook_posix_mmap (m_data_operations.m_mmap);
@@ -1043,13 +1048,13 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_fopen (const char* pathname, const ch
 
     // verify if fopen operation was successful
     auto result = (fptr != nullptr) ? 0 : -1;
-    
+
     // update statistic entry
     this->update_statistics (OperationType::metadata_calls,
         static_cast<int> (Metadata::fopen),
         result,
         enforced);
-    
+
     return fptr;
 }
 
@@ -1077,7 +1082,7 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_fopen64 (const char* pathname, const 
 
     // verify if fopen operation was successful
     auto result = (fptr != nullptr) ? 0 : -1;
-    
+
     // update statistic entry
     this->update_statistics (OperationType::metadata_calls,
         static_cast<int> (Metadata::fopen64),
@@ -1252,7 +1257,6 @@ int LdPreloadedPosix::ld_preloaded_posix_rmdir (const char* path)
     // perform original POSIX rmdir operation
     int result = m_directory_operations.m_rmdir (path);
 
-    
     // update statistic entry
     this->update_statistics (OperationType::directory_calls,
         static_cast<int> (Directory::rmdir),

@@ -232,8 +232,8 @@ extern "C" int munmap (void* addr, size_t length)
 #endif
 
     return (posix_data_calls.padll_intercept_munmap)
-    ? m_ld_preloaded_posix.ld_preloaded_posix_munmap (addr, length)
-    : m_posix_passthrough.passthrough_posix_munmap (addr, length);
+        ? m_ld_preloaded_posix.ld_preloaded_posix_munmap (addr, length)
+        : m_posix_passthrough.passthrough_posix_munmap (addr, length);
 }
 
 /**

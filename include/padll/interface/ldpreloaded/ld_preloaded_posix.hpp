@@ -77,9 +77,8 @@ private:
      * @param result
      * @param enforced
      */
-    void update_statistic_entry_metadata (const int& operation,
-        const int& result,
-        const bool& enforced);
+    void
+    update_statistic_entry_metadata (const int& operation, const int& result, const bool& enforced);
 
     /**
      * update_statistic_entry_dir:
@@ -87,8 +86,7 @@ private:
      * @param result
      * @param enforced
      */
-    void
-    update_statistic_entry_dir (const int& operation, const int& result, const bool& enforced);
+    void update_statistic_entry_dir (const int& operation, const int& result, const bool& enforced);
 
     /**
      * update_statistic_entry_ext_attr:
@@ -244,7 +242,8 @@ public:
      * @param offset
      * @return
      */
-    void* ld_preloaded_posix_mmap (void* addr, size_t lenght, int prot, int flags, int fd, off_t offset);
+    void*
+    ld_preloaded_posix_mmap (void* addr, size_t lenght, int prot, int flags, int fd, off_t offset);
 
     /**
      * ld_preloaded_posix_munmap:
