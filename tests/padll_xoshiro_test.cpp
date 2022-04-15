@@ -1,6 +1,7 @@
 #include <chrono>
 #include <iostream>
 #include <padll/third_party/xoshiro.hpp>
+#include <random>
 
 using namespace XoshiroCpp;
 
@@ -59,6 +60,26 @@ public:
         std::chrono::duration<double> elapsed_seconds = end - start;
 
         this->log_results (std::string_view ("cpp-random"), iterations, elapsed_seconds);
+    }
+
+    /**
+     * test_cpp_mt19937:
+     */
+    void test_cpp_mt19937 (const uint64_t& iterations, const int& min, const int& max)
+    {
+        std::mt19937 mt { this->seed };
+
+        auto start = std::chrono::system_clock::now ();
+        for (uint64_t i = 0; i < iterations; i++) {
+            [[maybe_unused]] auto value = static_cast<int> ((mt () % max) - min);
+#if OPTION_XOSHIRO_TEST_DEBUG
+            std::cout << "cpp-mt19937 (" << i << "): " << value << std::endl;
+#endif
+        }
+        auto end = std::chrono::system_clock::now ();
+        std::chrono::duration<double> elapsed_seconds = end - start;
+
+        this->log_results (std::string_view ("cpp-mt19937"), iterations, elapsed_seconds);
     }
 
     /**
@@ -191,6 +212,7 @@ int main ()
     const int max { 100000 };
 
     xoshiro_test.test_cpp_random (iterations, min, max);
+    xoshiro_test.test_cpp_mt19937 (iterations, min, max);
     xoshiro_test.test_xoshiro128plus (iterations, min, max);
     xoshiro_test.test_xoshiro128plusplus (iterations, min, max);
     xoshiro_test.test_xoshiro128starstar (iterations, min, max);

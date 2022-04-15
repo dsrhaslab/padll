@@ -763,11 +763,13 @@ int LdPreloadedPosix::ld_preloaded_posix_close (int fd)
     int result = m_metadata_operations.m_close (fd);
 
     // remove entry from MountPointTable
-    this->m_mount_point_table.remove_mount_point_entry (fd);
+    if (option_hard_remove) {
+        this->m_mount_point_table.remove_mount_point_entry (fd);
+    }
 
     // update statistic entry
     this->update_statistics (OperationType::metadata_calls,
-        static_cast<int> (Metadata::open),
+        static_cast<int> (Metadata::close),
         result,
         enforced);
 

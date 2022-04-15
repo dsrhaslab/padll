@@ -94,6 +94,12 @@ constexpr bool option_mount_point_differentiation_enabled { true };
 // constexpr std::string_view option_default_remote_mount_point { "/home" };
 constexpr std::string_view option_default_remote_mount_point { "/" };
 
+/**
+ * option_hard_remove:
+ * Document this ...
+ */
+constexpr bool option_hard_remove { false };
+
 /***************************************************************************************************
  * Log configuration
  **************************************************************************************************/

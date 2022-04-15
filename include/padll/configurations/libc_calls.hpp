@@ -40,15 +40,15 @@ struct PosixExtendedAttributesCalls {
 };
 
 struct PosixMetadataCalls {
-    bool padll_intercept_open_var = false;
-    bool padll_intercept_open = false;
-    bool padll_intercept_creat = false;
-    bool padll_intercept_creat64 = false;
-    bool padll_intercept_openat_var = false;
-    bool padll_intercept_openat = false;
-    bool padll_intercept_open64_var = false;
-    bool padll_intercept_open64 = false;
-    bool padll_intercept_close = false;
+    bool padll_intercept_open_var = true;
+    bool padll_intercept_open = true;
+    bool padll_intercept_creat = true;
+    bool padll_intercept_creat64 = true;
+    bool padll_intercept_openat_var = true;
+    bool padll_intercept_openat = true;
+    bool padll_intercept_open64_var = true;
+    bool padll_intercept_open64 = true;
+    bool padll_intercept_close = true;
     bool padll_intercept_sync = false;
     bool padll_intercept_statfs = false;
     bool padll_intercept_fstatfs = false;
@@ -58,9 +58,9 @@ struct PosixMetadataCalls {
     bool padll_intercept_unlinkat = false;
     bool padll_intercept_rename = false;
     bool padll_intercept_renameat = false;
-    bool padll_intercept_fopen = false;
-    bool padll_intercept_fopen64 = false;
-    bool padll_intercept_fclose = false;
+    bool padll_intercept_fopen = true;
+    bool padll_intercept_fopen64 = true;
+    bool padll_intercept_fclose = true;
 };
 
 struct PosixSpecialCalls {

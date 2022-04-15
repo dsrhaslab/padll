@@ -117,7 +117,7 @@ bool MountPointTable::create_mount_point_entry (const int& fd,
             = std::make_unique<MountPointEntry> (path, mount_point);
 // submit error message to the logging facility
 #if OPTION_DETAILED_LOGGING
-        this->m_log->log_error ("Replacing value at file descriptor " + std::to_string (fd) + ".");
+        this->m_log->log_debug ("Replacing value at file descriptor " + std::to_string (fd) + ".");
 #endif
     }
 
@@ -152,7 +152,7 @@ bool MountPointTable::create_mount_point_entry (FILE* file_ptr,
         std::stringstream stream;
         stream << "Replacing value at file pointer " << file_ptr << ".";
         // submit error message to the logging facility
-        this->m_log->log_error (stream.str ());
+        this->m_log->log_debug (stream.str ());
 #endif
     }
 
@@ -319,7 +319,7 @@ MountPoint MountPointTable::extract_mount_point (const std::string_view& path) c
 
 // pick_workflow_id call. (...)
 std::pair<MountPoint, uint32_t> MountPointTable::pick_workflow_id (
-    const std::string_view& path) const
+    const std::string_view& path)
 {
     // extract mount point of the given path
     auto namespace_type = (!option_mount_point_differentiation_enabled)
@@ -446,7 +446,7 @@ MountPoint MountPointTable::extract_mount_point_from_path (const std::string_vie
 }
 
 // select_workflow_id call. (...)
-uint32_t MountPointTable::select_workflow_id (const MountPoint& namespace_name) const
+uint32_t MountPointTable::select_workflow_id (const MountPoint& namespace_name)
 {
     // get iterator to the mount point entry
     auto iterator = this->m_mount_point_workflows.find (namespace_name);
@@ -456,7 +456,7 @@ uint32_t MountPointTable::select_workflow_id (const MountPoint& namespace_name) 
     if (iterator != this->m_mount_point_workflows.end ()) {
         // generate random item to pick
         // TODO: we should use a better random number generator (e.g. mt19937)
-        auto random_item = static_cast<int> (random () % iterator->second.size ());
+        auto random_item = static_cast<int> (m_prng () % iterator->second.size ());
         // return workflow identifier
         return_value = iterator->second.begin ()[random_item];
     }

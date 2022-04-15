@@ -10,6 +10,7 @@
 #include <map>
 #include <padll/options/options.hpp>
 #include <padll/stage/mount_point_entry.hpp>
+#include <padll/third_party/xoshiro.hpp>
 #include <padll/utils/log.hpp>
 #include <shared_mutex>
 #include <sstream>
@@ -17,6 +18,7 @@
 #include <vector>
 
 using namespace padll::utils::log;
+using namespace XoshiroCpp;
 
 namespace padll::stage {
 
@@ -50,6 +52,7 @@ private:
     std::map<MountPoint, std::vector<uint32_t>> m_mount_point_workflows {};
 
     std::shared_ptr<Log> m_log { nullptr };
+    Xoshiro128StarStar m_prng { static_cast<uint64_t> (::getpid()) };
 
     /**
      * initialize:
@@ -75,7 +78,7 @@ private:
      * @param mount_point
      * @return
      */
-    [[nodiscard]] uint32_t select_workflow_id (const MountPoint& mount_point) const;
+    [[nodiscard]] uint32_t select_workflow_id (const MountPoint& mount_point);
 
     /**
      * is_file_descriptor_valid:
@@ -141,7 +144,7 @@ public:
      * @return
      */
     [[nodiscard]] std::pair<MountPoint, uint32_t> pick_workflow_id (
-        const std::string_view& path) const;
+        const std::string_view& path);
 
     /**
      * pick_workflow_id:
