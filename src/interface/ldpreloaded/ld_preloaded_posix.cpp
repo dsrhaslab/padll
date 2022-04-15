@@ -152,11 +152,11 @@ std::string LdPreloadedPosix::to_string ()
 
 // update_statistic_entry_data call. (...)
 void LdPreloadedPosix::update_statistic_entry_data (const int& operation,
-    const long& result,
+    const ssize_t& bytes,
     const bool& enforced)
 {
     if (enforced) {
-        (result >= 0) ? this->m_data_stats.update_statistic_entry (operation, 1, result)
+        (bytes >= 0) ? this->m_data_stats.update_statistic_entry (operation, 1, bytes)
                       : this->m_data_stats.update_statistic_entry (operation, 1, 0, 1);
     } else {
         this->m_data_stats.update_bypassed_statistic_entry (operation, 1);
@@ -165,11 +165,11 @@ void LdPreloadedPosix::update_statistic_entry_data (const int& operation,
 
 // update_statistic_entry_metadata call. (...)
 void LdPreloadedPosix::update_statistic_entry_metadata (const int& operation,
-    const long& result,
+    const int& result,
     const bool& enforced)
 {
     if (enforced) {
-        (result >= 0) ? this->m_metadata_stats.update_statistic_entry (operation, 1, result)
+        (result >= 0) ? this->m_metadata_stats.update_statistic_entry (operation, 1, 0)
                       : this->m_metadata_stats.update_statistic_entry (operation, 1, 0, 1);
     } else {
         this->m_metadata_stats.update_bypassed_statistic_entry (operation, 1);
@@ -270,7 +270,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_read (int fd, void* buf, size_t cou
 
     // update statistic entry
     this->update_statistics (OperationType::data_calls,
-        static_cast<int> (paio::core::POSIX::read),
+        static_cast<int> (Data::read),
         result,
         enforced);
 
@@ -298,7 +298,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_write (int fd, const void* buf, siz
 
     // update statistic entry
     this->update_statistics (OperationType::data_calls,
-        static_cast<int> (paio::core::POSIX::write),
+        static_cast<int> (Data::write),
         result,
         enforced);
 
@@ -326,7 +326,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_pread (int fd, void* buf, size_t co
 
     // update statistic entry
     this->update_statistics (OperationType::data_calls,
-        static_cast<int> (paio::core::POSIX::pread),
+        static_cast<int> (Data::pread),
         result,
         enforced);
 
@@ -355,7 +355,7 @@ LdPreloadedPosix::ld_preloaded_posix_pwrite (int fd, const void* buf, size_t cou
 
     // update statistic entry
     this->update_statistics (OperationType::data_calls,
-        static_cast<int> (paio::core::POSIX::pwrite),
+        static_cast<int> (Data::pwrite),
         result,
         enforced);
 
@@ -385,7 +385,7 @@ LdPreloadedPosix::ld_preloaded_posix_pread64 (int fd, void* buf, size_t counter,
 
     // update statistic entry
     this->update_statistics (OperationType::data_calls,
-        static_cast<int> (paio::core::POSIX::pread64),
+        static_cast<int> (Data::pread64),
         result,
         enforced);
 
@@ -418,7 +418,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_pwrite64 (int fd,
 
     // update statistic entry
     this->update_statistics (OperationType::data_calls,
-        static_cast<int> (paio::core::POSIX::pwrite64),
+        static_cast<int> (Data::pwrite64),
         result,
         enforced);
 
@@ -449,17 +449,10 @@ int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags, mode
     this->m_mount_point_table.create_mount_point_entry (fd, path, mountpoint);
 
     // update statistic entry
-    if (this->m_collect && enforced) {
-        if (fd >= 0) {
-            this->m_metadata_stats.update_statistic_entry (
-                static_cast<int> (Metadata::open_variadic),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats
-                .update_statistic_entry (static_cast<int> (Metadata::open_variadic), 1, 0, 1);
-        }
-    }
+    this->update_statistics (OperationType::metadata_calls,
+        static_cast<int> (Metadata::open_variadic),
+        fd,
+        enforced);
 
     return fd;
 }
@@ -487,16 +480,10 @@ int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags)
     this->m_mount_point_table.create_mount_point_entry (fd, path, mountpoint);
 
     // update statistic entry
-    if (this->m_collect && enforced) {
-        if (fd >= 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::open), 1, 0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::open),
-                1,
-                0,
-                1);
-        }
-    }
+    this->update_statistics (OperationType::metadata_calls,
+        static_cast<int> (Metadata::open),
+        fd,
+        enforced);
 
     return fd;
 }
@@ -524,18 +511,10 @@ int LdPreloadedPosix::ld_preloaded_posix_creat (const char* path, mode_t mode)
     this->m_mount_point_table.create_mount_point_entry (fd, path, mountpoint);
 
     // update statistic entry
-    if (this->m_collect && enforced) {
-        if (fd >= 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::creat),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::creat),
-                1,
-                0,
-                1);
-        }
-    }
+    this->update_statistics (OperationType::metadata_calls,
+        static_cast<int> (Metadata::creat),
+        fd,
+        enforced);
 
     return fd;
 }
@@ -563,18 +542,10 @@ int LdPreloadedPosix::ld_preloaded_posix_creat64 (const char* path, mode_t mode)
     this->m_mount_point_table.create_mount_point_entry (fd, path, mountpoint);
 
     // update statistic entry
-    if (this->m_collect && enforced) {
-        if (fd >= 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::creat64),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::creat64),
-                1,
-                0,
-                1);
-        }
-    }
+    this->update_statistics (OperationType::metadata_calls,
+        static_cast<int> (Metadata::creat64),
+        fd,
+        enforced);
 
     return fd;
 }
@@ -605,17 +576,10 @@ int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd,
     this->m_mount_point_table.create_mount_point_entry (fd, path, mountpoint);
 
     // update statistic entry
-    if (this->m_collect && enforced) {
-        if (fd >= 0) {
-            this->m_metadata_stats.update_statistic_entry (
-                static_cast<int> (Metadata::openat_variadic),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats
-                .update_statistic_entry (static_cast<int> (Metadata::openat_variadic), 1, 0, 1);
-        }
-    }
+    this->update_statistics (OperationType::metadata_calls,
+        static_cast<int> (Metadata::openat_variadic),
+        fd,
+        enforced);
 
     return fd;
 }
@@ -643,18 +607,10 @@ int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd, const char* path, in
     this->m_mount_point_table.create_mount_point_entry (fd, path, mountpoint);
 
     // update statistic entry
-    if (this->m_collect && enforced) {
-        if (fd >= 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::openat),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::openat),
-                1,
-                0,
-                1);
-        }
-    }
+    this->update_statistics (OperationType::metadata_calls,
+        static_cast<int> (Metadata::openat),
+        fd,
+        enforced);
 
     return fd;
 }
@@ -682,17 +638,10 @@ int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags, mo
     this->m_mount_point_table.create_mount_point_entry (fd, path, mountpoint);
 
     // update statistic entry
-    if (this->m_collect && enforced) {
-        if (fd >= 0) {
-            this->m_metadata_stats.update_statistic_entry (
-                static_cast<int> (Metadata::open64_variadic),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats
-                .update_statistic_entry (static_cast<int> (Metadata::open64_variadic), 1, 0, 1);
-        }
-    }
+    this->update_statistics (OperationType::metadata_calls,
+        static_cast<int> (Metadata::open64_variadic),
+        fd,
+        enforced);
 
     return fd;
 }
@@ -720,18 +669,10 @@ int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags)
     this->m_mount_point_table.create_mount_point_entry (fd, path, mountpoint);
 
     // update statistic entry
-    if (this->m_collect && enforced) {
-        if (fd >= 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::open64),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::open64),
-                1,
-                0,
-                1);
-        }
-    }
+    this->update_statistics (OperationType::metadata_calls,
+        static_cast<int> (Metadata::open64),
+        fd,
+        enforced);
 
     return fd;
 }
@@ -759,18 +700,10 @@ int LdPreloadedPosix::ld_preloaded_posix_close (int fd)
     this->m_mount_point_table.remove_mount_point_entry (fd);
 
     // update statistic entry
-    if (this->m_collect && enforced) {
-        if (result == 0) {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::close),
-                1,
-                0);
-        } else {
-            this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::close),
-                1,
-                0,
-                1);
-        }
-    }
+    this->update_statistics (OperationType::metadata_calls,
+        static_cast<int> (Metadata::open),
+        result,
+        enforced);
 
     return result;
 }
@@ -792,9 +725,10 @@ void LdPreloadedPosix::ld_preloaded_posix_sync ()
     m_metadata_operations.m_sync ();
 
     // update statistic entry
-    if (this->m_collect) {
-        this->m_metadata_stats.update_statistic_entry (static_cast<int> (Metadata::sync), 1, 0);
-    }
+    this->update_statistics (OperationType::metadata_calls,
+        static_cast<int> (Metadata::sync),
+        1,
+        true);
 }
 
 // ld_preloaded_posix_statfs call. (...)

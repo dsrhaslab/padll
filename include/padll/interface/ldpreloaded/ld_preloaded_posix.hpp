@@ -69,7 +69,7 @@ private:
      * @param enforced
      */
     void
-    update_statistic_entry_data (const int& operation, const long& result, const bool& enforced);
+    update_statistic_entry_data (const int& operation, const ssize_t& result, const bool& enforced);
 
     /**
      * update_statistic_entry_metadata:
@@ -78,7 +78,7 @@ private:
      * @param enforced
      */
     void update_statistic_entry_metadata (const int& operation,
-        const long& result,
+        const int& result,
         const bool& enforced);
 
     /**
