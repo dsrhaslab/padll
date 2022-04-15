@@ -62,6 +62,55 @@ private:
         const int& operation_context,
         const int& payload);
 
+    /**
+     * update_statistic_entry_data:
+     * @param operation
+     * @param result
+     * @param enforced
+     */
+    void update_statistic_entry_data (const int& operation, const long& result, const bool& enforced);
+
+    /**
+     * update_statistic_entry_metadata:
+     * @param operation
+     * @param result
+     * @param enforced
+     */
+    void update_statistic_entry_metadata (const int& operation, const long& result, const bool& enforced);
+
+    /**
+     * update_statistic_entry_dir:
+     * @param operation
+     * @param result
+     * @param enforced
+     */
+    void update_statistic_entry_dir (const int& operation, const long& result, const bool& enforced);
+
+    /**
+     * update_statistic_entry_ext_attr:
+     * @param operation
+     * @param result
+     * @param enforced
+     */
+    void update_statistic_entry_ext_attr (const int& operation, const long& result, const bool& enforced);
+
+    /**
+     * update_statistic_entry_special:
+     * @param operation
+     * @param result
+     * @param enforced
+     */
+    void update_statistic_entry_special (const int& operation, const long& result, const bool& enforced);
+
+    /**
+     * update_staitistcs:
+     * @param operation_type
+     * @param operation
+     * @param result
+     * @param enforced
+     */
+    void update_statistics (const OperationType& operation_type, const int& operation,  const long& result, const bool& enforced);
+
 public:
     /**
      * LdPreloadedPosix default constructor.

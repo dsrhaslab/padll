@@ -156,7 +156,7 @@ std::string Statistics::to_string ()
     std::vector<StatisticEntry> entries {};
 
     for (auto& elem : this->m_statistic_entries) {
-        if ((elem.get_operation_counter () + elem.get_error_counter ()) > 0) {
+        if ((elem.get_operation_counter () + elem.get_error_counter () + elem.get_bypass_counter ()) > 0) {
             entries.push_back (elem);
         }
     }
