@@ -426,6 +426,67 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_pwrite64 (int fd,
 }
 #endif
 
+// ld_preloaded_posix_mmap call.
+void* LdPreloadedPosix::ld_preloaded_posix_mmap (void* addr, size_t lenght, int prot, int flags, int fd, off_t offset)
+{
+    // hook POSIX mmap operation to m_data_operations.m_mmap
+    this->m_dlsym_hook.hook_posix_mmap (m_data_operations.m_mmap);
+
+    // select workflow-id to submit I/O request
+    auto workflow_id = this->m_mount_point_table.pick_workflow_id (fd);
+
+    // enforce write request to PAIO data plane stage
+    auto enforced = this->enforce_request (__func__,
+        workflow_id,
+        static_cast<int> (paio::core::POSIX::mmap),
+        static_cast<int> (paio::core::POSIX_META::data_op),
+        1);
+
+    // perform original POSIX write operation
+    void* mem_ptr = m_data_operations.m_mmap (addr, lenght, prot, flags, fd, offset);
+
+    // validate memory pointer
+    auto result = (mem_ptr == MAP_FAILED) ? -1 : 0;
+
+    // update statistic entry
+    this->update_statistics (OperationType::data_calls,
+        static_cast<int> (Data::mmap),
+        result,
+        enforced);
+
+    return mem_ptr;
+}
+
+// ld_preloaded_posix_munmap call.
+int LdPreloadedPosix::ld_preloaded_posix_munmap (void* addr, size_t lenght)
+{
+    // hook POSIX munmap operation to m_data_operations.m_munmap
+    this->m_dlsym_hook.hook_posix_munmap (m_data_operations.m_munmap);
+
+    // BUG: Reported defects -@gsd at 4/15/2022, 3:01:31 PM
+    // Not sure how to handle this scenario ...
+    // select workflow-id to submit I/O request
+    auto workflow_id = this->m_mount_point_table.pick_workflow_id (-1);
+
+    // enforce write request to PAIO data plane stage
+    auto enforced = this->enforce_request (__func__,
+        workflow_id,
+        static_cast<int> (paio::core::POSIX::munmap),
+        static_cast<int> (paio::core::POSIX_META::data_op),
+        1);
+
+    // perform original POSIX write operation
+    auto result = m_data_operations.m_munmap (addr, lenght);
+
+    // update statistic entry
+    this->update_statistics (OperationType::data_calls,
+        static_cast<int> (Data::munmap),
+        result,
+        enforced);
+
+    return result;
+}
+
 // ld_preloaded_posix_open call.
 int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags, mode_t mode)
 {

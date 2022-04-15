@@ -235,6 +235,26 @@ public:
 #endif
 
     /**
+     * ld_preloaded_posix_mmap:
+     * @param addr
+     * @param lenght
+     * @param prot
+     * @param flags
+     * @param fd
+     * @param offset
+     * @return
+     */
+    void* ld_preloaded_posix_mmap (void* addr, size_t lenght, int prot, int flags, int fd, off_t offset);
+
+    /**
+     * ld_preloaded_posix_munmap:
+     * @param addr
+     * @param lenght
+     * @return
+     */
+    int ld_preloaded_posix_munmap (void* addr, size_t lenght);
+
+    /**
      * ld_preloaded_posix_open:
      *  https://linux.die.net/man/2/open
      * Notes:
