@@ -59,7 +59,7 @@ LdPreloadedPosix::~LdPreloadedPosix ()
         // print to stdout special calls based statistics in tabular format
         this->m_special_stats.tabulate ();
     } else {
-        this->generate_statistics_report ("/tmp");
+        this->generate_statistics_report (option_default_statistics_report_path);
     }
 }
 
@@ -97,12 +97,9 @@ StatisticEntry LdPreloadedPosix::get_statistic_entry (const OperationType& opera
 // to_string call. (...)
 std::string LdPreloadedPosix::to_string ()
 {
-    auto pid = ::getpid ();
-    auto ppid = ::getppid ();
     std::stringstream stream;
-
     stream << "----------------------------------------------------------------------\n";
-    stream << "LdPreloadedPosix Statistics (" << pid << ", " << ppid << ")\n";
+    stream << "LdPreloadedPosix Statistics (" << ::getpid () << ", " << ::getppid () << ")\n";
     stream << "----------------------------------------------------------------------\n";
     stream << this->m_metadata_stats.to_string (true);
     stream << this->m_data_stats.to_string (false);
@@ -114,7 +111,7 @@ std::string LdPreloadedPosix::to_string ()
 }
 
 // generate_statistics_report call. (...)
-void LdPreloadedPosix::generate_statistics_report (const std::string& path) 
+void LdPreloadedPosix::generate_statistics_report (const std::string_view& path) 
 {
     if (option_default_save_statistics_report) {
         std::string filename;
@@ -140,7 +137,7 @@ void LdPreloadedPosix::generate_statistics_report (const std::string& path)
             std::fprintf (fptr, "%s", report.c_str ());
             m_metadata_operations.m_fclose (fptr);
         } else {
-            Logging::log_error ("Error while opening statistics report file.");
+            this->m_log->log_error ("Error while opening statistics report file.");
         }
     } else {
         this->m_log->log_info (this->to_string ());

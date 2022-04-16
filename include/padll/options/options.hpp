@@ -135,6 +135,11 @@ constexpr bool option_default_table_format { false };
  */ 
 constexpr bool option_default_save_statistics_report { true };
 
+/**
+ * option_default_statistics_report_path:
+ */
+constexpr std::string_view option_default_statistics_report_path { "/tmp" };
+
 // *************************************************************************************************
 //  Default PAIO data plane stage configuration
 // *************************************************************************************************

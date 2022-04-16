@@ -62,7 +62,7 @@ PosixPassthrough::~PosixPassthrough ()
         // print to stdout special calls based statistics in tabular format
         this->m_special_stats.tabulate ();
     } else {
-        this->m_log->log_info (this->to_string ());
+        this->generate_statistics_report (option_default_statistics_report_path);
     }
 
     // validate if library handle is valid and close dynamic linking.
@@ -78,27 +78,42 @@ PosixPassthrough::~PosixPassthrough ()
 // to_string call. (...)
 std::string PosixPassthrough::to_string ()
 {
-    auto pid = ::getpid ();
-    auto ppid = ::getppid ();
     std::stringstream stream;
-
-    stream << "PosixPassthrough::Data statistics (" << pid << ", " << ppid << ")\n";
-    stream << "-----------------------------------------------------------\n";
-    stream << this->m_data_stats.to_string (true) << "\n";
-    stream << "PosixPassthrough::Metadata statistics (" << pid << ", " << ppid << ")\n";
-    stream << "-----------------------------------------------------------\n";
-    stream << this->m_metadata_stats.to_string (true) << "\n";
-    stream << "PosixPassthrough::Extended Attributes statistics (" << pid << ", " << ppid << ")\n";
-    stream << "-----------------------------------------------------------\n";
-    stream << this->m_ext_attr_stats.to_string (true) << "\n";
-    stream << "PosixPassthrough::Directory statistics (" << pid << ", " << ppid << ")\n";
-    stream << "-----------------------------------------------------------\n";
-    stream << this->m_dir_stats.to_string (true) << "\n";
-    stream << "PosixPassthrough::Special calls statistics (" << pid << ", " << ppid << ")\n";
-    stream << "-----------------------------------------------------------\n";
-    stream << this->m_special_stats.to_string (true) << "\n";
+    stream << "----------------------------------------------------------------------\n";
+    stream << "PosixPassthrough Statistics (" << ::getpid () << ", " << ::getppid () << ")\n";
+    stream << "----------------------------------------------------------------------\n";
+    stream << this->m_metadata_stats.to_string (true);
+    stream << this->m_data_stats.to_string (false);
+    stream << this->m_dir_stats.to_string (false);
+    stream << this->m_ext_attr_stats.to_string (false);
+    stream << this->m_special_stats.to_string (false);
 
     return stream.str ();
+    return stream.str ();
+}
+
+// generate_statistics_report call. (...)
+void PosixPassthrough::generate_statistics_report (const std::string_view& path) 
+{
+    if (option_default_save_statistics_report) {
+        std::string filename;
+        filename.append (path);
+        filename.append ("/");
+        filename.append ("padll-passthrough-stats-").append (std::to_string (::getpid ()));
+        filename.append (".stat");
+
+        FILE* fptr = this->passthrough_posix_fopen (filename.c_str (), "w");
+
+        if (fptr != nullptr) {
+            std::string report = this->to_string ();
+            std::fprintf (fptr, "%s", report.c_str ());
+            this->passthrough_posix_fclose (fptr);
+        } else {
+            this->m_log->log_error ("Error while opening statistics report file.");
+        }
+    } else {
+        this->m_log->log_info (this->to_string ());
+    }
 }
 
 // dlopen_library_handle call. (...)
