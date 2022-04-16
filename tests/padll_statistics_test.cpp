@@ -37,10 +37,10 @@ public:
     void test_statistics_constructors ()
     {
         Statistics stats {};
-        std::fprintf (this->m_fd, "%s\n", stats.to_string ().c_str ());
+        std::fprintf (this->m_fd, "%s\n", stats.to_string (true).c_str ());
 
         Statistics stats_param { "stats-parameterized-test", OperationType::metadata_calls };
-        std::fprintf (this->m_fd, "%s\n", stats_param.to_string ().c_str ());
+        std::fprintf (this->m_fd, "%s\n", stats_param.to_string (true).c_str ());
     }
 
     /**
@@ -56,7 +56,7 @@ public:
 
         // initialize statistics
         stats->initialize (type);
-        std::fprintf (this->m_fd, "%s\n", stats->to_string ().c_str ());
+        std::fprintf (this->m_fd, "%s\n", stats->to_string (true).c_str ());
     }
 
     /**
@@ -100,7 +100,7 @@ public:
         }
 
         if (debug) {
-            std::cout << stats->to_string () << "\n";
+            std::cout << stats->to_string (true) << "\n";
         }
     }
 };

@@ -59,7 +59,7 @@ LdPreloadedPosix::~LdPreloadedPosix ()
         // print to stdout special calls based statistics in tabular format
         this->m_special_stats.tabulate ();
     } else {
-        this->m_log->log_info (this->to_string ());
+        this->generate_statistics_report ("/tmp");
     }
 }
 
@@ -101,27 +101,50 @@ std::string LdPreloadedPosix::to_string ()
     auto ppid = ::getppid ();
     std::stringstream stream;
 
-    stream << "\nLdPreloadedPosix::Metadata statistics (" << pid << ", " << ppid << ")\n";
-    stream << "-----------------------------------------------------------\n";
-    stream << this->m_metadata_stats.to_string () << "\n";
-
-    stream << "LdPreloadedPosix::Data statistics (" << pid << ", " << ppid << ")\n";
-    stream << "-----------------------------------------------------------\n";
-    stream << this->m_data_stats.to_string () << "\n";
-
-    stream << "LdPreloadedPosix::Directory statistics (" << pid << ", " << ppid << ")\n";
-    stream << "-----------------------------------------------------------\n";
-    stream << this->m_dir_stats.to_string () << "\n";
-
-    stream << "LdPreloadedPosix::Extended attributes statistics (" << pid << ", " << ppid << ")\n";
-    stream << "-------------------------------------------------------------------\n";
-    stream << this->m_ext_attr_stats.to_string () << "\n";
-
-    stream << "LdPreloadedPosix::Special calls statistics (" << pid << ", " << ppid << ")\n";
-    stream << "-------------------------------------------------------------------\n";
-    stream << this->m_special_stats.to_string () << "\n";
+    stream << "----------------------------------------------------------------------\n";
+    stream << "LdPreloadedPosix Statistics (" << pid << ", " << ppid << ")\n";
+    stream << "----------------------------------------------------------------------\n";
+    stream << this->m_metadata_stats.to_string (true);
+    stream << this->m_data_stats.to_string (false);
+    stream << this->m_dir_stats.to_string (false);
+    stream << this->m_ext_attr_stats.to_string (false);
+    stream << this->m_special_stats.to_string (false);
 
     return stream.str ();
+}
+
+// generate_statistics_report call. (...)
+void LdPreloadedPosix::generate_statistics_report (const std::string& path) 
+{
+    if (option_default_save_statistics_report) {
+        std::string filename;
+        filename.append (path);
+        filename.append ("/");
+        filename.append ("padll-ldpreloaded-stats-").append (std::to_string (::getpid ()));
+        filename.append (".stat");
+
+        // hook m_fopen to the fopen function if null
+        if (m_metadata_operations.m_fopen == nullptr) {
+            this->m_dlsym_hook.hook_posix_fopen (m_metadata_operations.m_fopen);
+        }
+
+        // hook m_fclose to the close function if null
+        if (m_metadata_operations.m_fclose == nullptr) {
+            this->m_dlsym_hook.hook_posix_fclose (m_metadata_operations.m_fclose);
+        }
+
+        FILE* fptr = m_metadata_operations.m_fopen (filename.c_str (), "w");
+
+        if (fptr != nullptr) {
+            std::string report = this->to_string ();
+            std::fprintf (fptr, "%s", report.c_str ());
+            m_metadata_operations.m_fclose (fptr);
+        } else {
+            Logging::log_error ("Error while opening statistics report file.");
+        }
+    } else {
+        this->m_log->log_info (this->to_string ());
+    }
 }
 
 // enforce_request call. (...)

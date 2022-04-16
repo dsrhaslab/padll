@@ -150,7 +150,7 @@ int Statistics::get_stats_size () const
 }
 
 // to_string call. (...)
-std::string Statistics::to_string ()
+std::string Statistics::to_string (const bool& print_header)
 {
     std::stringstream stream;
     std::vector<StatisticEntry> entries {};
@@ -162,30 +162,34 @@ std::string Statistics::to_string ()
         }
     }
 
-    // TODO: use fmtlib/fmt for easier and faster formatting
-    char header[75];
-    std::sprintf (header,
-        "%18s %12s %12s %12s %15s",
-        "syscall",
-        "calls",
-        "errors",
-        "bypassed",
-        "bytes");
-    stream << header << "\n";
+    if (!entries.empty()) {
+        // TODO: use fmtlib/fmt for easier and faster formatting
+        char header[75];
+        if (print_header) {
+            std::sprintf (header,
+                "%15s %12s %12s %12s %15s",
+                "syscall",
+                "calls",
+                "errors",
+                "bypassed",
+                "bytes");
+            stream << header << "\n";
+        }
 
-    std::sprintf (header,
-        "%18s %12s %12s %12s %15s",
-        "-------",
-        "-----",
-        "------",
-        "--------",
-        "-----");
-    stream << header << "\n";
+        std::sprintf (header,
+            "%15s %12s %12s %12s %15s",
+            "-------",
+            "-----",
+            "------",
+            "--------",
+            "-----");
+        stream << header << "\n";
 
-    for (auto& elem : entries) {
-        stream << elem.to_string () << "\n";
+        for (auto& elem : entries) {
+            stream << elem.to_string () << "\n";
+        }
     }
-
+    
     return stream.str ();
 }
 

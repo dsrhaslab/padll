@@ -455,7 +455,6 @@ uint32_t MountPointTable::select_workflow_id (const MountPoint& namespace_name)
     // if the namespace exists, pick a random workflow
     if (iterator != this->m_mount_point_workflows.end ()) {
         // generate random item to pick
-        // TODO: we should use a better random number generator (e.g. mt19937)
         auto random_item = static_cast<int> (m_prng () % iterator->second.size ());
         // return workflow identifier
         return_value = iterator->second.begin ()[random_item];

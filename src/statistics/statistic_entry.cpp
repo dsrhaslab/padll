@@ -106,7 +106,7 @@ std::string StatisticEntry::to_string ()
     // TODO: use fmtlib/fmt for easier and faster formatting
     char stream[75];
     std::sprintf (stream,
-        "%18s %12" PRIu64 " %12" PRIu64 " %12" PRIu64 " %15" PRIu64 "",
+        "%15s %12" PRIu64 " %12" PRIu64 " %12" PRIu64 " %15" PRIu64 "",
         this->m_entry_name.c_str (),
         this->m_operation_counter,
         this->m_error_counter,

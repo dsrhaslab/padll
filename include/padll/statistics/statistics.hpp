@@ -127,7 +127,7 @@ public:
      * container.
      * @return Returns the description of all StatisticEntry objects in string-based format.
      */
-    [[maybe_unused]] std::string to_string ();
+    [[maybe_unused]] std::string to_string (const bool& print_header);
 
     /**
      * tabulate:

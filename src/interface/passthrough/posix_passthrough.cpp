@@ -84,19 +84,19 @@ std::string PosixPassthrough::to_string ()
 
     stream << "PosixPassthrough::Data statistics (" << pid << ", " << ppid << ")\n";
     stream << "-----------------------------------------------------------\n";
-    stream << this->m_data_stats.to_string () << "\n";
+    stream << this->m_data_stats.to_string (true) << "\n";
     stream << "PosixPassthrough::Metadata statistics (" << pid << ", " << ppid << ")\n";
     stream << "-----------------------------------------------------------\n";
-    stream << this->m_metadata_stats.to_string () << "\n";
+    stream << this->m_metadata_stats.to_string (true) << "\n";
     stream << "PosixPassthrough::Extended Attributes statistics (" << pid << ", " << ppid << ")\n";
     stream << "-----------------------------------------------------------\n";
-    stream << this->m_ext_attr_stats.to_string () << "\n";
+    stream << this->m_ext_attr_stats.to_string (true) << "\n";
     stream << "PosixPassthrough::Directory statistics (" << pid << ", " << ppid << ")\n";
     stream << "-----------------------------------------------------------\n";
-    stream << this->m_dir_stats.to_string () << "\n";
+    stream << this->m_dir_stats.to_string (true) << "\n";
     stream << "PosixPassthrough::Special calls statistics (" << pid << ", " << ppid << ")\n";
     stream << "-----------------------------------------------------------\n";
-    stream << this->m_special_stats.to_string () << "\n";
+    stream << this->m_special_stats.to_string (true) << "\n";
 
     return stream.str ();
 }

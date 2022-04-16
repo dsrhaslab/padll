@@ -119,6 +119,12 @@ private:
         const long& result,
         const bool& enforced);
 
+    /**
+     * generate_statistics_report:
+     * @param path
+     */ 
+    void generate_statistics_report (const std::string& path);
+
 public:
     /**
      * LdPreloadedPosix default constructor.

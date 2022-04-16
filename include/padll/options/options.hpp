@@ -130,6 +130,11 @@ constexpr std::string_view option_default_log_path { "/tmp/padll-info" };
  */
 constexpr bool option_default_table_format { false };
 
+/**
+ * option_deafault_save_statistics_report:
+ */ 
+constexpr bool option_default_save_statistics_report { true };
+
 // *************************************************************************************************
 //  Default PAIO data plane stage configuration
 // *************************************************************************************************
