@@ -132,7 +132,7 @@ constexpr bool option_default_table_format { false };
 
 /**
  * option_deafault_save_statistics_report:
- */ 
+ */
 constexpr bool option_default_save_statistics_report { true };
 
 /**

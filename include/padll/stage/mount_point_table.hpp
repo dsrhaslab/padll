@@ -52,7 +52,7 @@ private:
     std::map<MountPoint, std::vector<uint32_t>> m_mount_point_workflows {};
 
     std::shared_ptr<Log> m_log { nullptr };
-    Xoshiro128StarStar m_prng { static_cast<uint64_t> (::getpid()) };
+    Xoshiro128StarStar m_prng { static_cast<uint64_t> (::getpid ()) };
 
     /**
      * initialize:
@@ -143,8 +143,7 @@ public:
      * @param path
      * @return
      */
-    [[nodiscard]] std::pair<MountPoint, uint32_t> pick_workflow_id (
-        const std::string_view& path);
+    [[nodiscard]] std::pair<MountPoint, uint32_t> pick_workflow_id (const std::string_view& path);
 
     /**
      * pick_workflow_id:
