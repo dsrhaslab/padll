@@ -67,7 +67,7 @@ public:
      */
     void test_cpp_mt19937 (const uint64_t& iterations, const int& min, const int& max)
     {
-        std::mt19937 mt { this->seed };
+        std::mt19937 mt { static_cast<uint_fast32_t>(this->seed) };
 
         auto start = std::chrono::system_clock::now ();
         for (uint64_t i = 0; i < iterations; i++) {
