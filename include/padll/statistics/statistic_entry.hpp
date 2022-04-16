@@ -24,6 +24,7 @@ private:
     uint64_t m_operation_counter { 0 };
     uint64_t m_byte_counter { 0 };
     uint64_t m_error_counter { 0 };
+    uint64_t m_bypass_counter { 0 };
     std::mutex m_lock;
 
 public:
@@ -80,6 +81,13 @@ public:
     [[nodiscard]] uint64_t get_error_counter ();
 
     /**
+     * get_bypass_counter: Get the total number of bypassed operations registered (counted) at the
+     * StatisticEntry object. This method is thread-safe.
+     * @return Returns a copy of the m_bypass_counter parameter.
+     */
+    [[nodiscard]] uint64_t get_bypass_counter ();
+
+    /**
      * increment_operation_counter: Increments the total number of operations of the StatisticEntry
      * object by count.
      * This method is thread-safe.
@@ -101,6 +109,13 @@ public:
      * @param count Defines the amount of errors to be incremented.
      */
     void increment_error_counter (const uint64_t& count);
+
+    /**
+     * increment_bypass_counter: Increments the total times that a given syscalls has been bypassed.
+     * This method is thread-safe.
+     * @param count Defines the amount of bypassed operations to be incremented.
+     */
+    void increment_bypass_counter (const uint64_t& count);
 
     /**
      * to_string: generate a string-based format of the contents of the StatisticEntry object.

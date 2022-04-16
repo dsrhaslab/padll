@@ -10,7 +10,7 @@
 #include <iostream>
 #include <padll/library_headers/libc_enums.hpp>
 #include <padll/statistics/statistic_entry.hpp>
-#include <padll/thrid_party/tabulate.hpp>
+#include <padll/third_party/tabulate.hpp>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -102,6 +102,15 @@ public:
         const uint64_t& error_value);
 
     /**
+     * update_bypassed_statistic_entry: updatethe bypassed operation counter of a specific
+     * StatisticEntry of the m_statistics_entries container.
+     * @param operation_type Defines the operation entry to be registered.
+     * @param bypassed_value Defines the value to be incremented in the operation counter.
+     */
+    void update_bypassed_statistic_entry (const int& operation_type,
+        const uint64_t& bypassed_value);
+
+    /**
      * get_stats_identifier_call: get the identifier of the Statistics object.
      * @return Returns a copy of the m_stats_identifier parameter.
      */
@@ -118,7 +127,7 @@ public:
      * container.
      * @return Returns the description of all StatisticEntry objects in string-based format.
      */
-    [[maybe_unused]] std::string to_string ();
+    [[maybe_unused]] std::string to_string (const bool& print_header);
 
     /**
      * tabulate:

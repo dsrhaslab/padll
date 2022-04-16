@@ -132,6 +132,17 @@ void Statistics::update_statistic_entry (const int& operation_type,
     this->m_statistic_entries[position].increment_error_counter (error_value);
 }
 
+// update_bypass_statistic_entry call. (...)
+void Statistics::update_bypassed_statistic_entry (const int& operation_type,
+    const uint64_t& bypass_value)
+{
+    // calculate the operation's position (index) in the statistics container
+    int position = operation_type % this->m_stats_size;
+
+    // update bypass counters
+    this->m_statistic_entries[position].increment_bypass_counter (bypass_value);
+}
+
 // get_stats_size call. (...)
 int Statistics::get_stats_size () const
 {
@@ -139,27 +150,44 @@ int Statistics::get_stats_size () const
 }
 
 // to_string call. (...)
-std::string Statistics::to_string ()
+std::string Statistics::to_string (const bool& print_header)
 {
     std::stringstream stream;
     std::vector<StatisticEntry> entries {};
 
     for (auto& elem : this->m_statistic_entries) {
-        if ((elem.get_operation_counter () + elem.get_error_counter ()) > 0) {
+        if ((elem.get_operation_counter () + elem.get_error_counter () + elem.get_bypass_counter ())
+            > 0) {
             entries.push_back (elem);
         }
     }
 
-    // TODO: use fmtlib/fmt for easier and faster formatting
-    char header[65];
-    std::sprintf (header, "%18s %10s %12s %15s", "syscall", "calls", "errors", "bytes");
-    stream << header << "\n";
+    if (!entries.empty ()) {
+        // TODO: use fmtlib/fmt for easier and faster formatting
+        char header[75];
+        if (print_header) {
+            std::sprintf (header,
+                "%15s %12s %12s %12s %15s",
+                "syscall",
+                "calls",
+                "errors",
+                "bypassed",
+                "bytes");
+            stream << header << "\n";
+        }
 
-    std::sprintf (header, "%18s %10s %12s %15s", "-------", "-----", "------", "-----");
-    stream << header << "\n";
+        std::sprintf (header,
+            "%15s %12s %12s %12s %15s",
+            "-------",
+            "-----",
+            "------",
+            "--------",
+            "-----");
+        stream << header << "\n";
 
-    for (auto& elem : entries) {
-        stream << elem.to_string () << "\n";
+        for (auto& elem : entries) {
+            stream << elem.to_string () << "\n";
+        }
     }
 
     return stream.str ();
@@ -191,6 +219,13 @@ long Statistics::aggregate_counters (int counter_type)
             }
             break;
 
+        // aggregate bypass counter
+        case 3:
+            for (auto& element : this->m_statistic_entries) {
+                sum_value += element.get_bypass_counter ();
+            }
+            break;
+
         default:
             return 0;
     }
@@ -202,11 +237,11 @@ long Statistics::aggregate_counters (int counter_type)
 void Statistics::tabulate ()
 {
     int rows = 0;
-    int columns = 4;
+    int columns = 5;
     Table table_stats;
 
     // add table header
-    table_stats.add_row ({ this->m_stats_identifier, "#iops", "#bytes", "#errors" });
+    table_stats.add_row ({ this->m_stats_identifier, "#iops", "#bytes", "#errors", "#bypass" });
     rows++;
 
     // format table title
@@ -224,6 +259,7 @@ void Statistics::tabulate ()
             std::to_string (elem.get_operation_counter ()),
             std::to_string (elem.get_byte_counter ()),
             std::to_string (elem.get_error_counter ()),
+            std::to_string (elem.get_bypass_counter ()),
         });
         rows++;
     }
@@ -232,7 +268,8 @@ void Statistics::tabulate ()
     table_stats.add_row ({ "total",
         std::to_string (this->aggregate_counters (0)),
         std::to_string (this->aggregate_counters (1)),
-        std::to_string (this->aggregate_counters (2)) });
+        std::to_string (this->aggregate_counters (2)),
+        std::to_string (this->aggregate_counters (3)) });
     rows++;
 
     // format header cells
@@ -260,6 +297,7 @@ void Statistics::tabulate ()
     table_stats[rows - 1][1].format ().font_color (Color::green).font_style ({ FontStyle::bold });
     table_stats[rows - 1][2].format ().font_color (Color::yellow).font_style ({ FontStyle::bold });
     table_stats[rows - 1][3].format ().font_color (Color::red).font_style ({ FontStyle::bold });
+    table_stats[rows - 1][4].format ().font_color (Color::blue).font_style ({ FontStyle::bold });
 
     // format statistic entries - underline values greater 0
     for (int i = 1; i < (rows - 1); i++) {

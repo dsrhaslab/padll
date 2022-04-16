@@ -70,6 +70,12 @@ private:
      */
     std::string to_string ();
 
+    /**
+     * generate_statistics_report:
+     * @param path
+     */
+    void generate_statistics_report (const std::string_view& path);
+
 public:
     /**
      * PosixPassthrough default constructor.

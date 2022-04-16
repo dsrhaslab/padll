@@ -20,7 +20,8 @@ StatisticEntry::StatisticEntry (const StatisticEntry& entry) :
     m_entry_name { entry.m_entry_name },
     m_operation_counter { entry.m_operation_counter },
     m_byte_counter { entry.m_byte_counter },
-    m_error_counter { entry.m_error_counter }
+    m_error_counter { entry.m_error_counter },
+    m_bypass_counter { entry.m_bypass_counter }
 { }
 
 // StatisticEntry default destructor.
@@ -56,6 +57,14 @@ uint64_t StatisticEntry::get_error_counter ()
     return this->m_error_counter;
 }
 
+// get_bypass_counter call. Get the number of registered bypassed operations.
+uint64_t StatisticEntry::get_bypass_counter ()
+{
+    // lock_guard over mutex
+    std::lock_guard lock (this->m_lock);
+    return this->m_bypass_counter;
+}
+
 // increment_operation_counter call. Increments the number of operations.
 void StatisticEntry::increment_operation_counter (const uint64_t& count)
 {
@@ -80,6 +89,14 @@ void StatisticEntry::increment_error_counter (const uint64_t& count)
     this->m_error_counter += count;
 }
 
+// increment_bypass_counter call. Increments the number of bypass operations.
+void StatisticEntry::increment_bypass_counter (const uint64_t& count)
+{
+    // lock_guard over mutex
+    std::lock_guard lock (this->m_lock);
+    this->m_bypass_counter += count;
+}
+
 // to_string call. Generate a string-based format of the contents of the StatisticEntry object.
 std::string StatisticEntry::to_string ()
 {
@@ -87,12 +104,13 @@ std::string StatisticEntry::to_string ()
     std::lock_guard lock (this->m_lock);
 
     // TODO: use fmtlib/fmt for easier and faster formatting
-    char stream[65];
+    char stream[75];
     std::sprintf (stream,
-        "%18s %10" PRIu64 " %10" PRIu64 " %15" PRIu64 "",
+        "%15s %12" PRIu64 " %12" PRIu64 " %12" PRIu64 " %15" PRIu64 "",
         this->m_entry_name.c_str (),
         this->m_operation_counter,
         this->m_error_counter,
+        this->m_bypass_counter,
         this->m_byte_counter);
 
     return { stream };

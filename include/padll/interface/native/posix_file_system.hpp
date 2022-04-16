@@ -50,7 +50,6 @@ ptr::PosixPassthrough m_posix_passthrough { std::string (option_library_name), m
 static __attribute__ ((constructor)) void init_method ()
 {
     std::printf ("PosixFileSystem constructor (%d, %d)\n", ::getpid (), getppid ());
-    std::this_thread::sleep_for (std::chrono::seconds (1));
 }
 
 /**
@@ -213,10 +212,9 @@ extern "C" void* mmap (void* addr, size_t length, int prot, int flags, int fd, o
     m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (fd) });
 #endif
 
-    // return (posix_data_calls.padll_intercept_mmap)
-    //     ? m_ld_preloaded_posix.ld_preloaded_posix_mmap (addr, length, prot, flags, fd, offset)
-    //     : m_posix_passthrough.passthrough_posix_mmap (addr, length, prot, flags, fd, offset);
-    return m_posix_passthrough.passthrough_posix_mmap (addr, length, prot, flags, fd, offset);
+    return (posix_data_calls.padll_intercept_mmap)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_mmap (addr, length, prot, flags, fd, offset)
+        : m_posix_passthrough.passthrough_posix_mmap (addr, length, prot, flags, fd, offset);
 }
 
 /**
@@ -229,13 +227,12 @@ extern "C" int munmap (void* addr, size_t length)
 {
 // detailed logging message
 #if OPTION_DETAILED_LOGGING
-    m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (-1) });
+    m_logger_ptr->create_routine_log_message (__func__, "?");
 #endif
 
-    // return (posix_data_calls.padll_intercept_munmap)
-    // ? m_ld_preloaded_posix.ld_preloaded_posix_munmap (addr, length)
-    // : m_posix_passthrough.passthrough_posix_munmap (addr, length);
-    return m_posix_passthrough.passthrough_posix_munmap (addr, length);
+    return (posix_data_calls.padll_intercept_munmap)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_munmap (addr, length)
+        : m_posix_passthrough.passthrough_posix_munmap (addr, length);
 }
 
 /**
@@ -394,7 +391,7 @@ extern "C" void sync ()
 {
 // detailed logging message
 #if OPTION_DETAILED_LOGGING
-    m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (-1) });
+    m_logger_ptr->create_routine_log_message (__func__, "?");
 #endif
 
     return (posix_metadata_calls.padll_intercept_sync)
@@ -670,8 +667,9 @@ extern "C" int mknod (const char* path, mode_t mode, dev_t dev)
     m_logger_ptr->create_routine_log_message (__func__, path);
 #endif
 
-    // TODO: redirect to ld_preloaded_posix as well
-    return m_posix_passthrough.passthrough_posix_mknod (path, mode, dev);
+    return (posix_directory_calls.padll_intercept_mknod)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_mknod (path, mode, dev)
+        : m_posix_passthrough.passthrough_posix_mknod (path, mode, dev);
 }
 
 /**
@@ -691,8 +689,9 @@ extern "C" int mknodat (int dirfd, const char* path, mode_t mode, dev_t dev)
         path);
 #endif
 
-    // TODO: redirect to ld_preloaded_posix as well
-    return m_posix_passthrough.passthrough_posix_mknodat (dirfd, path, mode, dev);
+    return (posix_directory_calls.padll_intercept_mknodat)
+        ? m_ld_preloaded_posix.ld_preloaded_posix_mknodat (dirfd, path, mode, dev)
+        : m_posix_passthrough.passthrough_posix_mknodat (dirfd, path, mode, dev);
 }
 
 /**
@@ -904,7 +903,7 @@ extern "C" int socket (int domain, int type, int protocol)
 {
 // detailed logging message
 #if OPTION_DETAILED_LOGGING
-    m_logger_ptr->create_routine_log_message (__func__, std::string_view { std::to_string (-1) });
+    m_logger_ptr->create_routine_log_message (__func__, "?");
 #endif
 
     return (posix_special_calls.padll_intercept_socket)

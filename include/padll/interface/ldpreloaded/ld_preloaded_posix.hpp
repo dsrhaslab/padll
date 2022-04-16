@@ -62,6 +62,69 @@ private:
         const int& operation_context,
         const int& payload);
 
+    /**
+     * update_statistic_entry_data:
+     * @param operation
+     * @param result
+     * @param enforced
+     */
+    void
+    update_statistic_entry_data (const int& operation, const ssize_t& bytes, const bool& enforced);
+
+    /**
+     * update_statistic_entry_metadata:
+     * @param operation
+     * @param result
+     * @param enforced
+     */
+    void
+    update_statistic_entry_metadata (const int& operation, const int& result, const bool& enforced);
+
+    /**
+     * update_statistic_entry_dir:
+     * @param operation
+     * @param result
+     * @param enforced
+     */
+    void update_statistic_entry_dir (const int& operation, const int& result, const bool& enforced);
+
+    /**
+     * update_statistic_entry_ext_attr:
+     * @param operation
+     * @param result
+     * @param enforced
+     */
+    void update_statistic_entry_ext_attr (const int& operation,
+        const ssize_t& bytes,
+        const bool& enforced);
+
+    /**
+     * update_statistic_entry_special:
+     * @param operation
+     * @param result
+     * @param enforced
+     */
+    void
+    update_statistic_entry_special (const int& operation, const int& result, const bool& enforced);
+
+    /**
+     * update_staitistcs:
+     * @param operation_type
+     * @param operation
+     * @param result
+     * @param enforced
+     */
+    void update_statistics (const OperationType& operation_type,
+        const int& operation,
+        const long& result,
+        const bool& enforced);
+
+    /**
+     * generate_statistics_report:
+     * @param path
+     */
+    void generate_statistics_report (const std::string_view& path);
+
 public:
     /**
      * LdPreloadedPosix default constructor.
@@ -174,6 +237,27 @@ public:
 #if defined(__USE_LARGEFILE64)
     ssize_t ld_preloaded_posix_pwrite64 (int fd, const void* buf, size_t counter, off64_t offset);
 #endif
+
+    /**
+     * ld_preloaded_posix_mmap:
+     * @param addr
+     * @param lenght
+     * @param prot
+     * @param flags
+     * @param fd
+     * @param offset
+     * @return
+     */
+    void*
+    ld_preloaded_posix_mmap (void* addr, size_t lenght, int prot, int flags, int fd, off_t offset);
+
+    /**
+     * ld_preloaded_posix_munmap:
+     * @param addr
+     * @param lenght
+     * @return
+     */
+    int ld_preloaded_posix_munmap (void* addr, size_t lenght);
 
     /**
      * ld_preloaded_posix_open:
@@ -392,6 +476,25 @@ public:
      * @return
      */
     int ld_preloaded_posix_mkdirat (int dirfd, const char* path, mode_t mode);
+
+    /**
+     * ld_preloaded_posix_mknod:
+     * @param path
+     * @param mode
+     * @param dev
+     * @return
+     */
+    int ld_preloaded_posix_mknod (const char* path, mode_t mode, dev_t dev);
+
+    /**
+     * ld_preloaded_posix_mknodat:
+     * @param dirfd
+     * @param path
+     * @param mode
+     * @param dev
+     * @return
+     */
+    int ld_preloaded_posix_mknodat (int dirfd, const char* path, mode_t mode, dev_t dev);
 
     /**
      * ld_preloaded_posix_rmdir:
