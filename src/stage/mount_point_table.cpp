@@ -318,8 +318,7 @@ MountPoint MountPointTable::extract_mount_point (const std::string_view& path) c
 }
 
 // pick_workflow_id call. (...)
-std::pair<MountPoint, uint32_t> MountPointTable::pick_workflow_id (
-    const std::string_view& path)
+std::pair<MountPoint, uint32_t> MountPointTable::pick_workflow_id (const std::string_view& path)
 {
     // extract mount point of the given path
     auto namespace_type = (!option_mount_point_differentiation_enabled)

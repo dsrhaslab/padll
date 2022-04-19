@@ -127,7 +127,7 @@ std::string LdPreloadedPosix::to_string ()
 }
 
 // generate_statistics_report call. (...)
-void LdPreloadedPosix::generate_statistics_report (const std::string_view& path) 
+void LdPreloadedPosix::generate_statistics_report (const std::string_view& path)
 {
     if (option_default_save_statistics_report) {
         std::string filename;

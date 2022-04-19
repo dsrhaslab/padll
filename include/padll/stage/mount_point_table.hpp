@@ -143,8 +143,7 @@ public:
      * @param path
      * @return
      */
-    [[nodiscard]] std::pair<MountPoint, uint32_t> pick_workflow_id (
-        const std::string_view& path);
+    [[nodiscard]] std::pair<MountPoint, uint32_t> pick_workflow_id (const std::string_view& path);
 
     /**
      * pick_workflow_id:

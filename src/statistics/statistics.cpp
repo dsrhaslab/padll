@@ -162,7 +162,7 @@ std::string Statistics::to_string (const bool& print_header)
         }
     }
 
-    if (!entries.empty()) {
+    if (!entries.empty ()) {
         // TODO: use fmtlib/fmt for easier and faster formatting
         char header[75];
         if (print_header) {
@@ -189,7 +189,7 @@ std::string Statistics::to_string (const bool& print_header)
             stream << elem.to_string () << "\n";
         }
     }
-    
+
     return stream.str ();
 }
 
