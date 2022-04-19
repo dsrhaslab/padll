@@ -170,6 +170,7 @@ if (PADLL_BUILD_TESTS)
     endfunction(padll_test)
 
     padll_test("tests/padll_mount_point_differentiation_test.cpp" "mountpoint_test")
+    padll_test("tests/padll_paio_integration_test.cpp" "stage_integration_test")
     padll_test("tests/padll_statistics_test.cpp" "statistics_test")
     padll_test("tests/padll_xoshiro_test.cpp" "xoshiro_bench")
 

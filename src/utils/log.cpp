@@ -12,8 +12,9 @@ Log::Log ()
 {
     // initialize log object
     this->initialize ();
-    // write debug message
-    this->log_info ("Log default constructor.");
+    std::stringstream stream;
+    stream << "Log default constructor (" << static_cast<void*> (this) << ").";
+    this->log_info (stream.str ());
 }
 
 // Log parameterized constructor.
@@ -25,14 +26,18 @@ Log::Log (const bool& enable_debug, const bool& debug_with_ldpreload, const std:
     // initialize log object
     this->initialize ();
     // write debug message
-    this->log_info ("Log parameterized constructor.");
+    std::stringstream stream;
+    stream << "Log parameterized constructor (" << static_cast<void*> (this) << ").";
+    this->log_info (stream.str ());
 }
 
 // Log default destructor.
 Log::~Log ()
 {
     // write debug message
-    this->log_info ("Log default destructor.");
+    std::stringstream stream;
+    stream << "Log default destructor (" << static_cast<void*> (this) << ").";
+    this->log_info (stream.str ());
     // cleanup log object
     this->cleanup ();
     // close library linking

@@ -12,7 +12,8 @@ LdPreloadedPosix::LdPreloadedPosix () :
     m_log { std::make_shared<Log> (option_default_enable_debug_level,
         option_default_enable_debug_with_ld_preload,
         std::string { option_default_log_path }) },
-    m_dlsym_hook { option_library_name, this->m_log }
+    m_dlsym_hook { option_library_name, this->m_log },
+    m_loaded { std::make_shared<std::atomic<bool>>(false)}
 {
     // create logging message
     std::stringstream stream;
@@ -21,15 +22,20 @@ LdPreloadedPosix::LdPreloadedPosix () :
 
     // write debug logging message
     this->m_log->log_info (stream.str ());
+    
+    // set loaded
+    this->set_loaded (true);
 }
 
 // LdPreloadedPosix parameterized constructor.
 LdPreloadedPosix::LdPreloadedPosix (const std::string& lib,
     const bool& stat_collection,
-    std::shared_ptr<Log> log_ptr) :
+    std::shared_ptr<Log> log_ptr,
+    std::shared_ptr<std::atomic<bool>> loaded_ptr) :
     m_log { log_ptr },
     m_dlsym_hook { lib, this->m_log },
-    m_collect { stat_collection }
+    m_collect { stat_collection },
+    m_loaded { loaded_ptr }
 {
     // create logging message
     std::stringstream stream;
@@ -38,6 +44,9 @@ LdPreloadedPosix::LdPreloadedPosix (const std::string& lib,
 
     // write debug logging message
     this->m_log->log_info (stream.str ());
+
+    // set loaded
+    this->set_loaded (true);
 }
 
 // LdPreloadedPosix default destructor.
@@ -61,6 +70,13 @@ LdPreloadedPosix::~LdPreloadedPosix ()
     } else {
         this->generate_statistics_report (option_default_statistics_report_path);
     }
+}
+
+// set_loaded call. (...)
+void LdPreloadedPosix::set_loaded (const bool& value) 
+{
+    std::cout << "LdPreloadedPosix: " << __func__ << std::endl;
+    this->m_loaded->store (value);
 }
 
 // set_statistic_collection call. (...)

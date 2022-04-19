@@ -8,11 +8,12 @@
 namespace padll::stage {
 
 // TODO: Tasks pending completion -@ricardomacedo at 4/11/2022, 4:10:17 PM
-// Initialize data plane stage in constructor (connect to control plane)
+// Update data plane stage initialization (missing arguments)
 DataPlaneStage::DataPlaneStage () :
     m_log { std::make_shared<Log> (option_default_enable_debug_level,
         option_default_enable_debug_with_ld_preload,
-        std::string { option_default_log_path }) }
+        std::string { option_default_log_path }) },
+    m_stage { std::make_shared<paio::PaioStage> () }
 {
     // create logging message
     std::stringstream stream;
@@ -24,8 +25,10 @@ DataPlaneStage::DataPlaneStage () :
 }
 
 // TODO: Tasks pending completion -@ricardomacedo at 4/11/2022, 4:10:45 PM
-// Initialize data plane stage in constructor (connect to control plane)
-DataPlaneStage::DataPlaneStage (std::shared_ptr<Log> log_ptr) : m_log { log_ptr }
+// Update data plane stage initialization (missing arguments)
+DataPlaneStage::DataPlaneStage (std::shared_ptr<Log> log_ptr) :
+    m_log { log_ptr },
+    m_stage { std::make_shared<paio::PaioStage> () }
 {
     // create logging message
     std::stringstream stream;

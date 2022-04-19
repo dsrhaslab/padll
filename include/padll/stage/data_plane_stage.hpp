@@ -20,13 +20,12 @@ class DataPlaneStage {
 
 private:
     std::mutex m_lock;
+    std::shared_ptr<Log> m_log { nullptr };
     std::atomic<bool> m_stage_initialized { false };
     std::shared_ptr<paio::PaioStage> m_stage { nullptr };
     std::unique_ptr<paio::PosixLayer> m_posix_instance { nullptr };
     // const long m_workflow_id { 1000 };
     const bool m_enforce { false }; // todo: temporary
-
-    std::shared_ptr<Log> m_log { nullptr };
 
     /**
      * initialize_stage:
