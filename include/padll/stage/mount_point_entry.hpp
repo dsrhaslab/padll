@@ -18,12 +18,14 @@ namespace padll::stage {
 /**
  * MountPointEntry class.
  * Complete me ...
+ *  - m_metadata_server_unit: is used to identify to which MDS/MDT server the MountPointEntry (and the file) belongs.
  */
 class MountPointEntry {
 
 private:
     std::string m_path {};
     MountPoint m_mount_point {};
+    uint32_t m_metadata_server_unit { static_cast<uint32_t> (-1) };
     std::mutex m_lock;
 
 public:
@@ -38,6 +40,14 @@ public:
      * @param mount_point
      */
     MountPointEntry (const std::string& path, const MountPoint& mount_point);
+
+    /**
+     * MountPointEntry parameterized constructor.
+     * @param path
+     * @param mount_point
+     * @param metadata_instance
+     */
+    MountPointEntry (const std::string& path, const MountPoint& mount_point, const uint32_t& metadata_instance);
 
     /**
      * MountPointEntry default destructor.
@@ -55,6 +65,12 @@ public:
      * @return
      */
     [[nodiscard]] const MountPoint& get_mount_point () const;
+
+    /**
+     * get_metadata_server_unit:
+     * @return
+     */
+    [[nodiscard]] const uint32_t& get_metadata_server_unit () const;
 
     /**
      * to_string:

@@ -160,6 +160,16 @@ void LdPreloadedPosix::generate_statistics_report (const std::string_view& path)
     }
 }
 
+// get_metadata_unit call. TODO: finish the implementation ...
+[[nodiscard]] uint32_t LdPreloadedPosix::get_metadata_unit ([[maybe_unused]] const char* path) const 
+{
+    if (option_select_workflow_by_metadata_unit) {
+        std::cerr << __func__ << ": missing implementation." << std::endl;
+    }
+
+    return static_cast<uint32_t> (-1);
+}
+
 // enforce_request call. (...)
 [[nodiscard]] bool LdPreloadedPosix::enforce_request (const std::string_view& function_name,
     const uint32_t& workflow_id,
@@ -548,7 +558,7 @@ int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags, mode
     int fd = m_metadata_operations.m_open_var (path, flags, mode);
 
     // create_mount_point_entry
-    this->m_mount_point_table.create_mount_point_entry (fd, path, mountpoint);
+    this->m_mount_point_table.create_mount_point_entry (fd, path, mountpoint, this->get_metadata_unit (path));
 
     // update statistic entry
     this->update_statistics (OperationType::metadata_calls,
@@ -579,7 +589,7 @@ int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags)
     int fd = m_metadata_operations.m_open (path, flags);
 
     // create_mount_point_entry
-    this->m_mount_point_table.create_mount_point_entry (fd, path, mountpoint);
+    this->m_mount_point_table.create_mount_point_entry (fd, path, mountpoint, this->get_metadata_unit (path));
 
     // update statistic entry
     this->update_statistics (OperationType::metadata_calls,
@@ -610,7 +620,7 @@ int LdPreloadedPosix::ld_preloaded_posix_creat (const char* path, mode_t mode)
     int fd = m_metadata_operations.m_creat (path, mode);
 
     // create_mount_point_entry
-    this->m_mount_point_table.create_mount_point_entry (fd, path, mountpoint);
+    this->m_mount_point_table.create_mount_point_entry (fd, path, mountpoint, this->get_metadata_unit (path));
 
     // update statistic entry
     this->update_statistics (OperationType::metadata_calls,
@@ -641,7 +651,7 @@ int LdPreloadedPosix::ld_preloaded_posix_creat64 (const char* path, mode_t mode)
     int fd = m_metadata_operations.m_creat64 (path, mode);
 
     // create_mount_point_entry
-    this->m_mount_point_table.create_mount_point_entry (fd, path, mountpoint);
+    this->m_mount_point_table.create_mount_point_entry (fd, path, mountpoint, this->get_metadata_unit (path));
 
     // update statistic entry
     this->update_statistics (OperationType::metadata_calls,
@@ -675,7 +685,7 @@ int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd,
     int fd = m_metadata_operations.m_openat_var (dirfd, path, flags, mode);
 
     // create_mount_point_entry
-    this->m_mount_point_table.create_mount_point_entry (fd, path, mountpoint);
+    this->m_mount_point_table.create_mount_point_entry (fd, path, mountpoint, this->get_metadata_unit (path));
 
     // update statistic entry
     this->update_statistics (OperationType::metadata_calls,
@@ -706,7 +716,7 @@ int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd, const char* path, in
     int fd = m_metadata_operations.m_openat (dirfd, path, flags);
 
     // create_mount_point_entry
-    this->m_mount_point_table.create_mount_point_entry (fd, path, mountpoint);
+    this->m_mount_point_table.create_mount_point_entry (fd, path, mountpoint, this->get_metadata_unit (path));
 
     // update statistic entry
     this->update_statistics (OperationType::metadata_calls,
@@ -737,7 +747,7 @@ int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags, mo
     int fd = m_metadata_operations.m_open64_var (path, flags, mode);
 
     // create_mount_point_entry
-    this->m_mount_point_table.create_mount_point_entry (fd, path, mountpoint);
+    this->m_mount_point_table.create_mount_point_entry (fd, path, mountpoint, this->get_metadata_unit (path));
 
     // update statistic entry
     this->update_statistics (OperationType::metadata_calls,
@@ -768,7 +778,7 @@ int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags)
     int fd = m_metadata_operations.m_open64 (path, flags);
 
     // create_mount_point_entry
-    this->m_mount_point_table.create_mount_point_entry (fd, path, mountpoint);
+    this->m_mount_point_table.create_mount_point_entry (fd, path, mountpoint, this->get_metadata_unit (path));
 
     // update statistic entry
     this->update_statistics (OperationType::metadata_calls,
@@ -1082,7 +1092,7 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_fopen (const char* pathname, const ch
     FILE* fptr = m_metadata_operations.m_fopen (pathname, mode);
 
     // create_mount_point_entry
-    this->m_mount_point_table.create_mount_point_entry (fptr, pathname, mountpoint);
+    this->m_mount_point_table.create_mount_point_entry (fptr, pathname, mountpoint, this->get_metadata_unit (pathname));
 
     // verify if fopen operation was successful
     auto result = (fptr != nullptr) ? 0 : -1;
@@ -1116,7 +1126,7 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_fopen64 (const char* pathname, const 
     FILE* fptr = m_metadata_operations.m_fopen64 (pathname, mode);
 
     // create_mount_point_entry
-    this->m_mount_point_table.create_mount_point_entry (fptr, pathname, mountpoint);
+    this->m_mount_point_table.create_mount_point_entry (fptr, pathname, mountpoint, this->get_metadata_unit (pathname));
 
     // verify if fopen operation was successful
     auto result = (fptr != nullptr) ? 0 : -1;

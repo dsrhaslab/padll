@@ -24,6 +24,7 @@ class MountPointDifferentiationTest {
 private:
     FILE* m_fd { stdout };
     void* m_lib_link { ::dlopen ("libc.so.6", RTLD_LAZY) };
+    uint32_t m_default_metadata_unit { static_cast<uint32_t> (-1) };
 
     void
     performance_report (const std::string& header, const int& operations, const long& elapsed_time)
@@ -83,14 +84,14 @@ private:
                 }
 
                 // create mount point entry for file descriptor
-                result = table_ptr->create_mount_point_entry (fd, path_to_file, mount_point);
+                result = table_ptr->create_mount_point_entry (fd, path_to_file, mount_point, this->m_default_metadata_unit);
 
                 // add file descriptor to vector
                 file_identifiers->emplace_back (fd);
 
                 // retry createing the same mount point entry
                 if (retry_after_create) {
-                    result = table_ptr->create_mount_point_entry (fd, path_to_file, mount_point);
+                    result = table_ptr->create_mount_point_entry (fd, path_to_file, mount_point, this->m_default_metadata_unit);
                 }
             } else {
 // open file and get file pointer
@@ -109,14 +110,14 @@ private:
                 }
 
                 // create mount point entry for file pointer
-                result = table_ptr->create_mount_point_entry (f_ptr, path_to_file, mount_point);
+                result = table_ptr->create_mount_point_entry (f_ptr, path_to_file, mount_point, this->m_default_metadata_unit);
 
                 // add file pointer to vector
                 file_identifiers->emplace_back (f_ptr);
 
                 // retry createing the same mount point entry
                 if (retry_after_create) {
-                    result = table_ptr->create_mount_point_entry (f_ptr, path_to_file, mount_point);
+                    result = table_ptr->create_mount_point_entry (f_ptr, path_to_file, mount_point, this->m_default_metadata_unit);
                 }
             }
 

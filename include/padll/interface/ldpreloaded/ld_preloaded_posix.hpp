@@ -126,6 +126,11 @@ private:
      */
     void generate_statistics_report (const std::string_view& path);
 
+    /**
+     * get_metadata_unit: get number of MDT or MDS unit that the file at path belongs to.
+     */
+    [[nodiscard]] uint32_t get_metadata_unit ([[maybe_unused]] const char* path) const;
+
 public:
     /**
      * LdPreloadedPosix default constructor.

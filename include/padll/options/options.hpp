@@ -100,6 +100,11 @@ constexpr std::string_view option_default_remote_mount_point { "/" };
  */
 constexpr bool option_hard_remove { false };
 
+/**
+ * option_default_metadata_server_unit:
+ */
+constexpr bool option_select_workflow_by_metadata_unit { false };
+
 /***************************************************************************************************
  * Log configuration
  **************************************************************************************************/
