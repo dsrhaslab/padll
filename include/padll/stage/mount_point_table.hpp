@@ -51,8 +51,8 @@ private:
     std::unordered_map<FILE*, std::unique_ptr<MountPointEntry>> m_file_ptr_table {};
     std::map<MountPoint, std::vector<uint32_t>> m_mount_point_workflows {};
 
-    std::shared_ptr<Log> m_log { std::make_shared <Log> () };
-    Xoshiro128StarStar m_prng { static_cast<uint64_t> (::getpid()) };
+    std::shared_ptr<Log> m_log { std::make_shared<Log> () };
+    Xoshiro128StarStar m_prng { static_cast<uint64_t> (::getpid ()) };
 
     /**
      * initialize:
@@ -83,7 +83,7 @@ private:
     /**
      * select_workflow_from_metadata_unit:
      * @param metadata_unit
-     * @return 
+     * @return
      */
     [[nodiscard]] uint32_t select_workflow_from_metadata_unit (const uint32_t& metadata_unit) const;
 

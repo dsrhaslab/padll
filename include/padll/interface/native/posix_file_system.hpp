@@ -32,10 +32,10 @@ const std::shared_ptr<lgr::Log> m_logger_ptr { std::make_shared<lgr::Log> (
  */
 ptr::PosixPassthrough m_posix_passthrough { std::string (option_library_name), m_logger_ptr };
 
-
 /**
- * Shared atomic object to define if the LdPreloadedPosix object is fully initialized (including syscall pointers, mountpoint table,  logging, ...)
- */ 
+ * Shared atomic object to define if the LdPreloadedPosix object is fully initialized (including
+ * syscall pointers, mountpoint table,  logging, ...)
+ */
 std::shared_ptr<std::atomic<bool>> m_ldp_loaded { std::make_shared<std::atomic<bool>> (false) };
 
 /**

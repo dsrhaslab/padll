@@ -108,8 +108,8 @@ bool MountPointTable::create_mount_point_entry (const int& fd,
     std::lock_guard write_lock (this->m_fd_shared_lock);
 
     // create entry for the 'fd' file descriptor
-    auto [iter, inserted] = this->m_file_descriptors_table.emplace (
-        std::make_pair (fd, std::make_unique<MountPointEntry> (path, mount_point, metadata_server_unit)));
+    auto [iter, inserted] = this->m_file_descriptors_table.emplace (std::make_pair (fd,
+        std::make_unique<MountPointEntry> (path, mount_point, metadata_server_unit)));
 
     // check if the insertion was successful
     if (!inserted) {
@@ -140,8 +140,8 @@ bool MountPointTable::create_mount_point_entry (FILE* file_ptr,
     std::lock_guard write_lock (this->m_fptr_shared_lock);
 
     // create entry for the 'file_ptr' file pointer
-    auto [iter, inserted] = this->m_file_ptr_table.emplace (
-        std::make_pair (file_ptr, std::make_unique<MountPointEntry> (path, mount_point, metadata_server_unit)));
+    auto [iter, inserted] = this->m_file_ptr_table.emplace (std::make_pair (file_ptr,
+        std::make_unique<MountPointEntry> (path, mount_point, metadata_server_unit)));
 
     // check if the insertion was successful
     if (!inserted) {
@@ -328,10 +328,10 @@ std::pair<MountPoint, uint32_t> MountPointTable::pick_workflow_id (const std::st
         : this->extract_mount_point_from_path (path);
 
     // select workflow identifier
-    auto workflow_id = (option_select_workflow_by_metadata_unit) 
-        ? this->select_workflow_from_metadata_unit (path) 
-        : this->select_workflow_from_mountpoint (namespace_type); 
-    
+    auto workflow_id = (option_select_workflow_by_metadata_unit)
+        ? this->select_workflow_from_metadata_unit (path)
+        : this->select_workflow_from_mountpoint (namespace_type);
+
     // verify if the workflow identifier was not found
     if (workflow_id == static_cast<uint32_t> (-1)) {
         this->m_log->log_error ("Error while selecting workflow id.");
@@ -354,9 +354,9 @@ uint32_t MountPointTable::pick_workflow_id (const int& fd)
         // option to no 'LD_PRELOAD' open calls, but register the MountPointEntry for 'LD_PRELOADED'
         // read and write calls get mount_point
         // select workflow-id from Mount Point or Metadata Server unit
-        workflow_id = (option_select_workflow_by_metadata_unit) 
-            ? this->select_workflow_from_metadata_unit (entry_ptr->get_metadata_server_unit ()) 
-            : this->select_workflow_from_mountpoint (entry_ptr->get_mount_point ()); 
+        workflow_id = (option_select_workflow_by_metadata_unit)
+            ? this->select_workflow_from_metadata_unit (entry_ptr->get_metadata_server_unit ())
+            : this->select_workflow_from_mountpoint (entry_ptr->get_mount_point ());
 
         // verify if the workflow identifier was not found
         if (workflow_id == static_cast<uint32_t> (-1)) {
@@ -377,9 +377,9 @@ uint32_t MountPointTable::pick_workflow_id (FILE* file_ptr)
     // check if the mount point entry was found
     if (return_value) {
         // select workflow-id from Mount Point or Metadata Server unit
-        workflow_id = (option_select_workflow_by_metadata_unit) 
-            ? this->select_workflow_from_metadata_unit (entry_ptr->get_metadata_server_unit ()) 
-            : this->select_workflow_from_mountpoint (entry_ptr->get_mount_point ()); 
+        workflow_id = (option_select_workflow_by_metadata_unit)
+            ? this->select_workflow_from_metadata_unit (entry_ptr->get_metadata_server_unit ())
+            : this->select_workflow_from_mountpoint (entry_ptr->get_mount_point ());
 
         // verify if the workflow identifier was not found
         if (workflow_id == static_cast<uint32_t> (-1)) {

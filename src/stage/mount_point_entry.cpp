@@ -17,7 +17,9 @@ MountPointEntry::MountPointEntry (const std::string& path, const MountPoint& mou
 { }
 
 // MountPointEntry parameterized constructor.
-MountPointEntry::MountPointEntry (const std::string& path, const MountPoint& mount_point, const uint32_t& metadata_instance) :
+MountPointEntry::MountPointEntry (const std::string& path,
+    const MountPoint& mount_point,
+    const uint32_t& metadata_instance) :
     m_path { path },
     m_mount_point { mount_point },
     m_metadata_server_unit { metadata_instance }
