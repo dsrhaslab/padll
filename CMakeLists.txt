@@ -156,7 +156,7 @@ if (PADLL_BUILD_TESTS)
     enable_testing()
 
     function(padll_test test_file executable_name)
-        get_filename_component(test_target_name "${test_file}" NAME_WE)
+        get_filename_component(test_target_name "${executable_name}" NAME_WE)
 
         add_executable("${test_target_name}" "")
         target_sources("${test_target_name}"

@@ -150,19 +150,34 @@ constexpr std::string_view option_default_statistics_report_path { "/tmp" };
 // *************************************************************************************************
 
 /**
+ * main_path: Default main path.
+ * This parameter defines the main path for the rules files (housekeeping, differentiation, and
+ * enforcement).
+ */
+inline std::filesystem::path main_path ()
+{
+    return "/home/gsd/hpdc22/padll/files/";
+}
+
+/**
  * option_default_stage_channels:
  */
-constexpr int option_default_stage_channels { 1 };
+constexpr int option_default_stage_channels { -1 };
 
 /**
  * option_default_stage_object_creation:
  */
-constexpr bool option_default_stage_object_creation { true };
+constexpr bool option_default_stage_object_creation { false };
 
 /**
  * option_default_stage_name:
  */
-constexpr std::string_view option_default_stage_name { "tensorflow-" };
+constexpr std::string_view option_default_stage_name { "padll-stage" };
+
+/**
+ * option_paio_environment_variable_env:
+ */
+constexpr std::string_view option_paio_environment_variable_env { "paio_env" };
 
 } // namespace padll::options
 
