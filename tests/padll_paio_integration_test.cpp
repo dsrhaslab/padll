@@ -1,3 +1,5 @@
+#include <cinttypes>
+#include <cstdio>
 #include <padll/options/options.hpp>
 #include <paio/interface/paio_instance.hpp>
 #include <paio/stage/paio_stage.hpp>
@@ -5,9 +7,132 @@
 
 namespace padll::tests {
 
+// Struct to store temporary results of each worker thread.
+struct ThreadResults {
+    double m_iops;
+};
+
+// Struct that stores the cumulative IOPS results (of all worker threads) of a given
+// run.
+struct MergedResults {
+    uint32_t m_run_id;
+    std::vector<double> m_iops;
+    double m_cumulative_iops;
+};
+
+// Struct that stores the average and standard deviation of IOPS results of all runs.
+struct SetupResults {
+    double m_avg_cumulative_iops;
+    double m_stdev_cumulative_iops;
+};
+
+/**
+ * record_stress_test_results: Store the results of a single worker stress test in a MergedResults
+ * object.
+ * @param results Pointer to a shared MergedResults object, that contains the results of all
+ * threads.
+ * @param threaded_results Const reference to the results' object of the single worker stress test.
+ */
+void record_stress_test_results (MergedResults* results, const ThreadResults& threaded_results)
+{
+    results->m_iops.emplace_back (threaded_results.m_iops);
+    results->m_cumulative_iops += threaded_results.m_iops;
+}
+
+/**
+ * stdout_results: Print performance report of the MergedResults object to a given file (including
+ * stdout). If detailed flag is enabled, the method also logs the performance results (IOPS) of each worker.
+ * @param results Performance results to be logged.
+ * @param print_detailed Flag that defines if the performance results of each worker thread should
+ * be also printed to file.
+ */
+void log_results (FILE* fd, const MergedResults& merged_results, bool print_detailed)
+{
+    std::fprintf (fd, "Run: %u\n", merged_results.m_run_id);
+    std::fprintf (fd, "\tIOPS (KOps/s):\t%.3lf\n", merged_results.m_cumulative_iops);
+    std::fprintf (fd, "----------------------------------\n");
+
+    // log performance results of each worker thread
+    if (print_detailed) {
+        for (unsigned int i = 0; i < merged_results.m_iops.size (); i++) {
+            std::fprintf (fd, "Thread-%d:\t", i);
+            std::fprintf (fd, "%.3lf KOps/s\n", merged_results.m_iops[i]);
+        }
+    }
+
+    std::fflush (fd);
+}
+
+/**
+ * log_final_results: Record the results of the overall execution (all runs).
+ * @param fd Pointer to a FILE object to write the performance report.
+ * @param results Performance results of the overall benchmark execution, which includes the average
+ * of all runs.
+ * @param setup_name Name of the benchmarking setup.
+ */
+void log_final_results (FILE* fd, const SetupResults& results, const std::string& setup_name)
+{
+    std::fprintf (fd, "----------------------------------\n");
+    std::fprintf (fd, "Setup results: %s\n", setup_name.c_str ());
+    std::fprintf (fd, "\tIOPS (KOps/s):\t%.3lf\n", results.m_avg_cumulative_iops);
+    std::fprintf (fd, "\tstdev-iops:\t%.3lf\n", results.m_stdev_cumulative_iops);
+    std::fprintf (fd, "----------------------------------\n");
+}
+
+/**
+ * compute_stdev: Calculate standard deviation of a given sample.
+ * @param sample Object that contains all values of the sample.
+ * @return Returns the standard deviation value of the sample.
+ */
+double compute_stdev (const std::vector<double>& sample)
+{
+    double sum;
+    double mean;
+    double stdev = 0;
+
+    int i;
+    int sample_size = static_cast<int> (sample.size ());
+
+    sum = std::accumulate (sample.begin (), sample.end (), 0.0);
+    mean = sum / sample_size;
+
+    for (i = 0; i < sample_size; i++)
+        stdev += pow (sample[i] - mean, 2);
+
+    return sqrt (stdev / sample_size);
+}
+
+/**
+ * merge_final_results: Merge the performance results of all runs into a single object, which will
+ * report the average and standard deviation values of the cumulative IOPS and throughput.
+ * @param results Container with the performance results of all runs.
+ * @return Returns a SetupResults object with the cumulative performance result of all runs.
+ */
+SetupResults merge_final_results (const std::vector<MergedResults>& results)
+{
+    SetupResults final_results {};
+    int total_runs = static_cast<int> (results.size ());
+
+    double cumulative_iops = 0;
+    std::vector<double> iops_sample_stdev {};
+
+    // compute cumulative IOPS
+    for (int i = 0; i < total_runs; i++) {
+        cumulative_iops += results[i].m_cumulative_iops;
+        iops_sample_stdev.push_back (results[i].m_cumulative_iops);
+    }
+
+    // compute average and standard deviation values and store them in the SetupResults object
+    final_results.m_avg_cumulative_iops = (cumulative_iops / total_runs);
+    final_results.m_stdev_cumulative_iops = compute_stdev (iops_sample_stdev);
+
+    return final_results;
+}
+
 class StageIntegrationTest {
 
 private:
+    FILE* m_fd { stdout };
     std::shared_ptr<paio::PaioStage> m_stage_ptr { nullptr };
     std::unique_ptr<paio::PaioInstance> m_instance_ptr { nullptr };
 
@@ -30,10 +155,15 @@ private:
 
     /**
      * generate_context_object: Generate a context object.
+     * @param workflow_range
+     * @param constant
+     * @param operation_type_range
+     * @param operation_context_range
+     * @return Returns a context object.
      */
     paio::core::Context generate_context_object (const int& workflow_range, const int& constant, const int& operation_type_range, const int& operation_context_range)
     {
-        auto workflow_id = static_cast<long> (random () % workflow_range) * constant;
+        auto workflow_id = static_cast<long> ((random () % workflow_range) + 1 ) * constant;
         auto operation_type = static_cast<int> (random () % operation_type_range);
         auto operation_context = static_cast<int> (random () % operation_context_range);
 
@@ -42,36 +172,62 @@ private:
 
     /**
      * submit_request:
+     * @param workflow_range
+     * @param constant
+     * @param operation_type_range
+     * @param operation_context_range
+     * @param detailed_debug
      */
     void submit_request (int workflow_range, int constant, int operation_type_range, int operation_context_range, bool detailed_debug)
     {
+        // generate Context object
         auto context_object = this->generate_context_object (workflow_range, constant, operation_type_range, operation_context_range);
         
         if (detailed_debug) {
-            std::cout << context_object.to_string () << std::endl;
+            std::fprintf (this->m_fd, "%s\n", context_object.to_string ().c_str ());
         }
         
+        // create Result object
         Result result {};
+        // enforce request through the PaioInstance
         this->m_instance_ptr->enforce (context_object, result);
 
         // validate ResultStatus
         if (result.get_result_status () != paio::enforcement::ResultStatus::success) {
-            std::cerr << __func__  << ": enforce failed." << std::endl;
+            std::fprintf (stderr, "%s: enforce failed.\n", __func__);
         }
         
+        // log Result object
         if (detailed_debug) {
-            std::cout << "Result: " << result.to_string () << std::endl;
+            std::fprintf (this->m_fd, "Result: %s\n", result.to_string ().c_str ());
         }
     }
 
     /**
-     * execute_worker:
+     * spawn_worker:
+     * @param worker_id
+     * @param iterations
+     * @param workflow_range
+     * @param constant
+     * @param operation_type_range
+     * @param operation_context_range
+     * @param detailed_debug
      */
-    void execute_worker (int worker_id, int iterations, int workflow_range, int constant, int operation_type_range, int operation_context_range, bool detailed_debug)
+    [[nodiscard]] ThreadResults spawn_worker (int iterations, int workflow_range, int constant, int operation_type_range, int operation_context_range, bool detailed_debug)
     {
+        auto start = std::chrono::high_resolution_clock::now ();
+
         for (int i = 0; i < iterations; i++) {
             this->submit_request (workflow_range, constant, operation_type_range, operation_context_range, detailed_debug);
         }
+
+        // calculate elapsed time
+        auto end = std::chrono::high_resolution_clock::now ();
+        std::chrono::duration<double> elapsed_seconds = end - start;
+
+        // store performance results of the worker thread
+        ThreadResults results { static_cast<double> (iterations) / elapsed_seconds.count () / 1000 };
+        return results;
     }
 
 public:
@@ -124,20 +280,59 @@ public:
      */
     void test_to_string ()
     {
+        std::cout << "\n-------------------------------------------------------" << std::endl;
+        std::cout << "Print StageInfo and PaioInstance content:" << std::endl;
+        std::cout << "-------------------------------------------------------" << std::endl;
         std::cout << this->m_stage_ptr->stage_info_to_string () << std::endl;
         std::cout << this->m_instance_ptr->to_string () << std::endl;
+        std::cout << "-------------------------------------------------------\n" << std::endl;
     }
 
-    void spawn_workers (int num_workers, int iterations, int workflow_range, int constant, int operation_type_range, int operation_context_range, bool detailed_debug)
+    /**
+     * execute_job: 
+     * @param run_id Unique identifier of the current run.
+     * ...
+     * @return Returns a MergedResults object with the results of the stress test.
+     */
+    MergedResults execute_job (uint32_t run_id, int num_workers, int iterations, int workflow_range, int constant, int operation_type_range, int operation_context_range, bool detailed_debug)
     {
+        // create object to store cumulative performance results
+        MergedResults results { run_id, {}, 0 };
+
+        std::mutex lock;
+
+        // lambda function to execute worker
+        auto func = ([&lock,&results, this, workflow_range, constant, operation_type_range, operation_context_range, detailed_debug] (int iterations) {
+            
+            // execute stress test for worker
+            ThreadResults thread_results = this->spawn_worker (iterations, workflow_range, constant, operation_type_range, operation_context_range, detailed_debug);
+            
+            {
+                std::unique_lock<std::mutex> unique_lock (lock);
+                record_stress_test_results (&results, thread_results);
+            }
+
+        });
+
+        int per_worker_iterations = iterations / num_workers;
+
+        // spawn workers
         std::vector<std::thread> workers;
         for (int i = 0; i < num_workers; i++) {
-            workers.emplace_back (std::thread (std::bind (&StageIntegrationTest::execute_worker, this, i, iterations, workflow_range, constant, operation_type_range, operation_context_range, detailed_debug)));
+            // spawn and emplace thread
+            workers.emplace_back (func, per_worker_iterations);
+            std::cerr << "Starting worker thread #" << i << " (" << workers[i].get_id () << ") ..." << std::endl;
         }
 
+        // join workers
         for (auto& worker : workers) {
+            std::thread::id joining_thread_id = worker.get_id ();
+            // join worker thread
             worker.join ();
+            std::cerr << "Joining worker thread #" << joining_thread_id << " ..." << std::endl;
         }
+
+        return results;
     }
 
 };
@@ -188,19 +383,41 @@ int main ()
         enforcement_rules_path,
         execute_on_receive);
 
-    std::this_thread::sleep_for (std::chrono::seconds (1));
+    // std::this_thread::sleep_for (std::chrono::seconds (1));
 
+    // check content in PaioStage's StageInfo and PaioInstance
     stage_test.test_to_string ();
+    
+    // benchmark setup
+    std::vector<MergedResults> run_results;
+    int num_workers { 1 };
+    int iterations { 10000000 };
+    int workflow_range { 4 };
+    int constant { 1000 };
+    int operation_type_range { paio::core::posix_size };
+    int operation_context_range { paio::core::posix_meta_size };
+    bool debug { false };
+    FILE* fd { stdout };
+    uint32_t runs = 3;
+    int wait_time = 5;
 
-    int num_workers = 1;
-    int iterations = 10;
-    int workflow_range = 4;
-    int constant = 1000;
-    int operation_type_range = paio::core::posix_size;
-    int operation_context_range = paio::core::posix_meta_size;
-    bool debug = false;
+    for (uint32_t i = 1; i <= runs; i++) {
+        // execute test
+        auto results = stage_test.execute_job (i, num_workers, iterations, workflow_range, constant, operation_type_range, operation_context_range, debug);
 
-    stage_test.spawn_workers (num_workers, iterations, workflow_range, constant, operation_type_range, operation_context_range, debug);
+        // log results to file or stdout
+        log_results (fd, results, debug);
+        // store MergedResults object in container
+        run_results.emplace_back (results);
+        
+        // sleep before going to the next run
+        std::this_thread::sleep_for (std::chrono::seconds (wait_time));
+    }
+
+    // merge final performance results
+    SetupResults final_results = merge_final_results (run_results);
+    // record final results in a given file (file or stdout)
+    log_final_results (fd, final_results, "PADLL::PAIO integration test");
 
     std::cout << "\n-------------------------------------------------------\n\n";
 
