@@ -340,7 +340,7 @@ int main ()
     bool default_object_creation { padll::options::option_default_stage_object_creation };
     // set path to rules files
     std::string housekeeping_rules_path { padll::options::main_path ().string ()
-        + "hsk-rules-local" };
+        + "hsk-micro-2" };
     std::string differentiation_rules_path { "" };
     std::string enforcement_rules_path { "" };
     // set rule execution options
@@ -374,7 +374,7 @@ int main ()
     int num_workers { 1 };
     int iterations { 10000000 };
     long workflow_id { 1000 };
-    int operation_type { static_cast<int> (paio::core::POSIX::open) };
+    int operation_type { static_cast<int> (paio::core::POSIX::close) };
     int operation_context { static_cast<int> (paio::core::POSIX_META::meta_op) };
     bool debug { false };
     FILE* fd { stdout };
