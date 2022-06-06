@@ -212,6 +212,14 @@ private:
     }
 
 public:
+    std::string m_housekeeping_rules_path {""};
+    std::string m_differentiation_rules_path { "" };
+    std::string m_enforcement_rules_path { "" };
+    int m_workers { 1 };
+    std::vector<long> m_per_worker_workflow_id {};
+    std::vector<int> m_per_worker_operation_type {};
+    std::vector<int> m_per_worker_operation_context {};
+
     /**
      * SimulateMicroTest default constructor.
      */
@@ -275,7 +283,7 @@ public:
      * ...
      * @return Returns a MergedResults object with the results of the stress test.
      */
-    MergedResults execute_job (int run_id, int num_workers, int iterations, long workflow_id, int operation_type, int operation_context, bool detailed_debug)
+    MergedResults execute_job (int run_id, int num_workers, int iterations, const std::vector<long>& workflow_id, const std::vector<int> operation_type, const std::vector<int> operation_context, bool detailed_debug)
     {
         // create object to store cumulative performance results
         MergedResults results { run_id, {}, 0 };
@@ -283,7 +291,7 @@ public:
         std::mutex lock;
 
         // lambda function to execute worker
-        auto func = ([&lock,&results, this, workflow_id, operation_type, operation_context, detailed_debug] (int iterations) {
+        auto func = ([&lock,&results, this, detailed_debug] (int iterations, long workflow_id, int operation_type, int operation_context) {
             
             // execute stress test for worker
             ThreadResults thread_results = this->spawn_worker (iterations, workflow_id, operation_type, operation_context, detailed_debug);
@@ -301,8 +309,8 @@ public:
         std::vector<std::thread> workers;
         for (int i = 0; i < num_workers; i++) {
             // spawn and emplace thread
-            workers.emplace_back (func, per_worker_iterations);
-            std::cerr << "Starting worker thread #" << i << " (" << workers[i].get_id () << ") ..." << std::endl;
+            workers.emplace_back (func, per_worker_iterations, workflow_id[i], operation_type[i], operation_context[i]);
+            std::cerr << "Starting worker thread #" << i << " (" << workers[i].get_id () << ", " << (workflow_id[i])  << ") ..." << std::endl;
         }
 
         // join workers
@@ -330,21 +338,98 @@ void print_header ()
     std::cout << "-------------------------------------------------------\n";
 }
 
-int main ()
+/**
+ * micro_bench_1_conf: configurations for the microbenchmarks test case #1.
+ */
+void micro_bench_1_conf (SimulateMicroTest* test_ptr, int num_workers)
 {
+    // update path to HousekeepingRules file
+    test_ptr->m_housekeeping_rules_path = padll::options::main_path ().string ()
+        + "hsk-micro-1";
 
-    // set stage name
+    // update number of workers
+    if (num_workers <= 4 && num_workers > 0) {
+        test_ptr->m_workers = num_workers;
+    } else {
+        throw std::runtime_error ("Invalid number of workers.");
+    }
+
+    // update per_worker_workflow_id vector
+    std::vector<long> workflow_id { 1000, 2000, 3000, 4000 };
+    test_ptr->m_per_worker_workflow_id = workflow_id;
+    
+    // update per_worker_operation_type vector 
+    std::vector<int> operation_type { static_cast<int> (paio::core::POSIX::open), static_cast<int> (paio::core::POSIX::close), static_cast<int> (paio::core::POSIX::rename), static_cast<int> (paio::core::POSIX::getxattr) };
+    test_ptr->m_per_worker_operation_type = operation_type;
+
+    // update per_worker_operation_context vector 
+    std::vector<int> operation_context { static_cast<int> (paio::core::POSIX_META::meta_op), static_cast<int> (paio::core::POSIX_META::meta_op), static_cast<int> (paio::core::POSIX_META::meta_op), static_cast<int> (paio::core::POSIX_META::meta_op) };
+    test_ptr->m_per_worker_operation_context = operation_context;
+}
+
+/**
+ * micro_bench_2_conf: configurations for the microbenchmarks test case #2.
+ */
+void micro_bench_2_conf (SimulateMicroTest* test_ptr, int num_workers)
+{
+    // update path to HousekeepingRules file
+    test_ptr->m_housekeeping_rules_path = padll::options::main_path ().string ()
+        + "hsk-micro-2";
+
+    // update number of workers
+    if (num_workers == 1) {
+        test_ptr->m_workers = num_workers;
+    } else {
+        throw std::runtime_error ("Invalid number of workers.");
+    }
+
+    // update per_worker_workflow_id vector
+    test_ptr->m_per_worker_workflow_id.emplace_back (1000);
+    
+    // update per_worker_operation_type vector 
+    test_ptr->m_per_worker_operation_type.emplace_back (static_cast<int> (paio::core::POSIX::open));
+
+    // update per_worker_operation_context vector 
+    test_ptr->m_per_worker_operation_context.emplace_back (static_cast<int> (paio::core::POSIX_META::meta_op));
+}
+
+/**
+ * micro_bench_3_conf: configurations for the microbenchmarks test case #1.
+ */
+void micro_bench_3_conf (SimulateMicroTest* test_ptr, int num_workers)
+{
+    // update path to HousekeepingRules file
+    test_ptr->m_housekeeping_rules_path = padll::options::main_path ().string ()
+        + "hsk-micro-3";
+
+    // update number of workers
+    if (num_workers <= 4 && num_workers > 0) {
+        test_ptr->m_workers = num_workers;
+    } else {
+        throw std::runtime_error ("Invalid number of workers.");
+    }
+
+    // update per_worker_workflow_id vector
+    std::vector<long> workflow_id { 1000, 2000, 3000, 4000 };
+    test_ptr->m_per_worker_workflow_id = workflow_id;
+    
+    // update per_worker_operation_type vector 
+    std::vector<int> operation_type { static_cast<int> (paio::core::POSIX::open), static_cast<int> (paio::core::POSIX::close), static_cast<int> (paio::core::POSIX::rename), static_cast<int> (paio::core::POSIX::getxattr) };
+    test_ptr->m_per_worker_operation_type = operation_type;
+
+    // update per_worker_operation_context vector 
+    std::vector<int> operation_context { static_cast<int> (paio::core::POSIX_META::meta_op), static_cast<int> (paio::core::POSIX_META::meta_op), static_cast<int> (paio::core::POSIX_META::meta_op), static_cast<int> (paio::core::POSIX_META::meta_op) };
+    test_ptr->m_per_worker_operation_context = operation_context;
+}
+
+int main (int argc, char** argv)
+{
+    // data plane stage setup
     std::string stage_name { padll::options::option_default_stage_name };
-    // set channel creation options
     int num_channels { padll::options::option_default_stage_channels };
     bool default_object_creation { padll::options::option_default_stage_object_creation };
-    // set path to rules files
-    std::string housekeeping_rules_path { padll::options::main_path ().string ()
-        + "hsk-micro-2" };
-    std::string differentiation_rules_path { "" };
-    std::string enforcement_rules_path { "" };
-    // set rule execution options
     bool execute_on_receive { true };
+
     // set environment variables for the stage
     std::string_view stage_env { padll::options::option_paio_environment_variable_env };
     std::string_view stage_env_value { "testing-environment" };
@@ -355,35 +440,47 @@ int main ()
     // create testing object
     SimulateMicroTest stage_test { stage_env_value };
 
+    // benchmark setup 
+    std::vector<MergedResults> run_results;
+    int num_workers { 4 };
+    int iterations { 1000000 };
+    bool debug { false };
+    FILE* fd { stdout };
+    uint32_t runs = 1;
+    int wait_time = -1;
+
+    if (argc > 1) {
+        if (std::strcmp (argv[1], "bench-2") == 0) {
+            std::cout << "Running microbenchmark #2." << std::endl;
+            micro_bench_2_conf (&stage_test, num_workers);
+        } else if (strcmp (argv[1], "bench-3") == 0) {
+            std::cout << "Running microbenchmark #3." << std::endl;
+            micro_bench_3_conf (&stage_test, num_workers);
+        } else {
+            std::cout << "Running microbenchmark #1." << std::endl;
+            micro_bench_1_conf (&stage_test, num_workers);
+        }
+    } else {
+        std::cout << "Running microbenchmark #1." << std::endl;
+        micro_bench_1_conf (&stage_test, num_workers);
+    }
+    
     // initialize PAIO stage
     stage_test.initialize (num_channels,
         default_object_creation,
         stage_name,
-        housekeeping_rules_path,
-        differentiation_rules_path,
-        enforcement_rules_path,
+        stage_test.m_housekeeping_rules_path,
+        stage_test.m_differentiation_rules_path,
+        stage_test.m_enforcement_rules_path,
         execute_on_receive);
-
-    // std::this_thread::sleep_for (std::chrono::seconds (1));
 
     // check content in PaioStage's StageInfo and PaioInstance
     stage_test.test_to_string ();
     
-    // benchmark setup
-    std::vector<MergedResults> run_results;
-    int num_workers { 1 };
-    int iterations { 10000000 };
-    long workflow_id { 1000 };
-    int operation_type { static_cast<int> (paio::core::POSIX::close) };
-    int operation_context { static_cast<int> (paio::core::POSIX_META::meta_op) };
-    bool debug { false };
-    FILE* fd { stdout };
-    uint32_t runs = 1;
-    int wait_time = 5;
-
+    // run benchmark
     for (uint32_t i = 1; i <= runs; i++) {
         // execute test
-        auto results = stage_test.execute_job (i, num_workers, iterations, workflow_id, operation_type, operation_context, debug);
+        auto results = stage_test.execute_job (i, num_workers, iterations, stage_test.m_per_worker_workflow_id, stage_test.m_per_worker_operation_type, stage_test.m_per_worker_operation_context, debug);
 
         // log results to file or stdout
         log_results (fd, results, debug);
@@ -391,7 +488,9 @@ int main ()
         run_results.emplace_back (results);
         
         // sleep before going to the next run
-        std::this_thread::sleep_for (std::chrono::seconds (wait_time));
+        if (wait_time > 0) {
+            std::this_thread::sleep_for (std::chrono::seconds (wait_time));
+        }
     }
 
     // merge final performance results

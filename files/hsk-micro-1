@@ -4,9 +4,9 @@
 4 create_channel 4000 posix 4000 getxattr no_op
 5 create_channel 5000 posix 5000 read no_op
 6 create_channel 6000 posix 6000 write no_op
-7 create_object 1000 1 posix no_op no_op noop 0 0
-8 create_object 2000 1 posix no_op no_op noop 0 0
-9 create_object 3000 1 posix no_op no_op noop 0 0
-10 create_object 4000 1 posix no_op no_op noop 0 0
-11 create_object 5000 1 posix no_op no_op noop 0 0
-12 create_object 6000 1 posix no_op no_op noop 0 0
+7 create_object 1000 1 posix no_op no_op drl 10000 250000
+8 create_object 2000 1 posix no_op no_op drl 10000 250000
+9 create_object 3000 1 posix no_op no_op drl 10000 250000
+10 create_object 4000 1 posix no_op no_op drl 10000 250000
+11 create_object 5000 1 posix no_op no_op drl 10000 250000
+12 create_object 6000 1 posix no_op no_op drl 10000 250000

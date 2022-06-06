@@ -1,11 +1,16 @@
 # PAIO and PADLL Configurations and Rules for Micro-benchmarks
 
 **General PAIO configurations:**
+```yaml
+EnforcementObject differentiation
 - option_default_enforcement_object_differentiation_operation_type : false
 - option_default_enforcement_object_differentiation_operation_context : false
+
+Statistic collection
 - option_default_channel_statistic_collection : true
 - option_default_object_statistic_collection : false
 - option_default_statistic_metric : StatisticMetric::throughput
+```
 
 ### 1a: rate limiting per-request type
 **Testing scenario:**
@@ -20,24 +25,35 @@
 - operation context : no_op
 
 **PAIO configurations:**
+```yaml
+Channel-level differentiation
 - option_default_channel_differentiation_workflow : false
 - option_default_channel_differentiation_operation_type : true
 - option_default_channel_differentiation_operation_context : false
-- option_default_statistic_classifier : ClassifierType::operation_type
+
+Context identifier
 - option_default_context_type : ContextType::POSIX
+- option_default_statistic_classifier : ClassifierType::operation_type
+```
 
 **PADLL configurations:**
-- libc_calls::padll_intercept_open_var | padll_intercept_open : true
-- libc_calls::padll_intercept_close : true
-- libc_calls::padll_intercept_rename : true
-- libc_calls::padll_intercept_getxattr : true
-- libc_calls::padll_intercept_read : true
-- libc_calls::padll_intercept_write : true
+```yaml
+libc_calls header
+- padll_intercept_open_var : true
+- padll_intercept_open : true
+- padll_intercept_close : true
+- padll_intercept_rename : true
+- padll_intercept_getxattr : true
+- padll_intercept_read : true
+- padll_intercept_write : true
 - rest of libc_calls : false
+```
 
 **Rules**
 - number of channels : 6 (one per request type; just for simplicity in number of configurations files to create)
 - enforcement object : DRL
+- housekeeping rules file : `files/hsk-micro-1`
+
 
 ---
 
@@ -54,22 +70,32 @@
 - operation context : meta_op
 
 **PAIO configurations:**
+```yaml
+Channel-level differentiation
 - option_default_channel_differentiation_workflow : false
 - option_default_channel_differentiation_operation_type : false
 - option_default_channel_differentiation_operation_context : true
-- option_default_statistic_classifier : ClassifierType::operation_context
+
+Context identifier
 - option_default_context_type : ContextType::POSIX_META
+- option_default_statistic_classifier : ClassifierType::operation_context
+```
 
 **PADLL configurations:**
-- libc_calls::padll_intercept_open_var | padll_intercept_open : true
-- libc_calls::padll_intercept_close : true
-- libc_calls::padll_intercept_rename : true
-- libc_calls::padll_intercept_getxattr : true
+```yaml
+libc_calls header
+- padll_intercept_open_var : true
+- padll_intercept_open : true
+- padll_intercept_close : true
+- padll_intercept_rename : true
+- padll_intercept_getxattr : true
 - rest of libc_calls : false
+```
 
 **Rules**
 - number of channels : 1
 - enforcement object : DRL
+- housekeeping rules file : `files/hsk-micro-2`
 
 ---
 
@@ -89,11 +115,15 @@
 - one data plane stage per-job
 
 **PADLL configurations:**
-- libc_calls::padll_intercept_open_var | padll_intercept_open : true
-- libc_calls::padll_intercept_close : true
-- libc_calls::padll_intercept_rename : true
-- libc_calls::padll_intercept_getxattr : true
+```yaml
+libc_calls header
+- padll_intercept_open_var : true
+- padll_intercept_open : true
+- padll_intercept_close : true
+- padll_intercept_rename : true
+- padll_intercept_getxattr : true
 - rest of libc_calls : false
+```
 
 ---
 
@@ -110,22 +140,31 @@
 - operation context : meta_op
 
 **PAIO configurations:**
+```yaml
+Channel-level differentiation
 - option_default_channel_differentiation_workflow : true
 - option_default_channel_differentiation_operation_type : false
 - option_default_channel_differentiation_operation_context : true
-- option_default_statistic_classifier : ClassifierType::operation_context
+
+Context identifier
 - option_default_context_type : ContextType::POSIX_META
+- option_default_statistic_classifier : ClassifierType::operation_context
+```
 
 **PADLL configurations:**
-- libc_calls::PosixMetadataCalls : true
-- libc_calls::PosixExtendedAttributedCalls : true
-- libc_calls::PosixDirectoryCalls : true
+```yaml
+libc_calls header
+- PosixMetadataCalls : true
+- PosixExtendedAttributedCalls : true
+- PosixDirectoryCalls : true
 - rest of libc_calls : false
+```
 
 **Rules**
 - number of channels : 4 (to enabled load balancing)
-    - note: test first with a single channel, and check if PAIO/PADLL is not a bottleneck; if not, use a single channel instead of 4
+    > **Note:** test first with a single channel, and check if PAIO/PADLL is not a bottleneck; if not, use a single channel instead of 4
 - enforcement object : DRL
+- housekeeping rules file : `files/hsk-micro-3`
 
 ---
 
