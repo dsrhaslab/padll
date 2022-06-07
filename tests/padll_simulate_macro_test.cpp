@@ -9,21 +9,38 @@ namespace padll::tests {
 
 // Struct to store temporary results of each worker thread.
 struct ThreadResults {
-    double m_iops;
+    double m_metadata_ops;
+    double m_data_ops;
+    double m_bandwidth;
 };
 
 // Struct that stores the cumulative IOPS results (of all worker threads) of a given
 // run.
 struct MergedResults {
     uint32_t m_run_id;
-    std::vector<double> m_iops;
-    double m_cumulative_iops;
+    std::vector<double> m_metadata_ops;
+    std::vector<double> m_data_ops;
+    std::vector<double> m_bandwidth;
+    double m_cumulative_metadata_ops;
+    double m_cumulative_data_ops;
+    double m_cumulative_bandwidth;
 };
 
 // Struct that stores the average and standard deviation of IOPS results of all runs.
 struct SetupResults {
-    double m_avg_cumulative_iops;
-    double m_stdev_cumulative_iops;
+    double m_avg_cumulative_metadata_ops;
+    double m_stdev_cumulative_metadata_ops;
+    double m_avg_cumulative_data_ops;
+    double m_stdev_cumulative_data_ops;
+    double m_avg_cumulative_bandwidth;
+    double m_stdev_cumulative_bandwidth;
+};
+
+// Enum class that defines the type of workers.
+enum class WorkerType {
+    metadata_worker = 1,
+    data_worker = 2,
+    hybrid_worker = 3
 };
 
 /**
@@ -35,8 +52,12 @@ struct SetupResults {
  */
 void record_stress_test_results (MergedResults* results, const ThreadResults& threaded_results)
 {
-    results->m_iops.emplace_back (threaded_results.m_iops);
-    results->m_cumulative_iops += threaded_results.m_iops;
+    results->m_metadata_ops.emplace_back (threaded_results.m_metadata_ops);
+    results->m_cumulative_metadata_ops += threaded_results.m_metadata_ops;
+    results->m_data_ops.emplace_back (threaded_results.m_data_ops);
+    results->m_cumulative_data_ops += threaded_results.m_data_ops;
+    results->m_bandwidth.emplace_back (threaded_results.m_bandwidth);
+    results->m_cumulative_bandwidth += threaded_results.m_bandwidth;
 }
 
 /**
@@ -49,16 +70,10 @@ void record_stress_test_results (MergedResults* results, const ThreadResults& th
 void log_results (FILE* fd, const MergedResults& merged_results, bool print_detailed)
 {
     std::fprintf (fd, "Run: %u\n", merged_results.m_run_id);
-    std::fprintf (fd, "\tIOPS (KOps/s):\t%.3lf\n", merged_results.m_cumulative_iops);
+    std::fprintf (fd, "\tMetadata Ops (KOps/s):\t%.3lf\n", merged_results.m_cumulative_metadata_ops);
+    std::fprintf (fd, "\tData Ops (KOps/s):\t%.3lf\n", merged_results.m_cumulative_data_ops);
+    std::fprintf (fd, "\tBandwidth (MiB/s):\t%.3lf\n", merged_results.m_cumulative_bandwidth);
     std::fprintf (fd, "----------------------------------\n");
-
-    // log performance results of each worker thread
-    if (print_detailed) {
-        for (unsigned int i = 0; i < merged_results.m_iops.size (); i++) {
-            std::fprintf (fd, "Thread-%d:\t", i);
-            std::fprintf (fd, "%.3lf KOps/s\n", merged_results.m_iops[i]);
-        }
-    }
 
     std::fflush (fd);
 }
@@ -74,8 +89,14 @@ void log_final_results (FILE* fd, const SetupResults& results, const std::string
 {
     std::fprintf (fd, "----------------------------------\n");
     std::fprintf (fd, "Setup results: %s\n", setup_name.c_str ());
-    std::fprintf (fd, "\tIOPS (KOps/s):\t%.3lf\n", results.m_avg_cumulative_iops);
-    std::fprintf (fd, "\tstdev-iops:\t%.3lf\n", results.m_stdev_cumulative_iops);
+    std::fprintf (fd, "\tMetadata Ops (KOps/s):\t%.3lf\n", results.m_avg_cumulative_metadata_ops);
+    std::fprintf (fd, "\tstdev-metadata-ops:\t%.3lf\n", results.m_stdev_cumulative_metadata_ops);
+    std::fprintf (fd, "\t--------\n");
+    std::fprintf (fd, "\tData Ops (KOps/s):\t%.3lf\n", results.m_avg_cumulative_data_ops);
+    std::fprintf (fd, "\tstdev-data-ops:\t%.3lf\n", results.m_stdev_cumulative_data_ops);
+    std::fprintf (fd, "\t--------\n");
+    std::fprintf (fd, "\tBandwidth (MiB/s):\t%.3lf\n", results.m_avg_cumulative_bandwidth);
+    std::fprintf (fd, "\tstdev-bw:\t%.3lf\n", results.m_stdev_cumulative_bandwidth);
     std::fprintf (fd, "----------------------------------\n");
 }
 
@@ -113,18 +134,37 @@ SetupResults merge_final_results (const std::vector<MergedResults>& results)
     SetupResults final_results {};
     int total_runs = static_cast<int> (results.size ());
 
-    double cumulative_iops = 0;
-    std::vector<double> iops_sample_stdev {};
-
-    // compute cumulative IOPS
+    // compute cumulative metadata ops
+    double cumulative_metadata_ops = 0;
+    std::vector<double> metadata_ops_sample_stdev {};
     for (int i = 0; i < total_runs; i++) {
-        cumulative_iops += results[i].m_cumulative_iops;
-        iops_sample_stdev.push_back (results[i].m_cumulative_iops);
+        cumulative_metadata_ops += results[i].m_cumulative_metadata_ops;
+        metadata_ops_sample_stdev.push_back (results[i].m_cumulative_metadata_ops);
+    }
+    
+    // compute cumulative data ops
+    double cumulative_data_ops = 0;
+    std::vector<double> data_ops_sample_stdev {};
+    for (int i = 0; i < total_runs; i++) {
+        cumulative_data_ops += results[i].m_cumulative_data_ops;
+        data_ops_sample_stdev.push_back (results[i].m_cumulative_data_ops);
+    }
+
+    // compute cumulative bandwidth
+    double cumulative_bandwidth = 0;
+    std::vector<double> bandwidth_sample_stdev {};
+    for (int i = 0; i < total_runs; i++) {
+        cumulative_bandwidth += results[i].m_cumulative_bandwidth;
+        bandwidth_sample_stdev.push_back (results[i].m_cumulative_bandwidth);
     }
 
     // compute average and standard deviation values and store them in the SetupResults object
-    final_results.m_avg_cumulative_iops = (cumulative_iops / total_runs);
-    final_results.m_stdev_cumulative_iops = compute_stdev (iops_sample_stdev);
+    final_results.m_avg_cumulative_metadata_ops = (cumulative_metadata_ops / total_runs);
+    final_results.m_stdev_cumulative_metadata_ops = compute_stdev (metadata_ops_sample_stdev);
+    final_results.m_avg_cumulative_data_ops = (cumulative_data_ops / total_runs);
+    final_results.m_stdev_cumulative_data_ops = compute_stdev (data_ops_sample_stdev);
+    final_results.m_avg_cumulative_bandwidth = (cumulative_bandwidth / total_runs);
+    final_results.m_stdev_cumulative_bandwidth = compute_stdev (bandwidth_sample_stdev);
 
     return final_results;
 }
@@ -160,10 +200,14 @@ private:
      * @param operation_context
      * @param detailed_debug
      */
-    void submit_request (long workflow_id, int operation_type, int operation_context, bool detailed_debug)
+    uint64_t submit_request (long workflow_id, int operation_type, int operation_context, bool detailed_debug)
     {
+        uint64_t size = (operation_context == static_cast<int> (paio::core::POSIX_META::data_op)) 
+            ? this->m_data_request_size 
+            : m_metadata_request_size;
+
         // generate Context object
-        paio::core::Context context_object { workflow_id, operation_type, operation_context, 1, 1 };
+        paio::core::Context context_object { workflow_id, operation_type, operation_context, size, 1 };
 
         if (detailed_debug) {
             std::fprintf (this->m_fd, "%s\n", context_object.to_string ().c_str ());
@@ -183,10 +227,13 @@ private:
         if (detailed_debug) {
             std::fprintf (this->m_fd, "Result: %s\n", result.to_string ().c_str ());
         }
+
+        // return number of bytes processed
+        return context_object.get_operation_size ();
     }
 
     /**
-     * spawn_worker:
+     * spawn_metadata_worker:
      * @param worker_id
      * @param iterations
      * @param workflow_id
@@ -194,10 +241,13 @@ private:
      * @param operation_context
      * @param detailed_debug
      */
-    [[nodiscard]] ThreadResults spawn_worker (int iterations, long workflow_id, int operation_type, int operation_context, bool detailed_debug)
+    [[nodiscard]] ThreadResults spawn_metadata_worker (int iterations, long workflow_id, bool detailed_debug)
     {
-        auto start = std::chrono::high_resolution_clock::now ();
+        auto operation_type = static_cast<int> (paio::core::POSIX::open);
+        auto operation_context = static_cast<int> (paio::core::POSIX_META::meta_op);
 
+        auto start = std::chrono::high_resolution_clock::now ();
+        
         for (int i = 0; i < iterations; i++) {
             this->submit_request (workflow_id, operation_type, operation_context, detailed_debug);
         }
@@ -207,9 +257,78 @@ private:
         std::chrono::duration<double> elapsed_seconds = end - start;
 
         // store performance results of the worker thread
-        ThreadResults results { static_cast<double> (iterations) / elapsed_seconds.count () / 1000 };
+        ThreadResults results { static_cast<double> (iterations) / elapsed_seconds.count () / 1000, 0, 0 };
         return results;
     }
+
+    /**
+     * spawn_data_worker:
+     * @param worker_id
+     * @param iterations
+     * @param workflow_id
+     * @param operation_type
+     * @param operation_context
+     * @param detailed_debug
+     */
+    [[nodiscard]] ThreadResults spawn_data_worker (int iterations, long workflow_id, bool detailed_debug)
+    {
+        auto operation_type = static_cast<int> (paio::core::POSIX::read);
+        auto operation_context = static_cast<int> (paio::core::POSIX_META::data_op);
+        uint64_t bytes_counter = 0;
+
+        auto start = std::chrono::high_resolution_clock::now ();
+        
+        for (int i = 0; i < iterations; i++) {
+            bytes_counter += this->submit_request (workflow_id, operation_type, operation_context, detailed_debug);
+        }
+
+        // calculate elapsed time
+        auto end = std::chrono::high_resolution_clock::now ();
+        std::chrono::duration<double> elapsed_seconds = end - start;
+
+        // store performance results of the worker thread
+        ThreadResults results { 0, static_cast<double> (iterations) / elapsed_seconds.count () / 1000, (static_cast<double>(bytes_counter) / 1024 / 1024) / elapsed_seconds.count () };
+
+        return results;
+    }
+
+    /**
+     * spawn_data_worker:
+     * @param worker_id
+     * @param iterations
+     * @param workflow_id
+     * @param operation_type
+     * @param operation_context
+     * @param detailed_debug
+     */
+    [[nodiscard]] ThreadResults spawn_hybrid_worker (int iterations, long workflow_id, bool detailed_debug)
+    {
+        uint64_t bytes_counter = 0;
+        uint64_t data_ops_counter = 0;
+        uint64_t metadata_ops_counter = 0;
+
+        auto start = std::chrono::high_resolution_clock::now ();
+        
+        for (int i = 0; i < iterations; i++) {
+            if (random () % 2) {
+                bytes_counter += this->submit_request (workflow_id, static_cast<int> (paio::core::POSIX::read), static_cast<int> (paio::core::POSIX_META::data_op), detailed_debug);
+                data_ops_counter++;
+            } else {
+                this->submit_request (workflow_id, static_cast<int> (paio::core::POSIX::open), static_cast<int> (paio::core::POSIX_META::meta_op), detailed_debug);
+                metadata_ops_counter++;
+            }
+        }
+
+        // calculate elapsed time
+        auto end = std::chrono::high_resolution_clock::now ();
+        std::chrono::duration<double> elapsed_seconds = end - start;
+
+        // store performance results of the worker thread
+        ThreadResults results { static_cast<double> (metadata_ops_counter) / elapsed_seconds.count () / 1000, static_cast<double> (data_ops_counter) / elapsed_seconds.count () / 1000, (static_cast<double>(bytes_counter) / 1024 / 1024) / elapsed_seconds.count () };
+
+        return results;
+    }
+
 
 public:
     std::string m_housekeeping_rules_path {""};
@@ -217,8 +336,9 @@ public:
     std::string m_enforcement_rules_path { "" };
     int m_workers { 1 };
     std::vector<long> m_per_worker_workflow_id {};
-    std::vector<int> m_per_worker_operation_type {};
-    std::vector<int> m_per_worker_operation_context {};
+    WorkerType m_worker_type {};
+    uint64_t m_data_request_size { 4096 };
+    uint64_t m_metadata_request_size { 1 };
 
     /**
      * SimulateMicroTest default constructor.
@@ -283,18 +403,34 @@ public:
      * ...
      * @return Returns a MergedResults object with the results of the stress test.
      */
-    MergedResults execute_job (int run_id, int num_workers, int iterations, const std::vector<long>& workflow_id, const std::vector<int>& operation_type, const std::vector<int>& operation_context, bool detailed_debug)
+    MergedResults execute_job (int run_id, int num_workers, int iterations, const std::vector<long>& workflow_id, WorkerType worker_type, bool detailed_debug)
     {
         // create object to store cumulative performance results
-        MergedResults results { run_id, {}, 0 };
+        MergedResults results { run_id, {}, {}, {}, 0, 0, 0 };
 
         std::mutex lock;
 
         // lambda function to execute worker
-        auto func = ([&lock,&results, this, detailed_debug] (int iterations, long workflow_id, int operation_type, int operation_context) {
+        auto func = ([&lock,&results, this, worker_type, detailed_debug] (int iterations, long workflow_id) {
             
             // execute stress test for worker
-            ThreadResults thread_results = this->spawn_worker (iterations, workflow_id, operation_type, operation_context, detailed_debug);
+            ThreadResults thread_results;
+            switch (worker_type) {
+                case WorkerType::metadata_worker:
+                    thread_results = this->spawn_metadata_worker (iterations, workflow_id, detailed_debug);
+                    break;
+
+                case WorkerType::data_worker:
+                    thread_results = this->spawn_data_worker (iterations, workflow_id, detailed_debug);
+                    break;
+
+                case WorkerType::hybrid_worker:
+                    thread_results = this->spawn_hybrid_worker (iterations, workflow_id, detailed_debug);
+                    break;
+
+                default:
+                throw std::runtime_error ("Invalid worker type");
+            }
             
             {
                 std::unique_lock<std::mutex> unique_lock (lock);
@@ -309,7 +445,7 @@ public:
         std::vector<std::thread> workers;
         for (int i = 0; i < num_workers; i++) {
             // spawn and emplace thread
-            workers.emplace_back (func, per_worker_iterations, workflow_id[i], operation_type[i], operation_context[i]);
+            workers.emplace_back (func, per_worker_iterations, workflow_id[i]);
             std::cerr << "Starting worker thread #" << i << " (" << workers[i].get_id () << ", " << (workflow_id[i])  << ") ..." << std::endl;
         }
 
@@ -339,13 +475,13 @@ void print_header ()
 }
 
 /**
- * micro_bench_1_conf: configurations for the microbenchmarks test case #1.
+ * metadata_only_conf: 
  */
-void micro_bench_1_conf (SimulateMicroTest* test_ptr, int num_workers)
+void metadata_conf (SimulateMicroTest* test_ptr, int num_workers)
 {
     // update path to HousekeepingRules file
     test_ptr->m_housekeeping_rules_path = padll::options::main_path ().string ()
-        + "hsk-micro-1";
+        + "hsk-macro-1";
 
     // update number of workers
     if (num_workers <= 4 && num_workers > 0) {
@@ -358,49 +494,18 @@ void micro_bench_1_conf (SimulateMicroTest* test_ptr, int num_workers)
     std::vector<long> workflow_id { 1000, 2000, 3000, 4000 };
     test_ptr->m_per_worker_workflow_id = workflow_id;
     
-    // update per_worker_operation_type vector 
-    std::vector<int> operation_type { static_cast<int> (paio::core::POSIX::open), static_cast<int> (paio::core::POSIX::close), static_cast<int> (paio::core::POSIX::rename), static_cast<int> (paio::core::POSIX::getxattr) };
-    test_ptr->m_per_worker_operation_type = operation_type;
-
-    // update per_worker_operation_context vector 
-    std::vector<int> operation_context { static_cast<int> (paio::core::POSIX_META::meta_op), static_cast<int> (paio::core::POSIX_META::meta_op), static_cast<int> (paio::core::POSIX_META::meta_op), static_cast<int> (paio::core::POSIX_META::meta_op) };
-    test_ptr->m_per_worker_operation_context = operation_context;
+    // update worker type  
+    test_ptr->m_worker_type = WorkerType::metadata_worker;
 }
 
 /**
- * micro_bench_2_conf: configurations for the microbenchmarks test case #2.
+ * data_only_conf: 
  */
-void micro_bench_2_conf (SimulateMicroTest* test_ptr, int num_workers)
+void data_conf (SimulateMicroTest* test_ptr, int num_workers)
 {
     // update path to HousekeepingRules file
     test_ptr->m_housekeeping_rules_path = padll::options::main_path ().string ()
-        + "hsk-micro-2";
-
-    // update number of workers
-    if (num_workers == 1) {
-        test_ptr->m_workers = num_workers;
-    } else {
-        throw std::runtime_error ("Invalid number of workers.");
-    }
-
-    // update per_worker_workflow_id vector
-    test_ptr->m_per_worker_workflow_id.emplace_back (1000);
-    
-    // update per_worker_operation_type vector 
-    test_ptr->m_per_worker_operation_type.emplace_back (static_cast<int> (paio::core::POSIX::open));
-
-    // update per_worker_operation_context vector 
-    test_ptr->m_per_worker_operation_context.emplace_back (static_cast<int> (paio::core::POSIX_META::meta_op));
-}
-
-/**
- * micro_bench_3_conf: configurations for the microbenchmarks test case #1.
- */
-void micro_bench_3_conf (SimulateMicroTest* test_ptr, int num_workers)
-{
-    // update path to HousekeepingRules file
-    test_ptr->m_housekeeping_rules_path = padll::options::main_path ().string ()
-        + "hsk-micro-3";
+        + "hsk-macro-1";
 
     // update number of workers
     if (num_workers <= 4 && num_workers > 0) {
@@ -413,13 +518,32 @@ void micro_bench_3_conf (SimulateMicroTest* test_ptr, int num_workers)
     std::vector<long> workflow_id { 1000, 2000, 3000, 4000 };
     test_ptr->m_per_worker_workflow_id = workflow_id;
     
-    // update per_worker_operation_type vector 
-    std::vector<int> operation_type { static_cast<int> (paio::core::POSIX::open), static_cast<int> (paio::core::POSIX::close), static_cast<int> (paio::core::POSIX::rename), static_cast<int> (paio::core::POSIX::getxattr) };
-    test_ptr->m_per_worker_operation_type = operation_type;
+    // update worker type  
+    test_ptr->m_worker_type = WorkerType::data_worker;
+}
 
-    // update per_worker_operation_context vector 
-    std::vector<int> operation_context { static_cast<int> (paio::core::POSIX_META::meta_op), static_cast<int> (paio::core::POSIX_META::meta_op), static_cast<int> (paio::core::POSIX_META::meta_op), static_cast<int> (paio::core::POSIX_META::meta_op) };
-    test_ptr->m_per_worker_operation_context = operation_context;
+/**
+ * hybrid_conf: 
+ */
+void hybrid_conf (SimulateMicroTest* test_ptr, int num_workers)
+{
+    // update path to HousekeepingRules file
+    test_ptr->m_housekeeping_rules_path = padll::options::main_path ().string ()
+        + "hsk-macro-1";
+
+    // update number of workers
+    if (num_workers <= 4 && num_workers > 0) {
+        test_ptr->m_workers = num_workers;
+    } else {
+        throw std::runtime_error ("Invalid number of workers.");
+    }
+
+    // update per_worker_workflow_id vector
+    std::vector<long> workflow_id { 1000, 2000, 3000, 4000 };
+    test_ptr->m_per_worker_workflow_id = workflow_id;
+    
+    // update worker type  
+    test_ptr->m_worker_type = WorkerType::hybrid_worker;
 }
 
 int main (int argc, char** argv)
@@ -450,19 +574,19 @@ int main (int argc, char** argv)
     int wait_time = -1;
 
     if (argc > 1) {
-        if (std::strcmp (argv[1], "bench-2") == 0) {
-            std::cout << "Running microbenchmark #2." << std::endl;
-            micro_bench_2_conf (&stage_test, num_workers);
-        } else if (strcmp (argv[1], "bench-3") == 0) {
-            std::cout << "Running microbenchmark #3." << std::endl;
-            micro_bench_3_conf (&stage_test, num_workers);
+        if (std::strcmp (argv[1], "metadata") == 0) {
+            std::cout << "Running metadata-only workers." << std::endl;
+            metadata_conf (&stage_test, num_workers);
+        } else if (strcmp (argv[1], "data") == 0) {
+            std::cout << "Running data-only workers." << std::endl;
+            data_conf (&stage_test, num_workers);
         } else {
-            std::cout << "Running microbenchmark #1." << std::endl;
-            micro_bench_1_conf (&stage_test, num_workers);
+            std::cout << "Running hyrbid workers." << std::endl;
+            hybrid_conf (&stage_test, num_workers);
         }
     } else {
-        std::cout << "Running microbenchmark #1." << std::endl;
-        micro_bench_1_conf (&stage_test, num_workers);
+        std::cout << "Running hyrbid workers." << std::endl;
+        hybrid_conf (&stage_test, num_workers);
     }
     
     // initialize PAIO stage
@@ -480,7 +604,7 @@ int main (int argc, char** argv)
     // run benchmark
     for (uint32_t i = 1; i <= runs; i++) {
         // execute test
-        auto results = stage_test.execute_job (i, num_workers, iterations, stage_test.m_per_worker_workflow_id, stage_test.m_per_worker_operation_type, stage_test.m_per_worker_operation_context, debug);
+        auto results = stage_test.execute_job (i, num_workers, iterations, stage_test.m_per_worker_workflow_id, stage_test.m_worker_type, debug);
 
         // log results to file or stdout
         log_results (fd, results, debug);
