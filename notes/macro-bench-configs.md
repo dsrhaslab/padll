@@ -59,7 +59,7 @@ libc_calls header
 
 ### 4: QoS control of (bursty) jobs (real use case)
 **Testing scenario:**
-- multiple TensorFlow jobs training a dataset
+- multiple TensorFlow jobs (4) training a dataset
 - each TensorFlow job is distributed (8 workers), and multi-threaded (interleaving)
 - goal: demonstrate that PADLL can control the burstiness of metadata operations, while ensuring QoS control of data operations as well (similar to PAIO's use case 2)
 - each job runs with different demands of data operations, but all with the same demand for metadata
@@ -76,7 +76,7 @@ libc_calls header
 Channel-level differentiation # multiple channels to attend requests in parallel
 - option_default_channel_differentiation_workflow : true
 - option_default_channel_differentiation_operation_type : false
-- option_default_channel_differentiation_operation_context : true
+- option_default_channel_differentiation_operation_context : false
 
 EnforcementObject-level differentiation # different objects to attend data and metadata requests
 - option_default_enforcement_object_differentiation_operation_type : false
@@ -105,4 +105,47 @@ libc_calls header
 
 ---
 
+### 5: Preventing MDS/MDT overloading (real use case)
+**Testing scenario:**
+- multiple TensorFlow jobs (4) training a dataset
+- each TensorFlow job is distributed (8 workers), and multi-threaded (interleaving)
+- datasets are unbalanced, in terms of which MDT holds their metadata
+- goal: demonstrate that PADLL can prevent MDS/MDT from overloading by controlling the amount of metadata operations submitted to each of them
+- datasets are managed by different MDSs, and each MDS has access to the same amount of metadata operations
+    - MDS1 : holds the dataset of {job1} .. {job3}
+    - MDS2 : holds the dataset of {job4}
+
+**Request considerations:**
+- definition : POSIX_META
+- operation type : metadata operations supported by PADLL
+- operation context : meta_op
+
+**PAIO configurations:**
+```yaml
+Channel-level differentiation # multiple channels to attend requests in parallel
+- option_default_channel_differentiation_workflow : true
+- option_default_channel_differentiation_operation_type : false
+- option_default_channel_differentiation_operation_context : true
+
+Context identifier
+- option_default_context_type : ContextType::POSIX_META
+- option_default_statistic_classifier : ClassifierType::operation_context
+```
+
+**PADLL configurations:**
+```yaml
+libc_calls header
+- PosixMetadataCalls : true
+- PosixExtendedAttributedCalls : true
+- PosixDirectoryCalls : true
+- rest of libc_calls : false
+```
+
+**Rules**
+- number of channels : 4 (to enabled load balancing)
+    > **Note:** test first with a single channel, and check if PAIO/PADLL is not a bottleneck; if not, use a single channel instead of 4
+- enforcement object : DRL
+- housekeeping rules file : `files/hsk-micro-3`
+
+---
 
