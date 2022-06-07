@@ -105,6 +105,8 @@ libc_calls header
 - each job replays the same as in **1b**
 - jobs have different priorities, and are rate limited more aggressively or not
 
+>**Note:** the macro-bench #3 use case demonstrates the same goal, but provides a stronger evaluation suite. **Consider replacing this with macro-bench #3**.
+
 **Request considerations:**
 - definition : POSIX_META
 - operation type : open, close, getxattr, rename, ...
