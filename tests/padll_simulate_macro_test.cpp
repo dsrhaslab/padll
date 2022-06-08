@@ -37,11 +37,7 @@ struct SetupResults {
 };
 
 // Enum class that defines the type of workers.
-enum class WorkerType {
-    metadata_worker = 1,
-    data_worker = 2,
-    hybrid_worker = 3
-};
+enum class WorkerType { metadata_worker = 1, data_worker = 2, hybrid_worker = 3 };
 
 /**
  * record_stress_test_results: Store the results of a single worker stress test in a MergedResults
@@ -62,7 +58,8 @@ void record_stress_test_results (MergedResults* results, const ThreadResults& th
 
 /**
  * stdout_results: Print performance report of the MergedResults object to a given file (including
- * stdout). If detailed flag is enabled, the method also logs the performance results (IOPS) of each worker.
+ * stdout). If detailed flag is enabled, the method also logs the performance results (IOPS) of each
+ * worker.
  * @param results Performance results to be logged.
  * @param print_detailed Flag that defines if the performance results of each worker thread should
  * be also printed to file.
@@ -70,7 +67,9 @@ void record_stress_test_results (MergedResults* results, const ThreadResults& th
 void log_results (FILE* fd, const MergedResults& merged_results, bool print_detailed)
 {
     std::fprintf (fd, "Run: %u\n", merged_results.m_run_id);
-    std::fprintf (fd, "\tMetadata Ops (KOps/s):\t%.3lf\n", merged_results.m_cumulative_metadata_ops);
+    std::fprintf (fd,
+        "\tMetadata Ops (KOps/s):\t%.3lf\n",
+        merged_results.m_cumulative_metadata_ops);
     std::fprintf (fd, "\tData Ops (KOps/s):\t%.3lf\n", merged_results.m_cumulative_data_ops);
     std::fprintf (fd, "\tBandwidth (MiB/s):\t%.3lf\n", merged_results.m_cumulative_bandwidth);
     std::fprintf (fd, "----------------------------------\n");
@@ -141,7 +140,7 @@ SetupResults merge_final_results (const std::vector<MergedResults>& results)
         cumulative_metadata_ops += results[i].m_cumulative_metadata_ops;
         metadata_ops_sample_stdev.push_back (results[i].m_cumulative_metadata_ops);
     }
-    
+
     // compute cumulative data ops
     double cumulative_data_ops = 0;
     std::vector<double> data_ops_sample_stdev {};
@@ -200,19 +199,26 @@ private:
      * @param operation_context
      * @param detailed_debug
      */
-    uint64_t submit_request (long workflow_id, int operation_type, int operation_context, bool detailed_debug)
+    uint64_t submit_request (long workflow_id,
+        int operation_type,
+        int operation_context,
+        bool detailed_debug)
     {
-        uint64_t size = (operation_context == static_cast<int> (paio::core::POSIX_META::data_op)) 
-            ? this->m_data_request_size 
+        uint64_t size = (operation_context == static_cast<int> (paio::core::POSIX_META::data_op))
+            ? this->m_data_request_size
             : m_metadata_request_size;
 
         // generate Context object
-        paio::core::Context context_object { workflow_id, operation_type, operation_context, size, 1 };
+        paio::core::Context context_object { workflow_id,
+            operation_type,
+            operation_context,
+            size,
+            1 };
 
         if (detailed_debug) {
             std::fprintf (this->m_fd, "%s\n", context_object.to_string ().c_str ());
         }
-        
+
         // create Result object
         Result result {};
         // enforce request through the PaioInstance
@@ -222,7 +228,7 @@ private:
         if (result.get_result_status () != paio::enforcement::ResultStatus::success) {
             std::fprintf (stderr, "%s: enforce failed.\n", __func__);
         }
-        
+
         // log Result object
         if (detailed_debug) {
             std::fprintf (this->m_fd, "Result: %s\n", result.to_string ().c_str ());
@@ -241,13 +247,14 @@ private:
      * @param operation_context
      * @param detailed_debug
      */
-    [[nodiscard]] ThreadResults spawn_metadata_worker (int iterations, long workflow_id, bool detailed_debug)
+    [[nodiscard]] ThreadResults
+    spawn_metadata_worker (int iterations, long workflow_id, bool detailed_debug)
     {
         auto operation_type = static_cast<int> (paio::core::POSIX::open);
         auto operation_context = static_cast<int> (paio::core::POSIX_META::meta_op);
 
         auto start = std::chrono::high_resolution_clock::now ();
-        
+
         for (int i = 0; i < iterations; i++) {
             this->submit_request (workflow_id, operation_type, operation_context, detailed_debug);
         }
@@ -257,7 +264,9 @@ private:
         std::chrono::duration<double> elapsed_seconds = end - start;
 
         // store performance results of the worker thread
-        ThreadResults results { static_cast<double> (iterations) / elapsed_seconds.count () / 1000, 0, 0 };
+        ThreadResults results { static_cast<double> (iterations) / elapsed_seconds.count () / 1000,
+            0,
+            0 };
         return results;
     }
 
@@ -270,16 +279,20 @@ private:
      * @param operation_context
      * @param detailed_debug
      */
-    [[nodiscard]] ThreadResults spawn_data_worker (int iterations, long workflow_id, bool detailed_debug)
+    [[nodiscard]] ThreadResults
+    spawn_data_worker (int iterations, long workflow_id, bool detailed_debug)
     {
         auto operation_type = static_cast<int> (paio::core::POSIX::read);
         auto operation_context = static_cast<int> (paio::core::POSIX_META::data_op);
         uint64_t bytes_counter = 0;
 
         auto start = std::chrono::high_resolution_clock::now ();
-        
+
         for (int i = 0; i < iterations; i++) {
-            bytes_counter += this->submit_request (workflow_id, operation_type, operation_context, detailed_debug);
+            bytes_counter += this->submit_request (workflow_id,
+                operation_type,
+                operation_context,
+                detailed_debug);
         }
 
         // calculate elapsed time
@@ -287,7 +300,9 @@ private:
         std::chrono::duration<double> elapsed_seconds = end - start;
 
         // store performance results of the worker thread
-        ThreadResults results { 0, static_cast<double> (iterations) / elapsed_seconds.count () / 1000, (static_cast<double>(bytes_counter) / 1024 / 1024) / elapsed_seconds.count () };
+        ThreadResults results { 0,
+            static_cast<double> (iterations) / elapsed_seconds.count () / 1000,
+            (static_cast<double> (bytes_counter) / 1024 / 1024) / elapsed_seconds.count () };
 
         return results;
     }
@@ -301,20 +316,27 @@ private:
      * @param operation_context
      * @param detailed_debug
      */
-    [[nodiscard]] ThreadResults spawn_hybrid_worker (int iterations, long workflow_id, bool detailed_debug)
+    [[nodiscard]] ThreadResults
+    spawn_hybrid_worker (int iterations, long workflow_id, bool detailed_debug)
     {
         uint64_t bytes_counter = 0;
         uint64_t data_ops_counter = 0;
         uint64_t metadata_ops_counter = 0;
 
         auto start = std::chrono::high_resolution_clock::now ();
-        
+
         for (int i = 0; i < iterations; i++) {
             if (random () % 2) {
-                bytes_counter += this->submit_request (workflow_id, static_cast<int> (paio::core::POSIX::read), static_cast<int> (paio::core::POSIX_META::data_op), detailed_debug);
+                bytes_counter += this->submit_request (workflow_id,
+                    static_cast<int> (paio::core::POSIX::read),
+                    static_cast<int> (paio::core::POSIX_META::data_op),
+                    detailed_debug);
                 data_ops_counter++;
             } else {
-                this->submit_request (workflow_id, static_cast<int> (paio::core::POSIX::open), static_cast<int> (paio::core::POSIX_META::meta_op), detailed_debug);
+                this->submit_request (workflow_id,
+                    static_cast<int> (paio::core::POSIX::open),
+                    static_cast<int> (paio::core::POSIX_META::meta_op),
+                    detailed_debug);
                 metadata_ops_counter++;
             }
         }
@@ -324,14 +346,16 @@ private:
         std::chrono::duration<double> elapsed_seconds = end - start;
 
         // store performance results of the worker thread
-        ThreadResults results { static_cast<double> (metadata_ops_counter) / elapsed_seconds.count () / 1000, static_cast<double> (data_ops_counter) / elapsed_seconds.count () / 1000, (static_cast<double>(bytes_counter) / 1024 / 1024) / elapsed_seconds.count () };
+        ThreadResults results { static_cast<double> (metadata_ops_counter)
+                / elapsed_seconds.count () / 1000,
+            static_cast<double> (data_ops_counter) / elapsed_seconds.count () / 1000,
+            (static_cast<double> (bytes_counter) / 1024 / 1024) / elapsed_seconds.count () };
 
         return results;
     }
 
-
 public:
-    std::string m_housekeeping_rules_path {""};
+    std::string m_housekeeping_rules_path { "" };
     std::string m_differentiation_rules_path { "" };
     std::string m_enforcement_rules_path { "" };
     int m_workers { 1 };
@@ -398,12 +422,17 @@ public:
     }
 
     /**
-     * execute_job: 
+     * execute_job:
      * @param run_id Unique identifier of the current run.
      * ...
      * @return Returns a MergedResults object with the results of the stress test.
      */
-    MergedResults execute_job (int run_id, int num_workers, int iterations, const std::vector<long>& workflow_id, WorkerType worker_type, bool detailed_debug)
+    MergedResults execute_job (int run_id,
+        int num_workers,
+        int iterations,
+        const std::vector<long>& workflow_id,
+        WorkerType worker_type,
+        bool detailed_debug)
     {
         // create object to store cumulative performance results
         MergedResults results { run_id, {}, {}, {}, 0, 0, 0 };
@@ -411,32 +440,34 @@ public:
         std::mutex lock;
 
         // lambda function to execute worker
-        auto func = ([&lock,&results, this, worker_type, detailed_debug] (int iterations, long workflow_id) {
-            
+        auto func = ([&lock, &results, this, worker_type, detailed_debug] (int iterations,
+                         long workflow_id) {
             // execute stress test for worker
             ThreadResults thread_results;
             switch (worker_type) {
                 case WorkerType::metadata_worker:
-                    thread_results = this->spawn_metadata_worker (iterations, workflow_id, detailed_debug);
+                    thread_results
+                        = this->spawn_metadata_worker (iterations, workflow_id, detailed_debug);
                     break;
 
                 case WorkerType::data_worker:
-                    thread_results = this->spawn_data_worker (iterations, workflow_id, detailed_debug);
+                    thread_results
+                        = this->spawn_data_worker (iterations, workflow_id, detailed_debug);
                     break;
 
                 case WorkerType::hybrid_worker:
-                    thread_results = this->spawn_hybrid_worker (iterations, workflow_id, detailed_debug);
+                    thread_results
+                        = this->spawn_hybrid_worker (iterations, workflow_id, detailed_debug);
                     break;
 
                 default:
-                throw std::runtime_error ("Invalid worker type");
+                    throw std::runtime_error ("Invalid worker type");
             }
-            
+
             {
                 std::unique_lock<std::mutex> unique_lock (lock);
                 record_stress_test_results (&results, thread_results);
             }
-
         });
 
         int per_worker_iterations = iterations / num_workers;
@@ -446,7 +477,8 @@ public:
         for (int i = 0; i < num_workers; i++) {
             // spawn and emplace thread
             workers.emplace_back (func, per_worker_iterations, workflow_id[i]);
-            std::cerr << "Starting worker thread #" << i << " (" << workers[i].get_id () << ", " << (workflow_id[i])  << ") ..." << std::endl;
+            std::cerr << "Starting worker thread #" << i << " (" << workers[i].get_id () << ", "
+                      << (workflow_id[i]) << ") ..." << std::endl;
         }
 
         // join workers
@@ -459,7 +491,6 @@ public:
 
         return results;
     }
-
 };
 } // namespace padll::tests
 
@@ -475,13 +506,12 @@ void print_header ()
 }
 
 /**
- * metadata_only_conf: 
+ * metadata_only_conf:
  */
 void metadata_conf (SimulateMicroTest* test_ptr, int num_workers)
 {
     // update path to HousekeepingRules file
-    test_ptr->m_housekeeping_rules_path = padll::options::main_path ().string ()
-        + "hsk-macro-1";
+    test_ptr->m_housekeeping_rules_path = padll::options::main_path ().string () + "hsk-macro-1";
 
     // update number of workers
     if (num_workers <= 4 && num_workers > 0) {
@@ -493,19 +523,18 @@ void metadata_conf (SimulateMicroTest* test_ptr, int num_workers)
     // update per_worker_workflow_id vector
     std::vector<long> workflow_id { 1000, 2000, 3000, 4000 };
     test_ptr->m_per_worker_workflow_id = workflow_id;
-    
-    // update worker type  
+
+    // update worker type
     test_ptr->m_worker_type = WorkerType::metadata_worker;
 }
 
 /**
- * data_only_conf: 
+ * data_only_conf:
  */
 void data_conf (SimulateMicroTest* test_ptr, int num_workers)
 {
     // update path to HousekeepingRules file
-    test_ptr->m_housekeeping_rules_path = padll::options::main_path ().string ()
-        + "hsk-macro-1";
+    test_ptr->m_housekeeping_rules_path = padll::options::main_path ().string () + "hsk-macro-1";
 
     // update number of workers
     if (num_workers <= 4 && num_workers > 0) {
@@ -517,19 +546,18 @@ void data_conf (SimulateMicroTest* test_ptr, int num_workers)
     // update per_worker_workflow_id vector
     std::vector<long> workflow_id { 1000, 2000, 3000, 4000 };
     test_ptr->m_per_worker_workflow_id = workflow_id;
-    
-    // update worker type  
+
+    // update worker type
     test_ptr->m_worker_type = WorkerType::data_worker;
 }
 
 /**
- * hybrid_conf: 
+ * hybrid_conf:
  */
 void hybrid_conf (SimulateMicroTest* test_ptr, int num_workers)
 {
     // update path to HousekeepingRules file
-    test_ptr->m_housekeeping_rules_path = padll::options::main_path ().string ()
-        + "hsk-macro-1";
+    test_ptr->m_housekeeping_rules_path = padll::options::main_path ().string () + "hsk-macro-1";
 
     // update number of workers
     if (num_workers <= 4 && num_workers > 0) {
@@ -541,8 +569,8 @@ void hybrid_conf (SimulateMicroTest* test_ptr, int num_workers)
     // update per_worker_workflow_id vector
     std::vector<long> workflow_id { 1000, 2000, 3000, 4000 };
     test_ptr->m_per_worker_workflow_id = workflow_id;
-    
-    // update worker type  
+
+    // update worker type
     test_ptr->m_worker_type = WorkerType::hybrid_worker;
 }
 
@@ -564,7 +592,7 @@ int main (int argc, char** argv)
     // create testing object
     SimulateMicroTest stage_test { stage_env_value };
 
-    // benchmark setup 
+    // benchmark setup
     std::vector<MergedResults> run_results;
     int num_workers { 4 };
     int iterations { 1000000 };
@@ -588,7 +616,7 @@ int main (int argc, char** argv)
         std::cout << "Running hyrbid workers." << std::endl;
         hybrid_conf (&stage_test, num_workers);
     }
-    
+
     // initialize PAIO stage
     stage_test.initialize (num_channels,
         default_object_creation,
@@ -600,17 +628,22 @@ int main (int argc, char** argv)
 
     // check content in PaioStage's StageInfo and PaioInstance
     stage_test.test_to_string ();
-    
+
     // run benchmark
     for (uint32_t i = 1; i <= runs; i++) {
         // execute test
-        auto results = stage_test.execute_job (i, num_workers, iterations, stage_test.m_per_worker_workflow_id, stage_test.m_worker_type, debug);
+        auto results = stage_test.execute_job (i,
+            num_workers,
+            iterations,
+            stage_test.m_per_worker_workflow_id,
+            stage_test.m_worker_type,
+            debug);
 
         // log results to file or stdout
         log_results (fd, results, debug);
         // store MergedResults object in container
         run_results.emplace_back (results);
-        
+
         // sleep before going to the next run
         if (wait_time > 0) {
             std::this_thread::sleep_for (std::chrono::seconds (wait_time));
