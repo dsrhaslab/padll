@@ -41,7 +41,8 @@ void record_stress_test_results (MergedResults* results, const ThreadResults& th
 
 /**
  * stdout_results: Print performance report of the MergedResults object to a given file (including
- * stdout). If detailed flag is enabled, the method also logs the performance results (IOPS) of each worker.
+ * stdout). If detailed flag is enabled, the method also logs the performance results (IOPS) of each
+ * worker.
  * @param results Performance results to be logged.
  * @param print_detailed Flag that defines if the performance results of each worker thread should
  * be also printed to file.
@@ -160,7 +161,10 @@ private:
      * @param operation_context
      * @param detailed_debug
      */
-    void submit_request (long workflow_id, int operation_type, int operation_context, bool detailed_debug)
+    void submit_request (long workflow_id,
+        int operation_type,
+        int operation_context,
+        bool detailed_debug)
     {
         // generate Context object
         paio::core::Context context_object { workflow_id, operation_type, operation_context, 1, 1 };
@@ -168,7 +172,7 @@ private:
         if (detailed_debug) {
             std::fprintf (this->m_fd, "%s\n", context_object.to_string ().c_str ());
         }
-        
+
         // create Result object
         Result result {};
         // enforce request through the PaioInstance
@@ -178,7 +182,7 @@ private:
         if (result.get_result_status () != paio::enforcement::ResultStatus::success) {
             std::fprintf (stderr, "%s: enforce failed.\n", __func__);
         }
-        
+
         // log Result object
         if (detailed_debug) {
             std::fprintf (this->m_fd, "Result: %s\n", result.to_string ().c_str ());
@@ -194,7 +198,11 @@ private:
      * @param operation_context
      * @param detailed_debug
      */
-    [[nodiscard]] ThreadResults spawn_worker (int iterations, long workflow_id, int operation_type, int operation_context, bool detailed_debug)
+    [[nodiscard]] ThreadResults spawn_worker (int iterations,
+        long workflow_id,
+        int operation_type,
+        int operation_context,
+        bool detailed_debug)
     {
         auto start = std::chrono::high_resolution_clock::now ();
 
@@ -207,12 +215,13 @@ private:
         std::chrono::duration<double> elapsed_seconds = end - start;
 
         // store performance results of the worker thread
-        ThreadResults results { static_cast<double> (iterations) / elapsed_seconds.count () / 1000 };
+        ThreadResults results { static_cast<double> (iterations) / elapsed_seconds.count ()
+            / 1000 };
         return results;
     }
 
 public:
-    std::string m_housekeeping_rules_path {""};
+    std::string m_housekeeping_rules_path { "" };
     std::string m_differentiation_rules_path { "" };
     std::string m_enforcement_rules_path { "" };
     int m_workers { 1 };
@@ -278,12 +287,18 @@ public:
     }
 
     /**
-     * execute_job: 
+     * execute_job:
      * @param run_id Unique identifier of the current run.
      * ...
      * @return Returns a MergedResults object with the results of the stress test.
      */
-    MergedResults execute_job (int run_id, int num_workers, int iterations, const std::vector<long>& workflow_id, const std::vector<int>& operation_type, const std::vector<int>& operation_context, bool detailed_debug)
+    MergedResults execute_job (int run_id,
+        int num_workers,
+        int iterations,
+        const std::vector<long>& workflow_id,
+        const std::vector<int>& operation_type,
+        const std::vector<int>& operation_context,
+        bool detailed_debug)
     {
         // create object to store cumulative performance results
         MergedResults results { run_id, {}, 0 };
@@ -291,16 +306,21 @@ public:
         std::mutex lock;
 
         // lambda function to execute worker
-        auto func = ([&lock,&results, this, detailed_debug] (int iterations, long workflow_id, int operation_type, int operation_context) {
-            
+        auto func = ([&lock, &results, this, detailed_debug] (int iterations,
+                         long workflow_id,
+                         int operation_type,
+                         int operation_context) {
             // execute stress test for worker
-            ThreadResults thread_results = this->spawn_worker (iterations, workflow_id, operation_type, operation_context, detailed_debug);
-            
+            ThreadResults thread_results = this->spawn_worker (iterations,
+                workflow_id,
+                operation_type,
+                operation_context,
+                detailed_debug);
+
             {
                 std::unique_lock<std::mutex> unique_lock (lock);
                 record_stress_test_results (&results, thread_results);
             }
-
         });
 
         int per_worker_iterations = iterations / num_workers;
@@ -309,8 +329,13 @@ public:
         std::vector<std::thread> workers;
         for (int i = 0; i < num_workers; i++) {
             // spawn and emplace thread
-            workers.emplace_back (func, per_worker_iterations, workflow_id[i], operation_type[i], operation_context[i]);
-            std::cerr << "Starting worker thread #" << i << " (" << workers[i].get_id () << ", " << (workflow_id[i])  << ") ..." << std::endl;
+            workers.emplace_back (func,
+                per_worker_iterations,
+                workflow_id[i],
+                operation_type[i],
+                operation_context[i]);
+            std::cerr << "Starting worker thread #" << i << " (" << workers[i].get_id () << ", "
+                      << (workflow_id[i]) << ") ..." << std::endl;
         }
 
         // join workers
@@ -323,7 +348,6 @@ public:
 
         return results;
     }
-
 };
 } // namespace padll::tests
 
@@ -344,8 +368,7 @@ void print_header ()
 void micro_bench_1_conf (SimulateMicroTest* test_ptr, int num_workers)
 {
     // update path to HousekeepingRules file
-    test_ptr->m_housekeeping_rules_path = padll::options::main_path ().string ()
-        + "hsk-micro-1";
+    test_ptr->m_housekeeping_rules_path = padll::options::main_path ().string () + "hsk-micro-1";
 
     // update number of workers
     if (num_workers <= 4 && num_workers > 0) {
@@ -357,13 +380,19 @@ void micro_bench_1_conf (SimulateMicroTest* test_ptr, int num_workers)
     // update per_worker_workflow_id vector
     std::vector<long> workflow_id { 1000, 2000, 3000, 4000 };
     test_ptr->m_per_worker_workflow_id = workflow_id;
-    
-    // update per_worker_operation_type vector 
-    std::vector<int> operation_type { static_cast<int> (paio::core::POSIX::open), static_cast<int> (paio::core::POSIX::close), static_cast<int> (paio::core::POSIX::rename), static_cast<int> (paio::core::POSIX::getxattr) };
+
+    // update per_worker_operation_type vector
+    std::vector<int> operation_type { static_cast<int> (paio::core::POSIX::open),
+        static_cast<int> (paio::core::POSIX::close),
+        static_cast<int> (paio::core::POSIX::rename),
+        static_cast<int> (paio::core::POSIX::getxattr) };
     test_ptr->m_per_worker_operation_type = operation_type;
 
-    // update per_worker_operation_context vector 
-    std::vector<int> operation_context { static_cast<int> (paio::core::POSIX_META::meta_op), static_cast<int> (paio::core::POSIX_META::meta_op), static_cast<int> (paio::core::POSIX_META::meta_op), static_cast<int> (paio::core::POSIX_META::meta_op) };
+    // update per_worker_operation_context vector
+    std::vector<int> operation_context { static_cast<int> (paio::core::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX_META::meta_op) };
     test_ptr->m_per_worker_operation_context = operation_context;
 }
 
@@ -373,8 +402,7 @@ void micro_bench_1_conf (SimulateMicroTest* test_ptr, int num_workers)
 void micro_bench_2_conf (SimulateMicroTest* test_ptr, int num_workers)
 {
     // update path to HousekeepingRules file
-    test_ptr->m_housekeeping_rules_path = padll::options::main_path ().string ()
-        + "hsk-micro-2";
+    test_ptr->m_housekeeping_rules_path = padll::options::main_path ().string () + "hsk-micro-2";
 
     // update number of workers
     if (num_workers == 1) {
@@ -385,12 +413,13 @@ void micro_bench_2_conf (SimulateMicroTest* test_ptr, int num_workers)
 
     // update per_worker_workflow_id vector
     test_ptr->m_per_worker_workflow_id.emplace_back (1000);
-    
-    // update per_worker_operation_type vector 
+
+    // update per_worker_operation_type vector
     test_ptr->m_per_worker_operation_type.emplace_back (static_cast<int> (paio::core::POSIX::open));
 
-    // update per_worker_operation_context vector 
-    test_ptr->m_per_worker_operation_context.emplace_back (static_cast<int> (paio::core::POSIX_META::meta_op));
+    // update per_worker_operation_context vector
+    test_ptr->m_per_worker_operation_context.emplace_back (
+        static_cast<int> (paio::core::POSIX_META::meta_op));
 }
 
 /**
@@ -399,8 +428,7 @@ void micro_bench_2_conf (SimulateMicroTest* test_ptr, int num_workers)
 void micro_bench_3_conf (SimulateMicroTest* test_ptr, int num_workers)
 {
     // update path to HousekeepingRules file
-    test_ptr->m_housekeeping_rules_path = padll::options::main_path ().string ()
-        + "hsk-micro-3";
+    test_ptr->m_housekeeping_rules_path = padll::options::main_path ().string () + "hsk-micro-3";
 
     // update number of workers
     if (num_workers <= 4 && num_workers > 0) {
@@ -412,13 +440,19 @@ void micro_bench_3_conf (SimulateMicroTest* test_ptr, int num_workers)
     // update per_worker_workflow_id vector
     std::vector<long> workflow_id { 1000, 2000, 3000, 4000 };
     test_ptr->m_per_worker_workflow_id = workflow_id;
-    
-    // update per_worker_operation_type vector 
-    std::vector<int> operation_type { static_cast<int> (paio::core::POSIX::open), static_cast<int> (paio::core::POSIX::close), static_cast<int> (paio::core::POSIX::rename), static_cast<int> (paio::core::POSIX::getxattr) };
+
+    // update per_worker_operation_type vector
+    std::vector<int> operation_type { static_cast<int> (paio::core::POSIX::open),
+        static_cast<int> (paio::core::POSIX::close),
+        static_cast<int> (paio::core::POSIX::rename),
+        static_cast<int> (paio::core::POSIX::getxattr) };
     test_ptr->m_per_worker_operation_type = operation_type;
 
-    // update per_worker_operation_context vector 
-    std::vector<int> operation_context { static_cast<int> (paio::core::POSIX_META::meta_op), static_cast<int> (paio::core::POSIX_META::meta_op), static_cast<int> (paio::core::POSIX_META::meta_op), static_cast<int> (paio::core::POSIX_META::meta_op) };
+    // update per_worker_operation_context vector
+    std::vector<int> operation_context { static_cast<int> (paio::core::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
+        static_cast<int> (paio::core::POSIX_META::meta_op) };
     test_ptr->m_per_worker_operation_context = operation_context;
 }
 
@@ -440,7 +474,7 @@ int main (int argc, char** argv)
     // create testing object
     SimulateMicroTest stage_test { stage_env_value };
 
-    // benchmark setup 
+    // benchmark setup
     std::vector<MergedResults> run_results;
     int num_workers { 4 };
     int iterations { 1000000 };
@@ -464,7 +498,7 @@ int main (int argc, char** argv)
         std::cout << "Running microbenchmark #1." << std::endl;
         micro_bench_1_conf (&stage_test, num_workers);
     }
-    
+
     // initialize PAIO stage
     stage_test.initialize (num_channels,
         default_object_creation,
@@ -476,17 +510,23 @@ int main (int argc, char** argv)
 
     // check content in PaioStage's StageInfo and PaioInstance
     stage_test.test_to_string ();
-    
+
     // run benchmark
     for (uint32_t i = 1; i <= runs; i++) {
         // execute test
-        auto results = stage_test.execute_job (i, num_workers, iterations, stage_test.m_per_worker_workflow_id, stage_test.m_per_worker_operation_type, stage_test.m_per_worker_operation_context, debug);
+        auto results = stage_test.execute_job (i,
+            num_workers,
+            iterations,
+            stage_test.m_per_worker_workflow_id,
+            stage_test.m_per_worker_operation_type,
+            stage_test.m_per_worker_operation_context,
+            debug);
 
         // log results to file or stdout
         log_results (fd, results, debug);
         // store MergedResults object in container
         run_results.emplace_back (results);
-        
+
         // sleep before going to the next run
         if (wait_time > 0) {
             std::this_thread::sleep_for (std::chrono::seconds (wait_time));
