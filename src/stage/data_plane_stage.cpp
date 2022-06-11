@@ -37,7 +37,11 @@ DataPlaneStage::DataPlaneStage () :
 
 // TODO: Tasks pending completion -@ricardomacedo at 4/11/2022, 4:10:45 PM
 // Update data plane stage initialization (missing arguments)
-DataPlaneStage::DataPlaneStage (std::shared_ptr<Log> log_ptr, const std::string& hsk_rules_path, const std::string& dif_rules_path, const std::string& enf_rules_path, const bool& execute_on_receive) :
+DataPlaneStage::DataPlaneStage (std::shared_ptr<Log> log_ptr,
+    const std::string& hsk_rules_path,
+    const std::string& dif_rules_path,
+    const std::string& enf_rules_path,
+    const bool& execute_on_receive) :
     m_log { log_ptr }
 {
     // create logging message
@@ -52,7 +56,7 @@ DataPlaneStage::DataPlaneStage (std::shared_ptr<Log> log_ptr, const std::string&
     this->m_stage = { std::make_shared<paio::PaioStage> (option_default_stage_channels,
         option_default_stage_object_creation,
         std::string (option_default_stage_name),
-        hsk_rules_path, 
+        hsk_rules_path,
         dif_rules_path,
         enf_rules_path,
         execute_on_receive) };

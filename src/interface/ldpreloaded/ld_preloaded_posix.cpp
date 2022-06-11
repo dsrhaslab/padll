@@ -36,7 +36,11 @@ LdPreloadedPosix::LdPreloadedPosix (const std::string& lib,
     m_log { log_ptr },
     m_dlsym_hook { lib, this->m_log },
     m_collect { stat_collection },
-    m_stage { std::make_unique<DataPlaneStage> (log_ptr, std::string {padll::options::main_path().string() + "hsk-micro-1-noop"}, std::string{""}, std::string{""}, true) },
+    m_stage { std::make_unique<DataPlaneStage> (log_ptr,
+        std::string { padll::options::main_path ().string () + "hsk-micro-1-noop" },
+        std::string { "" },
+        std::string { "" },
+        true) },
     m_loaded { loaded_ptr }
 {
     // create logging message
@@ -829,7 +833,8 @@ int LdPreloadedPosix::ld_preloaded_posix_close (int fd)
     // select workflow-id to submit I/O request
     auto workflow_id = this->m_mount_point_table.pick_workflow_id (fd);
 
-    // TODO: for the microbenchmarks, this may return an error ... We need to come with a workaround (even for when we are not registering open-based calls, this will always return error)
+    // TODO: for the microbenchmarks, this may return an error ... We need to come with a workaround
+    // (even for when we are not registering open-based calls, this will always return error)
 
     // enforce close request to PAIO data plane stage
     auto enforced = this->enforce_request (__func__,

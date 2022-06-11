@@ -42,7 +42,11 @@ public:
      * DataPlaneStage parameterized constructor.
      * @param log
      */
-    DataPlaneStage (std::shared_ptr<Log> log_ptr, const std::string& hsk_rules_path, const std::string& dif_rules_path, const std::string& enf_rules_path, const bool& execute_on_receive);
+    DataPlaneStage (std::shared_ptr<Log> log_ptr,
+        const std::string& hsk_rules_path,
+        const std::string& dif_rules_path,
+        const std::string& enf_rules_path,
+        const bool& execute_on_receive);
 
     /**
      * DataPlaneStage default destructor.
