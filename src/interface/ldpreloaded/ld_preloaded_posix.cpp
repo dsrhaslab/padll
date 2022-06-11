@@ -28,6 +28,7 @@ LdPreloadedPosix::LdPreloadedPosix () :
 }
 
 // LdPreloadedPosix parameterized constructor.
+// TODO: fix m_stage initializer to a more generic way
 LdPreloadedPosix::LdPreloadedPosix (const std::string& lib,
     const bool& stat_collection,
     std::shared_ptr<Log> log_ptr,
@@ -35,6 +36,7 @@ LdPreloadedPosix::LdPreloadedPosix (const std::string& lib,
     m_log { log_ptr },
     m_dlsym_hook { lib, this->m_log },
     m_collect { stat_collection },
+    m_stage { std::make_unique<DataPlaneStage> (log_ptr, std::string {padll::options::main_path().string() + "hsk-micro-1-noop"}, std::string{""}, std::string{""}, true) },
     m_loaded { loaded_ptr }
 {
     // create logging message
@@ -160,7 +162,7 @@ void LdPreloadedPosix::generate_statistics_report (const std::string_view& path)
     }
 }
 
-// get_metadata_unit call. TODO: finish the implementation ...
+// get_metadata_unit call. TODO: finish the implementation ... This is to be used in use-case-2
 [[nodiscard]] uint32_t LdPreloadedPosix::get_metadata_unit ([[maybe_unused]] const char* path) const
 {
     if (option_select_workflow_by_metadata_unit) {
@@ -607,6 +609,7 @@ int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags)
 }
 
 // ld_preloaded_posix_creat call.
+// Note: changed POSIX::creat classifier to POSIX::open
 int LdPreloadedPosix::ld_preloaded_posix_creat (const char* path, mode_t mode)
 {
     // hook POSIX creat operation to m_metadata_operations.m_creat
@@ -618,7 +621,7 @@ int LdPreloadedPosix::ld_preloaded_posix_creat (const char* path, mode_t mode)
     // enforce creat request to PAIO data plane stage
     auto enforced = this->enforce_request (__func__,
         workflow_id,
-        static_cast<int> (paio::core::POSIX::creat),
+        static_cast<int> (paio::core::POSIX::open),
         static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
@@ -641,6 +644,7 @@ int LdPreloadedPosix::ld_preloaded_posix_creat (const char* path, mode_t mode)
 }
 
 // ld_preloaded_posix_creat64 call.
+// Note: changed POSIX::creat64 classifier to POSIX::open
 int LdPreloadedPosix::ld_preloaded_posix_creat64 (const char* path, mode_t mode)
 {
     // hook POSIX creat64 operation to m_metadata_operations.m_creat64
@@ -652,7 +656,7 @@ int LdPreloadedPosix::ld_preloaded_posix_creat64 (const char* path, mode_t mode)
     // enforce creat64 request to PAIO data plane stage
     auto enforced = this->enforce_request (__func__,
         workflow_id,
-        static_cast<int> (paio::core::POSIX::creat64),
+        static_cast<int> (paio::core::POSIX::open),
         static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
@@ -689,7 +693,7 @@ int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd,
     // enforce openat request to PAIO data plane stage
     auto enforced = this->enforce_request (__func__,
         workflow_id,
-        static_cast<int> (paio::core::POSIX::openat),
+        static_cast<int> (paio::core::POSIX::open),
         static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
@@ -712,6 +716,7 @@ int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd,
 }
 
 // ld_preloaded_posix_openat call.
+// Note: changed POSIX::openat classifier to POSIX::open
 int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd, const char* path, int flags)
 {
     // hook POSIX openat operation to m_metadata_operations.m_openat
@@ -723,7 +728,7 @@ int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd, const char* path, in
     // enforce openat request to PAIO data plane stage
     auto enforced = this->enforce_request (__func__,
         workflow_id,
-        static_cast<int> (paio::core::POSIX::openat),
+        static_cast<int> (paio::core::POSIX::open),
         static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
@@ -746,6 +751,7 @@ int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd, const char* path, in
 }
 
 // ld_preloaded_posix_open64 call. (...)
+// Note: changed POSIX::open64 classifier to POSIX::open
 int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags, mode_t mode)
 {
     // hook POSIX open64_var operation to m_metadata_operations.m_open64_var
@@ -757,7 +763,7 @@ int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags, mo
     // enforce open64 request to PAIO data plane stage
     auto enforced = this->enforce_request (__func__,
         workflow_id,
-        static_cast<int> (paio::core::POSIX::open64),
+        static_cast<int> (paio::core::POSIX::open),
         static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
@@ -780,6 +786,7 @@ int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags, mo
 }
 
 // ld_preloaded_posix_open64 call. (...)
+// Note: changed POSIX::open64 classifier to POSIX::open
 int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags)
 {
     // hook POSIX open64 operation to m_metadata_operations.m_open64
@@ -791,7 +798,7 @@ int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags)
     // enforce open64 request to PAIO data plane stage
     auto enforced = this->enforce_request (__func__,
         workflow_id,
-        static_cast<int> (paio::core::POSIX::open64),
+        static_cast<int> (paio::core::POSIX::open),
         static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
@@ -821,6 +828,8 @@ int LdPreloadedPosix::ld_preloaded_posix_close (int fd)
 
     // select workflow-id to submit I/O request
     auto workflow_id = this->m_mount_point_table.pick_workflow_id (fd);
+
+    // TODO: for the microbenchmarks, this may return an error ... We need to come with a workaround (even for when we are not registering open-based calls, this will always return error)
 
     // enforce close request to PAIO data plane stage
     auto enforced = this->enforce_request (__func__,
