@@ -839,8 +839,10 @@ int LdPreloadedPosix::ld_preloaded_posix_close (int fd)
     // select workflow-id to submit I/O request
     auto workflow_id = this->m_mount_point_table.pick_workflow_id (fd);
 
-    // TODO: for the microbenchmarks, this may return an error ... We need to come with a workaround
-    // (even for when we are not registering open-based calls, this will always return error)
+    // FIXME: this is a workaround to overcome the limitation of unregistered file descriptors
+    if (workflow_id == static_cast<uint32_t> (-1)) {
+        workflow_id = this->m_mount_point_table.pick_workflow_id_by_force ();
+    }
 
     // enforce close request to PAIO data plane stage
     auto enforced = this->enforce_request (__func__,
