@@ -53,8 +53,9 @@ LdPreloadedPosix::LdPreloadedPosix (const std::string& lib,
             padll::options::option_default_enf_rules_file ().string (),
             padll::options::option_execute_on_receive);
     } else {
-        //setup controller-based stage
-        throw std::runtime_error ("Not implemented yet: missing DataPlaneStage integration for sync_with_controller.");
+        // setup controller-based stage
+        throw std::runtime_error (
+            "Not implemented yet: missing DataPlaneStage integration for sync_with_controller.");
     }
 
     // set loaded
