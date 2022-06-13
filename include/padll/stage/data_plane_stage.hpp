@@ -24,13 +24,6 @@ private:
     std::atomic<bool> m_stage_initialized { false };
     std::shared_ptr<paio::PaioStage> m_stage { nullptr };
     std::unique_ptr<paio::PosixLayer> m_posix_instance { nullptr };
-    // const long m_workflow_id { 1000 };
-    const bool m_enforce { true }; // todo: temporary
-
-    /**
-     * initialize_stage:
-     */
-    void initialize_stage ();
 
 public:
     /**
@@ -41,6 +34,10 @@ public:
     /**
      * DataPlaneStage parameterized constructor.
      * @param log
+     * @param hsk_rules_path
+     * @param dif_rules_path
+     * @param enf_rules_path
+     * @param execute_on_receive
      */
     DataPlaneStage (std::shared_ptr<Log> log_ptr,
         const std::string& hsk_rules_path,
