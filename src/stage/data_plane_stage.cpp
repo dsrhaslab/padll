@@ -16,11 +16,14 @@ DataPlaneStage::DataPlaneStage () :
 {
     // create logging message
     std::stringstream stream;
-    stream << "DataPlaneStage default constructor ";
+    stream << "DataPlaneStage initialized with default values ";
     stream << "(" << static_cast<void*> (this->m_log.get ()) << ")";
 
     // write debug logging message
     this->m_log->log_info (stream.str ());
+
+    // set initialization status to true (stage is ready to receive requests)
+    this->set_stage_initialized (true);
 }
 
 // DataPlaneStage parameterized constructor.
@@ -52,7 +55,7 @@ DataPlaneStage::DataPlaneStage (std::shared_ptr<Log> log_ptr,
     this->m_posix_instance = std::make_unique<paio::PosixLayer> (this->m_stage);
 
     // set initialization status to true (stage is ready to receive requests)
-    this->m_stage_initialized.store (true);
+    this->set_stage_initialized (true);
 
     // write debug logging message
     this->m_log->log_info (stream.str ());
@@ -62,6 +65,12 @@ DataPlaneStage::DataPlaneStage (std::shared_ptr<Log> log_ptr,
 DataPlaneStage::~DataPlaneStage ()
 {
     this->m_log->log_info ("DataPlaneStage destructor.\n");
+}
+
+// set_stage_initialized call. (...)
+void DataPlaneStage::set_stage_initialized (const bool& status)
+{
+    this->m_stage_initialized.store (status);
 }
 
 // enforce_request call. (...)

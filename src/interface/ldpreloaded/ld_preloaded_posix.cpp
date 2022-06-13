@@ -28,7 +28,6 @@ LdPreloadedPosix::LdPreloadedPosix () :
 }
 
 // LdPreloadedPosix parameterized constructor.
-// TODO: fix m_stage initializer to a more generic way
 LdPreloadedPosix::LdPreloadedPosix (const std::string& lib,
     const bool& stat_collection,
     std::shared_ptr<Log> log_ptr,
@@ -36,20 +35,27 @@ LdPreloadedPosix::LdPreloadedPosix (const std::string& lib,
     m_log { log_ptr },
     m_dlsym_hook { lib, this->m_log },
     m_collect { stat_collection },
-    m_stage { std::make_unique<DataPlaneStage> (log_ptr,
-        std::string { padll::options::main_path ().string () + "hsk-micro-1-noop" },
-        std::string { "" },
-        std::string { "" },
-        true) },
     m_loaded { loaded_ptr }
 {
     // create logging message
     std::stringstream stream;
     stream << "LdPreloadedPosix parameterized constructor ";
     stream << "(" << static_cast<void*> (this->m_log.get ()) << ")";
-
     // write debug logging message
     this->m_log->log_info (stream.str ());
+
+    // initialize DataPlaneStage object
+    if (!option_sync_with_controller) {
+        // setup local stage object
+        this->m_stage = std::make_unique<DataPlaneStage> (log_ptr,
+            padll::options::option_default_hsk_rules_file ().string (),
+            padll::options::option_default_dif_rules_file ().string (),
+            padll::options::option_default_enf_rules_file ().string (),
+            padll::options::option_execute_on_receive);
+    } else {
+        //setup controller-based stage
+        throw std::runtime_error ("Not implemented yet: missing DataPlaneStage integration for sync_with_controller.");
+    }
 
     // set loaded
     this->set_loaded (true);

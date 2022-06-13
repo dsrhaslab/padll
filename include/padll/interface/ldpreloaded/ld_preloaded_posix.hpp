@@ -50,7 +50,7 @@ private:
     Statistics m_special_stats { "special", OperationType::special_calls };
 
     // data plane stage configurations
-    std::unique_ptr<DataPlaneStage> m_stage { std::make_unique<DataPlaneStage> () };
+    std::unique_ptr<DataPlaneStage> m_stage { nullptr };
     MountPointTable m_mount_point_table { this->m_log };
     std::shared_ptr<std::atomic<bool>> m_loaded { nullptr };
 

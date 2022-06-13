@@ -25,6 +25,12 @@ private:
     std::shared_ptr<paio::PaioStage> m_stage { nullptr };
     std::unique_ptr<paio::PosixLayer> m_posix_instance { nullptr };
 
+    /**
+     * set_stage_initialized:
+     * @param status
+     */
+    void set_stage_initialized (const bool& status);
+
 public:
     /**
      * DataPlaneStage default constructor.
