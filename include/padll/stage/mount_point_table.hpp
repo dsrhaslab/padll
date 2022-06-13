@@ -51,7 +51,7 @@ private:
     std::unordered_map<FILE*, std::unique_ptr<MountPointEntry>> m_file_ptr_table {};
     std::map<MountPoint, std::vector<uint32_t>> m_mount_point_workflows {};
 
-    std::shared_ptr<Log> m_log { nullptr };
+    std::shared_ptr<Log> m_log { std::make_shared<Log> () };
     Xoshiro128StarStar m_prng { static_cast<uint64_t> (::getpid ()) };
 
     /**
@@ -74,11 +74,24 @@ private:
     [[nodiscard]] MountPoint extract_mount_point_from_path (const std::string_view& path) const;
 
     /**
-     * select_workflow_id
+     * select_workflow_from_mountpoint
      * @param mount_point
      * @return
      */
-    [[nodiscard]] uint32_t select_workflow_id (const MountPoint& mount_point);
+    [[nodiscard]] uint32_t select_workflow_from_mountpoint (const MountPoint& mount_point);
+
+    /**
+     * select_workflow_from_metadata_unit:
+     * @param metadata_unit
+     * @return
+     */
+    [[nodiscard]] uint32_t select_workflow_from_metadata_unit (const uint32_t& metadata_unit) const;
+
+    /**
+     * select_workflow_from_metadata_unit:
+     * @param path
+     */
+    [[nodiscard]] uint32_t select_workflow_from_metadata_unit (const std::string_view& path) const;
 
     /**
      * is_file_descriptor_valid:
@@ -114,22 +127,26 @@ public:
      * @param fd
      * @param path
      * @param mount_point
+     * @param metadata_server_unit
      * @return
      */
     bool create_mount_point_entry (const int& fd,
         const std::string& path,
-        const MountPoint& mount_point);
+        const MountPoint& mount_point,
+        const uint32_t& metadata_server_unit);
 
     /**
      * create_mount_point_entry:
      * @param file_ptr
      * @param path
      * @param mount_point
+     * @param metadata_server_unit
      * @return
      */
     bool create_mount_point_entry (FILE* file_ptr,
         const std::string& path,
-        const MountPoint& mount_point);
+        const MountPoint& mount_point,
+        const uint32_t& metadata_server_unit);
 
     /**
      * extract_mount_point:

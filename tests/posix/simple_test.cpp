@@ -19,7 +19,8 @@ int main (int argc, char* argv[])
     int write_ops = 0;
     char* buffer = static_cast<char*> (std::malloc (sizeof (char) * BUFFER_SIZE));
 
-    int fd_write = ::open ("tmp.txt", O_CREAT | O_TRUNC | O_RDWR, 0600);
+    int fd_write
+        = ::open ("/home/gsd/hpdc22/padll/build/tmp.txt", O_CREAT | O_TRUNC | O_RDWR, 0600);
     int fd_read = ::open ("/home/gsd/hpdc22/padll/include/padll/configurations/libc_calls.hpp",
         O_RDONLY,
         0600);

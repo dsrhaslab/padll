@@ -156,7 +156,7 @@ if (PADLL_BUILD_TESTS)
     enable_testing()
 
     function(padll_test test_file executable_name)
-        get_filename_component(test_target_name "${test_file}" NAME_WE)
+        get_filename_component(test_target_name "${executable_name}" NAME_WE)
 
         add_executable("${test_target_name}" "")
         target_sources("${test_target_name}"
@@ -170,6 +170,9 @@ if (PADLL_BUILD_TESTS)
     endfunction(padll_test)
 
     padll_test("tests/padll_mount_point_differentiation_test.cpp" "mountpoint_test")
+    padll_test("tests/padll_paio_integration_test.cpp" "stage_integration_test")
+    padll_test("tests/padll_simulate_macro_test.cpp" "macro_test")
+    padll_test("tests/padll_simulate_micro_test.cpp" "micro_test")
     padll_test("tests/padll_statistics_test.cpp" "statistics_test")
     padll_test("tests/padll_xoshiro_test.cpp" "xoshiro_bench")
 

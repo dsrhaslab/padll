@@ -1,0 +1,2 @@
+1 create_channel 1000 posix_meta 1000 no_op meta_op
+2 create_object 1000 1 posix_meta no_op meta_op drl 10000 500000

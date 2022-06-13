@@ -52,6 +52,7 @@ private:
     // data plane stage configurations
     std::unique_ptr<DataPlaneStage> m_stage { std::make_unique<DataPlaneStage> () };
     MountPointTable m_mount_point_table { this->m_log };
+    std::shared_ptr<std::atomic<bool>> m_loaded { nullptr };
 
     /**
      * enforce_request:
@@ -125,6 +126,11 @@ private:
      */
     void generate_statistics_report (const std::string_view& path);
 
+    /**
+     * get_metadata_unit: get number of MDT or MDS unit that the file at path belongs to.
+     */
+    [[nodiscard]] uint32_t get_metadata_unit ([[maybe_unused]] const char* path) const;
+
 public:
     /**
      * LdPreloadedPosix default constructor.
@@ -136,15 +142,22 @@ public:
      * @param lib String that respects to the library that will be intercepted.
      * @param stat_collection Boolean that defines if statistic collection is enabled or disabled.
      * @param log_ptr
+     * @param loaded_ptr
      */
     LdPreloadedPosix (const std::string& lib,
         const bool& stat_collection,
-        std::shared_ptr<Log> log_ptr);
+        std::shared_ptr<Log> log_ptr,
+        std::shared_ptr<std::atomic<bool>> loaded_ptr);
 
     /**
      * LdPreloadedPosix default destructor.
      */
     ~LdPreloadedPosix ();
+
+    /**
+     * set_loaded:
+     */
+    void set_loaded (const bool& value);
 
     /**
      * get_statistic_entry:

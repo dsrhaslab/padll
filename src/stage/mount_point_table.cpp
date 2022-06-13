@@ -96,7 +96,8 @@ void MountPointTable::initialize ()
 // create_mount_point_entry call. (...)
 bool MountPointTable::create_mount_point_entry (const int& fd,
     const std::string& path,
-    const MountPoint& mount_point)
+    const MountPoint& mount_point,
+    const uint32_t& metadata_server_unit)
 {
     // check if key is a reserved or inexistent file descriptor
     if (!this->is_file_descriptor_valid (fd)) {
@@ -107,14 +108,14 @@ bool MountPointTable::create_mount_point_entry (const int& fd,
     std::lock_guard write_lock (this->m_fd_shared_lock);
 
     // create entry for the 'fd' file descriptor
-    auto [iter, inserted] = this->m_file_descriptors_table.emplace (
-        std::make_pair (fd, std::make_unique<MountPointEntry> (path, mount_point)));
+    auto [iter, inserted] = this->m_file_descriptors_table.emplace (std::make_pair (fd,
+        std::make_unique<MountPointEntry> (path, mount_point, metadata_server_unit)));
 
     // check if the insertion was successful
     if (!inserted) {
         // replace key-value pair in file_descriptors_table
         this->m_file_descriptors_table.at (fd)
-            = std::make_unique<MountPointEntry> (path, mount_point);
+            = std::make_unique<MountPointEntry> (path, mount_point, metadata_server_unit);
 // submit error message to the logging facility
 #if OPTION_DETAILED_LOGGING
         this->m_log->log_debug ("Replacing value at file descriptor " + std::to_string (fd) + ".");
@@ -127,7 +128,8 @@ bool MountPointTable::create_mount_point_entry (const int& fd,
 // create_mount_point_entry call. (...)
 bool MountPointTable::create_mount_point_entry (FILE* file_ptr,
     const std::string& path,
-    const MountPoint& mount_point)
+    const MountPoint& mount_point,
+    const uint32_t& metadata_server_unit)
 {
     // check if key is a reserved or inexistent file descriptor
     if (!this->is_file_pointer_valid (file_ptr)) {
@@ -138,14 +140,14 @@ bool MountPointTable::create_mount_point_entry (FILE* file_ptr,
     std::lock_guard write_lock (this->m_fptr_shared_lock);
 
     // create entry for the 'file_ptr' file pointer
-    auto [iter, inserted] = this->m_file_ptr_table.emplace (
-        std::make_pair (file_ptr, std::make_unique<MountPointEntry> (path, mount_point)));
+    auto [iter, inserted] = this->m_file_ptr_table.emplace (std::make_pair (file_ptr,
+        std::make_unique<MountPointEntry> (path, mount_point, metadata_server_unit)));
 
     // check if the insertion was successful
     if (!inserted) {
         // replace key-value pair in file_ptr_table
         this->m_file_ptr_table.at (file_ptr)
-            = std::make_unique<MountPointEntry> (path, mount_point);
+            = std::make_unique<MountPointEntry> (path, mount_point, metadata_server_unit);
 
 // submit error message to the logging facility
 #if OPTION_DETAILED_LOGGING
@@ -326,7 +328,9 @@ std::pair<MountPoint, uint32_t> MountPointTable::pick_workflow_id (const std::st
         : this->extract_mount_point_from_path (path);
 
     // select workflow identifier
-    auto workflow_id = this->select_workflow_id (namespace_type);
+    auto workflow_id = (option_select_workflow_by_metadata_unit)
+        ? this->select_workflow_from_metadata_unit (path)
+        : this->select_workflow_from_mountpoint (namespace_type);
 
     // verify if the workflow identifier was not found
     if (workflow_id == static_cast<uint32_t> (-1)) {
@@ -349,10 +353,10 @@ uint32_t MountPointTable::pick_workflow_id (const int& fd)
         // This will only work if all file descriptors are registered ...; in the future support the
         // option to no 'LD_PRELOAD' open calls, but register the MountPointEntry for 'LD_PRELOADED'
         // read and write calls get mount_point
-        auto mount_point = entry_ptr->get_mount_point ();
-
-        // select workflow-id
-        workflow_id = this->select_workflow_id (mount_point);
+        // select workflow-id from Mount Point or Metadata Server unit
+        workflow_id = (option_select_workflow_by_metadata_unit)
+            ? this->select_workflow_from_metadata_unit (entry_ptr->get_metadata_server_unit ())
+            : this->select_workflow_from_mountpoint (entry_ptr->get_mount_point ());
 
         // verify if the workflow identifier was not found
         if (workflow_id == static_cast<uint32_t> (-1)) {
@@ -372,11 +376,11 @@ uint32_t MountPointTable::pick_workflow_id (FILE* file_ptr)
 
     // check if the mount point entry was found
     if (return_value) {
-        // get mount_point
-        auto mount_point = entry_ptr->get_mount_point ();
+        // select workflow-id from Mount Point or Metadata Server unit
+        workflow_id = (option_select_workflow_by_metadata_unit)
+            ? this->select_workflow_from_metadata_unit (entry_ptr->get_metadata_server_unit ())
+            : this->select_workflow_from_mountpoint (entry_ptr->get_mount_point ());
 
-        // select workflow-id
-        workflow_id = this->select_workflow_id (mount_point);
         // verify if the workflow identifier was not found
         if (workflow_id == static_cast<uint32_t> (-1)) {
             this->m_log->log_error ("Error while selecting workflow id.");
@@ -444,8 +448,8 @@ MountPoint MountPointTable::extract_mount_point_from_path (const std::string_vie
     return return_value;
 }
 
-// select_workflow_id call. (...)
-uint32_t MountPointTable::select_workflow_id (const MountPoint& namespace_name)
+// select_workflow_from_mountpoint call. (...)
+uint32_t MountPointTable::select_workflow_from_mountpoint (const MountPoint& namespace_name)
 {
     // get iterator to the mount point entry
     auto iterator = this->m_mount_point_workflows.find (namespace_name);
@@ -454,13 +458,29 @@ uint32_t MountPointTable::select_workflow_id (const MountPoint& namespace_name)
     // if the namespace exists, pick a random workflow
     if (iterator != this->m_mount_point_workflows.end ()) {
         // generate random item to pick
-        auto random_item = static_cast<int> (m_prng () % iterator->second.size ());
+        auto random_item = static_cast<int> (this->m_prng () % iterator->second.size ());
         // return workflow identifier
         return_value = iterator->second.begin ()[random_item];
     }
 
     // if the namespace entry is not found, return -1
     return return_value;
+}
+
+// select_workflow_from_metadata_unit call. (...)
+uint32_t MountPointTable::select_workflow_from_metadata_unit (const uint32_t& metadata_unit) const
+{
+    // TODO: implement this ...
+    std::cerr << __func__ << "(" << metadata_unit << "): Not implemented yet." << std::endl;
+    return static_cast<uint32_t> (-1);
+}
+
+// select_workflow_from_metadata_unit call. (...)
+uint32_t MountPointTable::select_workflow_from_metadata_unit (const std::string_view& path) const
+{
+    // TODO: implement this ...
+    std::cerr << __func__ << "(" << path << "): Not implemented yet." << std::endl;
+    return static_cast<uint32_t> (-1);
 }
 
 // to_string call. (...)

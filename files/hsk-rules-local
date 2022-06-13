@@ -1,0 +1,8 @@
+1 create_channel 1000 posix_meta 1000 no_op high_priority
+2 create_channel 2000 posix_meta 2000 no_op med_priority
+3 create_channel 3000 posix_meta 3000 no_op low_priority
+4 create_channel 4000 posix_meta 4000 no_op data_op
+5 create_object 1000 1 posix_meta no_op high_priority noop 0 0
+6 create_object 2000 1 posix_meta no_op med_priority noop 0 0
+7 create_object 3000 1 posix_meta no_op low_priority noop 0 0
+8 create_object 4000 1 posix_meta no_op data_op noop 0 0

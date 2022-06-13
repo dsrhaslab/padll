@@ -1,0 +1,8 @@
+1 create_channel 1000 posix_meta 1000 no_op meta_op
+2 create_channel 2000 posix_meta 2000 no_op meta_op
+3 create_channel 3000 posix_meta 3000 no_op meta_op
+4 create_channel 4000 posix_meta 4000 no_op meta_op
+5 create_object 1000 1 posix_meta no_op no_op drl 10000 62500
+6 create_object 2000 1 posix_meta no_op no_op drl 10000 62500
+7 create_object 3000 1 posix_meta no_op no_op drl 10000 62500
+8 create_object 4000 1 posix_meta no_op no_op drl 10000 62500
