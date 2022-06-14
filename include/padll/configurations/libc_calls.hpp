@@ -28,7 +28,7 @@ struct PosixDirectoryCalls {
 };
 
 struct PosixExtendedAttributesCalls {
-    bool padll_intercept_getxattr = false;
+    bool padll_intercept_getxattr = true;
     bool padll_intercept_lgetxattr = false;
     bool padll_intercept_fgetxattr = false;
     bool padll_intercept_setxattr = false;
