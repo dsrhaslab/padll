@@ -180,11 +180,16 @@ constexpr std::string_view option_default_stage_name { "padll-stage" };
 constexpr std::string_view option_paio_environment_variable_env { "paio_env" };
 
 /**
+ * option_default_connection_address_env:
+ */
+constexpr std::string_view option_default_connection_address_env { "cheferd_local_address" };
+
+/**
  * option_default_hsk_rules_file:
  */
 inline std::filesystem::path option_default_hsk_rules_file ()
 {
-    return main_path ().append ("hsk-micro-1-noop");
+    return main_path ().append ("hsk-micro-2");
 }
 
 /**
@@ -204,7 +209,7 @@ inline std::filesystem::path option_default_enf_rules_file ()
 }
 
 /**
- * option_sync_with_controller: defines if the data plane stage should riun without controller, or
+ * option_sync_with_controller: defines if the data plane stage should run without controller, or
  * if should connect to a local controller.
  */
 constexpr bool option_sync_with_controller { false };

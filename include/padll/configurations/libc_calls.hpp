@@ -7,8 +7,8 @@
 #define PADLL_LIBC_CALLS_HPP
 
 struct PosixDataCalls {
-    bool padll_intercept_read = true;
-    bool padll_intercept_write = true;
+    bool padll_intercept_read = false;
+    bool padll_intercept_write = false;
     bool padll_intercept_pread = false;
     bool padll_intercept_pwrite = false;
 #if defined(__USE_LARGEFILE64)
@@ -56,8 +56,8 @@ struct PosixMetadataCalls {
     bool padll_intercept_fstatfs64 = false;
     bool padll_intercept_unlink = false;
     bool padll_intercept_unlinkat = false;
-    bool padll_intercept_rename = false;
-    bool padll_intercept_renameat = false;
+    bool padll_intercept_rename = true;
+    bool padll_intercept_renameat = true;
     bool padll_intercept_fopen = false;
     bool padll_intercept_fopen64 = false;
     bool padll_intercept_fclose = false;

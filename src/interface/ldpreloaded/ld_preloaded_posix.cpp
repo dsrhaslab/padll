@@ -1388,7 +1388,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_getxattr (const char* path,
     auto enforced = this->enforce_request (__func__,
         workflow_id,
         static_cast<int> (paio::core::POSIX::getxattr),
-        static_cast<int> (paio::core::POSIX_META::ext_attr_op),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX getxattr operation
@@ -1420,7 +1420,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_lgetxattr (const char* path,
     auto enforced = this->enforce_request (__func__,
         workflow_id,
         static_cast<int> (paio::core::POSIX::getxattr),
-        static_cast<int> (paio::core::POSIX_META::ext_attr_op),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX lgetxattr operation
@@ -1450,7 +1450,7 @@ LdPreloadedPosix::ld_preloaded_posix_fgetxattr (int fd, const char* name, void* 
     auto enforced = this->enforce_request (__func__,
         workflow_id,
         static_cast<int> (paio::core::POSIX::getxattr),
-        static_cast<int> (paio::core::POSIX_META::ext_attr_op),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX fgetxattr operation

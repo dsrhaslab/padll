@@ -22,6 +22,9 @@ private:
     std::mutex m_lock;
     std::shared_ptr<Log> m_log { nullptr };
     std::atomic<bool> m_stage_initialized { false };
+    paio::options::CommunicationType m_communication_type { paio::options::CommunicationType::_unix };
+    std::string m_local_controller_address { "" };
+    int m_local_controller_port { paio::options::option_default_port };
     std::shared_ptr<paio::PaioStage> m_stage { nullptr };
     std::unique_ptr<paio::PosixLayer> m_posix_instance { nullptr };
 
@@ -30,6 +33,11 @@ private:
      * @param status
      */
     void set_stage_initialized (const bool& status);
+
+    /**
+     * set_local_connection_address:
+     */
+    std::string set_local_connection_address () const;
 
 public:
     /**
@@ -46,9 +54,9 @@ public:
      * @param execute_on_receive
      */
     DataPlaneStage (std::shared_ptr<Log> log_ptr,
-        const std::string& hsk_rules_path,
-        const std::string& dif_rules_path,
-        const std::string& enf_rules_path,
+        [[maybe_unused]] const std::string& hsk_rules_path,
+        [[maybe_unused]] const std::string& dif_rules_path,
+        [[maybe_unused]] const std::string& enf_rules_path,
         const bool& execute_on_receive);
 
     /**
