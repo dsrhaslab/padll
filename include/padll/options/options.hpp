@@ -128,7 +128,7 @@ constexpr std::string_view option_default_log_path { "/tmp/padll-info" };
  * option_default_detailed_logging:
  */
 // constexpr bool option_default_detailed_logging { true };
-#define OPTION_DETAILED_LOGGING true
+#define OPTION_DETAILED_LOGGING false
 
 /**
  * option_default_table_format:
@@ -136,7 +136,7 @@ constexpr std::string_view option_default_log_path { "/tmp/padll-info" };
 constexpr bool option_default_table_format { false };
 
 /**
- * option_deafault_save_statistics_report:
+ * option_default_save_statistics_report:
  */
 constexpr bool option_default_save_statistics_report { true };
 
@@ -178,6 +178,47 @@ constexpr std::string_view option_default_stage_name { "padll-stage" };
  * option_paio_environment_variable_env:
  */
 constexpr std::string_view option_paio_environment_variable_env { "paio_env" };
+
+/**
+ * option_default_connection_address_env:
+ */
+constexpr std::string_view option_default_connection_address_env { "cheferd_local_address" };
+
+/**
+ * option_default_hsk_rules_file:
+ */
+inline std::filesystem::path option_default_hsk_rules_file ()
+{
+    return main_path ().append ("hsk-micro-2");
+}
+
+/**
+ * option_default_dif_rules_file:
+ */
+inline std::filesystem::path option_default_dif_rules_file ()
+{
+    return "";
+}
+
+/**
+ * option_default_enf_rules_file:
+ */
+inline std::filesystem::path option_default_enf_rules_file ()
+{
+    return "";
+}
+
+/**
+ * option_sync_with_controller: defines if the data plane stage should run without controller, or
+ * if should connect to a local controller.
+ */
+constexpr bool option_sync_with_controller { false };
+
+/**
+ * option_execute_on_receive: defines if rules (mainly housekeeping) should execute on receive, or
+ * if should be stored to be latter applied.
+ */
+constexpr bool option_execute_on_receive { true };
 
 } // namespace padll::options
 

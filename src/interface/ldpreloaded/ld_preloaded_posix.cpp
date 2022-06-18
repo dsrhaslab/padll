@@ -28,7 +28,6 @@ LdPreloadedPosix::LdPreloadedPosix () :
 }
 
 // LdPreloadedPosix parameterized constructor.
-// TODO: fix m_stage initializer to a more generic way
 LdPreloadedPosix::LdPreloadedPosix (const std::string& lib,
     const bool& stat_collection,
     std::shared_ptr<Log> log_ptr,
@@ -36,20 +35,33 @@ LdPreloadedPosix::LdPreloadedPosix (const std::string& lib,
     m_log { log_ptr },
     m_dlsym_hook { lib, this->m_log },
     m_collect { stat_collection },
-    m_stage { std::make_unique<DataPlaneStage> (log_ptr,
-        std::string { padll::options::main_path ().string () + "hsk-micro-1-noop" },
-        std::string { "" },
-        std::string { "" },
-        true) },
     m_loaded { loaded_ptr }
 {
     // create logging message
     std::stringstream stream;
     stream << "LdPreloadedPosix parameterized constructor ";
     stream << "(" << static_cast<void*> (this->m_log.get ()) << ")";
-
     // write debug logging message
     this->m_log->log_info (stream.str ());
+
+    // initialize DataPlaneStage object
+    if (option_sync_with_controller) {
+        // setup controller-based stage
+        this->m_stage = std::make_unique<DataPlaneStage> (log_ptr,
+            padll::options::option_default_stage_channels, 
+            padll::options::option_default_stage_object_creation, 
+            std::string (padll::options::option_default_stage_name)); 
+    } else {
+        // setup local stage object
+        this->m_stage = std::make_unique<DataPlaneStage> (log_ptr,
+            padll::options::option_default_stage_channels, 
+            padll::options::option_default_stage_object_creation, 
+            std::string (padll::options::option_default_stage_name),
+            padll::options::option_default_hsk_rules_file ().string (),
+            padll::options::option_default_dif_rules_file ().string (),
+            padll::options::option_default_enf_rules_file ().string (),
+            padll::options::option_execute_on_receive);
+    }
 
     // set loaded
     this->set_loaded (true);
@@ -177,7 +189,7 @@ void LdPreloadedPosix::generate_statistics_report (const std::string_view& path)
 }
 
 // enforce_request call. (...)
-[[nodiscard]] bool LdPreloadedPosix::enforce_request (const std::string_view& function_name,
+[[nodiscard]] bool LdPreloadedPosix::enforce_request ([[maybe_unused]]const std::string_view& function_name,
     const uint32_t& workflow_id,
     const int& operation_type,
     const int& operation_context,
@@ -613,7 +625,7 @@ int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags)
 }
 
 // ld_preloaded_posix_creat call.
-// Note: changed POSIX::creat classifier to POSIX::open
+// NOTE: changed POSIX::creat classifier to POSIX::open
 int LdPreloadedPosix::ld_preloaded_posix_creat (const char* path, mode_t mode)
 {
     // hook POSIX creat operation to m_metadata_operations.m_creat
@@ -648,7 +660,7 @@ int LdPreloadedPosix::ld_preloaded_posix_creat (const char* path, mode_t mode)
 }
 
 // ld_preloaded_posix_creat64 call.
-// Note: changed POSIX::creat64 classifier to POSIX::open
+// NOTE: changed POSIX::creat64 classifier to POSIX::open
 int LdPreloadedPosix::ld_preloaded_posix_creat64 (const char* path, mode_t mode)
 {
     // hook POSIX creat64 operation to m_metadata_operations.m_creat64
@@ -683,6 +695,7 @@ int LdPreloadedPosix::ld_preloaded_posix_creat64 (const char* path, mode_t mode)
 }
 
 // ld_preloaded_posix_openat call.
+// NOTE: changed POSIX::openat classifier to POSIX::open
 int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd,
     const char* path,
     int flags,
@@ -720,7 +733,7 @@ int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd,
 }
 
 // ld_preloaded_posix_openat call.
-// Note: changed POSIX::openat classifier to POSIX::open
+// NOTE: changed POSIX::openat classifier to POSIX::open
 int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd, const char* path, int flags)
 {
     // hook POSIX openat operation to m_metadata_operations.m_openat
@@ -755,7 +768,7 @@ int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd, const char* path, in
 }
 
 // ld_preloaded_posix_open64 call. (...)
-// Note: changed POSIX::open64 classifier to POSIX::open
+// NOTE: changed POSIX::open64 classifier to POSIX::open
 int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags, mode_t mode)
 {
     // hook POSIX open64_var operation to m_metadata_operations.m_open64_var
@@ -790,7 +803,7 @@ int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags, mo
 }
 
 // ld_preloaded_posix_open64 call. (...)
-// Note: changed POSIX::open64 classifier to POSIX::open
+// NOTE: changed POSIX::open64 classifier to POSIX::open
 int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags)
 {
     // hook POSIX open64 operation to m_metadata_operations.m_open64
@@ -833,8 +846,10 @@ int LdPreloadedPosix::ld_preloaded_posix_close (int fd)
     // select workflow-id to submit I/O request
     auto workflow_id = this->m_mount_point_table.pick_workflow_id (fd);
 
-    // TODO: for the microbenchmarks, this may return an error ... We need to come with a workaround
-    // (even for when we are not registering open-based calls, this will always return error)
+    // FIXME: this is a workaround to overcome the limitation of unregistered file descriptors
+    if (workflow_id == static_cast<uint32_t> (-1)) {
+        workflow_id = this->m_mount_point_table.pick_workflow_id_by_force ();
+    }
 
     // enforce close request to PAIO data plane stage
     auto enforced = this->enforce_request (__func__,
@@ -1024,6 +1039,7 @@ int LdPreloadedPosix::ld_preloaded_posix_unlink (const char* path)
 }
 
 // ld_preloaded_posix_unlinkat call. (...)
+// NOTE: changed POSIX::unlinkat classifier to POSIX::unlink
 int LdPreloadedPosix::ld_preloaded_posix_unlinkat (int dirfd, const char* pathname, int flags)
 {
     // hook POSIX unlinkat operation to m_metadata_operations.m_unlinkat
@@ -1035,7 +1051,7 @@ int LdPreloadedPosix::ld_preloaded_posix_unlinkat (int dirfd, const char* pathna
     // enforce unlinkat request to PAIO data plane stage
     auto enforced = this->enforce_request (__func__,
         workflow_id,
-        static_cast<int> (paio::core::POSIX::unlinkat),
+        static_cast<int> (paio::core::POSIX::unlink),
         static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
@@ -1080,6 +1096,7 @@ int LdPreloadedPosix::ld_preloaded_posix_rename (const char* old_path, const cha
 }
 
 // ld_preloaded_posix_renameat call. (...)
+// NOTE: changed POSIX::renameat classifier to POSIX::rename
 int LdPreloadedPosix::ld_preloaded_posix_renameat (int olddirfd,
     const char* old_path,
     int newdirfd,
@@ -1094,7 +1111,7 @@ int LdPreloadedPosix::ld_preloaded_posix_renameat (int olddirfd,
     // enforce renameat request to PAIO data plane stage
     auto enforced = this->enforce_request (__func__,
         workflow_id,
-        static_cast<int> (paio::core::POSIX::renameat),
+        static_cast<int> (paio::core::POSIX::rename),
         static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
@@ -1216,6 +1233,7 @@ int LdPreloadedPosix::ld_preloaded_posix_fclose (FILE* stream)
 }
 
 // ld_preloaded_posix_mkdir call. (...)
+// NOTE: changed POSIX_META::dir_op classifier to POSIX_META::meta_op
 int LdPreloadedPosix::ld_preloaded_posix_mkdir (const char* path, mode_t mode)
 {
     // hook POSIX mkdir operation to m_directory_operations.m_mkdir
@@ -1228,7 +1246,7 @@ int LdPreloadedPosix::ld_preloaded_posix_mkdir (const char* path, mode_t mode)
     auto enforced = this->enforce_request (__func__,
         workflow_id,
         static_cast<int> (paio::core::POSIX::mkdir),
-        static_cast<int> (paio::core::POSIX_META::dir_op),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX mkdir operation
@@ -1244,6 +1262,7 @@ int LdPreloadedPosix::ld_preloaded_posix_mkdir (const char* path, mode_t mode)
 }
 
 // ld_preloaded_posix_mkdirat call. (...)
+// NOTE: changed POSIX::mkdirat classifier to POSIX::mkdir; changed POSIX_META::dir_op classifier to POSIX_META::meta_op
 int LdPreloadedPosix::ld_preloaded_posix_mkdirat (int dirfd, const char* path, mode_t mode)
 {
     // hook POSIX mkdirat operation to m_directory_operations.m_mkdirat
@@ -1255,8 +1274,8 @@ int LdPreloadedPosix::ld_preloaded_posix_mkdirat (int dirfd, const char* path, m
     // enforce mkdirat request to PAIO data plane stage
     auto enforced = this->enforce_request (__func__,
         workflow_id,
-        static_cast<int> (paio::core::POSIX::mkdirat),
-        static_cast<int> (paio::core::POSIX_META::dir_op),
+        static_cast<int> (paio::core::POSIX::mkdir),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX mkdirat operation
@@ -1272,6 +1291,7 @@ int LdPreloadedPosix::ld_preloaded_posix_mkdirat (int dirfd, const char* path, m
 }
 
 // ld_preloaded_posix_mknod call. (...)
+// NOTE: changed POSIX_META::dir_op classifier to POSIX_META::meta_op
 int LdPreloadedPosix::ld_preloaded_posix_mknod (const char* path, mode_t mode, dev_t dev)
 {
     // hook POSIX mknod operation to m_directory_operations.m_mknod
@@ -1284,7 +1304,7 @@ int LdPreloadedPosix::ld_preloaded_posix_mknod (const char* path, mode_t mode, d
     auto enforced = this->enforce_request (__func__,
         workflow_id,
         static_cast<int> (paio::core::POSIX::mknod),
-        static_cast<int> (paio::core::POSIX_META::dir_op),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX mknod operation
@@ -1300,6 +1320,7 @@ int LdPreloadedPosix::ld_preloaded_posix_mknod (const char* path, mode_t mode, d
 }
 
 // ld_preloaded_posix_mknodat call. (...)
+// NOTE: changed POSIX::mknodat classifier to POSIX::mknod; changed POSIX_META::dir_op classifier to POSIX_META::meta_op
 int LdPreloadedPosix::ld_preloaded_posix_mknodat (int dirfd,
     const char* path,
     mode_t mode,
@@ -1314,8 +1335,8 @@ int LdPreloadedPosix::ld_preloaded_posix_mknodat (int dirfd,
     // enforce mknodat request to PAIO data plane stage
     auto enforced = this->enforce_request (__func__,
         workflow_id,
-        static_cast<int> (paio::core::POSIX::mknodat),
-        static_cast<int> (paio::core::POSIX_META::dir_op),
+        static_cast<int> (paio::core::POSIX::mknod),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX mknod operation
@@ -1374,7 +1395,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_getxattr (const char* path,
     auto enforced = this->enforce_request (__func__,
         workflow_id,
         static_cast<int> (paio::core::POSIX::getxattr),
-        static_cast<int> (paio::core::POSIX_META::ext_attr_op),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX getxattr operation
@@ -1390,6 +1411,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_getxattr (const char* path,
 }
 
 // ld_preloaded_posix_lgetxattr call. (...)
+// NOTE: changed POSIX::lgetxattr classifier to POSIX::getxattr
 ssize_t LdPreloadedPosix::ld_preloaded_posix_lgetxattr (const char* path,
     const char* name,
     void* value,
@@ -1404,8 +1426,8 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_lgetxattr (const char* path,
     // enforce lgetxattr request to PAIO data plane stage
     auto enforced = this->enforce_request (__func__,
         workflow_id,
-        static_cast<int> (paio::core::POSIX::lgetxattr),
-        static_cast<int> (paio::core::POSIX_META::ext_attr_op),
+        static_cast<int> (paio::core::POSIX::getxattr),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX lgetxattr operation
@@ -1421,6 +1443,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_lgetxattr (const char* path,
 }
 
 // ld_preloaded_posix_fgetxattr call. (...)
+// NOTE: changed POSIX::fgetxattr classifier to POSIX::getxattr; changed POSIX_META::ext_attr_op classifier to POSIX_META::meta_op
 ssize_t
 LdPreloadedPosix::ld_preloaded_posix_fgetxattr (int fd, const char* name, void* value, size_t size)
 {
@@ -1433,8 +1456,8 @@ LdPreloadedPosix::ld_preloaded_posix_fgetxattr (int fd, const char* name, void* 
     // enforce fgetxattr request to PAIO data plane stage
     auto enforced = this->enforce_request (__func__,
         workflow_id,
-        static_cast<int> (paio::core::POSIX::fgetxattr),
-        static_cast<int> (paio::core::POSIX_META::ext_attr_op),
+        static_cast<int> (paio::core::POSIX::getxattr),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX fgetxattr operation
@@ -1450,6 +1473,7 @@ LdPreloadedPosix::ld_preloaded_posix_fgetxattr (int fd, const char* name, void* 
 }
 
 // ld_preloaded_posix_setxattr call. (...)
+// NOTE: changed POSIX_META::ext_attr_op classifier to POSIX_META::meta_op
 int LdPreloadedPosix::ld_preloaded_posix_setxattr (const char* path,
     const char* name,
     const void* value,
@@ -1466,7 +1490,7 @@ int LdPreloadedPosix::ld_preloaded_posix_setxattr (const char* path,
     auto enforced = this->enforce_request (__func__,
         workflow_id,
         static_cast<int> (paio::core::POSIX::setxattr),
-        static_cast<int> (paio::core::POSIX_META::ext_attr_op),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX setxattr operation
@@ -1482,6 +1506,7 @@ int LdPreloadedPosix::ld_preloaded_posix_setxattr (const char* path,
 }
 
 // ld_preloaded_posix_lsetxattr call. (...)
+// NOTE: changed POSIX::lsetxattr classifier to POSIX::setxattr; changed POSIX_META::ext_attr_op classifier to POSIX_META::meta_op
 int LdPreloadedPosix::ld_preloaded_posix_lsetxattr (const char* path,
     const char* name,
     const void* value,
@@ -1497,8 +1522,8 @@ int LdPreloadedPosix::ld_preloaded_posix_lsetxattr (const char* path,
     // enforce lsetxattr request to PAIO data plane stage
     auto enforced = this->enforce_request (__func__,
         workflow_id,
-        static_cast<int> (paio::core::POSIX::lsetxattr),
-        static_cast<int> (paio::core::POSIX_META::ext_attr_op),
+        static_cast<int> (paio::core::POSIX::setxattr),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX lsetxattr operation
@@ -1514,6 +1539,7 @@ int LdPreloadedPosix::ld_preloaded_posix_lsetxattr (const char* path,
 }
 
 // ld_preloaded_posix_fsetxattr call. (...)
+// NOTE: changed POSIX::fsetxattr classifier to POSIX::setxattr; changed POSIX_META::ext_attr_op classifier to POSIX_META::meta_op
 int LdPreloadedPosix::ld_preloaded_posix_fsetxattr (int fd,
     const char* name,
     const void* value,
@@ -1529,8 +1555,8 @@ int LdPreloadedPosix::ld_preloaded_posix_fsetxattr (int fd,
     // enforce fsetxattr request to PAIO data plane stage
     auto enforced = this->enforce_request (__func__,
         workflow_id,
-        static_cast<int> (paio::core::POSIX::fsetxattr),
-        static_cast<int> (paio::core::POSIX_META::ext_attr_op),
+        static_cast<int> (paio::core::POSIX::setxattr),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX fsetxattr operation
@@ -1546,6 +1572,7 @@ int LdPreloadedPosix::ld_preloaded_posix_fsetxattr (int fd,
 }
 
 // ld_preloaded_posix_listxattr call. (...)
+// NOTE: changed POSIX_META::ext_attr_op classifier to POSIX_META::meta_op
 ssize_t LdPreloadedPosix::ld_preloaded_posix_listxattr (const char* path, char* list, size_t size)
 {
     // hook POSIX listxattr operation to m_extattr_operations.m_listxattr
@@ -1558,7 +1585,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_listxattr (const char* path, char* 
     auto enforced = this->enforce_request (__func__,
         workflow_id,
         static_cast<int> (paio::core::POSIX::listxattr),
-        static_cast<int> (paio::core::POSIX_META::ext_attr_op),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX listxattr operation
@@ -1574,6 +1601,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_listxattr (const char* path, char* 
 }
 
 // ld_preloaded_posix_llistxattr call. (...)
+// NOTE: changed POSIX::llistxattr classifier to POSIX::listxattr; changed POSIX_META::ext_attr_op classifier to POSIX_META::meta_op
 ssize_t LdPreloadedPosix::ld_preloaded_posix_llistxattr (const char* path, char* list, size_t size)
 {
     // hook POSIX llistxattr operation to m_extattr_operations.m_llistxattr
@@ -1585,8 +1613,8 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_llistxattr (const char* path, char*
     // enforce llistxattr request to PAIO data plane stage
     auto enforced = this->enforce_request (__func__,
         workflow_id,
-        static_cast<int> (paio::core::POSIX::llistxattr),
-        static_cast<int> (paio::core::POSIX_META::ext_attr_op),
+        static_cast<int> (paio::core::POSIX::listxattr),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX llistxattr operation
@@ -1602,6 +1630,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_llistxattr (const char* path, char*
 }
 
 // ld_preloaded_posix_flistxattr call. (...)
+// NOTE: changed POSIX::flistxattr classifier to POSIX::listxattr; changed POSIX_META::ext_attr_op classifier to POSIX_META::meta_op
 ssize_t LdPreloadedPosix::ld_preloaded_posix_flistxattr (int fd, char* list, size_t size)
 {
     // hook POSIX flistxattr operation to m_extattr_operations.m_flistxattr
@@ -1613,8 +1642,8 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_flistxattr (int fd, char* list, siz
     // enforce flistxattr request to PAIO data plane stage
     auto enforced = this->enforce_request (__func__,
         workflow_id,
-        static_cast<int> (paio::core::POSIX::flistxattr),
-        static_cast<int> (paio::core::POSIX_META::ext_attr_op),
+        static_cast<int> (paio::core::POSIX::listxattr),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX flistxattr operation

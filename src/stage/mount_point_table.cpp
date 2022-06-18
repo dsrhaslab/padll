@@ -367,6 +367,25 @@ uint32_t MountPointTable::pick_workflow_id (const int& fd)
     return workflow_id;
 }
 
+// pick_workflow_id_by_force call. This operation is to be used on 'close' syscall, when the regular
+// pick_workflow_id does not work.
+uint32_t MountPointTable::pick_workflow_id_by_force ()
+{
+    // define MountPoint value
+    auto mount_point
+        = option_mount_point_differentiation_enabled ? MountPoint::kRemote : MountPoint::kNone;
+
+    // select workflow-id from MountPoint
+    auto workflow_id = this->select_workflow_from_mountpoint (mount_point);
+
+    // verify if the workflow identifier was not found
+    if (workflow_id == static_cast<uint32_t> (-1)) {
+        this->m_log->log_error ("Error while selecting workflow id.");
+    }
+
+    return workflow_id;
+}
+
 // pick_workflow_id call. (...)
 uint32_t MountPointTable::pick_workflow_id (FILE* file_ptr)
 {

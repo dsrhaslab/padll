@@ -170,6 +170,14 @@ public:
     [[nodiscard]] uint32_t pick_workflow_id (const int& fd);
 
     /**
+     * pick_workflow_id:
+     * FIXME: this method is a temporary hack to overcome the limitation of unregistered file
+     * descriptors. Currently, this is only being used on
+     * LdPreloadedPosix::ld_preloaded_posix_close.
+     */
+    [[nodiscard]] uint32_t pick_workflow_id_by_force ();
+
+    /**
      * pick_workflow_id
      * @param file_ptr
      * @return

@@ -50,14 +50,14 @@ private:
     Statistics m_special_stats { "special", OperationType::special_calls };
 
     // data plane stage configurations
-    std::unique_ptr<DataPlaneStage> m_stage { std::make_unique<DataPlaneStage> () };
+    std::unique_ptr<DataPlaneStage> m_stage { nullptr };
     MountPointTable m_mount_point_table { this->m_log };
     std::shared_ptr<std::atomic<bool>> m_loaded { nullptr };
 
     /**
      * enforce_request:
      */
-    [[nodiscard]] bool enforce_request (const std::string_view& function_name,
+    [[nodiscard]] bool enforce_request ([[maybe_unused]] const std::string_view& function_name,
         const uint32_t& workflow_id,
         const int& operation_type,
         const int& operation_context,

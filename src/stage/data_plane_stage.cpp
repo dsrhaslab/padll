@@ -7,8 +7,7 @@
 
 namespace padll::stage {
 
-// TODO: Tasks pending completion -@ricardomacedo at 4/11/2022, 4:10:17 PM
-// Update data plane stage initialization (missing arguments)
+// DataPlaneStage default constructor.
 DataPlaneStage::DataPlaneStage () :
     m_log { std::make_shared<Log> (option_default_enable_debug_level,
         option_default_enable_debug_with_ld_preload,
@@ -17,27 +16,21 @@ DataPlaneStage::DataPlaneStage () :
 {
     // create logging message
     std::stringstream stream;
-    stream << "DataPlaneStage default constructor ";
+    stream << "DataPlaneStage initialized with default values ";
     stream << "(" << static_cast<void*> (this->m_log.get ()) << ")";
 
     // write debug logging message
     this->m_log->log_info (stream.str ());
+
+    // set initialization status to true (stage is ready to receive requests)
+    this->set_stage_initialized (true);
 }
 
-/**
- * intitialize_stage:
- * stage_name
- * num_channels
- * object_creation
- * hsk_rules_path
- * dif_rules_path
- * enf_rules_path
- * execute_on_receive
- */
-
-// TODO: Tasks pending completion -@ricardomacedo at 4/11/2022, 4:10:45 PM
-// Update data plane stage initialization (missing arguments)
+// DataPlaneStage parameterized constructor.
 DataPlaneStage::DataPlaneStage (std::shared_ptr<Log> log_ptr,
+    const int& num_channels,
+    const bool& default_object_creation,
+    const std::string& stage_name,
     const std::string& hsk_rules_path,
     const std::string& dif_rules_path,
     const std::string& enf_rules_path,
@@ -46,55 +39,76 @@ DataPlaneStage::DataPlaneStage (std::shared_ptr<Log> log_ptr,
 {
     // create logging message
     std::stringstream stream;
-    stream << "DataPlaneStage parameterized constructor ";
+    stream << "DataPlaneStage parameterized constructor [w/o controller] ";
     stream << "(" << static_cast<void*> (this->m_log.get ()) << ")";
 
     // unique_lock over mutex
     std::unique_lock lock (this->m_lock);
 
-    // initialize PAIO structures (stage and instance-interface)
-    this->m_stage = { std::make_shared<paio::PaioStage> (option_default_stage_channels,
-        option_default_stage_object_creation,
-        std::string (option_default_stage_name),
+    // initialize local data plane stage
+    this->m_stage = { std::make_shared<paio::PaioStage> (num_channels,
+        default_object_creation,
+        stage_name,
         hsk_rules_path,
         dif_rules_path,
         enf_rules_path,
-        execute_on_receive) };
-
+        execute_on_receive) 
+    };
+    
+    // initialize PosixLayer instance
     this->m_posix_instance = std::make_unique<paio::PosixLayer> (this->m_stage);
 
-    // update initialization status
-    this->m_stage_initialized.store (true);
+    // set initialization status to true (stage is ready to receive requests)
+    this->set_stage_initialized (true);
 
     // write debug logging message
     this->m_log->log_info (stream.str ());
 }
 
-// TODO: Implement the DataPlaneStage destructor
+// DataPlaneStage parameterized constructor.
+DataPlaneStage::DataPlaneStage (std::shared_ptr<Log> log_ptr,
+    const int& num_channels,
+    const bool& default_object_creation,
+    const std::string& stage_name) :
+    m_log { log_ptr }
+{
+    // create logging message
+    std::stringstream stream;
+    stream << "DataPlaneStage parameterized constructor [w/ controller] ";
+    stream << "(" << static_cast<void*> (this->m_log.get ()) << ")";
+
+    // unique_lock over mutex
+    std::unique_lock lock (this->m_lock);
+
+    // initialize data plane stage that connects to local controller
+    this->m_stage = { std::make_shared<paio::PaioStage> (num_channels, 
+        default_object_creation, 
+        stage_name, 
+        this->m_communication_type, 
+        this->m_local_controller_address, 
+        this->m_local_controller_port) 
+    };
+
+    // initialize PosixLayer instance
+    this->m_posix_instance = std::make_unique<paio::PosixLayer> (this->m_stage);
+
+    // set initialization status to true (stage is ready to receive requests)
+    this->set_stage_initialized (true);
+
+    // write debug logging message
+    this->m_log->log_info (stream.str ());
+}
+
+// DataPlaneStage default destructor.
 DataPlaneStage::~DataPlaneStage ()
 {
     this->m_log->log_info ("DataPlaneStage destructor.\n");
 }
 
-// TODO: remove this function
-// initialize_stage call. (...)
-void DataPlaneStage::initialize_stage ()
+// set_stage_initialized call. (...)
+void DataPlaneStage::set_stage_initialized (const bool& status)
 {
-    std::cout << "DataPlaneStage::initialize_stage()" << std::endl;
-    // unique_lock over mutex
-    std::unique_lock lock (this->m_lock);
-
-    // initialize PAIO structures (stage and instance-interface)
-    this->m_stage = { std::make_shared<paio::PaioStage> (option_default_stage_channels,
-        option_default_stage_object_creation,
-        std::string (option_default_stage_name)) };
-    this->m_posix_instance = std::make_unique<paio::PosixLayer> (this->m_stage);
-
-    // fixme: remove; this is only temporary ...
-    std::this_thread::sleep_for (std::chrono::seconds (1));
-
-    // update initialization status
-    this->m_stage_initialized.store (true);
+    this->m_stage_initialized.store (status);
 }
 
 // enforce_request call. (...)
@@ -103,37 +117,46 @@ void DataPlaneStage::enforce_request (const uint32_t& workflow_id,
     const int& operation_context,
     const uint64_t& operation_size)
 {
-    // FIXME: temporary just to try out tests w/ and w/o data plane stage
-    if (this->m_enforce) {
-        // initialize data plane stage
-        // TODO: Tasks pending completion -@ricardomacedo at 4/11/2022, 4:04:55 PM
-        // adjust this to not call m_stage_initialized on every single call
-        if (!m_stage_initialized.load (std::memory_order_relaxed)) {
-            this->initialize_stage ();
-            std::cout << this->m_stage->stage_info_to_string () << "\n";
-        }
 
-        // missing: validate workflow-id ...
+    // create Context object
+    auto context_obj = this->m_posix_instance->build_context_object (workflow_id,
+        operation_type,
+        operation_context,
+        operation_size,
+        1);
 
-        // create Context object
-        auto context_obj = this->m_posix_instance->build_context_object (workflow_id,
-            operation_type,
-            operation_context,
-            operation_size,
-            1);
+    // submit request through posix_base
+    this->m_posix_instance->posix_base (nullptr, operation_size, context_obj);
 
-        // submit request through posix_base
-        this->m_posix_instance->posix_base (nullptr, operation_size, context_obj);
-    }
-
+    // create debug message
 #if OPTION_DETAILED_LOGGING
-    // NOTE: Needs discussion or investigation -@gsd at 4/12/2022, 3:00:39 PM
-    // This is only for initial debugging
     std::stringstream message;
     message << __func__ << "(" << workflow_id << ", " << operation_type << ", " << operation_context
             << ", " << operation_size << ")";
     this->m_log->log_debug (message.str ());
 #endif
+}
+
+// set_local_connection_address call. Set data plane stage connection address (to local control plane).
+std::string DataPlaneStage::set_local_connection_address () const
+{
+    // get environment variable for data plane stage
+    auto address_value = std::getenv (padll::options::option_default_connection_address_env.data ());
+
+    if (address_value != nullptr) {
+        // log message
+        Logging::log_warn ("Cheferd local connection address is `" + std::string (address_value) + "`.");
+
+        // return fetched connection address
+        return std::string (address_value);
+    } else {
+        // log message
+        Logging::log_warn ("Inaccessible environment variable ("
+            + std::string (padll::options::option_default_connection_address_env) + ") value: using default connection address.");
+
+        // return paio default connection address
+        return paio::options::option_default_socket_name ();
+    }
 }
 
 } // namespace padll::stage
