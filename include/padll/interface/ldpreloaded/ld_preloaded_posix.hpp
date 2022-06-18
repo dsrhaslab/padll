@@ -57,7 +57,7 @@ private:
     /**
      * enforce_request:
      */
-    [[nodiscard]] bool enforce_request (const std::string_view& function_name,
+    [[nodiscard]] bool enforce_request ([[maybe_unused]] const std::string_view& function_name,
         const uint32_t& workflow_id,
         const int& operation_type,
         const int& operation_context,

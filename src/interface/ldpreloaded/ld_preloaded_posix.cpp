@@ -45,17 +45,22 @@ LdPreloadedPosix::LdPreloadedPosix (const std::string& lib,
     this->m_log->log_info (stream.str ());
 
     // initialize DataPlaneStage object
-    if (!option_sync_with_controller) {
+    if (option_sync_with_controller) {
+        // setup controller-based stage
+        this->m_stage = std::make_unique<DataPlaneStage> (log_ptr,
+            padll::options::option_default_stage_channels, 
+            padll::options::option_default_stage_object_creation, 
+            std::string (padll::options::option_default_stage_name)); 
+    } else {
         // setup local stage object
         this->m_stage = std::make_unique<DataPlaneStage> (log_ptr,
+            padll::options::option_default_stage_channels, 
+            padll::options::option_default_stage_object_creation, 
+            std::string (padll::options::option_default_stage_name),
             padll::options::option_default_hsk_rules_file ().string (),
             padll::options::option_default_dif_rules_file ().string (),
             padll::options::option_default_enf_rules_file ().string (),
             padll::options::option_execute_on_receive);
-    } else {
-        // setup controller-based stage
-        throw std::runtime_error (
-            "Not implemented yet: missing DataPlaneStage integration for sync_with_controller.");
     }
 
     // set loaded
@@ -184,7 +189,7 @@ void LdPreloadedPosix::generate_statistics_report (const std::string_view& path)
 }
 
 // enforce_request call. (...)
-[[nodiscard]] bool LdPreloadedPosix::enforce_request (const std::string_view& function_name,
+[[nodiscard]] bool LdPreloadedPosix::enforce_request ([[maybe_unused]]const std::string_view& function_name,
     const uint32_t& workflow_id,
     const int& operation_type,
     const int& operation_context,

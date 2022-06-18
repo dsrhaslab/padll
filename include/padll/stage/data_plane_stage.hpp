@@ -47,17 +47,37 @@ public:
 
     /**
      * DataPlaneStage parameterized constructor.
+     * This constructor is used when executing without control plane.
      * @param log
+     * @param num_channels
+     * @param default_object_creation
+     * @param stage_name
      * @param hsk_rules_path
      * @param dif_rules_path
      * @param enf_rules_path
      * @param execute_on_receive
      */
     DataPlaneStage (std::shared_ptr<Log> log_ptr,
-        [[maybe_unused]] const std::string& hsk_rules_path,
-        [[maybe_unused]] const std::string& dif_rules_path,
-        [[maybe_unused]] const std::string& enf_rules_path,
+        const int& num_channels,
+        const bool& default_object_creation,
+        const std::string& stage_name,
+        const std::string& hsk_rules_path,
+        const std::string& dif_rules_path,
+        const std::string& enf_rules_path,
         const bool& execute_on_receive);
+
+    /**
+     * DataPlaneStage parameterized constructor.
+     * This constructor is used when executing with control plane.
+     * @param log
+     * @param num_channels
+     * @param default_object_creation
+     * @param stage_name
+     */
+    DataPlaneStage (std::shared_ptr<Log> log_ptr,
+        const int& num_channels,
+        const bool& default_object_creation,
+        const std::string& stage_name);
 
     /**
      * DataPlaneStage default destructor.
