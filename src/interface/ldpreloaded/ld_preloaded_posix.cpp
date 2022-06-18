@@ -1228,6 +1228,7 @@ int LdPreloadedPosix::ld_preloaded_posix_fclose (FILE* stream)
 }
 
 // ld_preloaded_posix_mkdir call. (...)
+// NOTE: changed POSIX_META::dir_op classifier to POSIX_META::meta_op
 int LdPreloadedPosix::ld_preloaded_posix_mkdir (const char* path, mode_t mode)
 {
     // hook POSIX mkdir operation to m_directory_operations.m_mkdir
@@ -1240,7 +1241,7 @@ int LdPreloadedPosix::ld_preloaded_posix_mkdir (const char* path, mode_t mode)
     auto enforced = this->enforce_request (__func__,
         workflow_id,
         static_cast<int> (paio::core::POSIX::mkdir),
-        static_cast<int> (paio::core::POSIX_META::dir_op),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX mkdir operation
@@ -1256,7 +1257,7 @@ int LdPreloadedPosix::ld_preloaded_posix_mkdir (const char* path, mode_t mode)
 }
 
 // ld_preloaded_posix_mkdirat call. (...)
-// NOTE: changed POSIX::mkdirat classifier to POSIX::mkdir
+// NOTE: changed POSIX::mkdirat classifier to POSIX::mkdir; changed POSIX_META::dir_op classifier to POSIX_META::meta_op
 int LdPreloadedPosix::ld_preloaded_posix_mkdirat (int dirfd, const char* path, mode_t mode)
 {
     // hook POSIX mkdirat operation to m_directory_operations.m_mkdirat
@@ -1269,7 +1270,7 @@ int LdPreloadedPosix::ld_preloaded_posix_mkdirat (int dirfd, const char* path, m
     auto enforced = this->enforce_request (__func__,
         workflow_id,
         static_cast<int> (paio::core::POSIX::mkdir),
-        static_cast<int> (paio::core::POSIX_META::dir_op),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX mkdirat operation
@@ -1285,6 +1286,7 @@ int LdPreloadedPosix::ld_preloaded_posix_mkdirat (int dirfd, const char* path, m
 }
 
 // ld_preloaded_posix_mknod call. (...)
+// NOTE: changed POSIX_META::dir_op classifier to POSIX_META::meta_op
 int LdPreloadedPosix::ld_preloaded_posix_mknod (const char* path, mode_t mode, dev_t dev)
 {
     // hook POSIX mknod operation to m_directory_operations.m_mknod
@@ -1297,7 +1299,7 @@ int LdPreloadedPosix::ld_preloaded_posix_mknod (const char* path, mode_t mode, d
     auto enforced = this->enforce_request (__func__,
         workflow_id,
         static_cast<int> (paio::core::POSIX::mknod),
-        static_cast<int> (paio::core::POSIX_META::dir_op),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX mknod operation
@@ -1313,7 +1315,7 @@ int LdPreloadedPosix::ld_preloaded_posix_mknod (const char* path, mode_t mode, d
 }
 
 // ld_preloaded_posix_mknodat call. (...)
-// NOTE: changed POSIX::mknodat classifier to POSIX::mknod
+// NOTE: changed POSIX::mknodat classifier to POSIX::mknod; changed POSIX_META::dir_op classifier to POSIX_META::meta_op
 int LdPreloadedPosix::ld_preloaded_posix_mknodat (int dirfd,
     const char* path,
     mode_t mode,
@@ -1329,7 +1331,7 @@ int LdPreloadedPosix::ld_preloaded_posix_mknodat (int dirfd,
     auto enforced = this->enforce_request (__func__,
         workflow_id,
         static_cast<int> (paio::core::POSIX::mknod),
-        static_cast<int> (paio::core::POSIX_META::dir_op),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX mknod operation
@@ -1436,7 +1438,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_lgetxattr (const char* path,
 }
 
 // ld_preloaded_posix_fgetxattr call. (...)
-// NOTE: changed POSIX::fgetxattr classifier to POSIX::getxattr
+// NOTE: changed POSIX::fgetxattr classifier to POSIX::getxattr; changed POSIX_META::ext_attr_op classifier to POSIX_META::meta_op
 ssize_t
 LdPreloadedPosix::ld_preloaded_posix_fgetxattr (int fd, const char* name, void* value, size_t size)
 {
@@ -1466,6 +1468,7 @@ LdPreloadedPosix::ld_preloaded_posix_fgetxattr (int fd, const char* name, void* 
 }
 
 // ld_preloaded_posix_setxattr call. (...)
+// NOTE: changed POSIX_META::ext_attr_op classifier to POSIX_META::meta_op
 int LdPreloadedPosix::ld_preloaded_posix_setxattr (const char* path,
     const char* name,
     const void* value,
@@ -1482,7 +1485,7 @@ int LdPreloadedPosix::ld_preloaded_posix_setxattr (const char* path,
     auto enforced = this->enforce_request (__func__,
         workflow_id,
         static_cast<int> (paio::core::POSIX::setxattr),
-        static_cast<int> (paio::core::POSIX_META::ext_attr_op),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX setxattr operation
@@ -1498,7 +1501,7 @@ int LdPreloadedPosix::ld_preloaded_posix_setxattr (const char* path,
 }
 
 // ld_preloaded_posix_lsetxattr call. (...)
-// NOTE: changed POSIX::lsetxattr classifier to POSIX::setxattr
+// NOTE: changed POSIX::lsetxattr classifier to POSIX::setxattr; changed POSIX_META::ext_attr_op classifier to POSIX_META::meta_op
 int LdPreloadedPosix::ld_preloaded_posix_lsetxattr (const char* path,
     const char* name,
     const void* value,
@@ -1515,7 +1518,7 @@ int LdPreloadedPosix::ld_preloaded_posix_lsetxattr (const char* path,
     auto enforced = this->enforce_request (__func__,
         workflow_id,
         static_cast<int> (paio::core::POSIX::setxattr),
-        static_cast<int> (paio::core::POSIX_META::ext_attr_op),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX lsetxattr operation
@@ -1531,7 +1534,7 @@ int LdPreloadedPosix::ld_preloaded_posix_lsetxattr (const char* path,
 }
 
 // ld_preloaded_posix_fsetxattr call. (...)
-// NOTE: changed POSIX::fsetxattr classifier to POSIX::setxattr
+// NOTE: changed POSIX::fsetxattr classifier to POSIX::setxattr; changed POSIX_META::ext_attr_op classifier to POSIX_META::meta_op
 int LdPreloadedPosix::ld_preloaded_posix_fsetxattr (int fd,
     const char* name,
     const void* value,
@@ -1548,7 +1551,7 @@ int LdPreloadedPosix::ld_preloaded_posix_fsetxattr (int fd,
     auto enforced = this->enforce_request (__func__,
         workflow_id,
         static_cast<int> (paio::core::POSIX::setxattr),
-        static_cast<int> (paio::core::POSIX_META::ext_attr_op),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX fsetxattr operation
@@ -1564,6 +1567,7 @@ int LdPreloadedPosix::ld_preloaded_posix_fsetxattr (int fd,
 }
 
 // ld_preloaded_posix_listxattr call. (...)
+// NOTE: changed POSIX_META::ext_attr_op classifier to POSIX_META::meta_op
 ssize_t LdPreloadedPosix::ld_preloaded_posix_listxattr (const char* path, char* list, size_t size)
 {
     // hook POSIX listxattr operation to m_extattr_operations.m_listxattr
@@ -1576,7 +1580,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_listxattr (const char* path, char* 
     auto enforced = this->enforce_request (__func__,
         workflow_id,
         static_cast<int> (paio::core::POSIX::listxattr),
-        static_cast<int> (paio::core::POSIX_META::ext_attr_op),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX listxattr operation
@@ -1592,7 +1596,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_listxattr (const char* path, char* 
 }
 
 // ld_preloaded_posix_llistxattr call. (...)
-// NOTE: changed POSIX::llistxattr classifier to POSIX::listxattr
+// NOTE: changed POSIX::llistxattr classifier to POSIX::listxattr; changed POSIX_META::ext_attr_op classifier to POSIX_META::meta_op
 ssize_t LdPreloadedPosix::ld_preloaded_posix_llistxattr (const char* path, char* list, size_t size)
 {
     // hook POSIX llistxattr operation to m_extattr_operations.m_llistxattr
@@ -1605,7 +1609,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_llistxattr (const char* path, char*
     auto enforced = this->enforce_request (__func__,
         workflow_id,
         static_cast<int> (paio::core::POSIX::listxattr),
-        static_cast<int> (paio::core::POSIX_META::ext_attr_op),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX llistxattr operation
@@ -1621,7 +1625,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_llistxattr (const char* path, char*
 }
 
 // ld_preloaded_posix_flistxattr call. (...)
-// NOTE: changed POSIX::flistxattr classifier to POSIX::listxattr
+// NOTE: changed POSIX::flistxattr classifier to POSIX::listxattr; changed POSIX_META::ext_attr_op classifier to POSIX_META::meta_op
 ssize_t LdPreloadedPosix::ld_preloaded_posix_flistxattr (int fd, char* list, size_t size)
 {
     // hook POSIX flistxattr operation to m_extattr_operations.m_flistxattr
@@ -1634,7 +1638,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_flistxattr (int fd, char* list, siz
     auto enforced = this->enforce_request (__func__,
         workflow_id,
         static_cast<int> (paio::core::POSIX::listxattr),
-        static_cast<int> (paio::core::POSIX_META::ext_attr_op),
+        static_cast<int> (paio::core::POSIX_META::meta_op),
         1);
 
     // perform original POSIX flistxattr operation

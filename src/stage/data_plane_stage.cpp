@@ -12,7 +12,6 @@ DataPlaneStage::DataPlaneStage () :
     m_log { std::make_shared<Log> (option_default_enable_debug_level,
         option_default_enable_debug_with_ld_preload,
         std::string { option_default_log_path }) },
-    m_local_controller_address { this->set_local_connection_address () },
     m_stage { std::make_shared<paio::PaioStage> () }
 {
     // create logging message
@@ -33,8 +32,7 @@ DataPlaneStage::DataPlaneStage (std::shared_ptr<Log> log_ptr,
     [[maybe_unused]] const std::string& dif_rules_path,
     [[maybe_unused]] const std::string& enf_rules_path,
     [[maybe_unused]] const bool& execute_on_receive) :
-    m_log { log_ptr },
-    m_local_controller_address { this->set_local_connection_address () }
+    m_log { log_ptr }
 {
     // create logging message
     std::stringstream stream;
@@ -44,22 +42,26 @@ DataPlaneStage::DataPlaneStage (std::shared_ptr<Log> log_ptr,
     // unique_lock over mutex
     std::unique_lock lock (this->m_lock);
 
-    // initialize PAIO structures (stage and instance-interface)
-    // this->m_stage = { std::make_shared<paio::PaioStage> (option_default_stage_channels,
-    //     option_default_stage_object_creation,
-    //     std::string (option_default_stage_name),
-    //     hsk_rules_path,
-    //     dif_rules_path,
-    //     enf_rules_path,
-    //     execute_on_receive) };
-
-    this->m_stage = { std::make_shared<paio::PaioStage> (option_default_stage_channels, 
-        option_default_stage_object_creation, 
-        std::string (option_default_stage_name), 
-        this->m_communication_type, 
-        this->m_local_controller_address, 
-        this->m_local_controller_port) };
-
+    // check if data plane stage should connect to control plane
+    if (padll::options::option_sync_with_controller) {
+        // initialize data plane stage that connects to local controller
+        this->m_stage = { std::make_shared<paio::PaioStage> (option_default_stage_channels, 
+            option_default_stage_object_creation, 
+            std::string (option_default_stage_name), 
+            this->m_communication_type, 
+            this->m_local_controller_address, 
+            this->m_local_controller_port) };
+    } else {
+        // initialize local data plane stage
+        this->m_stage = { std::make_shared<paio::PaioStage> (option_default_stage_channels,
+            option_default_stage_object_creation,
+            std::string (option_default_stage_name),
+            hsk_rules_path,
+            dif_rules_path,
+            enf_rules_path,
+            execute_on_receive) };
+    }
+    
     // initialize PosixLayer instance
     this->m_posix_instance = std::make_unique<paio::PosixLayer> (this->m_stage);
 

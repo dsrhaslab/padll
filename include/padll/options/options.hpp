@@ -128,7 +128,7 @@ constexpr std::string_view option_default_log_path { "/tmp/padll-info" };
  * option_default_detailed_logging:
  */
 // constexpr bool option_default_detailed_logging { true };
-#define OPTION_DETAILED_LOGGING true
+#define OPTION_DETAILED_LOGGING false
 
 /**
  * option_default_table_format:
@@ -136,7 +136,7 @@ constexpr std::string_view option_default_log_path { "/tmp/padll-info" };
 constexpr bool option_default_table_format { false };
 
 /**
- * option_deafault_save_statistics_report:
+ * option_default_save_statistics_report:
  */
 constexpr bool option_default_save_statistics_report { true };
 
