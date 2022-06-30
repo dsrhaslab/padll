@@ -131,6 +131,11 @@ private:
      */
     [[nodiscard]] uint32_t get_metadata_unit ([[maybe_unused]] const char* path) const;
 
+    /**
+     * set_data_plane_stage_name:
+     */
+    [[nodiscard]] std::string set_data_plane_stage_name () const;
+
 public:
     /**
      * LdPreloadedPosix default constructor.

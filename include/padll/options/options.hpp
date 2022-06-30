@@ -175,6 +175,11 @@ constexpr bool option_default_stage_object_creation { false };
 constexpr std::string_view option_default_stage_name { "padll-stage" };
 
 /**
+ * option_default_stage_name_env:
+ */
+constexpr std::string_view option_default_stage_name_env { "paio_name" };
+
+/**
  * option_paio_environment_variable_env:
  */
 constexpr std::string_view option_paio_environment_variable_env { "paio_env" };
