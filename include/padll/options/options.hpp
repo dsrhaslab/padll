@@ -175,6 +175,11 @@ constexpr bool option_default_stage_object_creation { false };
 constexpr std::string_view option_default_stage_name { "padll-stage" };
 
 /**
+ * option_default_stage_name_env:
+ */
+constexpr std::string_view option_default_stage_name_env { "paio_name" };
+
+/**
  * option_paio_environment_variable_env:
  */
 constexpr std::string_view option_paio_environment_variable_env { "paio_env" };
@@ -212,7 +217,7 @@ inline std::filesystem::path option_default_enf_rules_file ()
  * option_sync_with_controller: defines if the data plane stage should run without controller, or
  * if should connect to a local controller.
  */
-constexpr bool option_sync_with_controller { false };
+constexpr bool option_sync_with_controller { true };
 
 /**
  * option_execute_on_receive: defines if rules (mainly housekeeping) should execute on receive, or

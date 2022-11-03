@@ -44,19 +44,22 @@ LdPreloadedPosix::LdPreloadedPosix (const std::string& lib,
     // write debug logging message
     this->m_log->log_info (stream.str ());
 
+    // set data plane stage name    
+    std::string stage_name { this->set_data_plane_stage_name () };
+
     // initialize DataPlaneStage object
     if (option_sync_with_controller) {
         // setup controller-based stage
         this->m_stage = std::make_unique<DataPlaneStage> (log_ptr,
             padll::options::option_default_stage_channels, 
             padll::options::option_default_stage_object_creation, 
-            std::string (padll::options::option_default_stage_name)); 
+            stage_name); 
     } else {
         // setup local stage object
         this->m_stage = std::make_unique<DataPlaneStage> (log_ptr,
             padll::options::option_default_stage_channels, 
             padll::options::option_default_stage_object_creation, 
-            std::string (padll::options::option_default_stage_name),
+            stage_name,
             padll::options::option_default_hsk_rules_file ().string (),
             padll::options::option_default_dif_rules_file ().string (),
             padll::options::option_default_enf_rules_file ().string (),
@@ -102,6 +105,29 @@ void LdPreloadedPosix::set_statistic_collection (bool value)
 {
     this->m_collect.store (value);
 }
+
+// set_data_plane_stage_name call. ...
+std::string LdPreloadedPosix::set_data_plane_stage_name () const
+{
+    // get environment variable for data plane stage
+    auto name_value = std::getenv (padll::options::option_default_stage_name_env.data ());
+
+    if (name_value != nullptr) {
+        // log message
+        Logging::log_warn ("PAIO data plane stage name is `" + std::string (name_value) + "`.");
+
+        // return fetched stage name
+        return std::string (name_value);
+    } else {
+        // log message
+        Logging::log_warn ("Inaccessible environment variable ("
+            + std::string (padll::options::option_default_stage_name_env) + ") value: using default stage name.");
+
+        // return paio default stage name
+        return std::string (padll::options::option_default_stage_name);
+    }
+}
+
 
 // get_statistic_entry call.
 StatisticEntry LdPreloadedPosix::get_statistic_entry (const OperationType& operation_type,
