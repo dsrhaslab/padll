@@ -292,7 +292,7 @@ public:
      * ...
      * @return Returns a MergedResults object with the results of the stress test.
      */
-    MergedResults execute_job (int run_id,
+    MergedResults execute_job (uint32_t run_id,
         int num_workers,
         int iterations,
         const std::vector<long>& workflow_id,

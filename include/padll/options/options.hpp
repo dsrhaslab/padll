@@ -217,7 +217,7 @@ inline std::filesystem::path option_default_enf_rules_file ()
  * option_sync_with_controller: defines if the data plane stage should run without controller, or
  * if should connect to a local controller.
  */
-constexpr bool option_sync_with_controller { true };
+constexpr bool option_sync_with_controller { false };
 
 /**
  * option_execute_on_receive: defines if rules (mainly housekeeping) should execute on receive, or

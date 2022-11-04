@@ -101,25 +101,43 @@ if (ABCI_DEPLOYMENT)
     find_library(PAIO_LIBRARY paio HINTS /home/acb11912na/db/paio/build)
     target_link_libraries(padll ${PAIO_LIBRARY})
 else()
-    if (NOT IS_LOCAL)
-        message(STATUS "Finding PAIO in deployment server")
-        find_library(PAIO_LIBRARY paio HINTS /home/gsd/hpdc22/paio/build)
-    else ()
-        message(STATUS "Finding PAIO in local server")
-        find_library(PAIO_LIBRARY paio HINTS /Users/ricardomacedo/Projects/sds-data-plane/paio/build)
-    endif ()
+    # if (NOT IS_LOCAL)
+    #     message(STATUS "Finding PAIO in deployment server")
+    #     find_library(PAIO_LIBRARY paio HINTS /home/gsd/hpdc22/paio/build)
+    # else ()
+    #     message(STATUS "Finding PAIO in local server")
+    #     # find_library(PAIO_LIBRARY paio HINTS /Users/ricardomacedo/Projects/sds-data-plane/paio/build)
+    #     find_library(PAIO_LIBRARY paio HINTS /Users/ricardomacedo/Projects/dsrhaslab-projects/paio/build)
+    # endif ()
+    #target_link_libraries(padll ${PAIO_LIBRARY})
+    
+    FetchContent_Declare(paio
+        GIT_REPOSITORY  https://github.com/dsrhaslab/paio.git
+        GIT_TAG         origin/main
+    )
 
-    target_link_libraries(padll ${PAIO_LIBRARY})
+    FetchContent_MakeAvailable(paio)
+    target_link_libraries(padll paio)
+
 endif()
 
 # ---------------------------------------------------------------------------- #
 # spdlog -- logging library
 
-FetchContent_Declare(spdlog
-        URL https://github.com/gabime/spdlog/archive/v1.8.1.tar.gz
-        UPDATE_COMMAND ""
+if(${CMAKE_VERSION} VERSION_LESS "3.24.0") 
+    FetchContent_Declare(spdlog
+        URL             https://github.com/gabime/spdlog/archive/v1.8.1.tar.gz
+        UPDATE_COMMAND  ""
         INSTALL_COMMAND ""
-        )
+    )
+else ()
+    FetchContent_Declare(spdlog
+        URL             https://github.com/gabime/spdlog/archive/v1.8.1.tar.gz
+        UPDATE_COMMAND  ""
+        INSTALL_COMMAND ""
+        DOWNLOAD_EXTRACT_TIMESTAMP NEW
+    )
+endif ()
 
 FetchContent_MakeAvailable(spdlog)
 
