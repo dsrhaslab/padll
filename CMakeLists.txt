@@ -1,6 +1,6 @@
 # ---------------------------------------------------------------------------- #
 
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.16)
 include(FetchContent)
 
 project(padll VERSION 1.0.0 DESCRIPTION "padll: ...")
@@ -13,13 +13,16 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 option(PADLL_INSTALL "Install PADLL's header and library" ON)
 option(PADLL_BUILD_TESTS "Build PADLL's unit tests" ON)
 option(PADLL_BUILD_LIBC_TESTS "Build libc tests" ON)
-option(ABCI_DEPLOYMENT "Install PADLL in ABCI supercomputer" OFF)
+option(FETCH_FROM_GIT "Fetch PAIO repo from github" ON)
+
+# Path to (local) PAIO lib
+set(PAIO_LOCAL_PATH "/path/to/paio/build")
 
 # Setup the basic C++ Compiler flags
 if (APPLE)
 message(STATUS "Detecting Local Environment (apple-clang)")
     option(IS_LOCAL "Install PADLL in local setup" ON)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -fPIC")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -fPIC")
 endif (APPLE)
 
 if (UNIX AND NOT APPLE)
@@ -96,21 +99,8 @@ target_sources(
 
 message(STATUS "Installing PAIO data plane library")
 
-if (ABCI_DEPLOYMENT)
-    message(STATUS "Detecting ABCI deployment")
-    find_library(PAIO_LIBRARY paio HINTS /home/acb11912na/db/paio/build)
-    target_link_libraries(padll ${PAIO_LIBRARY})
-else()
-    # if (NOT IS_LOCAL)
-    #     message(STATUS "Finding PAIO in deployment server")
-    #     find_library(PAIO_LIBRARY paio HINTS /home/gsd/hpdc22/paio/build)
-    # else ()
-    #     message(STATUS "Finding PAIO in local server")
-    #     # find_library(PAIO_LIBRARY paio HINTS /Users/ricardomacedo/Projects/sds-data-plane/paio/build)
-    #     find_library(PAIO_LIBRARY paio HINTS /Users/ricardomacedo/Projects/dsrhaslab-projects/paio/build)
-    # endif ()
-    #target_link_libraries(padll ${PAIO_LIBRARY})
-    
+if (FETCH_FROM_GIT)
+    message(STATUS "Fetching libpaio from git")
     FetchContent_Declare(paio
         GIT_REPOSITORY  https://github.com/dsrhaslab/paio.git
         GIT_TAG         origin/main
@@ -118,7 +108,10 @@ else()
 
     FetchContent_MakeAvailable(paio)
     target_link_libraries(padll paio)
-
+else()
+    message(STATUS "Finding libpaio in local environment")
+    find_library(PAIO_LIBRARY paio HINTS ${PAIO_LOCAL_PATH})
+    target_link_libraries(padll ${PAIO_LIBRARY})
 endif()
 
 # ---------------------------------------------------------------------------- #
