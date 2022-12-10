@@ -13,10 +13,10 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 option(PADLL_INSTALL "Install PADLL's header and library" ON)
 option(PADLL_BUILD_TESTS "Build PADLL's unit tests" ON)
 option(PADLL_BUILD_LIBC_TESTS "Build libc tests" ON)
-option(FETCH_FROM_GIT "Fetch PAIO repo from github" ON)
+option(FETCH_FROM_GIT "Fetch PAIO repo from github" OFF)
 
 # Path to (local) PAIO lib
-set(PAIO_LOCAL_PATH "/path/to/paio/build")
+set(PAIO_LOCAL_PATH "/home/gsd/hpdc22/paio/build")
 
 # Setup the basic C++ Compiler flags
 if (APPLE)

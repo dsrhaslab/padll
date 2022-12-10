@@ -92,7 +92,7 @@ constexpr bool option_mount_point_differentiation_enabled { true };
  *  operations will pick from a selected set of workflow identifiers
  */
 // constexpr std::string_view option_default_remote_mount_point { "/home" };
-constexpr std::string_view option_default_remote_mount_point { "/" };
+constexpr std::string_view option_default_remote_mount_point { "/tmp" };
 
 /**
  * option_hard_remove:
@@ -112,12 +112,12 @@ constexpr bool option_select_workflow_by_metadata_unit { false };
 /**
  * option_default_enable_debug_level:
  */
-constexpr bool option_default_enable_debug_level { true };
+constexpr bool option_default_enable_debug_level { false };
 
 /**
  * option_default_enable_debug_with_ld_preload:
  */
-constexpr bool option_default_enable_debug_with_ld_preload { true };
+constexpr bool option_default_enable_debug_with_ld_preload { false };
 
 /**
  * option_default_log_path:
@@ -157,6 +157,7 @@ constexpr std::string_view option_default_statistics_report_path { "/tmp" };
 inline std::filesystem::path main_path ()
 {
     return "/home/gsd/hpdc22/padll/files/";
+    // return "/home1/07853/rgmacedo/padll/files/";
 }
 
 /**
@@ -194,7 +195,7 @@ constexpr std::string_view option_default_connection_address_env { "cheferd_loca
  */
 inline std::filesystem::path option_default_hsk_rules_file ()
 {
-    return main_path ().append ("hsk-micro-2");
+    return main_path ().append ("hsk-scale-test");
 }
 
 /**

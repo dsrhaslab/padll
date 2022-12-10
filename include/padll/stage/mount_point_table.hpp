@@ -35,10 +35,19 @@ public:
         4000,
         5000,
         6000 };
-    const std::vector<uint32_t> default_remote_mount_point_workflows { 1000, 2000, 3000 };
+    // const std::vector<uint32_t> default_remote_mount_point_workflows { 1000 };
     // FIXME: Needing refactor or cleanup -@gsd at 4/13/2022, 2:14:08 PM
     // Do not consider right now differentiation between local and remote mount points.
     // const std::vector<uint32_t> default_local_mount_point_workflows { 4000, 5000, 6000 };
+
+    std::vector<uint32_t> default_remote_mount_point_workflows {};
+
+    MountPointWorkflows (const int& num_workflows) {
+        for (int i = 1; i <= num_workflows; i++) {
+            this->default_remote_mount_point_workflows.push_back (i*1000);
+        }
+    }
+
 };
 
 class MountPointTable {
@@ -46,7 +55,8 @@ class MountPointTable {
 private:
     std::shared_timed_mutex m_fd_shared_lock;
     std::shared_timed_mutex m_fptr_shared_lock;
-    MountPointWorkflows m_default_workflows {};
+    int m_num_workflows { std::stoi (std::getenv ("padll_workflows")) };
+    MountPointWorkflows m_default_workflows { this->m_num_workflows };
     std::unordered_map<int, std::unique_ptr<MountPointEntry>> m_file_descriptors_table {};
     std::unordered_map<FILE*, std::unique_ptr<MountPointEntry>> m_file_ptr_table {};
     std::map<MountPoint, std::vector<uint32_t>> m_mount_point_workflows {};

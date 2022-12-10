@@ -91,6 +91,11 @@ void MountPointTable::initialize ()
         this->register_mount_point_type (MountPoint::kNone,
             this->m_default_workflows.default_mount_point_workflows);
     }
+
+    std::cout << "MountPointTable initialize (" << this->m_num_workflows << ")" << std::endl;
+    for (int i = 0; i < this->m_default_workflows.default_remote_mount_point_workflows.size (); i++) {
+        std::cout << "cenas (" << i << ") : " << this->m_default_workflows.default_remote_mount_point_workflows.at(i) << std::endl;
+    }
 }
 
 // create_mount_point_entry call. (...)

@@ -410,7 +410,7 @@ int main (int argc, char** argv)
         std::fprintf (stdout, "Executing %s: %s runs -- %s threads -- %s ops\n", argv[0], argv[1], argv[2], argv[3]);
     }
 
-    uint32_t wait_time {10};
+    uint32_t wait_time {5};
     bool store_run_perf_report {false};
     bool store_perf_report {false};
     std::string result_path {"/tmp/padll-results/microbenchmarks-perf-results/"};
