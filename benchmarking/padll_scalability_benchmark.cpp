@@ -413,7 +413,8 @@ int main (int argc, char** argv)
     uint32_t wait_time {5};
     bool store_run_perf_report {false};
     bool store_perf_report {false};
-    std::string result_path {"/tmp/padll-results/microbenchmarks-perf-results/"};
+    // std::string result_path {"/tmp/padll-results/microbenchmarks-perf-results/"};
+    std::string result_path {"/home1/07853/rgmacedo/padll-results/"};
     std::string syscall_pathname { "/tmp/sample-file" };
 
 

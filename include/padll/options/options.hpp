@@ -143,8 +143,8 @@ constexpr bool option_default_save_statistics_report { true };
 /**
  * option_default_statistics_report_path:
  */
-constexpr std::string_view option_default_statistics_report_path { "/tmp" };
-
+// constexpr std::string_view option_default_statistics_report_path { "/tmp" };
+constexpr std::string_view option_default_statistics_report_path { "/home1/07853/rgmacedo/padll-results" };
 // *************************************************************************************************
 //  Default PAIO data plane stage configuration
 // *************************************************************************************************
@@ -156,8 +156,8 @@ constexpr std::string_view option_default_statistics_report_path { "/tmp" };
  */
 inline std::filesystem::path main_path ()
 {
-    return "/home/gsd/hpdc22/padll/files/";
-    // return "/home1/07853/rgmacedo/padll/files/";
+    // return "/home/gsd/hpdc22/padll/files/";
+    return "/home1/07853/rgmacedo/padll/files/";
 }
 
 /**
