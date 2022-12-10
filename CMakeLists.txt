@@ -156,6 +156,7 @@ if (PADLL_BUILD_LIBC_TESTS)
         add_test(NAME "${test_target_name}" COMMAND "${test_target_name}")
     endfunction(padll_libc_test)
 
+    padll_libc_test("benchmarking/padll_scalability_benchmark.cpp" "padll_scalability_bench")
     padll_libc_test("tests/posix/simple_test.cpp" "simple_test")
     padll_libc_test("tests/posix/hybrid_calls_test.cpp" "hybrid_test")
     padll_libc_test("tests/posix/directory_calls_test.cpp" "dir_test")
