@@ -16,6 +16,9 @@
 #include <iostream>
 #include <sstream>
 #include <fcntl.h>
+#include <mutex>
+#include <cmath>
+#include <cstring>
 
 
 namespace fs = std::filesystem;
@@ -46,8 +49,8 @@ struct SetupResults {
 
 /**
  * stress_test: continuously submit operation to the PAIO data plane stage in a close-loop.
- * @param instance Pointer to the PosixLayer interface to submit the request.
- * @param workflow_id Identifier of the workflow.
+ * @param fd 
+ * @param pathname
  * @param operation_size Size of the operation to be generated and submitted.
  * @param total_ops Number of operations to be submitted in the execution.
  * @param print_report Boolean that defines if the execution report is to be printed to the stdout.
@@ -55,6 +58,7 @@ struct SetupResults {
  * throughput, of the execution.
  */
 ThreadResults stress_test (FILE* fd,
+    const std::string& pathname,
     const ssize_t& operation_size,
     const uint64_t& total_ops,
     bool print_report)
@@ -66,8 +70,10 @@ ThreadResults stress_test (FILE* fd,
     }
 
     auto start = std::chrono::high_resolution_clock::now ();
+    
+    // cycle of syscall submission
     for (uint64_t i = 1; i <= total_ops; i++) {
-        ::open ("/tmp/hello_world", O_RDONLY, 0666);
+        ::open (pathname.c_str (), O_RDONLY, 0666);
     }
     // calculate elapsed time
     auto end = std::chrono::high_resolution_clock::now ();
@@ -242,11 +248,6 @@ SetupResults merge_final_results (const std::vector<MergedResults>& results)
  * stress_test call and stores the results in a ThreadResults shared object.
  * @param fd Pointer to a FILE object to write the performance report.
  * @param run_id Unique identifier of the current run.
- * @param channels Number of channels and threads to be used in the current run. This is both used
- * to initialize the PAIO data plane stage, and the spawn N worker threads to perform the actual
- * stress test.
- * @param create_default_enf_objects Flag to indicate whether the default enforcement objects should
- * be created at data plane stage initialization.
  * @param stage_name Name of the data plane stage.
  * @param total_operations Total number of operations to be performed by each worker thread.
  * @param operation_size Size of each operation.
@@ -254,9 +255,9 @@ SetupResults merge_final_results (const std::vector<MergedResults>& results)
  */
 MergedResults execute_run (FILE* fd,
     uint32_t run_id,
-    unsigned int channels,
-    bool create_default_enf_objects,
+    int num_threads,
     std::string stage_name,
+    const std::string& pathname,
     uint64_t total_ops,
     ssize_t op_size)
 {
@@ -268,17 +269,18 @@ MergedResults execute_run (FILE* fd,
         .m_cumulative_throughput = 0 };
 
 
-    std::thread workers[channels];
+    std::thread workers[num_threads];
     std::mutex lock;
 
     // lambda function for each thread to execute
     auto func = ([&lock, &results] (FILE* fd,
+                     const std::string& pathname,
                      const ssize_t& op_size,
                      const long& total_ops,
                      bool print) {
         // execute stress test
         ThreadResults thread_results
-            = stress_test (fd, op_size, total_ops, print);
+            = stress_test (fd, pathname, op_size, total_ops, print);
         {
             std::unique_lock<std::mutex> unique_lock (lock);
             record_stress_test_results (&results, thread_results);
@@ -286,14 +288,14 @@ MergedResults execute_run (FILE* fd,
     });
 
     // spawn worker threads
-    for (unsigned int i = 1; i <= channels; i++) {
-        workers[i - 1] = std::thread (func, fd, op_size, total_ops, false);
+    for (unsigned int i = 1; i <= num_threads; i++) {
+        workers[i - 1] = std::thread (func, fd, pathname, op_size, total_ops, false);
         std::cerr << "Starting worker thread #" << i << " (" << workers[i - 1].get_id () << ") ..."
                   << std::endl;
     }
 
     // join worker threads
-    for (unsigned int i = 1; i <= channels; i++) {
+    for (unsigned int i = 1; i <= num_threads; i++) {
         std::thread::id joining_thread_id = workers[i - 1].get_id ();
         workers[i - 1].join ();
         std::cerr << "Joining worker thread #" << i << " (" << joining_thread_id << ") ..."
@@ -397,35 +399,39 @@ void print_server_info (FILE* fd)
  */
 int main (int argc, char** argv)
 {
+
     // print header and node information to stdout
     print_server_info (stdout);
 
-    uint32_t FLAGS_runs { 3 };
-    uint32_t FLAGS_wtime {10};
-    uint32_t FLAGS_threads {1};
-    uint64_t FLAGS_ops {10};
-    uint64_t FLAGS_size {0};
-    bool FLAGS_store_run_perf_report {false};
-    bool FLAGS_store_perf_report {false};
-    std::string FLAGS_result_path {"/tmp/padll-results/microbenchmarks-perf-results/"};
+    if (argc < 4) {
+        std::fprintf (stdout, "Error: missing arguments ... \n");
+        return 1;
+    } else {
+        std::fprintf (stdout, "Executing %s: %s runs -- %s threads -- %s ops\n", argv[0], argv[1], argv[2], argv[3]);
+    }
+
+    uint32_t wait_time {10};
+    bool store_run_perf_report {false};
+    bool store_perf_report {false};
+    std::string result_path {"/tmp/padll-results/microbenchmarks-perf-results/"};
+    std::string syscall_pathname { "/tmp/sample-file" };
 
 
     // benchmark setup
     std::vector<MergedResults> run_results;
     bool print_detailed = false;
 
-    // data plane setup
-    auto channels = static_cast<unsigned int> (FLAGS_threads);
-    bool create_default_enf_objects = true;
+    int num_runs { std::stoi (argv[1]) };
+    int num_threads { std::stoi (argv[2]) };
+    long num_ops { std::stoi (argv[3]) };
+    long operation_size { 0 };
+    
     std::string stage_name { "microbenchmark-stage" };
 
-    // application setup
-    uint64_t total_operations = FLAGS_ops;
-    auto operation_size = static_cast<ssize_t> (FLAGS_size);
-
+    
     // create directory to store performance results
-    if (FLAGS_store_perf_report && !FLAGS_result_path.empty ()) {
-        fs::path path = FLAGS_result_path;
+    if (store_perf_report && !result_path.empty ()) {
+        fs::path path = result_path;
 
         // verify if directory already exists
         if (!fs::exists (path)) {
@@ -437,22 +443,22 @@ int main (int argc, char** argv)
             }
         }
 
-        FLAGS_result_path = path.string ();
+        result_path = path.string ();
     }
 
     // File name
     fs::path filename;
-    if (!FLAGS_result_path.empty ()) {
-        filename = (FLAGS_result_path + "micro-perf-results-" + std::to_string (channels) + "-"
+    if (!result_path.empty ()) {
+        filename = (result_path + "micro-perf-results-" + std::to_string (num_threads) + "-"
             + std::to_string (operation_size));
     }
 
-    for (uint32_t run = 0; run < FLAGS_runs; run++) {
+    for (uint32_t run = 0; run < static_cast<uint32_t> (num_runs); run++) {
         FILE* fd_run_report;
         fs::path filename_run_perf_report = filename.string () + "-" + std::to_string (run + 1);
 
         // open file to store the performance report of the current run
-        if (FLAGS_store_run_perf_report) {
+        if (store_run_perf_report) {
             fd_run_report = std::fopen (filename_run_perf_report.string ().c_str (), "w");
 
             if (fd_run_report == nullptr) {
@@ -468,11 +474,11 @@ int main (int argc, char** argv)
         // execute run
         MergedResults results = execute_run (fd_run_report,
             run,
-            channels,
-            create_default_enf_objects,
+            static_cast<uint32_t> (num_threads),
             stage_name,
-            total_operations,
-            operation_size);
+            syscall_pathname,
+            static_cast<uint64_t> (num_ops),
+            static_cast<uint64_t> (operation_size));
 
         // log results to file or stdout
         log_results (fd_run_report, results, print_detailed);
@@ -481,7 +487,7 @@ int main (int argc, char** argv)
         run_results.emplace_back (results);
 
         // close file descriptor of the performance report file of the current run
-        if (FLAGS_store_run_perf_report) {
+        if (store_run_perf_report) {
             int close_value = std::fclose (fd_run_report);
 
             if (close_value != 0) {
@@ -491,7 +497,7 @@ int main (int argc, char** argv)
         }
 
         // sleep before going to the next run
-        std::this_thread::sleep_for (std::chrono::seconds (FLAGS_wtime));
+        std::this_thread::sleep_for (std::chrono::seconds (wait_time));
     }
 
     FILE* fd_perf_report;
@@ -499,7 +505,7 @@ int main (int argc, char** argv)
     SetupResults final_results = merge_final_results (run_results);
 
     // open file to store the final performance report (file or stdout)
-    if (FLAGS_store_perf_report) {
+    if (store_perf_report) {
         fd_perf_report = std::fopen (filename.string ().c_str (), "w");
         if (fd_perf_report == nullptr) {
             std::cerr << "Error on open (" << filename << "): " << std::strerror (errno) << "\n";
@@ -514,7 +520,7 @@ int main (int argc, char** argv)
     log_final_results (fd_perf_report, final_results, filename.string ());
 
     // close file descriptor of the performance report file
-    if (FLAGS_store_perf_report) {
+    if (store_perf_report) {
         int close_value = std::fclose (fd_perf_report);
 
         if (close_value != 0) {

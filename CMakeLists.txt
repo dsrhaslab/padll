@@ -30,6 +30,16 @@ if (UNIX AND NOT APPLE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -pthread -fPIC -Wl,--no-as-needed -ldl")
 endif ()
 
+# Install PADLL to be used in production. This option will modify the 
+# compilation options, regarding compiler-based optimizations.
+option(PRODUCTION "Compiling with release mode" ON)
+
+if (PRODUCTION) 
+    message(STATUS "Compiling with compiler-based optimizations (-O3)")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+else() 
+    message(STATUS "Compiling with default compiling options")
+endif (PRODUCTION)
 
 # Test whether -Wthread-safety is available. See
 # https://clang.llvm.org/docs/ThreadSafetyAnalysis.html
