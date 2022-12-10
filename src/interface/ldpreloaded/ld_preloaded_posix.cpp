@@ -600,14 +600,15 @@ int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags, mode
 
     // perform original POSIX open operation
     // int fd = m_metadata_operations.m_open_var (path, flags, mode);
-    int fd = (rand() % static_cast<int>(2000000));
+    // int fd = (rand() % static_cast<int>(2000000));
 
-    // create_mount_point_entry
-    this->m_mount_point_table.create_mount_point_entry (fd,
-        path,
-        mountpoint,
-        this->get_metadata_unit (path));
+    // // create_mount_point_entry
+    // this->m_mount_point_table.create_mount_point_entry (fd,
+    //     path,
+    //     mountpoint,
+    //     this->get_metadata_unit (path));
 
+    int fd = 10;
     // update statistic entry
     this->update_statistics (OperationType::metadata_calls,
         static_cast<int> (Metadata::open_variadic),
