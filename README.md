@@ -11,10 +11,10 @@ Tutorial to install and test padll.
 <b>0. Install dependencies</b>
 ```shell
 # Install PAIO data plane framework
-$ cd /path/to/dir
-$ git clone https://github.com/rgmacedo/paio.git	# update to dsrhaslab/paio
+$ cd /path/to/dir   # select the path to clone the PAIO github repository
+$ git clone https://github.com/dsrhaslab/paio.git	# update to dsrhaslab/paio
 $ cd paio
-$ git checkout rgmacedo/padll
+$ git checkout <set-release>
 $ mkdir build; cd build
 $ cmake ..; cmake --build .
 $ export CPATH="/path/to/dir/paio/include:${CPATH}"

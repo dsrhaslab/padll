@@ -55,7 +55,7 @@ class MountPointTable {
 private:
     std::shared_timed_mutex m_fd_shared_lock;
     std::shared_timed_mutex m_fptr_shared_lock;
-    int m_num_workflows { std::stoi (std::getenv ("padll_workflows")) };
+    int m_num_workflows { padll::options::option_padll_workflows () };
     MountPointWorkflows m_default_workflows { this->m_num_workflows };
     std::unordered_map<int, std::unique_ptr<MountPointEntry>> m_file_descriptors_table {};
     std::unordered_map<FILE*, std::unique_ptr<MountPointEntry>> m_file_ptr_table {};
