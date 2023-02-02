@@ -1,6 +1,6 @@
 /**
  *   Written by Ricardo Macedo.
- *   Copyright (c) 2021-2022 INESC TEC.
+ *   Copyright (c) 2021-2023 INESC TEC.
  **/
 
 #include <padll/stage/data_plane_stage.hpp>

@@ -1,6 +1,6 @@
 /**
  *   Written by Ricardo Macedo.
- *   Copyright (c) 2021-2022 INESC TEC.
+ *   Copyright (c) 2021-2023 INESC TEC.
  **/
 
 #include <cassert>
@@ -48,9 +48,9 @@ struct SetupResults {
 };
 
 /**
- * stress_test: continuously submit operation to the PAIO data plane stage in a close-loop.
- * @param fd 
- * @param pathname
+ * stress_test: continuously submit operation to the PADLL data plane stage in a close-loop.
+ * @param fd file descriptor to store logging messages
+ * @param pathname sample file to be opened
  * @param operation_size Size of the operation to be generated and submitted.
  * @param total_ops Number of operations to be submitted in the execution.
  * @param print_report Boolean that defines if the execution report is to be printed to the stdout.
@@ -83,11 +83,9 @@ ThreadResults stress_test (FILE* fd,
     delete[] message;
 
     // store performance results of the worker thread
-    ThreadResults perf_result { .m_iops
-        = static_cast<double> (total_ops) / elapsed_seconds.count () / 1000,
-        .m_throughput = (static_cast<double> (total_ops)
-                            * (static_cast<double> (operation_size) / 1024 / 1024 / 1024))
-            / elapsed_seconds.count () };
+    ThreadResults perf_result { };
+    perf_result.m_iops = static_cast<double> (total_ops) / elapsed_seconds.count () / 1000;
+    perf_result.m_throughput = (static_cast<double> (total_ops) * (static_cast<double> (operation_size) / 1024 / 1024 / 1024)) / elapsed_seconds.count ();
 
     // print to stdout the execution report
     if (print_report) {
@@ -248,25 +246,24 @@ SetupResults merge_final_results (const std::vector<MergedResults>& results)
  * stress_test call and stores the results in a ThreadResults shared object.
  * @param fd Pointer to a FILE object to write the performance report.
  * @param run_id Unique identifier of the current run.
- * @param stage_name Name of the data plane stage.
  * @param total_operations Total number of operations to be performed by each worker thread.
  * @param operation_size Size of each operation.
  * @return Returns a MergedResults object with the results of the stress test.
  */
 MergedResults execute_run (FILE* fd,
     uint32_t run_id,
-    int num_threads,
-    std::string stage_name,
+    uint32_t num_threads,
     const std::string& pathname,
     uint64_t total_ops,
     ssize_t op_size)
 {
     // create object to store cumulative performance results
-    MergedResults results { .m_run_id = (run_id + 1),
-        .m_iops = {},
-        .m_throughput = {},
-        .m_cumulative_iops = 0,
-        .m_cumulative_throughput = 0 };
+    MergedResults results {};
+    results.m_run_id = run_id + 1;
+    results.m_iops = {};
+    results.m_throughput = {};
+    results.m_cumulative_iops = {0};
+    results.m_cumulative_throughput = {0};
 
 
     std::thread workers[num_threads];
@@ -368,29 +365,6 @@ void print_server_info (FILE* fd)
 #endif
 }
 
-// DEFINE_uint32 (runs, 3, "Defines the number of runs to be conducted.");
-
-// DEFINE_uint32 (wtime, 10, "Defines the waiting time, in seconds, between runs.");
-
-// DEFINE_uint32 (threads, 1, "Number of concurrent worker threads to run.");
-
-// DEFINE_uint64 (ops, 10000000, "Defines the number of operations for each worker thread to submit.");
-
-// DEFINE_uint64 (size, 0, "Defines the block size of each operation.");
-
-// DEFINE_bool (store_run_perf_report,
-//     false,
-//     "Defines if the performance report of each run is persisted in a file or logged to stdout.");
-
-// DEFINE_bool (store_perf_report,
-//     false,
-//     "Defines if the performance report of the overall benchmark execution is persisted in a file or"
-//     " logged to stdout.");
-
-// DEFINE_string (result_path,
-//     "/tmp/paio-results/microbenchmarks-perf-results/",
-//     "Defines the path to store the performance results.");
-
 /**
  * Notes:
  *  - Options header:
@@ -404,7 +378,7 @@ int main (int argc, char** argv)
     print_server_info (stdout);
 
     if (argc < 4) {
-        std::fprintf (stdout, "Error: missing arguments ... \n");
+        std::fprintf (stdout, "Error: missing arguments (runs -- threads -- ops) \n");
         return 1;
     } else {
         std::fprintf (stdout, "Executing %s: %s runs -- %s threads -- %s ops\n", argv[0], argv[1], argv[2], argv[3]);
@@ -413,22 +387,19 @@ int main (int argc, char** argv)
     uint32_t wait_time {5};
     bool store_run_perf_report {false};
     bool store_perf_report {true};
-    // std::string result_path {"/tmp/padll-results/microbenchmarks-perf-results/"};
-    std::string result_path {"/home1/07853/rgmacedo/padll-scalability-results/"};
+    std::string result_path {"/tmp/results/"};
+    // std::string result_path {"/home1/07853/rgmacedo/padll-scalability-results/"};
     std::string syscall_pathname { "/tmp/sample-file" };
-
 
     // benchmark setup
     std::vector<MergedResults> run_results;
     bool print_detailed = false;
 
-    int num_runs { std::stoi (argv[1]) };
-    int num_threads { std::stoi (argv[2]) };
-    long num_ops { std::stoi (argv[3]) };
+    uint32_t num_runs { static_cast<uint32_t> (std::stoul (argv[1])) };
+    uint32_t num_threads { static_cast<uint32_t> (std::stoul (argv[2])) };
+    long num_ops { std::stol (argv[3]) };
     long operation_size { 0 };
-    int num_stages { std::stoi (argv[4]) };
- 
-    std::string stage_name { "microbenchmark-stage" };
+    // int num_stages { std::stoi (argv[4]) };
 
     
     // create directory to store performance results
@@ -451,8 +422,8 @@ int main (int argc, char** argv)
     // File name
     fs::path filename;
     if (!result_path.empty ()) {
-        filename = (result_path + "micro-perf-results-" + std::to_string (num_threads) + "-"
-            + std::to_string (operation_size) + "-" + std::to_string (num_stages) + "-" + std::to_string (::getpid()) );
+        filename = (result_path + "scale-perf-results-" + std::to_string (num_threads) + "-"
+            + std::to_string (operation_size) + "-" + std::to_string (::getpid()) );
     }
 
     for (uint32_t run = 0; run < static_cast<uint32_t> (num_runs); run++) {
@@ -477,7 +448,6 @@ int main (int argc, char** argv)
         MergedResults results = execute_run (fd_run_report,
             run,
             static_cast<uint32_t> (num_threads),
-            stage_name,
             syscall_pathname,
             static_cast<uint64_t> (num_ops),
             static_cast<uint64_t> (operation_size));
