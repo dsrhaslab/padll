@@ -44,21 +44,21 @@ LdPreloadedPosix::LdPreloadedPosix (const std::string& lib,
     // write debug logging message
     this->m_log->log_info (stream.str ());
 
-    // set data plane stage name    
+    // set data plane stage name
     std::string stage_name { this->set_data_plane_stage_name () };
 
     // initialize DataPlaneStage object
     if (option_sync_with_controller) {
         // setup controller-based stage
         this->m_stage = std::make_unique<DataPlaneStage> (log_ptr,
-            padll::options::option_default_stage_channels, 
-            padll::options::option_default_stage_object_creation, 
-            stage_name); 
+            padll::options::option_default_stage_channels,
+            padll::options::option_default_stage_object_creation,
+            stage_name);
     } else {
         // setup local stage object
         this->m_stage = std::make_unique<DataPlaneStage> (log_ptr,
-            padll::options::option_default_stage_channels, 
-            padll::options::option_default_stage_object_creation, 
+            padll::options::option_default_stage_channels,
+            padll::options::option_default_stage_object_creation,
             stage_name,
             padll::options::option_default_hsk_rules_file ().string (),
             padll::options::option_default_dif_rules_file ().string (),
@@ -121,13 +121,13 @@ std::string LdPreloadedPosix::set_data_plane_stage_name () const
     } else {
         // log message
         Logging::log_warn ("Inaccessible environment variable ("
-            + std::string (padll::options::option_default_stage_name_env) + ") value: using default stage name.");
+            + std::string (padll::options::option_default_stage_name_env)
+            + ") value: using default stage name.");
 
         // return paio default stage name
         return std::string (padll::options::option_default_stage_name);
     }
 }
-
 
 // get_statistic_entry call.
 StatisticEntry LdPreloadedPosix::get_statistic_entry (const OperationType& operation_type,
@@ -215,7 +215,8 @@ void LdPreloadedPosix::generate_statistics_report (const std::string_view& path)
 }
 
 // enforce_request call. (...)
-[[nodiscard]] bool LdPreloadedPosix::enforce_request ([[maybe_unused]]const std::string_view& function_name,
+[[nodiscard]] bool LdPreloadedPosix::enforce_request (
+    [[maybe_unused]] const std::string_view& function_name,
     const uint32_t& workflow_id,
     const int& operation_type,
     const int& operation_context,
@@ -1292,7 +1293,8 @@ int LdPreloadedPosix::ld_preloaded_posix_mkdir (const char* path, mode_t mode)
 }
 
 // ld_preloaded_posix_mkdirat call. (...)
-// NOTE: changed POSIX::mkdirat classifier to POSIX::mkdir; changed POSIX_META::dir_op classifier to POSIX_META::meta_op
+// NOTE: changed POSIX::mkdirat classifier to POSIX::mkdir; changed POSIX_META::dir_op classifier to
+// POSIX_META::meta_op
 int LdPreloadedPosix::ld_preloaded_posix_mkdirat (int dirfd, const char* path, mode_t mode)
 {
     // hook POSIX mkdirat operation to m_directory_operations.m_mkdirat
@@ -1350,7 +1352,8 @@ int LdPreloadedPosix::ld_preloaded_posix_mknod (const char* path, mode_t mode, d
 }
 
 // ld_preloaded_posix_mknodat call. (...)
-// NOTE: changed POSIX::mknodat classifier to POSIX::mknod; changed POSIX_META::dir_op classifier to POSIX_META::meta_op
+// NOTE: changed POSIX::mknodat classifier to POSIX::mknod; changed POSIX_META::dir_op classifier to
+// POSIX_META::meta_op
 int LdPreloadedPosix::ld_preloaded_posix_mknodat (int dirfd,
     const char* path,
     mode_t mode,
@@ -1473,7 +1476,8 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_lgetxattr (const char* path,
 }
 
 // ld_preloaded_posix_fgetxattr call. (...)
-// NOTE: changed POSIX::fgetxattr classifier to POSIX::getxattr; changed POSIX_META::ext_attr_op classifier to POSIX_META::meta_op
+// NOTE: changed POSIX::fgetxattr classifier to POSIX::getxattr; changed POSIX_META::ext_attr_op
+// classifier to POSIX_META::meta_op
 ssize_t
 LdPreloadedPosix::ld_preloaded_posix_fgetxattr (int fd, const char* name, void* value, size_t size)
 {
@@ -1536,7 +1540,8 @@ int LdPreloadedPosix::ld_preloaded_posix_setxattr (const char* path,
 }
 
 // ld_preloaded_posix_lsetxattr call. (...)
-// NOTE: changed POSIX::lsetxattr classifier to POSIX::setxattr; changed POSIX_META::ext_attr_op classifier to POSIX_META::meta_op
+// NOTE: changed POSIX::lsetxattr classifier to POSIX::setxattr; changed POSIX_META::ext_attr_op
+// classifier to POSIX_META::meta_op
 int LdPreloadedPosix::ld_preloaded_posix_lsetxattr (const char* path,
     const char* name,
     const void* value,
@@ -1569,7 +1574,8 @@ int LdPreloadedPosix::ld_preloaded_posix_lsetxattr (const char* path,
 }
 
 // ld_preloaded_posix_fsetxattr call. (...)
-// NOTE: changed POSIX::fsetxattr classifier to POSIX::setxattr; changed POSIX_META::ext_attr_op classifier to POSIX_META::meta_op
+// NOTE: changed POSIX::fsetxattr classifier to POSIX::setxattr; changed POSIX_META::ext_attr_op
+// classifier to POSIX_META::meta_op
 int LdPreloadedPosix::ld_preloaded_posix_fsetxattr (int fd,
     const char* name,
     const void* value,
@@ -1631,7 +1637,8 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_listxattr (const char* path, char* 
 }
 
 // ld_preloaded_posix_llistxattr call. (...)
-// NOTE: changed POSIX::llistxattr classifier to POSIX::listxattr; changed POSIX_META::ext_attr_op classifier to POSIX_META::meta_op
+// NOTE: changed POSIX::llistxattr classifier to POSIX::listxattr; changed POSIX_META::ext_attr_op
+// classifier to POSIX_META::meta_op
 ssize_t LdPreloadedPosix::ld_preloaded_posix_llistxattr (const char* path, char* list, size_t size)
 {
     // hook POSIX llistxattr operation to m_extattr_operations.m_llistxattr
@@ -1660,7 +1667,8 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_llistxattr (const char* path, char*
 }
 
 // ld_preloaded_posix_flistxattr call. (...)
-// NOTE: changed POSIX::flistxattr classifier to POSIX::listxattr; changed POSIX_META::ext_attr_op classifier to POSIX_META::meta_op
+// NOTE: changed POSIX::flistxattr classifier to POSIX::listxattr; changed POSIX_META::ext_attr_op
+// classifier to POSIX_META::meta_op
 ssize_t LdPreloadedPosix::ld_preloaded_posix_flistxattr (int fd, char* list, size_t size)
 {
     // hook POSIX flistxattr operation to m_extattr_operations.m_flistxattr

@@ -107,14 +107,15 @@ constexpr bool option_select_workflow_by_metadata_unit { false };
 
 /**
  * option_padll_workflows: get the number of internal workflows used by the PADLL data plane stage.
- * @return: returns the number of workflows to set in the data plane stage. 
- *  May throw runtime_error exceptions if the padll_workflows are not set or are invalid values (< 0).
+ * @return: returns the number of workflows to set in the data plane stage.
+ *  May throw runtime_error exceptions if the padll_workflows are not set or are invalid values (<
+ * 0).
  */
-inline const int option_padll_workflows () 
+inline const int option_padll_workflows ()
 {
     // get value from environment variable
     auto workflows_env = std::getenv ("padll_workflows");
-    
+
     // validate if variable was set
     if (workflows_env != nullptr) {
         auto workflows = std::stoi (workflows_env);
@@ -124,7 +125,7 @@ inline const int option_padll_workflows ()
             return workflows;
         } else {
             throw std::runtime_error ("Invalid amount of workflows ('padll_workflows').");
-        } 
+        }
     } else {
         throw std::runtime_error ("Environment variable 'padll_workflows' not set.");
     }
@@ -169,7 +170,9 @@ constexpr bool option_default_save_statistics_report { true };
  * option_default_statistics_report_path:
  */
 // constexpr std::string_view option_default_statistics_report_path { "/tmp" };
-constexpr std::string_view option_default_statistics_report_path { "/home1/07853/rgmacedo/padll-results" };
+constexpr std::string_view option_default_statistics_report_path {
+    "/home1/07853/rgmacedo/padll-results"
+};
 
 // *************************************************************************************************
 //  Default PAIO data plane stage configuration

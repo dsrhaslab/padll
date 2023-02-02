@@ -52,9 +52,8 @@ DataPlaneStage::DataPlaneStage (std::shared_ptr<Log> log_ptr,
         hsk_rules_path,
         dif_rules_path,
         enf_rules_path,
-        execute_on_receive) 
-    };
-    
+        execute_on_receive) };
+
     // initialize PosixLayer instance
     this->m_posix_instance = std::make_unique<paio::PosixLayer> (this->m_stage);
 
@@ -81,13 +80,12 @@ DataPlaneStage::DataPlaneStage (std::shared_ptr<Log> log_ptr,
     std::unique_lock lock (this->m_lock);
 
     // initialize data plane stage that connects to local controller
-    this->m_stage = { std::make_shared<paio::PaioStage> (num_channels, 
-        default_object_creation, 
-        stage_name, 
-        this->m_communication_type, 
-        this->m_local_controller_address, 
-        this->m_local_controller_port) 
-    };
+    this->m_stage = { std::make_shared<paio::PaioStage> (num_channels,
+        default_object_creation,
+        stage_name,
+        this->m_communication_type,
+        this->m_local_controller_address,
+        this->m_local_controller_port) };
 
     // initialize PosixLayer instance
     this->m_posix_instance = std::make_unique<paio::PosixLayer> (this->m_stage);
@@ -137,22 +135,26 @@ void DataPlaneStage::enforce_request (const uint32_t& workflow_id,
 #endif
 }
 
-// set_local_connection_address call. Set data plane stage connection address (to local control plane).
+// set_local_connection_address call. Set data plane stage connection address (to local control
+// plane).
 std::string DataPlaneStage::set_local_connection_address () const
 {
     // get environment variable for data plane stage
-    auto address_value = std::getenv (padll::options::option_default_connection_address_env.data ());
+    auto address_value
+        = std::getenv (padll::options::option_default_connection_address_env.data ());
 
     if (address_value != nullptr) {
         // log message
-        Logging::log_warn ("Cheferd local connection address is `" + std::string (address_value) + "`.");
+        Logging::log_warn (
+            "Cheferd local connection address is `" + std::string (address_value) + "`.");
 
         // return fetched connection address
         return std::string (address_value);
     } else {
         // log message
         Logging::log_warn ("Inaccessible environment variable ("
-            + std::string (padll::options::option_default_connection_address_env) + ") value: using default connection address.");
+            + std::string (padll::options::option_default_connection_address_env)
+            + ") value: using default connection address.");
 
         // return paio default connection address
         return paio::options::option_default_socket_name ();

@@ -42,12 +42,12 @@ public:
 
     std::vector<uint32_t> default_remote_mount_point_workflows {};
 
-    MountPointWorkflows (const int& num_workflows) {
+    MountPointWorkflows (const int& num_workflows)
+    {
         for (int i = 1; i <= num_workflows; i++) {
-            this->default_remote_mount_point_workflows.push_back (i*1000);
+            this->default_remote_mount_point_workflows.push_back (i * 1000);
         }
     }
-
 };
 
 class MountPointTable {

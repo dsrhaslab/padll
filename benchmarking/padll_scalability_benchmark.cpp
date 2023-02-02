@@ -5,21 +5,20 @@
 
 #include <cassert>
 #include <cinttypes>
+#include <cmath>
 #include <cstdio>
+#include <cstring>
+#include <fcntl.h>
 #include <filesystem>
 #include <iomanip>
+#include <iostream>
+#include <mutex>
+#include <numeric>
+#include <sstream>
 #include <sys/stat.h>
+#include <thread>
 #include <unistd.h>
 #include <vector>
-#include <numeric>
-#include <thread>
-#include <iostream>
-#include <sstream>
-#include <fcntl.h>
-#include <mutex>
-#include <cmath>
-#include <cstring>
-
 
 namespace fs = std::filesystem;
 
@@ -70,7 +69,7 @@ ThreadResults stress_test (FILE* fd,
     }
 
     auto start = std::chrono::high_resolution_clock::now ();
-    
+
     // cycle of syscall submission
     for (uint64_t i = 1; i <= total_ops; i++) {
         ::open (pathname.c_str (), O_RDONLY, 0666);
@@ -83,9 +82,11 @@ ThreadResults stress_test (FILE* fd,
     delete[] message;
 
     // store performance results of the worker thread
-    ThreadResults perf_result { };
+    ThreadResults perf_result {};
     perf_result.m_iops = static_cast<double> (total_ops) / elapsed_seconds.count () / 1000;
-    perf_result.m_throughput = (static_cast<double> (total_ops) * (static_cast<double> (operation_size) / 1024 / 1024 / 1024)) / elapsed_seconds.count ();
+    perf_result.m_throughput = (static_cast<double> (total_ops)
+                                   * (static_cast<double> (operation_size) / 1024 / 1024 / 1024))
+        / elapsed_seconds.count ();
 
     // print to stdout the execution report
     if (print_report) {
@@ -262,9 +263,8 @@ MergedResults execute_run (FILE* fd,
     results.m_run_id = run_id + 1;
     results.m_iops = {};
     results.m_throughput = {};
-    results.m_cumulative_iops = {0};
-    results.m_cumulative_throughput = {0};
-
+    results.m_cumulative_iops = { 0 };
+    results.m_cumulative_throughput = { 0 };
 
     std::thread workers[num_threads];
     std::mutex lock;
@@ -276,8 +276,7 @@ MergedResults execute_run (FILE* fd,
                      const long& total_ops,
                      bool print) {
         // execute stress test
-        ThreadResults thread_results
-            = stress_test (fd, pathname, op_size, total_ops, print);
+        ThreadResults thread_results = stress_test (fd, pathname, op_size, total_ops, print);
         {
             std::unique_lock<std::mutex> unique_lock (lock);
             record_stress_test_results (&results, thread_results);
@@ -381,13 +380,18 @@ int main (int argc, char** argv)
         std::fprintf (stdout, "Error: missing arguments (runs -- threads -- ops) \n");
         return 1;
     } else {
-        std::fprintf (stdout, "Executing %s: %s runs -- %s threads -- %s ops\n", argv[0], argv[1], argv[2], argv[3]);
+        std::fprintf (stdout,
+            "Executing %s: %s runs -- %s threads -- %s ops\n",
+            argv[0],
+            argv[1],
+            argv[2],
+            argv[3]);
     }
 
-    uint32_t wait_time {5};
-    bool store_run_perf_report {false};
-    bool store_perf_report {true};
-    std::string result_path {"/tmp/results/"};
+    uint32_t wait_time { 5 };
+    bool store_run_perf_report { false };
+    bool store_perf_report { true };
+    std::string result_path { "/tmp/results/" };
     // std::string result_path {"/home1/07853/rgmacedo/padll-scalability-results/"};
     std::string syscall_pathname { "/tmp/sample-file" };
 
@@ -401,7 +405,6 @@ int main (int argc, char** argv)
     long operation_size { 0 };
     // int num_stages { std::stoi (argv[4]) };
 
-    
     // create directory to store performance results
     if (store_perf_report && !result_path.empty ()) {
         fs::path path = result_path;
@@ -423,7 +426,7 @@ int main (int argc, char** argv)
     fs::path filename;
     if (!result_path.empty ()) {
         filename = (result_path + "scale-perf-results-" + std::to_string (num_threads) + "-"
-            + std::to_string (operation_size) + "-" + std::to_string (::getpid()) );
+            + std::to_string (operation_size) + "-" + std::to_string (::getpid ()));
     }
 
     for (uint32_t run = 0; run < static_cast<uint32_t> (num_runs); run++) {
