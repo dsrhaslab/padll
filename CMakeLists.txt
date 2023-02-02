@@ -12,7 +12,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Setup the options that CMake can take in
 option(PADLL_INSTALL "Install PADLL's header and library" ON)
 option(PADLL_BUILD_TESTS "Build PADLL's unit tests" ON)
-option(PADLL_BUILD_LIBC_TESTS "Build libc tests" ON)
+option(PADLL_BUILD_BENCHMARKS "Build benchmarks" OFF)
 option(FETCH_FROM_GIT "Fetch PAIO repo from github" OFF)
 
 # Path to (local) PAIO lib
@@ -150,30 +150,6 @@ target_link_libraries(padll spdlog)
 
 # ---------------------------------------------------------------------------- #
 # tests
-if (PADLL_BUILD_LIBC_TESTS)
-    enable_testing()
-
-    function(padll_libc_test test_file executable_name)
-        get_filename_component(test_target_name "${executable_name}" NAME_WE)
-
-        add_executable("${test_target_name}" "")
-        target_sources("${test_target_name}"
-                PRIVATE
-                "${test_file}"
-                )
-
-        target_link_libraries("${test_target_name}")
-
-        add_test(NAME "${test_target_name}" COMMAND "${test_target_name}")
-    endfunction(padll_libc_test)
-
-    padll_libc_test("benchmarking/padll_scalability_benchmark.cpp" "padll_scalability_bench")
-    padll_libc_test("tests/posix/simple_test.cpp" "simple_test")
-    padll_libc_test("tests/posix/hybrid_calls_test.cpp" "hybrid_test")
-    padll_libc_test("tests/posix/directory_calls_test.cpp" "dir_test")
-    padll_libc_test("tests/posix/extended_attributes_calls_test.cpp" "xattr_test")
-
-endif (PADLL_BUILD_LIBC_TESTS)
 
 if (PADLL_BUILD_TESTS)
     enable_testing()
@@ -199,7 +175,34 @@ if (PADLL_BUILD_TESTS)
     padll_test("tests/padll_statistics_test.cpp" "statistics_test")
     padll_test("tests/padll_xoshiro_test.cpp" "xoshiro_bench")
 
+    padll_test("tests/posix/simple_test.cpp" "simple_test")
+    padll_test("tests/posix/hybrid_calls_test.cpp" "hybrid_test")
+    padll_test("tests/posix/directory_calls_test.cpp" "dir_test")
+    padll_test("tests/posix/extended_attributes_calls_test.cpp" "xattr_test")
+
+
 endif (PADLL_BUILD_TESTS)
+
+if (PADLL_BUILD_BENCHMARKS)
+    enable_testing()
+
+    function(padll_benchmarks test_file executable_name)
+        get_filename_component(test_target_name "${executable_name}" NAME_WE)
+
+        add_executable("${test_target_name}" "")
+        target_sources("${test_target_name}"
+                PRIVATE
+                "${test_file}"
+                )
+
+        target_link_libraries("${test_target_name}")
+
+        add_test(NAME "${test_target_name}" COMMAND "${test_target_name}")
+    endfunction(padll_benchmarks)
+
+    padll_benchmarks("benchmarking/padll_scalability_benchmark.cpp" "padll_scalability_bench")
+
+endif (PADLL_BUILD_BENCHMARKS)
 
 # ---------------------------------------------------------------------------- #
 # install

@@ -111,7 +111,7 @@ constexpr bool option_select_workflow_by_metadata_unit { false };
  *  May throw runtime_error exceptions if the padll_workflows are not set or are invalid values (<
  * 0).
  */
-inline const int option_padll_workflows ()
+inline int option_padll_workflows ()
 {
     // get value from environment variable
     auto workflows_env = std::getenv ("padll_workflows");

@@ -367,8 +367,12 @@ void print_server_info (FILE* fd)
 /**
  * Notes:
  *  - Options header:
- *    - option_default_context_type = ContextType::PAIO_GENERAL;
- *    - option_create_default_channels = true
+ *    - (paio) option_default_context_type = ContextType::POSIX;
+ *    - (paio) option_default_channel_differentiation_workflow = true
+ *    - (paio) option_default_channel_differentiation_operation_type = false
+ *    - (paio) option_default_channel_differentiation_operation_context = false
+ * - Command:
+ *  export padll_workflows=<total-workflows>; ./padll_scalability_bench <runs> <threads> <operations>
  */
 int main (int argc, char** argv)
 {
@@ -391,8 +395,7 @@ int main (int argc, char** argv)
     uint32_t wait_time { 5 };
     bool store_run_perf_report { false };
     bool store_perf_report { true };
-    std::string result_path { "/tmp/results/" };
-    // std::string result_path {"/home1/07853/rgmacedo/padll-scalability-results/"};
+    std::string result_path { "/tmp/padll-scalability-results/" };
     std::string syscall_pathname { "/tmp/sample-file" };
 
     // benchmark setup
