@@ -412,9 +412,9 @@ int main (int argc, char** argv)
 
     uint32_t wait_time {5};
     bool store_run_perf_report {false};
-    bool store_perf_report {false};
+    bool store_perf_report {true};
     // std::string result_path {"/tmp/padll-results/microbenchmarks-perf-results/"};
-    std::string result_path {"/home1/07853/rgmacedo/padll-results/"};
+    std::string result_path {"/home1/07853/rgmacedo/padll-scalability-results/"};
     std::string syscall_pathname { "/tmp/sample-file" };
 
 
@@ -426,7 +426,8 @@ int main (int argc, char** argv)
     int num_threads { std::stoi (argv[2]) };
     long num_ops { std::stoi (argv[3]) };
     long operation_size { 0 };
-    
+    int num_stages { std::stoi (argv[4]) };
+ 
     std::string stage_name { "microbenchmark-stage" };
 
     
@@ -451,7 +452,7 @@ int main (int argc, char** argv)
     fs::path filename;
     if (!result_path.empty ()) {
         filename = (result_path + "micro-perf-results-" + std::to_string (num_threads) + "-"
-            + std::to_string (operation_size));
+            + std::to_string (operation_size) + "-" + std::to_string (num_stages) + "-" + std::to_string (::getpid()) );
     }
 
     for (uint32_t run = 0; run < static_cast<uint32_t> (num_runs); run++) {
