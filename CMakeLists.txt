@@ -11,8 +11,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Setup the options that CMake can take in
 option(PADLL_INSTALL "Install PADLL's header and library" ON)
-option(PADLL_BUILD_TESTS "Build PADLL's unit tests" ON)
-option(PADLL_BUILD_BENCHMARKS "Build benchmarks" OFF)
+option(PADLL_BUILD_TESTS "Build PADLL's unit tests" OFF)
+option(PADLL_BUILD_BENCHMARKS "Build benchmarks" ON)
 option(FETCH_FROM_GIT "Fetch PAIO repo from github" OFF)
 
 # Path to (local) PAIO lib
