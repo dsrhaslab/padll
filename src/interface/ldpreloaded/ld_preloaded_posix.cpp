@@ -600,16 +600,14 @@ int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags, mode
         1);
 
     // perform original POSIX open operation
-    // int fd = m_metadata_operations.m_open_var (path, flags, mode);
-    // int fd = (rand() % static_cast<int>(2000000));
+    int fd = m_metadata_operations.m_open_var (path, flags, mode);
 
-    // // create_mount_point_entry
-    // this->m_mount_point_table.create_mount_point_entry (fd,
-    //     path,
-    //     mountpoint,
-    //     this->get_metadata_unit (path));
+    // create_mount_point_entry
+    this->m_mount_point_table.create_mount_point_entry (fd,
+        path,
+        mountpoint,
+        this->get_metadata_unit (path));
 
-    int fd = 10;
     // update statistic entry
     this->update_statistics (OperationType::metadata_calls,
         static_cast<int> (Metadata::open_variadic),
@@ -636,15 +634,13 @@ int LdPreloadedPosix::ld_preloaded_posix_open (const char* path, int flags)
         1);
 
     // perform original POSIX open operation
-    // int fd = m_metadata_operations.m_open (path, flags);
-    // int fd = 3 + (rand() % static_cast<int>(2000000));
+    int fd = m_metadata_operations.m_open (path, flags);
 
-    // // create_mount_point_entry
-    // this->m_mount_point_table.create_mount_point_entry (fd,
-    //     path,
-    //     mountpoint,
-    //     this->get_metadata_unit (path));
-    int fd = 10;
+    // create_mount_point_entry
+    this->m_mount_point_table.create_mount_point_entry (fd,
+        path,
+        mountpoint,
+        this->get_metadata_unit (path));
 
     // update statistic entry
     this->update_statistics (OperationType::metadata_calls,

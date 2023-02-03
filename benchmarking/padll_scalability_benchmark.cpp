@@ -72,7 +72,7 @@ ThreadResults stress_test (FILE* fd,
 
     // cycle of syscall submission
     for (uint64_t i = 1; i <= total_ops; i++) {
-        ::open (pathname.c_str (), O_RDONLY, 0666);
+        ::open (pathname.c_str (), O_CREAT, 0666);
     }
     // calculate elapsed time
     auto end = std::chrono::high_resolution_clock::now ();
