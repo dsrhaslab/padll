@@ -18,6 +18,10 @@ using namespace padll::utils::log;
 
 namespace padll::interface::ldpreloaded {
 
+/**
+ * DlsymHookLibc class.
+ * This class implements all libc hooks and logic for LD_PRELOAD libc calls.
+*/
 class DlsymHookLibc {
 
 private:
@@ -27,7 +31,7 @@ private:
     std::shared_ptr<Log> m_log { nullptr };
 
     /**
-     *  initialize:
+     *  initialize: initialize the DlSymHook class, by opening the libc library handle; print a logging (error) message if the ibrary was not successfully opened.
      */
     void initialize ()
     {
@@ -40,11 +44,8 @@ private:
     }
 
     /**
-     * dlopen_library_handle:
-     * @param lib_handle
-     * @param lib_name
-     * @return
-     * TODO: (re)validate this function
+     * dlopen_library_handle: open the libc library and store the resulting pointer.
+     * @return returns a boolean defining if the dynamic library was successfully opened or not.
      */
     bool dlopen_library_handle ()
     {
@@ -74,8 +75,8 @@ public:
 
     /**
      * DlsymHookLibc parameterized constructor.
-     * @param library_path
-     * @param log_ptr
+     * @param library_path path to the dynamic library to be opened
+     * @param log_ptr shared pointer to a logging object
      */
     DlsymHookLibc (const std::string_view& library_path, std::shared_ptr<Log> log_ptr) :
         m_lib_name { library_path },
@@ -119,10 +120,8 @@ public:
     // }
 
     /**
-     * hook_posix_read:
-     * @param read_ptr
-     * @param lib_handle
-     * @param lib_name
+     * hook_posix_read: function to hook libc's read function pointer.
+     * @param read_ptr function pointer with the same header as libc's read.
      */
     void hook_posix_read (libc_read_t& read_ptr)
     {
@@ -141,8 +140,8 @@ public:
     }
 
     /**
-     * hook_posix_write:
-     * @param write_ptr
+     * hook_posix_write: function to hook libc's write function pointer.
+     * @param write_ptr function pointer with the same header as libc's write.
      */
     void hook_posix_write (libc_write_t& write_ptr)
     {
@@ -161,8 +160,8 @@ public:
     }
 
     /**
-     * hook_posix_pread:
-     * @param pread_ptr
+     * hook_posix_pread: function to hook libc's pread function pointer.
+     * @param pread_ptr function pointer with the same header as libc's pread.
      */
     void hook_posix_pread (libc_pread_t& pread_ptr)
     {
@@ -181,8 +180,8 @@ public:
     }
 
     /**
-     * hook_posix_pwrite:
-     * @param pwrite_ptr
+     * hook_posix_pwrite: function to hook libc's pwrite function pointer.
+     * @param pwrite_ptr function pointer with the same header as libc's pwrite.
      */
     void hook_posix_pwrite (libc_pwrite_t& pwrite_ptr)
     {
@@ -201,8 +200,8 @@ public:
     }
 
 /**
- * hook_posix_pread64:
- * @param pread64_ptr
+ * hook_posix_pread64: function to hook libc's pread64 function pointer.
+ * @param pread64_ptr function pointer with the same header as libc's pread64.
  */
 #if defined(__USE_LARGEFILE64)
     void hook_posix_pread64 (libc_pread64_t& pread64_ptr)
@@ -223,8 +222,8 @@ public:
 #endif
 
 /**
- * hook_posix_pwrite64:
- * @param pwrite64_ptr
+ * hook_posix_pwrite64: function to hook libc's pwrite64 function pointer.
+ * @param pwrite64_ptr function pointer with the same header as libc's pwrite64.
  */
 #if defined(__USE_LARGEFILE64)
     void hook_posix_pwrite64 (libc_pwrite64_t& pwrite64_ptr)
@@ -245,8 +244,8 @@ public:
 #endif
 
     /**
-     * hook_posix_mmap:
-     * @param mmap_ptr
+     * hook_posix_mmap: function to hook libc's mmap function pointer.
+     * @param mmap_ptr function pointer with the same header as libc's mmap.
      */
     void hook_posix_mmap (libc_mmap_t& mmap_ptr)
     {
@@ -265,8 +264,8 @@ public:
     }
 
     /**
-     * hook_posix_munmap:
-     * @param munmap_ptr
+     * hook_posix_munmap: function to hook libc's munmap function pointer.
+     * @param munmap_ptr function pointer with the same header as libc's munmap.
      */
     void hook_posix_munmap (libc_munmap_t& munmap_ptr)
     {
@@ -285,8 +284,8 @@ public:
     }
 
     /**
-     * hook_posix_open_var:
-     * @param open_ptr
+     * hook_posix_openvar: function to hook libc's open variadic function pointer.
+     * @param open_ptr function pointer with the same header as libc's open variadic.
      */
     void hook_posix_open_var (libc_open_variadic_t& open_ptr)
     {
@@ -305,8 +304,8 @@ public:
     }
 
     /**
-     * hook_posix_open:
-     * @param open_ptr
+     * hook_posix_open: function to hook libc's open function pointer.
+     * @param open_ptr function pointer with the same header as libc's open.
      */
     void hook_posix_open (libc_open_t& open_ptr)
     {
@@ -325,8 +324,8 @@ public:
     }
 
     /**
-     * hook_posix_creat:
-     * @param creat_ptr
+     * hook_posix_creat: function to hook libc's creat function pointer.
+     * @param creat_ptr function pointer with the same header as libc's creat.
      */
     void hook_posix_creat (libc_creat_t& creat_ptr)
     {
@@ -345,8 +344,8 @@ public:
     }
 
     /**
-     * hook_posix_creat64:
-     * @param creat64_ptr
+     * hook_posix_creat64: function to hook libc's creat64 function pointer.
+     * @param creat64_ptr function pointer with the same header as libc's creat64.
      */
     void hook_posix_creat64 (libc_creat64_t& creat64_ptr)
     {
@@ -365,8 +364,8 @@ public:
     }
 
     /**
-     * hook_posix_openat_var:
-     * @param openat_ptr
+     * hook_posix_openat_var: function to hook libc's openat variadic function pointer.
+     * @param openat_ptr function pointer with the same header as libc's openat variadic.
      */
     void hook_posix_openat_var (libc_openat_variadic_t& openat_ptr)
     {
@@ -385,8 +384,8 @@ public:
     }
 
     /**
-     * hook_posix_openat:
-     * @param openat_ptr
+     * hook_posix_openat: function to hook libc's openat function pointer.
+     * @param openat_ptr function pointer with the same header as libc's openat.
      */
     void hook_posix_openat (libc_openat_t& openat_ptr)
     {
@@ -405,8 +404,8 @@ public:
     }
 
     /**
-     * hook_posix_open64_variadic:
-     * @param open64_ptr
+     * hook_posix_open64_variadic: function to hook libc's open64 variadic function pointer.
+     * @param open64_ptr function pointer with the same header as libc's open64 variadic.
      */
     void hook_posix_open64_variadic (libc_open64_variadic_t& open64_ptr)
     {
@@ -425,8 +424,8 @@ public:
     }
 
     /**
-     * hook_posix_open64:
-     * @param open64_ptr
+     * hook_posix_open64: function to hook libc's open64 function pointer.
+     * @param open64_ptr function pointer with the same header as libc's open64.
      */
     void hook_posix_open64 (libc_open64_t& open64_ptr)
     {
@@ -445,8 +444,8 @@ public:
     }
 
     /**
-     * hook_posix_close:
-     * @param close_ptr
+     * hook_posix_close: function to hook libc's close function pointer.
+     * @param close_ptr function pointer with the same header as libc's close.
      */
     void hook_posix_close (libc_close_t& close_ptr)
     {
@@ -465,8 +464,8 @@ public:
     }
 
     /**
-     * hook_posix_sync:
-     * @param sync_ptr
+     * hook_posix_sync: function to hook libc's sync function pointer.
+     * @param sync_ptr function pointer with the same header as libc's sync.
      */
     void hook_posix_sync (libc_sync_t& sync_ptr)
     {
@@ -485,8 +484,8 @@ public:
     }
 
     /**
-     * hook_posix_statfs:
-     * @param statfs_ptr
+     * hook_posix_statfs: function to hook libc's statfs function pointer.
+     * @param statfs_ptr function pointer with the same header as libc's statfs.
      */
     void hook_posix_statfs (libc_statfs_t& statfs_ptr)
     {
@@ -505,8 +504,8 @@ public:
     }
 
     /**
-     * hook_posix_fstatfs:
-     * @param fstatfs_ptr
+     * hook_posix_fstatfs: function to hook libc's fstatfs function pointer.
+     * @param fstatfs_ptr function pointer with the same header as libc's fstatfs.
      */
     void hook_posix_fstatfs (libc_fstatfs_t& fstatfs_ptr)
     {
@@ -525,8 +524,8 @@ public:
     }
 
     /**
-     * hook_posix_statfs64:
-     * @param statfs64_ptr
+     * hook_posix_statfs64: function to hook libc's statfs64 function pointer.
+     * @param statfs64_ptr function pointer with the same header as libc's statfs64.
      */
     void hook_posix_statfs64 (libc_statfs64_t& statfs64_ptr)
     {
@@ -545,8 +544,8 @@ public:
     }
 
     /**
-     * hook_posix_fstatfs64:
-     * @param fstatfs64_ptr
+     * hook_posix_fstatfs64: function to hook libc's fstatfs64 function pointer.
+     * @param fstatfs64_ptr function pointer with the same header as libc's fstatfs64.
      */
     void hook_posix_fstatfs64 (libc_fstatfs64_t& fstatfs64_ptr)
     {
@@ -565,8 +564,8 @@ public:
     }
 
     /**
-     * hook_posix_unlink:
-     * @param unlink_ptr
+     * hook_posix_unlink: function to hook libc's unlink function pointer.
+     * @param unlink_ptr function pointer with the same header as libc's unlink.
      */
     void hook_posix_unlink (libc_unlink_t& unlink_ptr)
     {
@@ -585,8 +584,8 @@ public:
     }
 
     /**
-     * hook_posix_unlinkat:
-     * @param unlinkat_ptr
+     * hook_posix_unlinkat: function to hook libc's unlinkat function pointer.
+     * @param unlinkat_ptr function pointer with the same header as libc's unlinkat.
      */
     void hook_posix_unlinkat (libc_unlinkat_t& unlinkat_ptr)
     {
