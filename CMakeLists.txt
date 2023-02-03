@@ -11,12 +11,13 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Setup the options that CMake can take in
 option(PADLL_INSTALL "Install PADLL's header and library" ON)
-option(PADLL_BUILD_TESTS "Build PADLL's unit tests" ON)
-option(PADLL_BUILD_LIBC_TESTS "Build libc tests" ON)
-option(FETCH_FROM_GIT "Fetch PAIO repo from github" ON)
+option(PADLL_BUILD_TESTS "Build PADLL's unit tests" OFF)
+option(PADLL_BUILD_BENCHMARKS "Build benchmarks" ON)
+option(FETCH_FROM_GIT "Fetch PAIO repo from github" OFF)
 
 # Path to (local) PAIO lib
-set(PAIO_LOCAL_PATH "/path/to/paio/build")
+set(PAIO_LOCAL_PATH "/home/gsd/hpdc22/paio/build")
+# set(PAIO_LOCAL_PATH "/path/to/paio/build")
 
 # Setup the basic C++ Compiler flags
 if (APPLE)
@@ -30,6 +31,16 @@ if (UNIX AND NOT APPLE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -pthread -fPIC -Wl,--no-as-needed -ldl")
 endif ()
 
+# Install PADLL to be used in production. This option will modify the 
+# compilation options, regarding compiler-based optimizations.
+option(PRODUCTION "Compiling with release mode" ON)
+
+if (PRODUCTION) 
+    message(STATUS "Compiling with compiler-based optimizations (-O3)")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+else() 
+    message(STATUS "Compiling with default compiling options")
+endif (PRODUCTION)
 
 # Test whether -Wthread-safety is available. See
 # https://clang.llvm.org/docs/ThreadSafetyAnalysis.html
@@ -139,29 +150,6 @@ target_link_libraries(padll spdlog)
 
 # ---------------------------------------------------------------------------- #
 # tests
-if (PADLL_BUILD_LIBC_TESTS)
-    enable_testing()
-
-    function(padll_libc_test test_file executable_name)
-        get_filename_component(test_target_name "${executable_name}" NAME_WE)
-
-        add_executable("${test_target_name}" "")
-        target_sources("${test_target_name}"
-                PRIVATE
-                "${test_file}"
-                )
-
-        target_link_libraries("${test_target_name}")
-
-        add_test(NAME "${test_target_name}" COMMAND "${test_target_name}")
-    endfunction(padll_libc_test)
-
-    padll_libc_test("tests/posix/simple_test.cpp" "simple_test")
-    padll_libc_test("tests/posix/hybrid_calls_test.cpp" "hybrid_test")
-    padll_libc_test("tests/posix/directory_calls_test.cpp" "dir_test")
-    padll_libc_test("tests/posix/extended_attributes_calls_test.cpp" "xattr_test")
-
-endif (PADLL_BUILD_LIBC_TESTS)
 
 if (PADLL_BUILD_TESTS)
     enable_testing()
@@ -187,7 +175,34 @@ if (PADLL_BUILD_TESTS)
     padll_test("tests/padll_statistics_test.cpp" "statistics_test")
     padll_test("tests/padll_xoshiro_test.cpp" "xoshiro_bench")
 
+    padll_test("tests/posix/simple_test.cpp" "simple_test")
+    padll_test("tests/posix/hybrid_calls_test.cpp" "hybrid_test")
+    padll_test("tests/posix/directory_calls_test.cpp" "dir_test")
+    padll_test("tests/posix/extended_attributes_calls_test.cpp" "xattr_test")
+
+
 endif (PADLL_BUILD_TESTS)
+
+if (PADLL_BUILD_BENCHMARKS)
+    enable_testing()
+
+    function(padll_benchmarks test_file executable_name)
+        get_filename_component(test_target_name "${executable_name}" NAME_WE)
+
+        add_executable("${test_target_name}" "")
+        target_sources("${test_target_name}"
+                PRIVATE
+                "${test_file}"
+                )
+
+        target_link_libraries("${test_target_name}")
+
+        add_test(NAME "${test_target_name}" COMMAND "${test_target_name}")
+    endfunction(padll_benchmarks)
+
+    padll_benchmarks("benchmarking/padll_scalability_benchmark.cpp" "padll_scalability_bench")
+
+endif (PADLL_BUILD_BENCHMARKS)
 
 # ---------------------------------------------------------------------------- #
 # install

@@ -1,0 +1,256 @@
+1 create_channel 1000 posix_meta 1000 no_op no_op
+2 create_channel 2000 posix_meta 2000 no_op no_op
+3 create_channel 3000 posix_meta 3000 no_op no_op
+4 create_channel 4000 posix_meta 4000 no_op no_op
+5 create_channel 5000 posix_meta 5000 no_op no_op
+6 create_channel 6000 posix_meta 6000 no_op no_op
+7 create_channel 7000 posix_meta 7000 no_op no_op
+8 create_channel 8000 posix_meta 8000 no_op no_op
+9 create_channel 9000 posix_meta 9000 no_op no_op
+10 create_channel 10000 posix_meta 10000 no_op no_op
+11 create_channel 11000 posix_meta 11000 no_op no_op
+12 create_channel 12000 posix_meta 12000 no_op no_op
+13 create_channel 13000 posix_meta 13000 no_op no_op
+14 create_channel 14000 posix_meta 14000 no_op no_op
+15 create_channel 15000 posix_meta 15000 no_op no_op
+16 create_channel 16000 posix_meta 16000 no_op no_op
+17 create_channel 17000 posix_meta 17000 no_op no_op
+18 create_channel 18000 posix_meta 18000 no_op no_op
+19 create_channel 19000 posix_meta 19000 no_op no_op
+20 create_channel 20000 posix_meta 20000 no_op no_op
+21 create_channel 21000 posix_meta 21000 no_op no_op
+22 create_channel 22000 posix_meta 22000 no_op no_op
+23 create_channel 23000 posix_meta 23000 no_op no_op
+24 create_channel 24000 posix_meta 24000 no_op no_op
+25 create_channel 25000 posix_meta 25000 no_op no_op
+26 create_channel 26000 posix_meta 26000 no_op no_op
+27 create_channel 27000 posix_meta 27000 no_op no_op
+28 create_channel 28000 posix_meta 28000 no_op no_op
+29 create_channel 29000 posix_meta 29000 no_op no_op
+30 create_channel 30000 posix_meta 30000 no_op no_op
+31 create_channel 31000 posix_meta 31000 no_op no_op
+32 create_channel 32000 posix_meta 32000 no_op no_op
+33 create_channel 33000 posix_meta 33000 no_op no_op
+34 create_channel 34000 posix_meta 34000 no_op no_op
+35 create_channel 35000 posix_meta 35000 no_op no_op
+36 create_channel 36000 posix_meta 36000 no_op no_op
+37 create_channel 37000 posix_meta 37000 no_op no_op
+38 create_channel 38000 posix_meta 38000 no_op no_op
+39 create_channel 39000 posix_meta 39000 no_op no_op
+40 create_channel 40000 posix_meta 40000 no_op no_op
+41 create_channel 41000 posix_meta 41000 no_op no_op
+42 create_channel 42000 posix_meta 42000 no_op no_op
+43 create_channel 43000 posix_meta 43000 no_op no_op
+44 create_channel 44000 posix_meta 44000 no_op no_op
+45 create_channel 45000 posix_meta 45000 no_op no_op
+46 create_channel 46000 posix_meta 46000 no_op no_op
+47 create_channel 47000 posix_meta 47000 no_op no_op
+48 create_channel 48000 posix_meta 48000 no_op no_op
+49 create_channel 49000 posix_meta 49000 no_op no_op
+50 create_channel 50000 posix_meta 50000 no_op no_op
+51 create_channel 51000 posix_meta 51000 no_op no_op
+52 create_channel 52000 posix_meta 52000 no_op no_op
+53 create_channel 53000 posix_meta 53000 no_op no_op
+54 create_channel 54000 posix_meta 54000 no_op no_op
+55 create_channel 55000 posix_meta 55000 no_op no_op
+56 create_channel 56000 posix_meta 56000 no_op no_op
+57 create_channel 57000 posix_meta 57000 no_op no_op
+58 create_channel 58000 posix_meta 58000 no_op no_op
+59 create_channel 59000 posix_meta 59000 no_op no_op
+60 create_channel 60000 posix_meta 60000 no_op no_op
+61 create_channel 61000 posix_meta 61000 no_op no_op
+62 create_channel 62000 posix_meta 62000 no_op no_op
+63 create_channel 63000 posix_meta 63000 no_op no_op
+64 create_channel 64000 posix_meta 64000 no_op no_op
+65 create_channel 65000 posix_meta 65000 no_op no_op
+66 create_channel 66000 posix_meta 66000 no_op no_op
+67 create_channel 67000 posix_meta 67000 no_op no_op
+68 create_channel 68000 posix_meta 68000 no_op no_op
+69 create_channel 69000 posix_meta 69000 no_op no_op
+70 create_channel 70000 posix_meta 70000 no_op no_op
+71 create_channel 71000 posix_meta 71000 no_op no_op
+72 create_channel 72000 posix_meta 72000 no_op no_op
+73 create_channel 73000 posix_meta 73000 no_op no_op
+74 create_channel 74000 posix_meta 74000 no_op no_op
+75 create_channel 75000 posix_meta 75000 no_op no_op
+76 create_channel 76000 posix_meta 76000 no_op no_op
+77 create_channel 77000 posix_meta 77000 no_op no_op
+78 create_channel 78000 posix_meta 78000 no_op no_op
+79 create_channel 79000 posix_meta 79000 no_op no_op
+80 create_channel 80000 posix_meta 80000 no_op no_op
+81 create_channel 81000 posix_meta 81000 no_op no_op
+82 create_channel 82000 posix_meta 82000 no_op no_op
+83 create_channel 83000 posix_meta 83000 no_op no_op
+84 create_channel 84000 posix_meta 84000 no_op no_op
+85 create_channel 85000 posix_meta 85000 no_op no_op
+86 create_channel 86000 posix_meta 86000 no_op no_op
+87 create_channel 87000 posix_meta 87000 no_op no_op
+88 create_channel 88000 posix_meta 88000 no_op no_op
+89 create_channel 89000 posix_meta 89000 no_op no_op
+90 create_channel 90000 posix_meta 90000 no_op no_op
+91 create_channel 91000 posix_meta 91000 no_op no_op
+92 create_channel 92000 posix_meta 92000 no_op no_op
+93 create_channel 93000 posix_meta 93000 no_op no_op
+94 create_channel 94000 posix_meta 94000 no_op no_op
+95 create_channel 95000 posix_meta 95000 no_op no_op
+96 create_channel 96000 posix_meta 96000 no_op no_op
+97 create_channel 97000 posix_meta 97000 no_op no_op
+98 create_channel 98000 posix_meta 98000 no_op no_op
+99 create_channel 99000 posix_meta 99000 no_op no_op
+100 create_channel 100000 posix_meta 100000 no_op no_op
+101 create_channel 101000 posix_meta 101000 no_op no_op
+102 create_channel 102000 posix_meta 102000 no_op no_op
+103 create_channel 103000 posix_meta 103000 no_op no_op
+104 create_channel 104000 posix_meta 104000 no_op no_op
+105 create_channel 105000 posix_meta 105000 no_op no_op
+106 create_channel 106000 posix_meta 106000 no_op no_op
+107 create_channel 107000 posix_meta 107000 no_op no_op
+108 create_channel 108000 posix_meta 108000 no_op no_op
+109 create_channel 109000 posix_meta 109000 no_op no_op
+110 create_channel 110000 posix_meta 110000 no_op no_op
+111 create_channel 111000 posix_meta 111000 no_op no_op
+112 create_channel 112000 posix_meta 112000 no_op no_op
+113 create_channel 113000 posix_meta 113000 no_op no_op
+114 create_channel 114000 posix_meta 114000 no_op no_op
+115 create_channel 115000 posix_meta 115000 no_op no_op
+116 create_channel 116000 posix_meta 116000 no_op no_op
+117 create_channel 117000 posix_meta 117000 no_op no_op
+118 create_channel 118000 posix_meta 118000 no_op no_op
+119 create_channel 119000 posix_meta 119000 no_op no_op
+120 create_channel 120000 posix_meta 120000 no_op no_op
+121 create_channel 121000 posix_meta 121000 no_op no_op
+122 create_channel 122000 posix_meta 122000 no_op no_op
+123 create_channel 123000 posix_meta 123000 no_op no_op
+124 create_channel 124000 posix_meta 124000 no_op no_op
+125 create_channel 125000 posix_meta 125000 no_op no_op
+126 create_channel 126000 posix_meta 126000 no_op no_op
+127 create_channel 127000 posix_meta 127000 no_op no_op
+128 create_channel 128000 posix_meta 128000 no_op no_op
+129 create_object 1000 1 posix_meta no_op no_op drl 10000 1000000000
+130 create_object 2000 1 posix_meta no_op no_op drl 10000 1000000000
+131 create_object 3000 1 posix_meta no_op no_op drl 10000 1000000000
+132 create_object 4000 1 posix_meta no_op no_op drl 10000 1000000000
+133 create_object 5000 1 posix_meta no_op no_op drl 10000 1000000000
+134 create_object 6000 1 posix_meta no_op no_op drl 10000 1000000000
+135 create_object 7000 1 posix_meta no_op no_op drl 10000 1000000000
+136 create_object 8000 1 posix_meta no_op no_op drl 10000 1000000000
+137 create_object 9000 1 posix_meta no_op no_op drl 10000 1000000000
+138 create_object 10000 1 posix_meta no_op no_op drl 10000 1000000000
+139 create_object 11000 1 posix_meta no_op no_op drl 10000 1000000000
+140 create_object 12000 1 posix_meta no_op no_op drl 10000 1000000000
+141 create_object 13000 1 posix_meta no_op no_op drl 10000 1000000000
+142 create_object 14000 1 posix_meta no_op no_op drl 10000 1000000000
+143 create_object 15000 1 posix_meta no_op no_op drl 10000 1000000000
+144 create_object 16000 1 posix_meta no_op no_op drl 10000 1000000000
+145 create_object 17000 1 posix_meta no_op no_op drl 10000 1000000000
+146 create_object 18000 1 posix_meta no_op no_op drl 10000 1000000000
+147 create_object 19000 1 posix_meta no_op no_op drl 10000 1000000000
+148 create_object 20000 1 posix_meta no_op no_op drl 10000 1000000000
+149 create_object 21000 1 posix_meta no_op no_op drl 10000 1000000000
+150 create_object 22000 1 posix_meta no_op no_op drl 10000 1000000000
+151 create_object 23000 1 posix_meta no_op no_op drl 10000 1000000000
+152 create_object 24000 1 posix_meta no_op no_op drl 10000 1000000000
+153 create_object 25000 1 posix_meta no_op no_op drl 10000 1000000000
+154 create_object 26000 1 posix_meta no_op no_op drl 10000 1000000000
+155 create_object 27000 1 posix_meta no_op no_op drl 10000 1000000000
+156 create_object 28000 1 posix_meta no_op no_op drl 10000 1000000000
+157 create_object 29000 1 posix_meta no_op no_op drl 10000 1000000000
+158 create_object 30000 1 posix_meta no_op no_op drl 10000 1000000000
+159 create_object 31000 1 posix_meta no_op no_op drl 10000 1000000000
+160 create_object 32000 1 posix_meta no_op no_op drl 10000 1000000000
+161 create_object 33000 1 posix_meta no_op no_op drl 10000 1000000000
+162 create_object 34000 1 posix_meta no_op no_op drl 10000 1000000000
+163 create_object 35000 1 posix_meta no_op no_op drl 10000 1000000000
+164 create_object 36000 1 posix_meta no_op no_op drl 10000 1000000000
+165 create_object 37000 1 posix_meta no_op no_op drl 10000 1000000000
+166 create_object 38000 1 posix_meta no_op no_op drl 10000 1000000000
+167 create_object 39000 1 posix_meta no_op no_op drl 10000 1000000000
+168 create_object 40000 1 posix_meta no_op no_op drl 10000 1000000000
+169 create_object 41000 1 posix_meta no_op no_op drl 10000 1000000000
+170 create_object 42000 1 posix_meta no_op no_op drl 10000 1000000000
+171 create_object 43000 1 posix_meta no_op no_op drl 10000 1000000000
+172 create_object 44000 1 posix_meta no_op no_op drl 10000 1000000000
+173 create_object 45000 1 posix_meta no_op no_op drl 10000 1000000000
+174 create_object 46000 1 posix_meta no_op no_op drl 10000 1000000000
+175 create_object 47000 1 posix_meta no_op no_op drl 10000 1000000000
+176 create_object 48000 1 posix_meta no_op no_op drl 10000 1000000000
+177 create_object 49000 1 posix_meta no_op no_op drl 10000 1000000000
+178 create_object 50000 1 posix_meta no_op no_op drl 10000 1000000000
+179 create_object 51000 1 posix_meta no_op no_op drl 10000 1000000000
+180 create_object 52000 1 posix_meta no_op no_op drl 10000 1000000000
+181 create_object 53000 1 posix_meta no_op no_op drl 10000 1000000000
+182 create_object 54000 1 posix_meta no_op no_op drl 10000 1000000000
+183 create_object 55000 1 posix_meta no_op no_op drl 10000 1000000000
+184 create_object 56000 1 posix_meta no_op no_op drl 10000 1000000000
+185 create_object 57000 1 posix_meta no_op no_op drl 10000 1000000000
+186 create_object 58000 1 posix_meta no_op no_op drl 10000 1000000000
+187 create_object 59000 1 posix_meta no_op no_op drl 10000 1000000000
+188 create_object 60000 1 posix_meta no_op no_op drl 10000 1000000000
+189 create_object 61000 1 posix_meta no_op no_op drl 10000 1000000000
+190 create_object 62000 1 posix_meta no_op no_op drl 10000 1000000000
+191 create_object 63000 1 posix_meta no_op no_op drl 10000 1000000000
+192 create_object 64000 1 posix_meta no_op no_op drl 10000 1000000000
+193 create_object 65000 1 posix_meta no_op no_op drl 10000 1000000000
+194 create_object 66000 1 posix_meta no_op no_op drl 10000 1000000000
+195 create_object 67000 1 posix_meta no_op no_op drl 10000 1000000000
+196 create_object 68000 1 posix_meta no_op no_op drl 10000 1000000000
+197 create_object 69000 1 posix_meta no_op no_op drl 10000 1000000000
+198 create_object 70000 1 posix_meta no_op no_op drl 10000 1000000000
+199 create_object 71000 1 posix_meta no_op no_op drl 10000 1000000000
+200 create_object 72000 1 posix_meta no_op no_op drl 10000 1000000000
+201 create_object 73000 1 posix_meta no_op no_op drl 10000 1000000000
+202 create_object 74000 1 posix_meta no_op no_op drl 10000 1000000000
+203 create_object 75000 1 posix_meta no_op no_op drl 10000 1000000000
+204 create_object 76000 1 posix_meta no_op no_op drl 10000 1000000000
+205 create_object 77000 1 posix_meta no_op no_op drl 10000 1000000000
+206 create_object 78000 1 posix_meta no_op no_op drl 10000 1000000000
+207 create_object 79000 1 posix_meta no_op no_op drl 10000 1000000000
+208 create_object 80000 1 posix_meta no_op no_op drl 10000 1000000000
+209 create_object 81000 1 posix_meta no_op no_op drl 10000 1000000000
+210 create_object 82000 1 posix_meta no_op no_op drl 10000 1000000000
+211 create_object 83000 1 posix_meta no_op no_op drl 10000 1000000000
+212 create_object 84000 1 posix_meta no_op no_op drl 10000 1000000000
+213 create_object 85000 1 posix_meta no_op no_op drl 10000 1000000000
+214 create_object 86000 1 posix_meta no_op no_op drl 10000 1000000000
+215 create_object 87000 1 posix_meta no_op no_op drl 10000 1000000000
+216 create_object 88000 1 posix_meta no_op no_op drl 10000 1000000000
+217 create_object 89000 1 posix_meta no_op no_op drl 10000 1000000000
+218 create_object 90000 1 posix_meta no_op no_op drl 10000 1000000000
+219 create_object 91000 1 posix_meta no_op no_op drl 10000 1000000000
+220 create_object 92000 1 posix_meta no_op no_op drl 10000 1000000000
+221 create_object 93000 1 posix_meta no_op no_op drl 10000 1000000000
+222 create_object 94000 1 posix_meta no_op no_op drl 10000 1000000000
+223 create_object 95000 1 posix_meta no_op no_op drl 10000 1000000000
+224 create_object 96000 1 posix_meta no_op no_op drl 10000 1000000000
+225 create_object 97000 1 posix_meta no_op no_op drl 10000 1000000000
+226 create_object 98000 1 posix_meta no_op no_op drl 10000 1000000000
+227 create_object 99000 1 posix_meta no_op no_op drl 10000 1000000000
+228 create_object 100000 1 posix_meta no_op no_op drl 10000 1000000000
+229 create_object 101000 1 posix_meta no_op no_op drl 10000 1000000000
+230 create_object 102000 1 posix_meta no_op no_op drl 10000 1000000000
+231 create_object 103000 1 posix_meta no_op no_op drl 10000 1000000000
+232 create_object 104000 1 posix_meta no_op no_op drl 10000 1000000000
+233 create_object 105000 1 posix_meta no_op no_op drl 10000 1000000000
+234 create_object 106000 1 posix_meta no_op no_op drl 10000 1000000000
+235 create_object 107000 1 posix_meta no_op no_op drl 10000 1000000000
+236 create_object 108000 1 posix_meta no_op no_op drl 10000 1000000000
+237 create_object 109000 1 posix_meta no_op no_op drl 10000 1000000000
+238 create_object 110000 1 posix_meta no_op no_op drl 10000 1000000000
+239 create_object 111000 1 posix_meta no_op no_op drl 10000 1000000000
+240 create_object 112000 1 posix_meta no_op no_op drl 10000 1000000000
+241 create_object 113000 1 posix_meta no_op no_op drl 10000 1000000000
+242 create_object 114000 1 posix_meta no_op no_op drl 10000 1000000000
+243 create_object 115000 1 posix_meta no_op no_op drl 10000 1000000000
+244 create_object 116000 1 posix_meta no_op no_op drl 10000 1000000000
+245 create_object 117000 1 posix_meta no_op no_op drl 10000 1000000000
+246 create_object 118000 1 posix_meta no_op no_op drl 10000 1000000000
+247 create_object 119000 1 posix_meta no_op no_op drl 10000 1000000000
+248 create_object 120000 1 posix_meta no_op no_op drl 10000 1000000000
+249 create_object 121000 1 posix_meta no_op no_op drl 10000 1000000000
+250 create_object 122000 1 posix_meta no_op no_op drl 10000 1000000000
+251 create_object 123000 1 posix_meta no_op no_op drl 10000 1000000000
+252 create_object 124000 1 posix_meta no_op no_op drl 10000 1000000000
+253 create_object 125000 1 posix_meta no_op no_op drl 10000 1000000000
+254 create_object 126000 1 posix_meta no_op no_op drl 10000 1000000000
+255 create_object 127000 1 posix_meta no_op no_op drl 10000 1000000000
+256 create_object 128000 1 posix_meta no_op no_op drl 10000 1000000000

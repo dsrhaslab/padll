@@ -1,12 +1,13 @@
 /**
  *   Written by Ricardo Macedo.
- *   Copyright (c) 2021-2022 INESC TEC.
+ *   Copyright (c) 2021-2023 INESC TEC.
  **/
 
 #include <cstdio>
 #include <cstdlib>
 #include <fcntl.h>
 #include <unistd.h>
+#include <string>
 
 #define BUFFER_SIZE 1024
 
@@ -19,11 +20,11 @@ int main (int argc, char* argv[])
     int write_ops = 0;
     char* buffer = static_cast<char*> (std::malloc (sizeof (char) * BUFFER_SIZE));
 
-    int fd_write
-        = ::open ("/home/gsd/hpdc22/padll/build/tmp.txt", O_CREAT | O_TRUNC | O_RDWR, 0600);
-    int fd_read = ::open ("/home/gsd/hpdc22/padll/include/padll/configurations/libc_calls.hpp",
-        O_RDONLY,
-        0600);
+    std::string write_file { "/home/tmp.txt" };
+    std::string read_file { "/home/sample.txt" };
+
+    int fd_write = ::open (write_file.c_str (), O_CREAT | O_TRUNC | O_RDWR, 0600);
+    int fd_read = ::open (read_file.c_str (), O_RDONLY, 0600);
 
     while ((read_bytes = ::read (fd_read, buffer, BUFFER_SIZE)) > 0) {
         written_bytes += ::write (fd_write, buffer, read_bytes);

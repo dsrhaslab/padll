@@ -1,6 +1,6 @@
 /**
  *   Written by Ricardo Macedo.
- *   Copyright (c) 2021-2022 INESC TEC.
+ *   Copyright (c) 2021-2023 INESC TEC.
  **/
 
 #include <cstring>
@@ -123,15 +123,6 @@ private:
 
         // use static buffer size
         ssize_t info_size = 200;
-        // #if defined(__APPLE__)
-        // info_size = ::getxattr (path, xattr, nullptr, 0, 0, 0);
-        // #else
-        // info_size = ::getxattr (path, xattr, nullptr, 0);
-        // #endif
-        // if (info_size == -1) {
-        // std::fprintf (this->m_err, "Error while getting attribute: %s\n", std::strerror (errno));
-        // return -1;
-        // }
 
         // allocate buffer size to place the attribute value
         char* info = new char[info_size];
@@ -172,15 +163,6 @@ private:
 
         // use static buffer size
         ssize_t info_size = 200;
-        // get size of extended attribute
-        // #if defined(__unix__) || defined(__linux__)
-        // info_size = ::lgetxattr (path, xattr, nullptr, 0);
-        // #endif
-        // validate info_size result after lgetxattr
-        // if (info_size == -1) {
-        // std::cerr << "Error while getting attribute\n";
-        // return -1;
-        // }
 
         // allocate buffer size to place the attribute value
         char* info = new char[info_size];
@@ -218,18 +200,6 @@ private:
 
         // use static buffer size
         ssize_t info_size = 200;
-        // get size of extended attribute
-        // verify if the test is running on an Apple device and use the respective xattr calls
-        // #if defined(__APPLE__)
-        // info_size = ::fgetxattr (fd, xattr, nullptr, 0, 0, 0);
-        // #else
-        // info_size = ::fgetxattr (fd, xattr, nullptr, 0);
-        // #endif
-        // validate info_size result after fgetxattr
-        // if (info_size == -1) {
-        // std::cerr << "Error while getting attribute\n";
-        // return -1;
-        // }
 
         // allocate buffer size to place the attribute value
         char* info = new char[info_size];

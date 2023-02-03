@@ -1,6 +1,6 @@
 /**
  *   Written by Ricardo Macedo.
- *   Copyright (c) 2021-2022 INESC TEC.
+ *   Copyright (c) 2021-2023 INESC TEC.
  **/
 
 #ifndef PADLL_DATA_PLANE_STAGE_H
@@ -22,7 +22,9 @@ private:
     std::mutex m_lock;
     std::shared_ptr<Log> m_log { nullptr };
     std::atomic<bool> m_stage_initialized { false };
-    paio::options::CommunicationType m_communication_type { paio::options::CommunicationType::_unix };
+    paio::options::CommunicationType m_communication_type {
+        paio::options::CommunicationType::_unix
+    };
     std::string m_local_controller_address { this->set_local_connection_address () };
     int m_local_controller_port { paio::options::option_default_port };
     std::shared_ptr<paio::PaioStage> m_stage { nullptr };
