@@ -93,20 +93,21 @@ LdPreloadedPosix::~LdPreloadedPosix ()
     }
 }
 
-// set_loaded call. (...)
+// set_loaded call.
 void LdPreloadedPosix::set_loaded (const bool& value)
 {
-    std::cout << "LdPreloadedPosix: " << __func__ << std::endl;
+    std::cerr << "LdPreloadedPosix: " << __func__ << std::endl;
     this->m_loaded->store (value);
 }
 
-// set_statistic_collection call. (...)
+// set_statistic_collection call.
 void LdPreloadedPosix::set_statistic_collection (bool value)
 {
     this->m_collect.store (value);
 }
 
-// set_data_plane_stage_name call. ...
+// set_data_plane_stage_name call. If option_default_stage_name_env environment variable is not set,
+// it assumes the option_default_stage_name.
 std::string LdPreloadedPosix::set_data_plane_stage_name () const
 {
     // get environment variable for data plane stage
@@ -154,7 +155,7 @@ StatisticEntry LdPreloadedPosix::get_statistic_entry (const OperationType& opera
     }
 }
 
-// to_string call. (...)
+// to_string call. Return all statistics in string format.
 std::string LdPreloadedPosix::to_string ()
 {
     std::stringstream stream;
@@ -170,7 +171,7 @@ std::string LdPreloadedPosix::to_string ()
     return stream.str ();
 }
 
-// generate_statistics_report call. (...)
+// generate_statistics_report call. Write to file the statistics report.
 void LdPreloadedPosix::generate_statistics_report (const std::string_view& path)
 {
     if (option_default_save_statistics_report) {
@@ -204,7 +205,7 @@ void LdPreloadedPosix::generate_statistics_report (const std::string_view& path)
     }
 }
 
-// get_metadata_unit call. TODO: finish the implementation ... This is to be used in use-case-2
+// get_metadata_unit call. Work-in-progress.
 [[nodiscard]] uint32_t LdPreloadedPosix::get_metadata_unit ([[maybe_unused]] const char* path) const
 {
     if (option_select_workflow_by_metadata_unit) {
@@ -214,7 +215,7 @@ void LdPreloadedPosix::generate_statistics_report (const std::string_view& path)
     return static_cast<uint32_t> (-1);
 }
 
-// enforce_request call. (...)
+// enforce_request call. Submit request to the PAIO data plane stage to be enforced (rate limited).
 [[nodiscard]] bool LdPreloadedPosix::enforce_request (
     [[maybe_unused]] const std::string_view& function_name,
     const uint32_t& workflow_id,
@@ -241,7 +242,7 @@ void LdPreloadedPosix::generate_statistics_report (const std::string_view& path)
     return is_valid;
 }
 
-// update_statistic_entry_data call. (...)
+// update_statistic_entry_data call.
 void LdPreloadedPosix::update_statistic_entry_data (const int& operation,
     const ssize_t& bytes,
     const bool& enforced)
@@ -254,7 +255,7 @@ void LdPreloadedPosix::update_statistic_entry_data (const int& operation,
     }
 }
 
-// update_statistic_entry_metadata call. (...)
+// update_statistic_entry_metadata call.
 void LdPreloadedPosix::update_statistic_entry_metadata (const int& operation,
     const int& result,
     const bool& enforced)
@@ -267,7 +268,7 @@ void LdPreloadedPosix::update_statistic_entry_metadata (const int& operation,
     }
 }
 
-// update_statistic_entry_dir call. (...)
+// update_statistic_entry_dir call.
 void LdPreloadedPosix::update_statistic_entry_dir (const int& operation,
     const int& result,
     const bool& enforced)
@@ -280,7 +281,7 @@ void LdPreloadedPosix::update_statistic_entry_dir (const int& operation,
     }
 }
 
-// update_statistic_entry_ext_attr call. (...)
+// update_statistic_entry_ext_attr call.
 void LdPreloadedPosix::update_statistic_entry_ext_attr (const int& operation,
     const ssize_t& result,
     const bool& enforced)
@@ -293,7 +294,7 @@ void LdPreloadedPosix::update_statistic_entry_ext_attr (const int& operation,
     }
 }
 
-// update_statistic_entry_special call. (...)
+// update_statistic_entry_special call.
 void LdPreloadedPosix::update_statistic_entry_special (const int& operation,
     const int& result,
     const bool& enforced)
@@ -306,7 +307,7 @@ void LdPreloadedPosix::update_statistic_entry_special (const int& operation,
     }
 }
 
-// update_statistics call. (...)
+// update_statistics call.
 void LdPreloadedPosix::update_statistics (const OperationType& operation_type,
     const int& operation,
     const long& result,
@@ -794,7 +795,7 @@ int LdPreloadedPosix::ld_preloaded_posix_openat (int dirfd, const char* path, in
     return fd;
 }
 
-// ld_preloaded_posix_open64 call. (...)
+// ld_preloaded_posix_open64 call.
 // NOTE: changed POSIX::open64 classifier to POSIX::open
 int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags, mode_t mode)
 {
@@ -829,7 +830,7 @@ int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags, mo
     return fd;
 }
 
-// ld_preloaded_posix_open64 call. (...)
+// ld_preloaded_posix_open64 call.
 // NOTE: changed POSIX::open64 classifier to POSIX::open
 int LdPreloadedPosix::ld_preloaded_posix_open64 (const char* path, int flags)
 {
@@ -902,14 +903,13 @@ int LdPreloadedPosix::ld_preloaded_posix_close (int fd)
     return result;
 }
 
-// ld_preloaded_posix_sync call. (...)
+// ld_preloaded_posix_sync call.
 void LdPreloadedPosix::ld_preloaded_posix_sync ()
 {
     // hook POSIX sync operation to m_metadata_operations.m_sync
     this->m_dlsym_hook.hook_posix_sync (m_metadata_operations.m_sync);
 
     // enforce sync request to PAIO data plane stage
-    // TODO: don't really know what to do here
     // this->m_stage->enforce_request (this->m_mount_point_table.pick_workflow_id (path),
     // static_cast<int> (paio::core::POSIX::sync),
     //    static_cast<int> (paio::core::POSIX_META::meta_op),
@@ -925,7 +925,7 @@ void LdPreloadedPosix::ld_preloaded_posix_sync ()
         true);
 }
 
-// ld_preloaded_posix_statfs call. (...)
+// ld_preloaded_posix_statfs call.
 int LdPreloadedPosix::ld_preloaded_posix_statfs (const char* path, struct statfs* buf)
 {
     // hook POSIX statfs operation to m_metadata_operations.m_statfs
@@ -953,7 +953,7 @@ int LdPreloadedPosix::ld_preloaded_posix_statfs (const char* path, struct statfs
     return result;
 }
 
-// ld_preloaded_posix_fstatfs call. (...)
+// ld_preloaded_posix_fstatfs call.
 int LdPreloadedPosix::ld_preloaded_posix_fstatfs (int fd, struct statfs* buf)
 {
     // hook POSIX fstatfs operation to m_metadata_operations.m_fstatfs
@@ -981,7 +981,7 @@ int LdPreloadedPosix::ld_preloaded_posix_fstatfs (int fd, struct statfs* buf)
     return result;
 }
 
-// ld_preloaded_posix_statfs64 call. (...)
+// ld_preloaded_posix_statfs64 call.
 int LdPreloadedPosix::ld_preloaded_posix_statfs64 (const char* path, struct statfs64* buf)
 {
     // hook POSIX statfs64 operation to m_metadata_operations.m_statfs64
@@ -1009,7 +1009,7 @@ int LdPreloadedPosix::ld_preloaded_posix_statfs64 (const char* path, struct stat
     return result;
 }
 
-// ld_preloaded_posix_fstatfs64 call. (...)
+// ld_preloaded_posix_fstatfs64 call.
 int LdPreloadedPosix::ld_preloaded_posix_fstatfs64 (int fd, struct statfs64* buf)
 {
     // hook POSIX fstatfs64 operation to m_metadata_operations.m_fstatfs64
@@ -1037,7 +1037,7 @@ int LdPreloadedPosix::ld_preloaded_posix_fstatfs64 (int fd, struct statfs64* buf
     return result;
 }
 
-// ld_preloaded_posix_unlink call. (...)
+// ld_preloaded_posix_unlink call.
 int LdPreloadedPosix::ld_preloaded_posix_unlink (const char* path)
 {
     // hook POSIX unlink operation to m_metadata_operations.m_unlink
@@ -1065,7 +1065,7 @@ int LdPreloadedPosix::ld_preloaded_posix_unlink (const char* path)
     return result;
 }
 
-// ld_preloaded_posix_unlinkat call. (...)
+// ld_preloaded_posix_unlinkat call.
 // NOTE: changed POSIX::unlinkat classifier to POSIX::unlink
 int LdPreloadedPosix::ld_preloaded_posix_unlinkat (int dirfd, const char* pathname, int flags)
 {
@@ -1094,7 +1094,7 @@ int LdPreloadedPosix::ld_preloaded_posix_unlinkat (int dirfd, const char* pathna
     return result;
 }
 
-// ld_preloaded_posix_rename call. (...)
+// ld_preloaded_posix_rename call.
 int LdPreloadedPosix::ld_preloaded_posix_rename (const char* old_path, const char* new_path)
 {
     // hook POSIX rename operation to m_metadata_operations.m_rename
@@ -1122,7 +1122,7 @@ int LdPreloadedPosix::ld_preloaded_posix_rename (const char* old_path, const cha
     return result;
 }
 
-// ld_preloaded_posix_renameat call. (...)
+// ld_preloaded_posix_renameat call.
 // NOTE: changed POSIX::renameat classifier to POSIX::rename
 int LdPreloadedPosix::ld_preloaded_posix_renameat (int olddirfd,
     const char* old_path,
@@ -1154,7 +1154,7 @@ int LdPreloadedPosix::ld_preloaded_posix_renameat (int olddirfd,
     return result;
 }
 
-// ld_preloaded_posix_fopen call. (...)
+// ld_preloaded_posix_fopen call.
 FILE* LdPreloadedPosix::ld_preloaded_posix_fopen (const char* pathname, const char* mode)
 {
     // hook POSIX fopen operation to m_metadata_operations.m_fopen
@@ -1191,7 +1191,7 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_fopen (const char* pathname, const ch
     return fptr;
 }
 
-// ld_preloaded_posix_fopen64 call. (...)
+// ld_preloaded_posix_fopen64 call.
 FILE* LdPreloadedPosix::ld_preloaded_posix_fopen64 (const char* pathname, const char* mode)
 {
     // hook POSIX fopen64 operation to m_metadata_operations.m_fopen64
@@ -1228,7 +1228,7 @@ FILE* LdPreloadedPosix::ld_preloaded_posix_fopen64 (const char* pathname, const 
     return fptr;
 }
 
-// ld_preloaded_posix_fclose call. (...)
+// ld_preloaded_posix_fclose call.
 int LdPreloadedPosix::ld_preloaded_posix_fclose (FILE* stream)
 {
     // hook POSIX fclose operation to m_metadata_operations.m_fclose
@@ -1259,7 +1259,7 @@ int LdPreloadedPosix::ld_preloaded_posix_fclose (FILE* stream)
     return result;
 }
 
-// ld_preloaded_posix_mkdir call. (...)
+// ld_preloaded_posix_mkdir call.
 // NOTE: changed POSIX_META::dir_op classifier to POSIX_META::meta_op
 int LdPreloadedPosix::ld_preloaded_posix_mkdir (const char* path, mode_t mode)
 {
@@ -1288,7 +1288,7 @@ int LdPreloadedPosix::ld_preloaded_posix_mkdir (const char* path, mode_t mode)
     return result;
 }
 
-// ld_preloaded_posix_mkdirat call. (...)
+// ld_preloaded_posix_mkdirat call.
 // NOTE: changed POSIX::mkdirat classifier to POSIX::mkdir; changed POSIX_META::dir_op classifier to
 // POSIX_META::meta_op
 int LdPreloadedPosix::ld_preloaded_posix_mkdirat (int dirfd, const char* path, mode_t mode)
@@ -1318,7 +1318,7 @@ int LdPreloadedPosix::ld_preloaded_posix_mkdirat (int dirfd, const char* path, m
     return result;
 }
 
-// ld_preloaded_posix_mknod call. (...)
+// ld_preloaded_posix_mknod call.
 // NOTE: changed POSIX_META::dir_op classifier to POSIX_META::meta_op
 int LdPreloadedPosix::ld_preloaded_posix_mknod (const char* path, mode_t mode, dev_t dev)
 {
@@ -1347,7 +1347,7 @@ int LdPreloadedPosix::ld_preloaded_posix_mknod (const char* path, mode_t mode, d
     return result;
 }
 
-// ld_preloaded_posix_mknodat call. (...)
+// ld_preloaded_posix_mknodat call.
 // NOTE: changed POSIX::mknodat classifier to POSIX::mknod; changed POSIX_META::dir_op classifier to
 // POSIX_META::meta_op
 int LdPreloadedPosix::ld_preloaded_posix_mknodat (int dirfd,
@@ -1380,7 +1380,7 @@ int LdPreloadedPosix::ld_preloaded_posix_mknodat (int dirfd,
     return result;
 }
 
-// ld_preloaded_posix_rmdir call. (...)
+// ld_preloaded_posix_rmdir call.
 int LdPreloadedPosix::ld_preloaded_posix_rmdir (const char* path)
 {
     // hook POSIX rmdir operation to m_directory_operations.m_rmdir
@@ -1408,7 +1408,7 @@ int LdPreloadedPosix::ld_preloaded_posix_rmdir (const char* path)
     return result;
 }
 
-// ld_preloaded_posix_getxattr call. (...)
+// ld_preloaded_posix_getxattr call.
 ssize_t LdPreloadedPosix::ld_preloaded_posix_getxattr (const char* path,
     const char* name,
     void* value,
@@ -1439,7 +1439,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_getxattr (const char* path,
     return result;
 }
 
-// ld_preloaded_posix_lgetxattr call. (...)
+// ld_preloaded_posix_lgetxattr call.
 // NOTE: changed POSIX::lgetxattr classifier to POSIX::getxattr
 ssize_t LdPreloadedPosix::ld_preloaded_posix_lgetxattr (const char* path,
     const char* name,
@@ -1471,7 +1471,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_lgetxattr (const char* path,
     return result;
 }
 
-// ld_preloaded_posix_fgetxattr call. (...)
+// ld_preloaded_posix_fgetxattr call.
 // NOTE: changed POSIX::fgetxattr classifier to POSIX::getxattr; changed POSIX_META::ext_attr_op
 // classifier to POSIX_META::meta_op
 ssize_t
@@ -1502,7 +1502,7 @@ LdPreloadedPosix::ld_preloaded_posix_fgetxattr (int fd, const char* name, void* 
     return result;
 }
 
-// ld_preloaded_posix_setxattr call. (...)
+// ld_preloaded_posix_setxattr call.
 // NOTE: changed POSIX_META::ext_attr_op classifier to POSIX_META::meta_op
 int LdPreloadedPosix::ld_preloaded_posix_setxattr (const char* path,
     const char* name,
@@ -1535,7 +1535,7 @@ int LdPreloadedPosix::ld_preloaded_posix_setxattr (const char* path,
     return result;
 }
 
-// ld_preloaded_posix_lsetxattr call. (...)
+// ld_preloaded_posix_lsetxattr call.
 // NOTE: changed POSIX::lsetxattr classifier to POSIX::setxattr; changed POSIX_META::ext_attr_op
 // classifier to POSIX_META::meta_op
 int LdPreloadedPosix::ld_preloaded_posix_lsetxattr (const char* path,
@@ -1569,7 +1569,7 @@ int LdPreloadedPosix::ld_preloaded_posix_lsetxattr (const char* path,
     return result;
 }
 
-// ld_preloaded_posix_fsetxattr call. (...)
+// ld_preloaded_posix_fsetxattr call.
 // NOTE: changed POSIX::fsetxattr classifier to POSIX::setxattr; changed POSIX_META::ext_attr_op
 // classifier to POSIX_META::meta_op
 int LdPreloadedPosix::ld_preloaded_posix_fsetxattr (int fd,
@@ -1603,7 +1603,7 @@ int LdPreloadedPosix::ld_preloaded_posix_fsetxattr (int fd,
     return result;
 }
 
-// ld_preloaded_posix_listxattr call. (...)
+// ld_preloaded_posix_listxattr call.
 // NOTE: changed POSIX_META::ext_attr_op classifier to POSIX_META::meta_op
 ssize_t LdPreloadedPosix::ld_preloaded_posix_listxattr (const char* path, char* list, size_t size)
 {
@@ -1632,7 +1632,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_listxattr (const char* path, char* 
     return result;
 }
 
-// ld_preloaded_posix_llistxattr call. (...)
+// ld_preloaded_posix_llistxattr call.
 // NOTE: changed POSIX::llistxattr classifier to POSIX::listxattr; changed POSIX_META::ext_attr_op
 // classifier to POSIX_META::meta_op
 ssize_t LdPreloadedPosix::ld_preloaded_posix_llistxattr (const char* path, char* list, size_t size)
@@ -1662,7 +1662,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_llistxattr (const char* path, char*
     return result;
 }
 
-// ld_preloaded_posix_flistxattr call. (...)
+// ld_preloaded_posix_flistxattr call.
 // NOTE: changed POSIX::flistxattr classifier to POSIX::listxattr; changed POSIX_META::ext_attr_op
 // classifier to POSIX_META::meta_op
 ssize_t LdPreloadedPosix::ld_preloaded_posix_flistxattr (int fd, char* list, size_t size)
@@ -1692,7 +1692,7 @@ ssize_t LdPreloadedPosix::ld_preloaded_posix_flistxattr (int fd, char* list, siz
     return result;
 }
 
-// ld_preloaded_posix_socket call. (...)
+// ld_preloaded_posix_socket call.
 int LdPreloadedPosix::ld_preloaded_posix_socket (int domain, int type, int protocol)
 {
     // hook POSIX socket operation to m_special_operations.m_socket
@@ -1715,7 +1715,7 @@ int LdPreloadedPosix::ld_preloaded_posix_socket (int domain, int type, int proto
     return fd;
 }
 
-// ld_preloaded_posix_fcntl call. (...)
+// ld_preloaded_posix_fcntl call.
 int LdPreloadedPosix::ld_preloaded_posix_fcntl (int fd, int cmd, void* arg)
 {
     // hook POSIX fcntl operation to m_special_operations.m_socket

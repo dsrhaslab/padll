@@ -103,13 +103,13 @@ DataPlaneStage::~DataPlaneStage ()
     this->m_log->log_info ("DataPlaneStage destructor.\n");
 }
 
-// set_stage_initialized call. (...)
+// set_stage_initialized call.
 void DataPlaneStage::set_stage_initialized (const bool& status)
 {
     this->m_stage_initialized.store (status);
 }
 
-// enforce_request call. (...)
+// enforce_request call.
 void DataPlaneStage::enforce_request (const uint32_t& workflow_id,
     const int& operation_type,
     const int& operation_context,
@@ -135,9 +135,9 @@ void DataPlaneStage::enforce_request (const uint32_t& workflow_id,
 #endif
 }
 
-// set_local_connection_address call. Set data plane stage connection address (to local control
+// get_local_connection_address call. Get data plane stage connection address (to local control
 // plane).
-std::string DataPlaneStage::set_local_connection_address () const
+std::string DataPlaneStage::get_local_connection_address () const
 {
     // get environment variable for data plane stage
     auto address_value

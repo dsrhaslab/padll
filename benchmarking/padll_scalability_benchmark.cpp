@@ -372,7 +372,8 @@ void print_server_info (FILE* fd)
  *    - (paio) option_default_channel_differentiation_operation_type = false
  *    - (paio) option_default_channel_differentiation_operation_context = false
  * - Command:
- *  export padll_workflows=<total-workflows>; ./padll_scalability_bench <runs> <threads> <operations>
+ *  export padll_workflows=<total-workflows>; ./padll_scalability_bench <runs> <threads>
+ * <operations>
  */
 int main (int argc, char** argv)
 {

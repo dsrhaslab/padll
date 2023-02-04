@@ -28,7 +28,8 @@ namespace padll::interface::ldpreloaded {
 /**
  * LdPreloadedPosix class.
  *  https://www.gnu.org/software/libc/manual/html_node/Function-Index.html
- * missing: Complete me ...
+ * This class handles all the logic for rate limiting each of the supported POSIX operations.
+ * It only handles operations that have set to 'true' in the libc_calls header.
  */
 class LdPreloadedPosix {
 
@@ -55,7 +56,18 @@ private:
     std::shared_ptr<std::atomic<bool>> m_loaded { nullptr };
 
     /**
-     * enforce_request:
+     * enforce_request: submit the request to be enforced (rate limited) in the PAIO data plane
+     * stage. The enforcement will be based on the workflow-id, operation type, and operation
+     * context.
+     * @param function_name Name of the POSIX call that is being enforced. Parameter used for
+     * detailed logging.
+     * @param workflow_id Identifier of the workflow for the request to be submitted to.
+     * @param operation_type Type of the enforced POSIX operation (e.g., read, open, close,
+     * getxattr).
+     * @param operation_context Context of the enforced POSIX operation (e.g., metadata, data, ...).
+     * @param payload Cost of the operation to be enforced. Metadata operations have constant cost
+     * (i.e., 1 token), while the cost of data operations (i.e., read, write) is directly
+     * proportional to their buffer size.
      */
     [[nodiscard]] bool enforce_request ([[maybe_unused]] const std::string_view& function_name,
         const uint32_t& workflow_id,
@@ -64,56 +76,58 @@ private:
         const int& payload);
 
     /**
-     * update_statistic_entry_data:
-     * @param operation
-     * @param result
-     * @param enforced
+     * update_statistic_entry_data: update the statistic entry at the m_data_stats container.
+     * @param operation Index of the operation to be updated.
+     * @param bytes Number of successful bytes enforced.
+     * @param enforced Boolean that defines if the operation was successfully enforced.
      */
     void
     update_statistic_entry_data (const int& operation, const ssize_t& bytes, const bool& enforced);
 
     /**
-     * update_statistic_entry_metadata:
-     * @param operation
-     * @param result
-     * @param enforced
+     * update_statistic_entry_metadata: update the statistic entry at the m_metadata_stats
+     * container.
+     * @param operation Index of the operation to be updated.
+     * @param result Validates if the POSIX operation was successful.
+     * @param enforced Boolean that defines if the operation was successfully enforced.
      */
     void
     update_statistic_entry_metadata (const int& operation, const int& result, const bool& enforced);
 
     /**
-     * update_statistic_entry_dir:
-     * @param operation
-     * @param result
-     * @param enforced
+     * update_statistic_entry_dir: update the statistic entry at the m_dir_stats container.
+     * @param operation Index of the operation to be updated.
+     * @param result Validates if the POSIX operation was successful.
+     * @param enforced Boolean that defines if the operation was successfully enforced.
      */
     void update_statistic_entry_dir (const int& operation, const int& result, const bool& enforced);
 
     /**
-     * update_statistic_entry_ext_attr:
-     * @param operation
-     * @param result
-     * @param enforced
+     * update_statistic_entry_ext_attr: update the statistic entry at the _ext_attr_stats container.
+     * @param operation Index of the operation to be updated.
+     * @param bytes Number of successful bytes enforced.
+     * @param enforced Boolean that defines if the operation was successfully enforced.
      */
     void update_statistic_entry_ext_attr (const int& operation,
         const ssize_t& bytes,
         const bool& enforced);
 
     /**
-     * update_statistic_entry_special:
-     * @param operation
-     * @param result
-     * @param enforced
+     * update_statistic_entry_special: update the statistic entry at the m_special_stats container.
+     * @param operation Index of the operation to be updated.
+     * @param result Validates if the POSIX operation was successful.
+     * @param enforced Boolean that defines if the operation was successfully enforced.
      */
     void
     update_statistic_entry_special (const int& operation, const int& result, const bool& enforced);
 
     /**
-     * update_staitistcs:
-     * @param operation_type
-     * @param operation
-     * @param result
-     * @param enforced
+     * update_statistics: update statistic entry.
+     * @param operation_type defines the class of the submitted operations. Used to select which
+     * statistic container to update.
+     * @param operation Index of the operation to be updated.
+     * @param result Validates if the POSIX operation was successful.
+     * @param enforced Boolean that defines if the operation was successfully enforced.
      */
     void update_statistics (const OperationType& operation_type,
         const int& operation,
@@ -121,8 +135,8 @@ private:
         const bool& enforced);
 
     /**
-     * generate_statistics_report:
-     * @param path
+     * generate_statistics_report: generate report for the all statistic containers.
+     * @param path File path to where the report should be stored.
      */
     void generate_statistics_report (const std::string_view& path);
 
@@ -132,7 +146,7 @@ private:
     [[nodiscard]] uint32_t get_metadata_unit ([[maybe_unused]] const char* path) const;
 
     /**
-     * set_data_plane_stage_name:
+     * set_data_plane_stage_name: set name for the data plane stage.
      */
     [[nodiscard]] std::string set_data_plane_stage_name () const;
 
@@ -146,8 +160,8 @@ public:
      * LdPreloadedPosix parameterized constructor.
      * @param lib String that respects to the library that will be intercepted.
      * @param stat_collection Boolean that defines if statistic collection is enabled or disabled.
-     * @param log_ptr
-     * @param loaded_ptr
+     * @param log_ptr Shared pointer to a Logging object.
+     * @param loaded_ptr Atomic boolean that defines if the target dynamic library has been loaded.
      */
     LdPreloadedPosix (const std::string& lib,
         const bool& stat_collection,
@@ -160,29 +174,30 @@ public:
     ~LdPreloadedPosix ();
 
     /**
-     * set_loaded:
+     * set_loaded: updates the m_loaded shared object.
+     * @param value Value to be set in the m_loaded object.
      */
     void set_loaded (const bool& value);
 
     /**
-     * get_statistic_entry:
-     * @param operation_type
-     * @param operation_entry
-     * @return
+     * get_statistic_entry: get statistic entry of a given stats container.
+     * @param operation_type defines the class of the submitted operations. Used to select which
+     * statistic container to retrieve.
+     * @param operation Index of the operation to be retrieved.
+     * @return Returns a copy of the targeted StatisticEntry object.
      */
     StatisticEntry get_statistic_entry (const OperationType& operation_type,
         const int& operation_entry);
 
     /**
-     * set_statistic_collection:
-     * @param value
-     * @return
+     * set_statistic_collection: enable/disable statistic collection.
+     * @param value Value to be set for statistic collection.
      */
     void set_statistic_collection (bool value);
 
     /**
-     * to_string:
-     * @return
+     * to_string: pass all statistic entries to string-based format.
+     * @return Return resulting string.
      */
     std::string to_string ();
 

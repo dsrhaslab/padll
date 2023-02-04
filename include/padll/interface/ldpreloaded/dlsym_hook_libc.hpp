@@ -21,7 +21,7 @@ namespace padll::interface::ldpreloaded {
 /**
  * DlsymHookLibc class.
  * This class implements all libc hooks and logic for LD_PRELOAD libc calls.
-*/
+ */
 class DlsymHookLibc {
 
 private:
@@ -31,7 +31,8 @@ private:
     std::shared_ptr<Log> m_log { nullptr };
 
     /**
-     *  initialize: initialize the DlSymHook class, by opening the libc library handle; print a logging (error) message if the ibrary was not successfully opened.
+     *  initialize: initialize the DlSymHook class, by opening the libc library handle; print a
+     * logging (error) message if the library was not successfully opened.
      */
     void initialize ()
     {
@@ -604,8 +605,8 @@ public:
     }
 
     /**
-     * hook_posix_rename:
-     * @param rename_ptr
+     * hook_posix_rename: function to hook libc's rename function pointer.
+     * @param rename_ptr function pointer with the same header as libc's rename.
      */
     void hook_posix_rename (libc_rename_t& rename_ptr)
     {
@@ -624,8 +625,8 @@ public:
     }
 
     /**
-     * hook_posix_renameat:
-     * @param renameat_ptr
+     * hook_posix_renameat: function to hook libc's renameat function pointer.
+     * @param renameat_ptr function pointer with the same header as libc's renameat.
      */
     void hook_posix_renameat (libc_renameat_t& renameat_ptr)
     {
@@ -644,8 +645,8 @@ public:
     }
 
     /**
-     * hook_posix_fopen:
-     * @param fopen_ptr
+     * hook_posix_fopen: function to hook libc's fopen function pointer.
+     * @param fopen_ptr function pointer with the same header as libc's fopen.
      */
     void hook_posix_fopen (libc_fopen_t& fopen_ptr)
     {
@@ -664,8 +665,8 @@ public:
     }
 
     /**
-     * hook_posix_fopen64:
-     * @param fopen64_ptr
+     * hook_posix_fopen64: function to hook libc's fopen64 function pointer.
+     * @param fopen64_ptr function pointer with the same header as libc's fopen64.
      */
     void hook_posix_fopen64 (libc_fopen64_t& fopen64_ptr)
     {
@@ -684,8 +685,8 @@ public:
     }
 
     /**
-     * hook_posix_fclose:
-     * @param fclose_ptr
+     * hook_posix_fclose: function to hook libc's fclose function pointer.
+     * @param fclose_ptr function pointer with the same header as libc's fclose.
      */
     void hook_posix_fclose (libc_fclose_t& fclose_ptr)
     {
@@ -704,8 +705,8 @@ public:
     }
 
     /**
-     * hook_posix_mkdir:
-     * @param mkdir_ptr
+     * hook_posix_mkdir: function to hook libc's mkdir function pointer.
+     * @param mkdir_ptr function pointer with the same header as libc's mkdir.
      */
     void hook_posix_mkdir (libc_mkdir_t& mkdir_ptr)
     {
@@ -724,8 +725,8 @@ public:
     }
 
     /**
-     * hook_posix_mkdirat:
-     * @param mkdirat_ptr
+     * hook_posix_mkdirat: function to hook libc's mkdirat function pointer.
+     * @param mkdirat_ptr function pointer with the same header as libc's mkdirat.
      */
     void hook_posix_mkdirat (libc_mkdirat_t& mkdirat_ptr)
     {
@@ -744,8 +745,8 @@ public:
     }
 
     /**
-     * hook_posix_rmdir:
-     * @param rmdir_ptr
+     * hook_posix_rmdir: function to hook libc's rmdir function pointer.
+     * @param rmdir_ptr function pointer with the same header as libc's rmdir.
      */
     void hook_posix_rmdir (libc_rmdir_t& rmdir_ptr)
     {
@@ -764,8 +765,8 @@ public:
     }
 
     /**
-     * hook_posix_mknod:
-     * @param mknod_ptr
+     * hook_posix_mknod: function to hook libc's mknod function pointer.
+     * @param mknod_ptr function pointer with the same header as libc's mknod.
      */
     void hook_posix_mknod (libc_mknod_t& mknod_ptr)
     {
@@ -784,8 +785,8 @@ public:
     }
 
     /**
-     * hook_posix_mknodat:
-     * @param mknodat_ptr
+     * hook_posix_mknodat: function to hook libc's mknodat function pointer.
+     * @param mknodat_ptr function pointer with the same header as libc's mknodat.
      */
     void hook_posix_mknodat (libc_mknodat_t& mknodat_ptr)
     {
@@ -804,8 +805,8 @@ public:
     }
 
     /**
-     * hook_posix_getxattr:
-     * @param getxattr_ptr
+     * hook_posix_getxattr: function to hook libc's getxattr function pointer.
+     * @param getxattr_ptr function pointer with the same header as libc's getxattr.
      */
     void hook_posix_getxattr (libc_getxattr_t& getxattr_ptr)
     {
@@ -824,8 +825,8 @@ public:
     }
 
     /**
-     * hook_posix_lgetxattr:
-     * @param lgetxattr_ptr
+     * hook_posix_lgetxattr: function to hook libc's lgetxattr function pointer.
+     * @param lgetxattr_ptr function pointer with the same header as libc's lgetxattr.
      */
     void hook_posix_lgetxattr (libc_lgetxattr_t& lgetxattr_ptr)
     {
@@ -844,8 +845,8 @@ public:
     }
 
     /**
-     * hook_posix_fgetxattr:
-     * @param fgetxattr_ptr
+     * hook_posix_fgetxattr: function to hook libc's fgetxattr function pointer.
+     * @param fgetxattr_ptr function pointer with the same header as libc's fgetxattr.
      */
     void hook_posix_fgetxattr (libc_fgetxattr_t& fgetxattr_ptr)
     {
@@ -864,8 +865,8 @@ public:
     }
 
     /**
-     * hook_posix_setxattr:
-     * @param setxattr_ptr
+     * hook_posix_setxattr: function to hook libc's setxattr function pointer.
+     * @param setxattr_ptr function pointer with the same header as libc's setxattr.
      */
     void hook_posix_setxattr (libc_setxattr_t& setxattr_ptr)
     {
@@ -884,8 +885,8 @@ public:
     }
 
     /**
-     * hook_posix_lsetxattr:
-     * @param lsetxattr_ptr
+     * hook_posix_lsetxattr: function to hook libc's lsetxattr function pointer.
+     * @param lsetxattr_ptr function pointer with the same header as libc's lsetxattr.
      */
     void hook_posix_lsetxattr (libc_lsetxattr_t& lsetxattr_ptr)
     {
@@ -904,8 +905,8 @@ public:
     }
 
     /**
-     * hook_posix_fsetxattr:
-     * @param fsetxattr_ptr
+     * hook_posix_fsetxattr: function to hook libc's fsetxattr function pointer.
+     * @param fsetxattr_ptr function pointer with the same header as libc's fsetxattr.
      */
     void hook_posix_fsetxattr (libc_fsetxattr_t& fsetxattr_ptr)
     {
@@ -924,8 +925,8 @@ public:
     }
 
     /**
-     * hook_posix_listxattr:
-     * @param listxattr_ptr
+     * hook_posix_listxattr: function to hook libc's listxattr function pointer.
+     * @param listxattr_ptr function pointer with the same header as libc's listxattr.
      */
     void hook_posix_listxattr (libc_listxattr_t& listxattr_ptr)
     {
@@ -944,8 +945,8 @@ public:
     }
 
     /**
-     * hook_posix_llistxattr:
-     * @param llistxattr_ptr
+     * hook_posix_llistxattr: function to hook libc's llistxattr function pointer.
+     * @param llistxattr_ptr function pointer with the same header as libc's llistxattr.
      */
     void hook_posix_llistxattr (libc_llistxattr_t& llistxattr_ptr)
     {
@@ -964,8 +965,8 @@ public:
     }
 
     /**
-     * hook_posix_flistxattr:
-     * @param flistxattr_ptr
+     * hook_posix_flistxattr: function to hook libc's flistxattr function pointer.
+     * @param flistxattr_ptr function pointer with the same header as libc's flistxattr.
      */
     void hook_posix_flistxattr (libc_flistxattr_t& flistxattr_ptr)
     {
@@ -984,8 +985,8 @@ public:
     }
 
     /**
-     * hook_posix_socket:
-     * @param socket_ptr
+     * hook_posix_socket: function to hook libc's socket function pointer.
+     * @param socket_ptr function pointer with the same header as libc's socket.
      */
     void hook_posix_socket (libc_socket_t& socket_ptr)
     {
@@ -1004,8 +1005,8 @@ public:
     }
 
     /**
-     * hook_posix_fcntl:
-     * @param fcntl_ptr
+     * hook_posix_fcntl: function to hook libc's fcntl function pointer.
+     * @param fcntl_ptr function pointer with the same header as libc's fcntl.
      */
     void hook_posix_fcntl (libc_fcntl_t& fcntl_ptr)
     {
