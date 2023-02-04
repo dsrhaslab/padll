@@ -489,7 +489,7 @@ uint32_t MountPointTable::select_workflow_from_mountpoint (const MountPoint& nam
 // select_workflow_from_metadata_unit call. (...)
 uint32_t MountPointTable::select_workflow_from_metadata_unit (const uint32_t& metadata_unit) const
 {
-    // TODO: implement this ...
+    // TODO: work-in-progress
     std::cerr << __func__ << "(" << metadata_unit << "): Not implemented yet." << std::endl;
     return static_cast<uint32_t> (-1);
 }
@@ -497,7 +497,7 @@ uint32_t MountPointTable::select_workflow_from_metadata_unit (const uint32_t& me
 // select_workflow_from_metadata_unit call. (...)
 uint32_t MountPointTable::select_workflow_from_metadata_unit (const std::string_view& path) const
 {
-    // TODO: implement this ...
+    // TODO: work-in-progress
     std::cerr << __func__ << "(" << path << "): Not implemented yet." << std::endl;
     return static_cast<uint32_t> (-1);
 }

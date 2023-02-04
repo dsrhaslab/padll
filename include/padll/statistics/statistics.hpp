@@ -23,7 +23,7 @@ namespace padll::stats {
 
 /**
  * Statistics class.
- * missing: complete me ...
+ * This class keeps track of all statistics entries of a given category.
  */
 class Statistics {
 

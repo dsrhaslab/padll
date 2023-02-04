@@ -15,7 +15,8 @@ namespace padll::stats {
 
 /**
  * StatisticEntry class.
- * Missing: complete me ...
+ * This class keeps track of all statistics that respect to a given operation. All read and writes
+ * over existing counters are thread-safe.
  */
 class StatisticEntry {
 
