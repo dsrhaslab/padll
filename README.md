@@ -37,61 +37,63 @@ Ricardo Macedo, Mariana Miranda, Yusuke Tanimura, Jason Haga, Amit Ruhela, Steph
 }
 ```
 
+***
 
-
-## Getting started with padll
+## Getting started with PADLL
  
-Tutorial to install and test padll.
+This tutorial will guide on how to set up, benchmark, and use PADLL.
 
-<b>0. Install dependencies</b>
+#### Requirements and Dependencies
+PADLL is written with C++17 and was built and tested with `g++-9.3.0` and `cmake-3.16`.
+The core library depends on the [PAIO](https://github.com/dsrhaslab/paio) storage data plane framework (install instructions below) and the [spdlog v1.8.1](https://github.com/gabime/spdlog) logging library (installed at compile time).
+PADLL also uses the following third party libraries: [Xoshiro-cpp](https://github.com/Reputeless/Xoshiro-cpp) (pseudorandom number generator library), [tabulate](https://github.com/p-ranav/tabulate) (library for printing aligned, formatted, and colorized tables), [better-enums](https://github.com/aantron/better-enums) (compile-time enum library).
+
+<b>Install PAIO</b>
 ```shell
-# Install PAIO data plane framework
 $ cd /path/to/dir   # select the path to clone the PAIO github repository
-$ git clone https://github.com/dsrhaslab/paio.git	# update to dsrhaslab/paio
+$ git clone https://github.com/dsrhaslab/paio.git
 $ cd paio
-$ git checkout <set-release>
+$ git checkout v1.0.0
 $ mkdir build; cd build
 $ cmake ..; cmake --build .
 $ export CPATH="/path/to/dir/paio/include:${CPATH}"
+$ export LD_LIBRARY_PATH="/path/to/dir/paio/build/:${LD_LIBRARY_PATH}"
 ```
 
-<b>1. Set up padll</b>
+#### Setup PADLL
+
 ```shell
-$ cd padll; mkdir build; cd build;
+$ cd /path/to/dir   # select the path to clone the PADLL github repository
+$ $ git clone https://github.com/dsrhaslab/padll.git
+$ cd padll
+$ git checkout v1.0.0
+$ mkdir build; cd build;
 $ cmake ..
 $ cmake --build .
 $ export PATH_PADLL=$PWD
 ```
 
-<b>2. Setup microbenchmark</b>
+#### Configurations and Tuning
+
+
+#### Simple test
+
 ```shell
 $ cd padll/tests/posix
 $ g++ simple_test.cpp -o simple_test
 $ cd ..
 ```
 
-<b>3. Run microbenchmark</b>
+#### PADLL scalability benchmark
+
 ```shell
-$ cd padll
-$ LD_PRELOAD=$PATH_PADLL/libpadll.so ./tests/posix/simple_test
+$ cd /path/to/padll
+$ LD_PRELOAD=$PATH_PADLL/libpadll.so ./build/padll_scalability_bench
 ```
 
-## Features
-...
+#### PADLL paper experiments
 
-## Contents
-...
 
-## System Requirements
-...
-
-## Dependencies
-* `C++17`
-* `g++ 9.3.0`
-* `cmake 3.19.0-rc1`
-* library dependencies are handled in `CMakeLists.txt`
-
-...
 
 
 ## Acknowledgments
