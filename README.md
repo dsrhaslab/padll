@@ -259,10 +259,29 @@ PosixPassthrough Statistics
 
 ### Scalability test
 
+To test the data plane scalability, one can also resort to the `padll_scalability_bench` benchmark.
+The following configurations are only the changes with respect to the "Simple test" example.
+
+**PADLL configurations: options header**
+```yaml
+# include/padll/options/options.hpp
+- option_default_hsk_rules_file : "hsk-scale-test"
+```
+
+**PAIO configurations: options header**
+```yaml
+# include/paio/options/options.hpp
+- option_default_channel_differentiation_workflow : true
+- option_default_channel_differentiation_operation_type : false
+```
+
 ```shell
 $ cd /path/to/padll
-$ LD_PRELOAD=$PATH_PADLL/libpadll.so ./build/padll_scalability_bench
+$ vi benchmarking/bench.sh  # set the padll_path to the correct pathname
+# maximum number of threads is currently set to 128
+$ ./benchmarking/bench.sh Execute <number-of-stages> <number-of-threads/workflows>
 ```
+
 
 ### Connecting to the Cheferd control plane
 
