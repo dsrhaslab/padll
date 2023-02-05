@@ -232,7 +232,7 @@ constexpr std::string_view option_default_connection_address_env { "cheferd_loca
  */
 inline std::filesystem::path option_default_hsk_rules_file ()
 {
-    return main_path ().append ("hsk-scale-test");
+    return main_path ().append ("hsk-simple-test");
 }
 
 /**

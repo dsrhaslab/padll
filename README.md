@@ -95,12 +95,15 @@ Data plane stage configuration
 - option_default_stage_name : "padll-stage" # default name of the data plane stage
 - option_paio_environment_variable_env : "paio_env" # environment variable to set additional information for the stage
 
-
-Connection to control plane
+Connection to control plane and standalone mode
 - option_sync_with_controller : true  # IMPORTANT: defines if the data plane stage should execute standalone, or connect to the control plane  
 - option_default_connection_address_env : "cheferd_local_address" # environment variable to define the connection address to the control plane local controller
+- main_path : "/path/to/padll/files" # if running on standalone mode, define that path for housekeeping, differentiation, and enforcement files
+- option_default_hsk_rules_file : "hsk-simple-test" # if running on standalone mode, define the path to the housekeeping rules file (will define PAIO's channels and enforcement objects)
 
-Debugging
+Logging and Debugging
+- option_default_log_path : "/tmp/padll-info" # default path for PADLL logging files
+- option_default_statistics_report_path : "/tmp"  # main path to store statistic reports
 - OPTION_DETAILED_LOGGING : false # detailed logging (mainly used for debugging)
 ```
 
