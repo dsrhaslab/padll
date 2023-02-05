@@ -295,7 +295,7 @@ MergedResults execute_run (FILE* fd,
 
     // spawn worker threads
     for (unsigned int i = 1; i <= num_threads; i++) {
-        workers[i - 1] = std::thread (func, fd, pathname, op_size, total_ops, false);
+        workers[i - 1] = std::thread (func, fd, pathname, op_size, total_ops, shadow_op, false);
         std::cerr << "Starting worker thread #" << i << " (" << workers[i - 1].get_id () << ") ..."
                   << std::endl;
     }
