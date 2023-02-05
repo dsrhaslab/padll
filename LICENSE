@@ -3,8 +3,8 @@ The BSD 3-Clause "New" or "Modified" License
 Copyright (c) [2021-2023], INESC TEC
 
 PADLL is a storage middleware that enables system administrators to proactively 
-and holistically control the rate of data and and metadata workflows to achieve 
-QoS in HPC storage systems.
+and holistically control the rate of data and metadata workflows to achieve QoS 
+in HPC storage systems.
 
 This software is authored by:
 Ricardo Gonçalves Macedo <ricardo.g.macedo@inesctec.pt>

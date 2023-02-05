@@ -9,7 +9,7 @@
   </a>
 </h3>
 
-PADLL is a storage middleware that enables system administrators to proactively and holistically control the rate of data and and metadata workflows to achieve QoS in HPC storage systems. 
+PADLL is a storage middleware that enables system administrators to proactively and holistically control the rate of data and metadata workflows to achieve QoS in HPC storage systems. 
 Its design if build under the following core principles:
 
 * <b>Application and file system agnostic:</b> PADLL does not require code changes to any core layer of the HPC I/O stack, being applicable over multiple applications and cross-compatible with POSIX-compliant file systems. PADLL achieves this using LD_PRELOAD.
