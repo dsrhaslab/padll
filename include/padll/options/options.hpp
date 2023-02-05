@@ -183,8 +183,7 @@ constexpr std::string_view option_default_statistics_report_path { "/tmp" };
  */
 inline std::filesystem::path main_path ()
 {
-    // return "/path/to/padll/files/";
-    return "/home/gsd/hpdc22/padll/files/";
+    return "/path/to/padll/files/";
 }
 
 /**

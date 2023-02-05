@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# padll_path='/home1/07853/rgmacedo/padll/build'
 padll_path='path/to/padll/build'
 
 iops=10000000
