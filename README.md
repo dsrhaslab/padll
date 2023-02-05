@@ -43,7 +43,7 @@ Ricardo Macedo, Mariana Miranda, Yusuke Tanimura, Jason Haga, Amit Ruhela, Steph
  
 This tutorial will guide on how to set up, benchmark, and use PADLL.
 
-#### Requirements and Dependencies
+### Requirements and Dependencies
 PADLL is written with C++17 and was built and tested with `g++-9.3.0` and `cmake-3.16`.
 The core library was built using the [PAIO](https://github.com/dsrhaslab/paio) storage data plane framework (install instructions below).
 It also uses the [spdlog v1.8.1](https://github.com/gabime/spdlog) logging library (installed at compile time).
@@ -63,7 +63,7 @@ $ export CPATH="/path/to/dir/paio/include:${CPATH}"
 $ export LD_LIBRARY_PATH="/path/to/dir/paio/build/:${LD_LIBRARY_PATH}"
 ```
 
-#### Setup PADLL
+### Setup PADLL
 
 ```shell
 $ cd /path/to/dir   # select the path to clone the PADLL github repository
@@ -76,14 +76,12 @@ $ cmake --build .
 $ export PATH_PADLL=$PWD
 ```
 
-#### Configurations and Tuning
-
-<b>Configuring PADLL</b>
-
+### Configuring and tuning PADLL
 PADLL provides two sets of configurations:
 * [options.hpp](https://github.com/dsrhaslab/padll/blob/master/include/padll/options/options.hpp): configurations related to the data plane stage are placed in the options header file.
 * [libc_calls.hpp](https://github.com/dsrhaslab/padll/blob/master/include/padll/configurations/libc_calls.hpp): configurations related to which POSIX operations should be intercepted and handled with PADLL.
 
+#### options header
 ```yaml
 # include/padll/options/options.hpp
 
@@ -106,10 +104,12 @@ Debugging
 - OPTION_DETAILED_LOGGING : false # detailed logging (mainly used for debugging)
 ```
 
+#### libc calls header
 ```yaml
 # include/padll/configurations/libc_calls.hpp
 
-# to replicate the micro-benchmarking experiments of the PADLL paper (§5.1), one should enable the following system calls.
+# to replicate the micro-benchmarking experiments of the PADLL paper (§5.1), 
+# one should enable the following system calls.
 - padll_intercept_open_var : true
 - padll_intercept_open : true
 - padll_intercept_close : true
@@ -120,7 +120,7 @@ Debugging
 # remainder configurations should be set at false
 ```
 
-<b>Configuring PAIO</b>
+### Configuring and tuning PAIO
 
 PADLL's core internals are built using the PAIO data plane framework, namely the request differentiation and rate limiting.
 As such, depending on the use case that you may want to use PADLL, there are a few tuning knobs in PAIO that should be properly configured.
