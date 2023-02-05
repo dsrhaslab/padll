@@ -12,7 +12,7 @@
 PADLL is a storage middleware that enables system administrators to proactively and holistically control the rate of data and and metadata workflows to achieve QoS in HPC storage systems. 
 Its design if build under the following core principles:
 
-* <b>Application and File System agnostic:</b> PADLL does not require code changes to any core layer of the HPC I/O stack, being applicable over multiple applications and cross-compatible with POSIX-compliant file systems. PADLL achieves this using LD_PRELOAD.
+* <b>Application and file system agnostic:</b> PADLL does not require code changes to any core layer of the HPC I/O stack, being applicable over multiple applications and cross-compatible with POSIX-compliant file systems. PADLL achieves this using LD_PRELOAD.
 * <b>Fine-grained I/O control:</b> PADLL classifies, differentiates and controls requests at different levels of granularity, including operation type (*open*, *read*, *mkdir*), operation class (*metadata*, *data*, *extended attributes*), user, and job.
 * <b>Global visibility:</b> PADLL ensures holistic control of all I/O workflows and coordinated access to the file system, preventing contention and unfair usage or shared storage resources. This is achieved using [Cheferd](https://github.com/dsrhaslab/cheferd), a hierarchical Software-Defined Storage control plane.
 * <b>Custom QoS specification:</b> PADLL enables system administrators to create custom QoS policies for rate limiting jobs running at the cluster (e.g., uniform and priorty-based rate distribution, proportion sharing, DRF), protecting the file system from greedy jobs and I/O burstiness.
@@ -45,10 +45,13 @@ This tutorial will guide on how to set up, benchmark, and use PADLL.
 
 #### Requirements and Dependencies
 PADLL is written with C++17 and was built and tested with `g++-9.3.0` and `cmake-3.16`.
-The core library depends on the [PAIO](https://github.com/dsrhaslab/paio) storage data plane framework (install instructions below) and the [spdlog v1.8.1](https://github.com/gabime/spdlog) logging library (installed at compile time).
-PADLL also uses the following third party libraries: [Xoshiro-cpp](https://github.com/Reputeless/Xoshiro-cpp) (pseudorandom number generator library), [tabulate](https://github.com/p-ranav/tabulate) (library for printing aligned, formatted, and colorized tables), [better-enums](https://github.com/aantron/better-enums) (compile-time enum library).
+The core library was built using the [PAIO](https://github.com/dsrhaslab/paio) storage data plane framework (install instructions below).
+It also uses the [spdlog v1.8.1](https://github.com/gabime/spdlog) logging library (installed at compile time).
+
+Further, PADLL uses the following [third party]() libraries, which are embedded as single-header files: [Xoshiro-cpp](https://github.com/Reputeless/Xoshiro-cpp) (pseudorandom number generator library), [tabulate](https://github.com/p-ranav/tabulate) (library for printing aligned, formatted, and colorized tables), [better-enums](https://github.com/aantron/better-enums) (compile-time enum library).
 
 <b>Install PAIO</b>
+
 ```shell
 $ cd /path/to/dir   # select the path to clone the PAIO github repository
 $ git clone https://github.com/dsrhaslab/paio.git
@@ -74,6 +77,75 @@ $ export PATH_PADLL=$PWD
 ```
 
 #### Configurations and Tuning
+
+<b>Configuring PADLL</b>
+
+PADLL provides two sets of configurations:
+* [options.hpp](https://github.com/dsrhaslab/padll/blob/master/include/padll/options/options.hpp): configurations related to the data plane stage are placed in the options header file.
+* [libc_calls.hpp](https://github.com/dsrhaslab/padll/blob/master/include/padll/configurations/libc_calls.hpp): configurations related to which POSIX operations should be intercepted and handled with PADLL.
+
+```yaml
+# include/padll/options/options.hpp
+
+Mount point differentiation
+- option_default_remote_mount_point : "/tmp"  # IMPORTANT: define the default mount point to control I/O requests
+
+Statistic collection
+- option_default_statistic_collection : true  # simple statistic collection to validate which requests were successfully handled
+
+Data plane stage configuration
+- option_default_stage_name : "padll-stage" # default name of the data plane stage
+- option_paio_environment_variable_env : "paio_env" # environment variable to set additional information for the stage
+
+
+Connection to control plane
+- option_sync_with_controller : true  # IMPORTANT: defines if the data plane stage should execute standalone, or connect to the control plane  
+- option_default_connection_address_env : "cheferd_local_address" # environment variable to define the connection address to the control plane local controller
+
+Debugging
+- OPTION_DETAILED_LOGGING : false # detailed logging (mainly used for debugging)
+```
+
+```yaml
+# include/padll/configurations/libc_calls.hpp
+
+# to replicate the micro-benchmarking experiments of the PADLL paper (§5.1), one should enable the following system calls.
+- padll_intercept_open_var : true
+- padll_intercept_open : true
+- padll_intercept_close : true
+- padll_intercept_rename : true
+- padll_intercept_getxattr : true
+- padll_intercept_read : true
+- padll_intercept_write : true
+# remainder configurations should be set at false
+```
+
+<b>Configuring PAIO</b>
+
+PADLL's core internals are built using the PAIO data plane framework, namely the request differentiation and rate limiting.
+As such, depending on the use case that you may want to use PADLL, there are a few tuning knobs in PAIO that should be properly configured.
+These configurations are in PAIO options header file ([options.hpp](https://github.com/dsrhaslab/paio/blob/main/include/paio/options/options.hpp)).
+
+```yaml
+# include/paio/options/options.hpp
+
+Debugging and ld_preload settings
+- option_default_debug_log : true   # minor logging messages do not introduce significant overhead
+- option_default_ld_preload_enabled : true  # when using LD_PRELOAD, this should be set to prevent cyclic libc.so dependencies
+
+Statistic collection
+- option_default_channel_statistic_collection : true  # per-channel statistic collection
+- option_default_statistic_metric : StatisticMetric::counter  # simple statistic counter (optionally use StatisticMetric::throughput)
+
+Channel-level differentiation
+- option_default_channel_differentiation_workflow : true  # classify requests based on their workflow-id
+- option_default_channel_differentiation_operation_type : false # classify requests based on their operation type
+- option_default_channel_differentiation_operation_context : false  # classify requests based on their operation context
+
+Context identifier
+- option_default_context_type : ContextType::POSIX  # class of operations to consider
+- option_default_statistic_classifier : ClassifierType::operation_type  # type of classifier to be used on statistic counting
+```
 
 
 #### Simple test
