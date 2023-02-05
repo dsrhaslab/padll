@@ -74,8 +74,9 @@ ThreadResults stress_test (FILE* fd,
     // cycle of syscall submission
     for (uint64_t i = 1; i <= total_ops; i++) {
         auto fd = ::open (pathname.c_str (), O_CREAT, 0666);
-        
-        // if open operation is really being submitted to the file system, we should close the resulting file descriptor to prevent a 'too many open files' error
+
+        // if open operation is really being submitted to the file system, we should close the
+        // resulting file descriptor to prevent a 'too many open files' error
         if (!shadow_op) {
             ::close (fd);
         }
@@ -284,7 +285,8 @@ MergedResults execute_run (FILE* fd,
                      bool shadow_op,
                      bool print) {
         // execute stress test
-        ThreadResults thread_results = stress_test (fd, pathname, op_size, total_ops, shadow_op, print);
+        ThreadResults thread_results
+            = stress_test (fd, pathname, op_size, total_ops, shadow_op, print);
         {
             std::unique_lock<std::mutex> unique_lock (lock);
             record_stress_test_results (&results, thread_results);
