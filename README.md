@@ -153,11 +153,108 @@ Context identifier
 
 #### Simple test
 
+A straightforward example on how to use and test PADLL is with the `padll_scalability_bench`.
+
 ```shell
-$ cd padll/tests/posix
-$ g++ simple_test.cpp -o simple_test
-$ cd ..
+$ cd path/to/padll
+$ ./build/padll_scalability_bench 1 1 1000000  # <number-of-runs> <number-of-working-threads (same as workflows)> <number-of-operations>
 ```
+This is a simple benchmark that generates POSIX `open` calls in a closed-loop, based on a configurable number of threads and total of operations.
+The expected result (depicted below) shows that the benchmark can submit approximately 531kops (only `open` operations).
+
+```shell
+Date:      2023-02-05 11:53:47
+CPU:       6 * Intel(R) Core(TM) i5-9500 CPU @ 3.00GHz
+CPUCache:  9216 KB
+------------------------------------
+Executing ./padll_scalability_bench: 1 runs -- 1 threads -- 1000000 ops
+Starting worker thread #1 (140453677164288) ...
+Joining worker thread #1 (140453677164288) ...
+Run: 1
+	IOPS (KOps/s):	531.782
+	Thr (GiB/s):	0.000
+```
+
+Now let's consider a scenario where one wants to rate limit `open` operations to 20kops/s.
+For this, we should differentiate requests by their *operation type* and configure a token-bucket to service all opens at 20kops/s.
+
+**PADLL configurations: libc-calls and options header**
+```yaml
+# include/padll/configurations/libc_calls.hpp
+padll_intercept_open_var : true
+padll_intercept_open : true
+# remainder calls are set to false
+
+#############
+
+# include/padll/options/options.hpp
+main_path : "/path/to/padll/files/" # PADLL will run in standalone mode; thus, this should set for passing the correct housekeeping rules
+option_default_hsk_rules_file : "hsk-simple-test"
+option_sync_with_controller : false
+```
+
+**PAIO configurations: options header**
+```yaml
+# include/paio/options/options.hpp
+option_default_ld_preload_enabled : true
+option_create_default_channels : false
+option_default_channel_differentiation_workflow : false
+option_default_channel_differentiation_operation_type : true
+option_default_channel_differentiation_operation_context : false
+option_default_statistic_classifier : ClassifierType::operation_type
+option_default_context_type : ContextType::POSIX
+```
+
+After configuring both PAIO and PADLL, just run the `padll_scalability_bench` benchmark, attaching the LD_PRELOAD hook for the PADLL library.
+
+```shell
+$ cd path/to/padll
+$ export padll_workflows=1  # preload number of workflows with PADLL
+$ LD_PRELOAD=$PATH_PADLL/libpadll.so ./build/padll_scalability_bench 1 1 1000000  # <number-of-runs> <number-of-working-threads (same as workflows)> <number-of-operations>
+```
+
+**Example of expected results w/ PADLL (stdout):**
+```shell
+Date:      2023-02-05 12:05:18
+CPU:       6 * Intel(R) Core(TM) i5-9500 CPU @ 3.00GHz
+CPUCache:  9216 KB
+------------------------------------
+Executing ./padll_scalability_bench: 1 runs -- 1 threads -- 1000000 ops
+Starting worker thread #1 (139813909808896) ...
+Joining worker thread #1 (139813909808896) ...
+Run: 1
+	IOPS (KOps/s):	19.463
+	Thr (GiB/s):	0.000
+----------------------------------
+```
+
+**LD_PRELOAD report:** POSIX operations rate limited with PADLL.
+```shell
+$ cat /tmp/padll-ldpreloaded-stats-<pid>.stat
+----------------------------------------------------------------------
+LdPreloadedPosix Statistics
+----------------------------------------------------------------------
+        syscall        calls       errors     bypassed           bytes
+        -------        -----       ------     --------           -----
+  open_variadic      1000000            0            0               0
+```
+
+**Passthrough report:** POSIX operations intercepted with PADLL but not rate limited.
+```shell
+$ cat /tmp/padll-passthrough-stats-<pid>.stat
+----------------------------------------------------------------------
+PosixPassthrough Statistics
+----------------------------------------------------------------------
+        syscall        calls       errors     bypassed           bytes
+        -------        -----       ------     --------           -----
+          close      1000000            0            0               0
+          fopen            4            0            0               0
+        fopen64            1            0            0               0
+         fclose            4            0            0               0
+        -------        -----       ------     --------           -----
+           read            2            0            0             101
+```
+
 
 #### PADLL scalability benchmark
 
