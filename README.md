@@ -70,6 +70,7 @@ $ cd /path/to/dir   # select the path to clone the PADLL github repository
 $ $ git clone https://github.com/dsrhaslab/padll.git
 $ cd padll
 $ git checkout v1.0.0
+$ vi CMakeLists.txt   # line19: set path to the PAIO build
 $ mkdir build; cd build;
 $ cmake ..
 $ cmake --build .
