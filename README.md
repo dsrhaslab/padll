@@ -150,8 +150,9 @@ Context identifier
 - option_default_statistic_classifier : ClassifierType::operation_type  # type of classifier to be used on statistic counting
 ```
 
+***
 
-#### Simple test
+### Simple test
 
 A straightforward example on how to use and test PADLL is with the `padll_scalability_bench`.
 
@@ -181,28 +182,28 @@ For this, we should differentiate requests by their *operation type* and configu
 **PADLL configurations: libc-calls and options header**
 ```yaml
 # include/padll/configurations/libc_calls.hpp
-padll_intercept_open_var : true
-padll_intercept_open : true
+- padll_intercept_open_var : true
+- padll_intercept_open : true
 # remainder calls are set to false
 
-#############
+# ---
 
 # include/padll/options/options.hpp
-main_path : "/path/to/padll/files/" # PADLL will run in standalone mode; thus, this should set for passing the correct housekeeping rules
-option_default_hsk_rules_file : "hsk-simple-test"
-option_sync_with_controller : false
+- main_path : "/path/to/padll/files/" # PADLL will run in standalone mode; thus, this should set for passing the correct housekeeping rules
+- option_default_hsk_rules_file : "hsk-simple-test"
+- option_sync_with_controller : false
 ```
 
 **PAIO configurations: options header**
 ```yaml
 # include/paio/options/options.hpp
-option_default_ld_preload_enabled : true
-option_create_default_channels : false
-option_default_channel_differentiation_workflow : false
-option_default_channel_differentiation_operation_type : true
-option_default_channel_differentiation_operation_context : false
-option_default_statistic_classifier : ClassifierType::operation_type
-option_default_context_type : ContextType::POSIX
+- option_default_ld_preload_enabled : true
+- option_create_default_channels : false
+- option_default_channel_differentiation_workflow : false
+- option_default_channel_differentiation_operation_type : true
+- option_default_channel_differentiation_operation_context : false
+- option_default_statistic_classifier : ClassifierType::operation_type
+- option_default_context_type : ContextType::POSIX
 ```
 
 After configuring both PAIO and PADLL, just run the `padll_scalability_bench` benchmark, attaching the LD_PRELOAD hook for the PADLL library.
@@ -256,17 +257,25 @@ PosixPassthrough Statistics
 ```
 
 
-#### PADLL scalability benchmark
+### Scalability test
 
 ```shell
 $ cd /path/to/padll
 $ LD_PRELOAD=$PATH_PADLL/libpadll.so ./build/padll_scalability_bench
 ```
 
-#### PADLL paper experiments
+### Connecting to the Cheferd control plane
 
+To execute with the [Cheferd](https://github.com/dsrhaslab/cheferd) control plane, one must set the following configurations at the options header file ([options.hpp](https://github.com/dsrhaslab/padll/blob/master/include/padll/options/options.hpp)). 
+Further instructions on how to use the control plane can be found at the [Cheferd repository](https://github.com/dsrhaslab/cheferd).
 
+```yaml
+Connection to control plane and standalone mode
+- option_sync_with_controller : true
+- option_default_connection_address_env : "cheferd_local_address" # connection to a UNIX Domain Socket (e.g., "/tmp/0.0.0.0:50054.socket")
+```
 
+***
 
 ## Acknowledgments
 >We thank the [National Institute of Advanced Industrial Science and Technologies (AIST)](https://www.aist.go.jp/index_en.html)
