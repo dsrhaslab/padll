@@ -6,6 +6,11 @@
 #ifndef PADLL_LIBC_CALLS_HPP
 #define PADLL_LIBC_CALLS_HPP
 
+/**
+ * PosixDataCalls struct.
+ * Defines which data-based POSIX operations (read, write, ...) should be handled by PADLL.
+ * Operations set to false will follow the passthrough workflow.
+ */
 struct PosixDataCalls {
     bool padll_intercept_read = false;
     bool padll_intercept_write = false;
@@ -19,6 +24,11 @@ struct PosixDataCalls {
     bool padll_intercept_munmap = false;
 };
 
+/**
+ * PosixDirectoryCalls struct.
+ * Defines which directory-based POSIX operations (mkdir, mknod, ...) should be handled by PADLL.
+ * Operations set to false will follow the passthrough workflow.
+ */
 struct PosixDirectoryCalls {
     bool padll_intercept_mkdir = false;
     bool padll_intercept_mkdirat = false;
@@ -27,6 +37,11 @@ struct PosixDirectoryCalls {
     bool padll_intercept_mknodat = false;
 };
 
+/**
+ * PosixExtendedAttributesCalls struct.
+ * Defines which extended attributes based POSIX operations (getxattr, setxattr, ...) should be
+ * handled by PADLL. Operations set to false will follow the passthrough workflow.
+ */
 struct PosixExtendedAttributesCalls {
     bool padll_intercept_getxattr = false;
     bool padll_intercept_lgetxattr = false;
@@ -39,6 +54,11 @@ struct PosixExtendedAttributesCalls {
     bool padll_intercept_flistxattr = false;
 };
 
+/**
+ * PosixMetadataCalls struct.
+ * Defines which metadata-based POSIX operations (open, close, unlink, ...) should be handled by
+ * PADLL. Operations set to false will follow the passthrough workflow.
+ */
 struct PosixMetadataCalls {
     bool padll_intercept_open_var = true;
     bool padll_intercept_open = true;
@@ -63,6 +83,11 @@ struct PosixMetadataCalls {
     bool padll_intercept_fclose = false;
 };
 
+/**
+ * PosixSpecialCalls struct.
+ * Defines special POSIX operations that should be managed with PADLL, for internal organization
+ * (for example, both ::socket and ::fcntl calls generate file descriptors).
+ */
 struct PosixSpecialCalls {
     bool padll_intercept_socket = false;
     bool padll_intercept_fcntl = false;

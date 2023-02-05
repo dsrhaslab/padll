@@ -16,8 +16,7 @@ option(PADLL_BUILD_BENCHMARKS "Build benchmarks" ON)
 option(FETCH_FROM_GIT "Fetch PAIO repo from github" OFF)
 
 # Path to (local) PAIO lib
-set(PAIO_LOCAL_PATH "/home/gsd/hpdc22/paio/build")
-# set(PAIO_LOCAL_PATH "/path/to/paio/build")
+set(PAIO_LOCAL_PATH "/path/to/paio/build")
 
 # Setup the basic C++ Compiler flags
 if (APPLE)

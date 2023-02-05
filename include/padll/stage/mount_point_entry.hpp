@@ -17,9 +17,7 @@ namespace padll::stage {
 
 /**
  * MountPointEntry class.
- * Complete me ...
- *  - m_metadata_server_unit: is used to identify to which MDS/MDT server the MountPointEntry (and
- * the file) belongs.
+ * This class is used to register the mountpoints to be considered by the PADLL data plane.
  */
 class MountPointEntry {
 
@@ -37,16 +35,16 @@ public:
 
     /**
      * MountPointEntry parameterized constructor.
-     * @param path
-     * @param mount_point
+     * @param path Path name to be registered as a new MountPointEntry.
+     * @param mount_point Enum that defines if the path is a local or remote mountpoint.
      */
     MountPointEntry (const std::string& path, const MountPoint& mount_point);
 
     /**
      * MountPointEntry parameterized constructor.
-     * @param path
-     * @param mount_point
-     * @param metadata_instance
+     * @param path Path name to be registered as a new MountPointEntry.
+     * @param mount_point Enum that defines if the path is a local or remote mountpoint.
+     * @param metadata_instance Work-in-progress.
      */
     MountPointEntry (const std::string& path,
         const MountPoint& mount_point,
@@ -58,26 +56,26 @@ public:
     ~MountPointEntry ();
 
     /**
-     * get_path:
-     * @return
+     * get_path: get pathname of the MountPointEntry object.
+     * @return Returns a const value of m_path.
      */
     [[nodiscard]] const std::string& get_path () const;
 
     /**
-     * get_mount_point:
-     * @return
+     * get_mount_point: get the mountpoint type of the MountPointEntry object.
+     * @return Returns a const value of m_mount_point.
      */
     [[nodiscard]] const MountPoint& get_mount_point () const;
 
     /**
-     * get_metadata_server_unit:
+     * get_metadata_server_unit: work-in-progress.
      * @return
      */
     [[nodiscard]] const uint32_t& get_metadata_server_unit () const;
 
     /**
-     * to_string:
-     * @return
+     * to_string: create a string with the MountPointEntry object data.
+     * @return Returns the information of the MountPointEntry in string-based format.
      */
     [[nodiscard]] std::string to_string () const;
 };

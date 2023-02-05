@@ -50,8 +50,6 @@ ldp::LdPreloadedPosix m_ld_preloaded_posix { std::string (option_library_name),
  * init_method: constructor of the PosixFileSystem.
  * This method is executed before the program executes its main (). Under shared objects, this
  * occurs at load time.
- * The method needs to use printf instead of std::cout due to a static initialization order problem.
- * (https://stackoverflow.com/questions/16746166/using-cout-in-constructor-gives-segmentation-fault)
  */
 static __attribute__ ((constructor)) void init_method ()
 {
@@ -68,7 +66,8 @@ static __attribute__ ((destructor)) void destroy_method ()
 }
 
 /**
- * read:
+ * read: intercept POSIX read. Operation will be submitted to passthrough or enforced (rate limited)
+ * depending on the PosixDataCalls configurations.
  * @param fd
  * @param buf
  * @param size
@@ -89,7 +88,8 @@ extern "C" ssize_t read (int fd, void* buf, size_t size)
 }
 
 /**
- * write:
+ * write: intercept POSIX write. Operation will be submitted to passthrough or enforced (rate
+ * limited) depending on the PosixDataCalls configurations.
  * @param fd
  * @param buf
  * @param size
@@ -110,7 +110,8 @@ extern "C" ssize_t write (int fd, const void* buf, size_t size)
 }
 
 /**
- * pread:
+ * pread: intercept POSIX pread. Operation will be submitted to passthrough or enforced (rate
+ * limited) depending on the PosixDataCalls configurations.
  * @param fd
  * @param buf
  * @param size
@@ -132,7 +133,8 @@ extern "C" ssize_t pread (int fd, void* buf, size_t size, off_t offset)
 }
 
 /**
- * pwrite:
+ * pwrite: intercept POSIX pwrite. Operation will be submitted to passthrough or enforced (rate
+ * limited) depending on the PosixDataCalls configurations.
  * @param fd
  * @param buf
  * @param size
@@ -154,7 +156,8 @@ extern "C" ssize_t pwrite (int fd, const void* buf, size_t size, off_t offset)
 }
 
 /**
- * pread64:
+ * pread64: intercept POSIX pread64. Operation will be submitted to passthrough or enforced (rate
+ * limited) depending on the PosixDataCalls configurations.
  * @param fd
  * @param buf
  * @param size
@@ -178,7 +181,8 @@ extern "C" ssize_t pread64 (int fd, void* buf, size_t size, off64_t offset)
 #endif
 
 /**
- * pwrite64:
+ * pwrite64: intercept POSIX pwrite64. Operation will be submitted to passthrough or enforced (rate
+ * limited) depending on the PosixDataCalls configurations.
  * @param fd
  * @param buf
  * @param size
@@ -202,7 +206,8 @@ extern "C" ssize_t pwrite64 (int fd, const void* buf, size_t size, off64_t offse
 #endif
 
 /**
- * mmap:
+ * mmap: intercept POSIX mmap. Operation will be submitted to passthrough or enforced (rate limited)
+ * depending on the PosixDataCalls configurations.
  * @param addr
  * @param length
  * @param prot
@@ -224,7 +229,8 @@ extern "C" void* mmap (void* addr, size_t length, int prot, int flags, int fd, o
 }
 
 /**
- * munmap:
+ * munmap: intercept POSIX munmap. Operation will be submitted to passthrough or enforced (rate
+ * limited) depending on the PosixDataCalls configurations.
  * @param addr
  * @param length
  * @return
@@ -242,7 +248,8 @@ extern "C" int munmap (void* addr, size_t length)
 }
 
 /**
- * open:
+ * open: intercept POSIX open. Operation will be submitted to passthrough or enforced (rate limited)
+ * depending on the MetadataDataCalls configurations.
  * @param path
  * @param flags
  * @param ...
@@ -273,7 +280,8 @@ extern "C" int open (const char* path, int flags, ...)
 }
 
 /**
- * creat:
+ * creat: intercept POSIX creat. Operation will be submitted to passthrough or enforced (rate
+ * limited) depending on the MetadataDataCalls configurations.
  * @param path
  * @param mode
  * @return
@@ -291,7 +299,8 @@ extern "C" int creat (const char* path, mode_t mode)
 }
 
 /**
- * creat64:
+ * creat64: intercept POSIX creat64. Operation will be submitted to passthrough or enforced (rate
+ * limited) depending on the MetadataDataCalls configurations.
  * @param path
  * @param mode
  * @return
@@ -309,7 +318,8 @@ extern "C" int creat64 (const char* path, mode_t mode)
 }
 
 /**
- * openat:
+ * openat: intercept POSIX openat. Operation will be submitted to passthrough or enforced (rate
+ * limited) depending on the MetadataDataCalls configurations.
  * @param dirfd
  * @param path
  * @param flags
@@ -343,7 +353,8 @@ extern "C" int openat (int dirfd, const char* path, int flags, ...)
 }
 
 /**
- * open64:
+ * open64: intercept POSIX open64. Operation will be submitted to passthrough or enforced (rate
+ * limited) depending on the MetadataDataCalls configurations.
  * @param path
  * @param flags
  * @param ...
@@ -374,7 +385,8 @@ extern "C" int open64 (const char* path, int flags, ...)
 }
 
 /**
- * close:
+ * close: intercept POSIX close. Operation will be submitted to passthrough or enforced (rate
+ * limited) depending on the MetadataDataCalls configurations.
  * @param fd
  * @return
  */
@@ -391,7 +403,8 @@ extern "C" int close (int fd)
 }
 
 /**
- * sync:
+ * sync: intercept POSIX sync. Operation will be submitted to passthrough or enforced (rate limited)
+ * depending on the MetadataDataCalls configurations.
  */
 extern "C" void sync ()
 {
@@ -406,7 +419,8 @@ extern "C" void sync ()
 }
 
 /**
- * statfs:
+ * statfs: intercept POSIX statfs. Operation will be submitted to passthrough or enforced (rate
+ * limited) depending on the MetadataDataCalls configurations.
  * @param path
  * @param buf
  * @return
@@ -424,7 +438,8 @@ extern "C" int statfs (const char* path, struct statfs* buf)
 }
 
 /**
- * fstatfs:
+ * fstatfs: intercept POSIX fstatfs. Operation will be submitted to passthrough or enforced (rate
+ * limited) depending on the MetadataDataCalls configurations.
  * @param fd
  * @param buf
  * @return
@@ -442,7 +457,8 @@ extern "C" int fstatfs (int fd, struct statfs* buf)
 }
 
 /**
- * statfs64:
+ * statfs64: intercept POSIX statfs64. Operation will be submitted to passthrough or enforced (rate
+ * limited) depending on the MetadataDataCalls configurations.
  * @param path
  * @param buf
  * @return
@@ -460,7 +476,8 @@ extern "C" int statfs64 (const char* path, struct statfs64* buf)
 }
 
 /**
- * fstatfs64:
+ * fstatfs64: intercept POSIX fstatfs64. Operation will be submitted to passthrough or enforced
+ * (rate limited) depending on the MetadataDataCalls configurations.
  * @param fd
  * @param buf
  * @return
@@ -478,7 +495,8 @@ extern "C" int fstatfs64 (int fd, struct statfs64* buf)
 }
 
 /**
- * unlink:
+ * unlink: intercept POSIX unlink. Operation will be submitted to passthrough or enforced (rate
+ * limited) depending on the MetadataDataCalls configurations.
  * @param path
  * @return
  */
@@ -495,7 +513,8 @@ extern "C" int unlink (const char* path)
 }
 
 /**
- * unlinkat:
+ * unlinkat: intercept POSIX unlinkat. Operation will be submitted to passthrough or enforced (rate
+ * limited) depending on the MetadataDataCalls configurations.
  * @param dirfd
  * @param pathname
  * @param flags
@@ -516,7 +535,8 @@ extern "C" int unlinkat (int dirfd, const char* pathname, int flags)
 }
 
 /**
- * rename:
+ * rename: intercept POSIX rename. Operation will be submitted to passthrough or enforced (rate
+ * limited) depending on the MetadataDataCalls configurations.
  *  https://man7.org/linux/man-pages/man2/rename.2.html
  * @param old_path
  * @param new_path
@@ -535,7 +555,8 @@ extern "C" int rename (const char* old_path, const char* new_path)
 }
 
 /**
- * renameat:
+ * renameat: intercept POSIX renameat. Operation will be submitted to passthrough or enforced (rate
+ * limited) depending on the MetadataDataCalls configurations.
  *  https://man7.org/linux/man-pages/man2/renameat.2.html
  * @param olddirfd
  * @param old_path
@@ -556,7 +577,8 @@ extern "C" int renameat (int olddirfd, const char* old_path, int newdirfd, const
 }
 
 /**
- * fopen:
+ * fopen: intercept POSIX fopen. Operation will be submitted to passthrough or enforced (rate
+ * limited) depending on the MetadataDataCalls configurations.
  * @param pathname
  * @param mode
  * @return
@@ -574,7 +596,8 @@ extern "C" FILE* fopen (const char* pathname, const char* mode)
 }
 
 /**
- * fopen64:
+ * fopen64: intercept POSIX fopen64. Operation will be submitted to passthrough or enforced (rate
+ * limited) depending on the MetadataDataCalls configurations.
  * @param pathname
  * @param mode
  * @return
@@ -592,7 +615,8 @@ extern "C" FILE* fopen64 (const char* pathname, const char* mode)
 }
 
 /**
- * fclose:
+ * fclose: intercept POSIX fclose. Operation will be submitted to passthrough or enforced (rate
+ * limited) depending on the MetadataDataCalls configurations.
  * @param stream
  * @return
  */
@@ -604,7 +628,8 @@ extern "C" int fclose (FILE* stream)
 }
 
 /**
- * mkdir:
+ * mkdir: intercept POSIX mkdir. Operation will be submitted to passthrough or enforced (rate
+ * limited) depending on the DirectoryCalls configurations.
  * @param path
  * @param mode
  * @return
@@ -622,7 +647,8 @@ extern "C" int mkdir (const char* path, mode_t mode)
 }
 
 /**
- * mkdirat:
+ * mkdirat: intercept POSIX mkdirat. Operation will be submitted to passthrough or enforced (rate
+ * limited) depending on the DirectoryCalls configurations.
  * @param dirfd
  * @param path
  * @param mode
@@ -643,7 +669,8 @@ extern "C" int mkdirat (int dirfd, const char* path, mode_t mode)
 }
 
 /**
- * rmdir:
+ * rmdir: intercept POSIX rmdir. Operation will be submitted to passthrough or enforced (rate
+ * limited) depending on the DirectoryCalls configurations.
  * @param path
  * @return
  */
@@ -660,7 +687,8 @@ extern "C" int rmdir (const char* path)
 }
 
 /**
- * mknod:
+ * mknod: intercept POSIX mknod. Operation will be submitted to passthrough or enforced (rate
+ * limited) depending on the DirectoryCalls configurations.
  * @param path
  * @param mode
  * @param dev
@@ -679,7 +707,8 @@ extern "C" int mknod (const char* path, mode_t mode, dev_t dev)
 }
 
 /**
- * mknodat:
+ * mknodat: intercept POSIX mknodat. Operation will be submitted to passthrough or enforced (rate
+ * limited) depending on the DirectoryCalls configurations.
  * @param dirfd
  * @param path
  * @param mode
@@ -701,7 +730,8 @@ extern "C" int mknodat (int dirfd, const char* path, mode_t mode, dev_t dev)
 }
 
 /**
- * getxattr:
+ * getxattr: intercept POSIX getxattr. Operation will be submitted to passthrough or enforced (rate
+ * limited) depending on the ExtendedAttributesCalls configurations.
  * @param path
  * @param name
  * @param value
@@ -723,7 +753,8 @@ extern "C" ssize_t getxattr (const char* path, const char* name, void* value, si
 #endif
 
 /**
- * lgetxattr:
+ * lgetxattr: intercept POSIX lgetxattr. Operation will be submitted to passthrough or enforced
+ * (rate limited) depending on the ExtendedAttributesCalls configurations.
  * @param path
  * @param name
  * @param value
@@ -743,7 +774,8 @@ extern "C" ssize_t lgetxattr (const char* path, const char* name, void* value, s
 }
 
 /**
- * fgetxattr:
+ * fgetxattr: intercept POSIX fgetxattr. Operation will be submitted to passthrough or enforced
+ * (rate limited) depending on the ExtendedAttributesCalls configurations.
  * @param fd
  * @param name
  * @param value
@@ -767,7 +799,8 @@ extern "C" ssize_t fgetxattr (int fd, const char* name, void* value, size_t size
 #endif
 
 /**
- * setxattr:
+ * setxattr: intercept POSIX setxattr. Operation will be submitted to passthrough or enforced (rate
+ * limited) depending on the ExtendedAttributesCalls configurations.
  * @param path
  * @param name
  * @param value
@@ -791,7 +824,8 @@ setxattr (const char* path, const char* name, const void* value, size_t size, in
 #endif
 
 /**
- * lsetxattr:
+ * lsetxattr: intercept POSIX lsetxattr. Operation will be submitted to passthrough or enforced
+ * (rate limited) depending on the ExtendedAttributesCalls configurations.
  * @param path
  * @param name
  * @param value
@@ -813,7 +847,8 @@ lsetxattr (const char* path, const char* name, const void* value, size_t size, i
 }
 
 /**
- * fsetxattr:
+ * fsetxattr: intercept POSIX fsetxattr. Operation will be submitted to passthrough or enforced
+ * (rate limited) depending on the ExtendedAttributesCalls configurations.
  * @param fd
  * @param name
  * @param value
@@ -838,7 +873,8 @@ extern "C" int fsetxattr (int fd, const char* name, const void* value, size_t si
 #endif
 
 /**
- * listxattr:
+ * listxattr: intercept POSIX listxattr. Operation will be submitted to passthrough or enforced
+ * (rate limited) depending on the ExtendedAttributesCalls configurations.
  * @param path
  * @param list
  * @param size
@@ -859,7 +895,8 @@ extern "C" ssize_t listxattr (const char* path, char* list, size_t size)
 #endif
 
 /**
- * llistxattr:
+ * llistxattr: intercept POSIX llistxattr. Operation will be submitted to passthrough or enforced
+ * (rate limited) depending on the ExtendedAttributesCalls configurations.
  * @param path
  * @param list
  * @param size
@@ -878,7 +915,8 @@ extern "C" ssize_t llistxattr (const char* path, char* list, size_t size)
 }
 
 /**
- * flistxattr:
+ * flistxattr: intercept POSIX flistxattr. Operation will be submitted to passthrough or enforced
+ * (rate limited) depending on the ExtendedAttributesCalls configurations.
  * @param fd
  * @param list
  * @param size
@@ -899,7 +937,8 @@ extern "C" ssize_t flistxattr (int fd, char* list, size_t size)
 #endif
 
 /**
- * socket:
+ * socket: intercept POSIX socket. Operation will be submitted to passthrough or enforced (rate
+ * limited) depending on the SpecialCalls configurations.
  * @param domain
  * @param type
  * @param protocol
@@ -918,7 +957,8 @@ extern "C" int socket (int domain, int type, int protocol)
 }
 
 /**
- * fcntl:
+ * fcntl: intercept POSIX fcntl. Operation will be submitted to passthrough or enforced (rate
+ * limited) depending on the SpecialCalls configurations.
  * @param fd
  * @param cmd
  */

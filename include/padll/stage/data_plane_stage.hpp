@@ -16,6 +16,11 @@ using namespace padll::utils::log;
 
 namespace padll::stage {
 
+/**
+ * DataPlaneStage class.
+ * This class handles all logic to submit requests to the PAIO data plane stage to be enforced (rate
+ * limited).
+ */
 class DataPlaneStage {
 
 private:
@@ -25,21 +30,22 @@ private:
     paio::options::CommunicationType m_communication_type {
         paio::options::CommunicationType::_unix
     };
-    std::string m_local_controller_address { this->set_local_connection_address () };
+    std::string m_local_controller_address { this->get_local_connection_address () };
     int m_local_controller_port { paio::options::option_default_port };
     std::shared_ptr<paio::PaioStage> m_stage { nullptr };
     std::unique_ptr<paio::PosixLayer> m_posix_instance { nullptr };
 
     /**
-     * set_stage_initialized:
-     * @param status
+     * set_stage_initialized: mark data plane stage as initialized.
+     * @param status Value to be set for stage initialization.
      */
     void set_stage_initialized (const bool& status);
 
     /**
-     * set_local_connection_address:
+     * get_local_connection_address: Get address for the data plane stage connection with local
+     * controller.
      */
-    std::string set_local_connection_address () const;
+    std::string get_local_connection_address () const;
 
 public:
     /**
@@ -50,14 +56,15 @@ public:
     /**
      * DataPlaneStage parameterized constructor.
      * This constructor is used when executing without control plane.
-     * @param log
-     * @param num_channels
-     * @param default_object_creation
-     * @param stage_name
-     * @param hsk_rules_path
-     * @param dif_rules_path
-     * @param enf_rules_path
-     * @param execute_on_receive
+     * @param log Shared pointer to a Logging object.
+     * @param num_channels Number of channels to be set in the data plane.
+     * @param default_object_creation Enable or disable default enforcement object creation, upon
+     * channel creation.
+     * @param stage_name Name of the data plane stage.
+     * @param hsk_rules_path Path to the housekeeping rules file.
+     * @param dif_rules_path Path to the differentiation rules file.
+     * @param enf_rules_path Path to the enforcement rules file.
+     * @param execute_on_receive Boolean to define if rules should be applied upon parsing.
      */
     DataPlaneStage (std::shared_ptr<Log> log_ptr,
         const int& num_channels,
@@ -71,10 +78,11 @@ public:
     /**
      * DataPlaneStage parameterized constructor.
      * This constructor is used when executing with control plane.
-     * @param log
-     * @param num_channels
-     * @param default_object_creation
-     * @param stage_name
+     * @param log Shared pointer to a Logging object.
+     * @param num_channels Number of channels to be set in the data plane.
+     * @param default_object_creation Enable or disable default enforcement object creation, upon
+     * channel creation.
+     * @param stage_name Name of the data plane stage.
      */
     DataPlaneStage (std::shared_ptr<Log> log_ptr,
         const int& num_channels,
@@ -87,11 +95,12 @@ public:
     ~DataPlaneStage ();
 
     /**
-     * enforce_request:
-     * @param workflow_id
-     * @param operation_type
-     * @param operation_context
-     * @param operation_size
+     * enforce_request: submit request to be enforced at the PAIO data plane stage.
+     * @param workflow_id Workflow identifier (used for channel selection).
+     * @param operation_type Operation type of the handled POSIX operation.
+     * @param operation_context Context of the handled POSIX operation (data, metadata, extended
+     * attributes, ...).
+     * @param operation_size Size of the operation (will be used to determine the cost).
      */
     void enforce_request (const uint32_t& workflow_id,
         const int& operation_type,

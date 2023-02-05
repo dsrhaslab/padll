@@ -1,9 +1,8 @@
 #!/bin/bash
 
-# padll_path='/home1/07853/rgmacedo/padll/build'
 padll_path='path/to/padll/build'
 
-iops=100000000
+iops=10000000
 num_runs=1
 
 # $1 = number of stages
@@ -15,9 +14,9 @@ function Execute {
     export padll_workflows=$2
     for (( stage=1; stage<($1+1); stage++ )); do 
         LD_PRELOAD=$padll_path/libpadll.so $padll_path/padll_scalability_bench $num_runs $2 $iops $1  > /dev/null 2>&1 &
-    	echo "$?"
+    	# echo "$?"
     done
-    echo ""
+    echo ""; echo "Results are placed at /tmp/padll-scalability-results/."; echo ""; 
 }
 
 "$@"

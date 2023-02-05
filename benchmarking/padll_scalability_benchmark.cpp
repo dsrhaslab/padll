@@ -60,6 +60,7 @@ ThreadResults stress_test (FILE* fd,
     const std::string& pathname,
     const ssize_t& operation_size,
     const uint64_t& total_ops,
+    bool shadow_op,
     bool print_report)
 {
     // allocate memory for the request's buffer
@@ -72,7 +73,13 @@ ThreadResults stress_test (FILE* fd,
 
     // cycle of syscall submission
     for (uint64_t i = 1; i <= total_ops; i++) {
-        ::open (pathname.c_str (), O_CREAT, 0666);
+        auto fd = ::open (pathname.c_str (), O_CREAT, 0666);
+
+        // if open operation is really being submitted to the file system, we should close the
+        // resulting file descriptor to prevent a 'too many open files' error
+        if (!shadow_op) {
+            ::close (fd);
+        }
     }
     // calculate elapsed time
     auto end = std::chrono::high_resolution_clock::now ();
@@ -256,7 +263,8 @@ MergedResults execute_run (FILE* fd,
     uint32_t num_threads,
     const std::string& pathname,
     uint64_t total_ops,
-    ssize_t op_size)
+    ssize_t op_size,
+    bool shadow_op)
 {
     // create object to store cumulative performance results
     MergedResults results {};
@@ -274,9 +282,11 @@ MergedResults execute_run (FILE* fd,
                      const std::string& pathname,
                      const ssize_t& op_size,
                      const long& total_ops,
+                     bool shadow_op,
                      bool print) {
         // execute stress test
-        ThreadResults thread_results = stress_test (fd, pathname, op_size, total_ops, print);
+        ThreadResults thread_results
+            = stress_test (fd, pathname, op_size, total_ops, shadow_op, print);
         {
             std::unique_lock<std::mutex> unique_lock (lock);
             record_stress_test_results (&results, thread_results);
@@ -285,7 +295,7 @@ MergedResults execute_run (FILE* fd,
 
     // spawn worker threads
     for (unsigned int i = 1; i <= num_threads; i++) {
-        workers[i - 1] = std::thread (func, fd, pathname, op_size, total_ops, false);
+        workers[i - 1] = std::thread (func, fd, pathname, op_size, total_ops, shadow_op, false);
         std::cerr << "Starting worker thread #" << i << " (" << workers[i - 1].get_id () << ") ..."
                   << std::endl;
     }
@@ -372,7 +382,8 @@ void print_server_info (FILE* fd)
  *    - (paio) option_default_channel_differentiation_operation_type = false
  *    - (paio) option_default_channel_differentiation_operation_context = false
  * - Command:
- *  export padll_workflows=<total-workflows>; ./padll_scalability_bench <runs> <threads> <operations>
+ *  export padll_workflows=<total-workflows>; ./padll_scalability_bench <runs> <threads>
+ * <operations>
  */
 int main (int argc, char** argv)
 {
@@ -406,6 +417,7 @@ int main (int argc, char** argv)
     uint32_t num_threads { static_cast<uint32_t> (std::stoul (argv[2])) };
     long num_ops { std::stol (argv[3]) };
     long operation_size { 0 };
+    bool shadow_op { false };
     // int num_stages { std::stoi (argv[4]) };
 
     // create directory to store performance results
@@ -456,7 +468,8 @@ int main (int argc, char** argv)
             static_cast<uint32_t> (num_threads),
             syscall_pathname,
             static_cast<uint64_t> (num_ops),
-            static_cast<uint64_t> (operation_size));
+            static_cast<uint64_t> (operation_size),
+            shadow_op);
 
         // log results to file or stdout
         log_results (fd_run_report, results, print_detailed);

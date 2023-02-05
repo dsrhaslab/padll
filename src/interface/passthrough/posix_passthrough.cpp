@@ -6,10 +6,6 @@
 #include <padll/interface/passthrough/posix_passthrough.hpp>
 #include <utility>
 
-/**
- * Missing: passthrough_posix_open
- */
-
 namespace padll::interface::passthrough {
 
 // PosixPassthrough default constructor.
@@ -75,7 +71,7 @@ PosixPassthrough::~PosixPassthrough ()
     }
 }
 
-// to_string call. (...)
+// to_string call.
 std::string PosixPassthrough::to_string ()
 {
     std::stringstream stream;
@@ -89,10 +85,9 @@ std::string PosixPassthrough::to_string ()
     stream << this->m_special_stats.to_string (false);
 
     return stream.str ();
-    return stream.str ();
 }
 
-// generate_statistics_report call. (...)
+// generate_statistics_report call.
 void PosixPassthrough::generate_statistics_report (const std::string_view& path)
 {
     if (option_default_save_statistics_report) {
@@ -116,7 +111,7 @@ void PosixPassthrough::generate_statistics_report (const std::string_view& path)
     }
 }
 
-// dlopen_library_handle call. (...)
+// dlopen_library_handle call.
 bool PosixPassthrough::dlopen_library_handle ()
 {
     // unique_lock over mutex
@@ -130,7 +125,7 @@ bool PosixPassthrough::dlopen_library_handle ()
     return (this->m_lib_handle != nullptr);
 }
 
-// initialize call. (...)
+// initialize call.
 void PosixPassthrough::initialize ()
 {
     // assign pointer to m_lib_handle, and validate pointer
@@ -141,7 +136,7 @@ void PosixPassthrough::initialize ()
     }
 }
 
-// set_statistic_collection call. (...)
+// set_statistic_collection call.
 void PosixPassthrough::set_statistic_collection (bool value)
 {
     this->m_collect.store (value);
@@ -172,7 +167,7 @@ StatisticEntry PosixPassthrough::get_statistic_entry (const OperationType& opera
     }
 }
 
-// passthrough_posix_read call. (...)
+// passthrough_posix_read call.
 ssize_t PosixPassthrough::passthrough_posix_read (int fd, void* buf, size_t counter)
 {
     ssize_t result = ((libc_read_t)dlsym (RTLD_NEXT, "read")) (fd, buf, counter);
@@ -189,7 +184,7 @@ ssize_t PosixPassthrough::passthrough_posix_read (int fd, void* buf, size_t coun
     return result;
 }
 
-// passthrough_posix_write call. (...)
+// passthrough_posix_write call.
 ssize_t PosixPassthrough::passthrough_posix_write (int fd, const void* buf, size_t counter)
 {
     ssize_t result = ((libc_write_t)dlsym (RTLD_NEXT, "write")) (fd, buf, counter);
@@ -206,7 +201,7 @@ ssize_t PosixPassthrough::passthrough_posix_write (int fd, const void* buf, size
     return result;
 }
 
-// passthrough_posix_pread call. (...)
+// passthrough_posix_pread call.
 ssize_t PosixPassthrough::passthrough_posix_pread (int fd, void* buf, size_t counter, off_t offset)
 {
     ssize_t result = ((libc_pread_t)dlsym (RTLD_NEXT, "pread")) (fd, buf, counter, offset);
@@ -223,7 +218,7 @@ ssize_t PosixPassthrough::passthrough_posix_pread (int fd, void* buf, size_t cou
     return result;
 }
 
-// passthrough_posix_pwrite call. (...)
+// passthrough_posix_pwrite call.
 ssize_t
 PosixPassthrough::passthrough_posix_pwrite (int fd, const void* buf, size_t counter, off_t offset)
 {
@@ -241,7 +236,7 @@ PosixPassthrough::passthrough_posix_pwrite (int fd, const void* buf, size_t coun
     return result;
 }
 
-// passthrough_posix_pread64 call. (...)
+// passthrough_posix_pread64 call.
 #if defined(__USE_LARGEFILE64)
 ssize_t
 PosixPassthrough::passthrough_posix_pread64 (int fd, void* buf, size_t counter, off64_t offset)
@@ -261,7 +256,7 @@ PosixPassthrough::passthrough_posix_pread64 (int fd, void* buf, size_t counter, 
 }
 #endif
 
-// passthrough_posix_pwrite64 call. (...)
+// passthrough_posix_pwrite64 call.
 #if defined(__USE_LARGEFILE64)
 ssize_t PosixPassthrough::passthrough_posix_pwrite64 (int fd,
     const void* buf,
@@ -285,7 +280,7 @@ ssize_t PosixPassthrough::passthrough_posix_pwrite64 (int fd,
 }
 #endif
 
-// pass_through_posix_mmap call. (...)
+// pass_through_posix_mmap call.
 void* PosixPassthrough::passthrough_posix_mmap (void* addr,
     size_t length,
     int prot,
@@ -307,7 +302,7 @@ void* PosixPassthrough::passthrough_posix_mmap (void* addr,
     return result;
 }
 
-// pass_through_posix_munmap call. (...)
+// pass_through_posix_munmap call.
 int PosixPassthrough::passthrough_posix_munmap (void* addr, size_t length)
 {
     int result = ((libc_munmap_t)dlsym (RTLD_NEXT, "munmap")) (addr, length);
@@ -324,7 +319,7 @@ int PosixPassthrough::passthrough_posix_munmap (void* addr, size_t length)
     return result;
 }
 
-// passthrough_posix_open call. (...)
+// passthrough_posix_open call.
 int PosixPassthrough::passthrough_posix_open (const char* path, int flags, mode_t mode)
 {
     int result = ((libc_open_variadic_t)dlsym (RTLD_NEXT, "open")) (path, flags, mode);
@@ -345,7 +340,7 @@ int PosixPassthrough::passthrough_posix_open (const char* path, int flags, mode_
     return result;
 }
 
-// passthrough_posix_open call. (...)
+// passthrough_posix_open call.
 int PosixPassthrough::passthrough_posix_open (const char* path, int flags)
 {
     int result = ((libc_open_t)dlsym (RTLD_NEXT, "open")) (path, flags);
@@ -365,7 +360,7 @@ int PosixPassthrough::passthrough_posix_open (const char* path, int flags)
     return result;
 }
 
-// passthrough_posix_creat call. (...)
+// passthrough_posix_creat call.
 int PosixPassthrough::passthrough_posix_creat (const char* path, mode_t mode)
 {
     int result = ((libc_creat_t)dlsym (RTLD_NEXT, "creat")) (path, mode);
@@ -387,7 +382,7 @@ int PosixPassthrough::passthrough_posix_creat (const char* path, mode_t mode)
     return result;
 }
 
-// passthrough_posix_creat64 call. (...)
+// passthrough_posix_creat64 call.
 int PosixPassthrough::passthrough_posix_creat64 (const char* path, mode_t mode)
 {
     int result = ((libc_creat64_t)dlsym (RTLD_NEXT, "creat64")) (path, mode);
@@ -409,7 +404,7 @@ int PosixPassthrough::passthrough_posix_creat64 (const char* path, mode_t mode)
     return result;
 }
 
-// passthrough_posix_openat call. (...)
+// passthrough_posix_openat call.
 int PosixPassthrough::passthrough_posix_openat (int dirfd, const char* path, int flags, mode_t mode)
 {
     int result = ((libc_openat_variadic_t)dlsym (RTLD_NEXT, "openat")) (dirfd, path, flags, mode);
@@ -430,7 +425,7 @@ int PosixPassthrough::passthrough_posix_openat (int dirfd, const char* path, int
     return result;
 }
 
-// passthrough_posix_openat call. (...)
+// passthrough_posix_openat call.
 int PosixPassthrough::passthrough_posix_openat (int dirfd, const char* path, int flags)
 {
     int result = ((libc_openat_t)dlsym (RTLD_NEXT, "openat")) (dirfd, path, flags);
@@ -452,7 +447,7 @@ int PosixPassthrough::passthrough_posix_openat (int dirfd, const char* path, int
     return result;
 }
 
-// passthrough_posix_open64 call. (...)
+// passthrough_posix_open64 call.
 int PosixPassthrough::passthrough_posix_open64 (const char* path, int flags, mode_t mode)
 {
     int result = ((libc_open64_variadic_t)dlsym (RTLD_NEXT, "open64")) (path, flags, mode);
@@ -474,7 +469,7 @@ int PosixPassthrough::passthrough_posix_open64 (const char* path, int flags, mod
     return result;
 }
 
-// passthrough_posix_open64 call. (...)
+// passthrough_posix_open64 call.
 int PosixPassthrough::passthrough_posix_open64 (const char* path, int flags)
 {
     int result = ((libc_open64_t)dlsym (RTLD_NEXT, "open64")) (path, flags);
@@ -496,7 +491,7 @@ int PosixPassthrough::passthrough_posix_open64 (const char* path, int flags)
     return result;
 }
 
-// passthrough_posix_close call. (...)
+// passthrough_posix_close call.
 int PosixPassthrough::passthrough_posix_close (int fd)
 {
     int result = ((libc_close_t)dlsym (RTLD_NEXT, "close")) (fd);
@@ -518,7 +513,7 @@ int PosixPassthrough::passthrough_posix_close (int fd)
     return result;
 }
 
-// passthrough_posix_sync call. (...)
+// passthrough_posix_sync call.
 void PosixPassthrough::passthrough_posix_sync ()
 {
     return ((libc_sync_t)dlsym (RTLD_NEXT, "sync")) ();
@@ -529,7 +524,7 @@ void PosixPassthrough::passthrough_posix_sync ()
     }
 }
 
-// passthrough_posix_statfs call. (...)
+// passthrough_posix_statfs call.
 int PosixPassthrough::passthrough_posix_statfs (const char* path, struct statfs* buf)
 {
     int result = ((libc_statfs_t)dlsym (RTLD_NEXT, "statfs")) (path, buf);
@@ -551,7 +546,7 @@ int PosixPassthrough::passthrough_posix_statfs (const char* path, struct statfs*
     return result;
 }
 
-// passthrough_posix_fstatfs call. (...)
+// passthrough_posix_fstatfs call.
 int PosixPassthrough::passthrough_posix_fstatfs (int fd, struct statfs* buf)
 {
     int result = ((libc_fstatfs_t)dlsym (RTLD_NEXT, "fstatfs")) (fd, buf);
@@ -573,7 +568,7 @@ int PosixPassthrough::passthrough_posix_fstatfs (int fd, struct statfs* buf)
     return result;
 }
 
-// passthrough_posix_statfs64 call. (...)
+// passthrough_posix_statfs64 call.
 int PosixPassthrough::passthrough_posix_statfs64 (const char* path, struct statfs64* buf)
 {
     int result = ((libc_statfs64_t)dlsym (RTLD_NEXT, "statfs64")) (path, buf);
@@ -595,7 +590,7 @@ int PosixPassthrough::passthrough_posix_statfs64 (const char* path, struct statf
     return result;
 }
 
-// passthrough_posix_fstatfs64 call. (...)
+// passthrough_posix_fstatfs64 call.
 int PosixPassthrough::passthrough_posix_fstatfs64 (int fd, struct statfs64* buf)
 {
     int result = ((libc_fstatfs64_t)dlsym (RTLD_NEXT, "fstatfs64")) (fd, buf);
@@ -617,7 +612,7 @@ int PosixPassthrough::passthrough_posix_fstatfs64 (int fd, struct statfs64* buf)
     return result;
 }
 
-// passthrough_posix_unlink call. (...)
+// passthrough_posix_unlink call.
 int PosixPassthrough::passthrough_posix_unlink (const char* old_path)
 {
     int result = ((libc_unlink_t)dlsym (RTLD_NEXT, "unlink")) (old_path);
@@ -639,7 +634,7 @@ int PosixPassthrough::passthrough_posix_unlink (const char* old_path)
     return result;
 }
 
-// passthrough_posix_unlinkat call. (...)
+// passthrough_posix_unlinkat call.
 int PosixPassthrough::passthrough_posix_unlinkat (int dirfd, const char* pathname, int flags)
 {
     int result = ((libc_unlinkat_t)dlsym (RTLD_NEXT, "unlinkat")) (dirfd, pathname, flags);
@@ -661,7 +656,7 @@ int PosixPassthrough::passthrough_posix_unlinkat (int dirfd, const char* pathnam
     return result;
 }
 
-// passthrough_posix_rename call. (...)
+// passthrough_posix_rename call.
 int PosixPassthrough::passthrough_posix_rename (const char* old_path, const char* new_path)
 {
     int result = ((libc_rename_t)dlsym (RTLD_NEXT, "rename")) (old_path, new_path);
@@ -683,7 +678,7 @@ int PosixPassthrough::passthrough_posix_rename (const char* old_path, const char
     return result;
 }
 
-// passthrough_posix_renameat call. (...)
+// passthrough_posix_renameat call.
 int PosixPassthrough::passthrough_posix_renameat (int olddirfd,
     const char* old_path,
     int newdirfd,
@@ -709,7 +704,7 @@ int PosixPassthrough::passthrough_posix_renameat (int olddirfd,
     return result;
 }
 
-// passthrough_posix_fopen call. (...)
+// passthrough_posix_fopen call.
 FILE* PosixPassthrough::passthrough_posix_fopen (const char* pathname, const char* mode)
 {
     FILE* result = ((libc_fopen_t)dlsym (RTLD_NEXT, "fopen")) (pathname, mode);
@@ -731,7 +726,7 @@ FILE* PosixPassthrough::passthrough_posix_fopen (const char* pathname, const cha
     return result;
 }
 
-// passthrough_posix_fopen64 call. (...)
+// passthrough_posix_fopen64 call.
 FILE* PosixPassthrough::passthrough_posix_fopen64 (const char* pathname, const char* mode)
 {
     FILE* result = ((libc_fopen64_t)dlsym (RTLD_NEXT, "fopen64")) (pathname, mode);
@@ -753,7 +748,7 @@ FILE* PosixPassthrough::passthrough_posix_fopen64 (const char* pathname, const c
     return result;
 }
 
-// passthrough_posix_fclose call. (...)
+// passthrough_posix_fclose call.
 int PosixPassthrough::passthrough_posix_fclose (FILE* stream)
 {
     int result = ((libc_fclose_t)dlsym (RTLD_NEXT, "fclose")) (stream);
@@ -775,7 +770,7 @@ int PosixPassthrough::passthrough_posix_fclose (FILE* stream)
     return result;
 }
 
-// passthrough_posix_mkdir call. (...)
+// passthrough_posix_mkdir call.
 int PosixPassthrough::passthrough_posix_mkdir (const char* path, mode_t mode)
 {
     int result = ((libc_mkdir_t)dlsym (RTLD_NEXT, "mkdir")) (path, mode);
@@ -792,7 +787,7 @@ int PosixPassthrough::passthrough_posix_mkdir (const char* path, mode_t mode)
     return result;
 }
 
-// passthrough_posix_mkdirat call. (...)
+// passthrough_posix_mkdirat call.
 int PosixPassthrough::passthrough_posix_mkdirat (int dirfd, const char* path, mode_t mode)
 {
     int result = ((libc_mkdirat_t)dlsym (RTLD_NEXT, "mkdirat")) (dirfd, path, mode);
@@ -812,7 +807,7 @@ int PosixPassthrough::passthrough_posix_mkdirat (int dirfd, const char* path, mo
     return result;
 }
 
-// passthrough_posix_rmdir call. (...)
+// passthrough_posix_rmdir call.
 int PosixPassthrough::passthrough_posix_rmdir (const char* path)
 {
     int result = ((libc_rmdir_t)dlsym (RTLD_NEXT, "rmdir")) (path);
@@ -829,7 +824,7 @@ int PosixPassthrough::passthrough_posix_rmdir (const char* path)
     return result;
 }
 
-// passthrough_posix_mknod call. (...)
+// passthrough_posix_mknod call.
 int PosixPassthrough::passthrough_posix_mknod (const char* path, mode_t mode, dev_t dev)
 {
     int result = ((libc_mknod_t)dlsym (RTLD_NEXT, "mknod")) (path, mode, dev);
@@ -846,7 +841,7 @@ int PosixPassthrough::passthrough_posix_mknod (const char* path, mode_t mode, de
     return result;
 }
 
-// passthrough_posix_mknodat call. (...)
+// passthrough_posix_mknodat call.
 int PosixPassthrough::passthrough_posix_mknodat (int dirfd,
     const char* path,
     mode_t mode,
@@ -869,7 +864,7 @@ int PosixPassthrough::passthrough_posix_mknodat (int dirfd,
     return result;
 }
 
-// passthrough_posix_getxattr call. (...)
+// passthrough_posix_getxattr call.
 ssize_t PosixPassthrough::passthrough_posix_getxattr (const char* path,
     const char* name,
     void* value,
@@ -893,7 +888,7 @@ ssize_t PosixPassthrough::passthrough_posix_getxattr (const char* path,
     return result;
 }
 
-// passthrough_posix_lgetxattr call. (...)
+// passthrough_posix_lgetxattr call.
 ssize_t PosixPassthrough::passthrough_posix_lgetxattr (const char* path,
     const char* name,
     void* value,
@@ -917,7 +912,7 @@ ssize_t PosixPassthrough::passthrough_posix_lgetxattr (const char* path,
     return result;
 }
 
-// passthrough_posix_fgetxattr call. (...)
+// passthrough_posix_fgetxattr call.
 ssize_t
 PosixPassthrough::passthrough_posix_fgetxattr (int fd, const char* name, void* value, size_t size)
 {
@@ -939,7 +934,7 @@ PosixPassthrough::passthrough_posix_fgetxattr (int fd, const char* name, void* v
     return result;
 }
 
-// passthrough_posix_setxattr call. (...)
+// passthrough_posix_setxattr call.
 int PosixPassthrough::passthrough_posix_setxattr (const char* path,
     const char* name,
     const void* value,
@@ -964,7 +959,7 @@ int PosixPassthrough::passthrough_posix_setxattr (const char* path,
     return result;
 }
 
-// passthrough_posix_lsetxattr call. (...)
+// passthrough_posix_lsetxattr call.
 int PosixPassthrough::passthrough_posix_lsetxattr (const char* path,
     const char* name,
     const void* value,
@@ -990,7 +985,7 @@ int PosixPassthrough::passthrough_posix_lsetxattr (const char* path,
     return result;
 }
 
-// passthrough_posix_fsetxattr call. (...)
+// passthrough_posix_fsetxattr call.
 int PosixPassthrough::passthrough_posix_fsetxattr (int fd,
     const char* name,
     const void* value,
@@ -1015,7 +1010,7 @@ int PosixPassthrough::passthrough_posix_fsetxattr (int fd,
     return result;
 }
 
-// passthrough_posix_listxattr call. (...)
+// passthrough_posix_listxattr call.
 ssize_t PosixPassthrough::passthrough_posix_listxattr (const char* path, char* list, size_t size)
 {
     ssize_t result = ((libc_listxattr_t)dlsym (RTLD_NEXT, "listxattr")) (path, list, size);
@@ -1036,7 +1031,7 @@ ssize_t PosixPassthrough::passthrough_posix_listxattr (const char* path, char* l
     return result;
 }
 
-// passthrough_posix_llistxattr call. (...)
+// passthrough_posix_llistxattr call.
 ssize_t PosixPassthrough::passthrough_posix_llistxattr (const char* path, char* list, size_t size)
 {
     ssize_t result = ((libc_llistxattr_t)dlsym (RTLD_NEXT, "llistxattr")) (path, list, size);
@@ -1060,7 +1055,7 @@ ssize_t PosixPassthrough::passthrough_posix_llistxattr (const char* path, char* 
     return result;
 }
 
-// passthrough_posix_flistxattr call. (...)
+// passthrough_posix_flistxattr call.
 ssize_t PosixPassthrough::passthrough_posix_flistxattr (int fd, char* list, size_t size)
 {
     ssize_t result = ((libc_flistxattr_t)dlsym (RTLD_NEXT, "flistxattr")) (fd, list, size);
@@ -1084,7 +1079,7 @@ ssize_t PosixPassthrough::passthrough_posix_flistxattr (int fd, char* list, size
     return result;
 }
 
-// passthrough_posix_socket call. (...)
+// passthrough_posix_socket call.
 int PosixPassthrough::passthrough_posix_socket (int domain, int type, int protocol)
 {
     int result = ((libc_socket_t)dlsym (RTLD_NEXT, "socket")) (domain, type, protocol);

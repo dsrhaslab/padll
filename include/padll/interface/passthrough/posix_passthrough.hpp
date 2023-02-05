@@ -22,6 +22,12 @@ using namespace padll::utils::log;
 
 namespace padll::interface::passthrough {
 
+/**
+ * PosixPassthrough class.
+ * This class handles the logic for all intercepted POSIX operations that should not be rate
+ * limited, thus actuating as a passthrough. It only handles operations that have set to 'false' in
+ * the libc_calls header.
+ */
 class PosixPassthrough {
 
 private:
@@ -38,41 +44,41 @@ private:
     Statistics m_special_stats { "special", OperationType::special_calls };
 
     /**
-     * initialize:
+     * initialize: initialize PosixPassthrough constructors, by opening libc library handle.
      */
     void initialize ();
 
     /**
-     * dlopen_library_handle:
-     * @return
+     * dlopen_library_handle: open libc library.
+     * @return Returns true if library was successfully opened; false otherwise.
      */
     bool dlopen_library_handle ();
 
     /**
-     * get_statistic_entry:
-     * @param operation_type
-     * @param operation_entry
-     * @return
+     * get_statistic_entry: get statistic entry of a given stats container.
+     * @param operation_type defines the class of the submitted operations. Used to select which
+     * statistic container to retrieve.
+     * @param operation Index of the operation to be retrieved.
+     * @return Returns a copy of the targeted StatisticEntry object.
      */
     StatisticEntry get_statistic_entry (const OperationType& operation_type,
         const int& operation_entry);
 
     /**
-     * set_statistic_collection:
-     * @param value
-     * @return
+     * set_statistic_collection: enable/disable statistic collection.
+     * @param value Value to be set for statistic collection.
      */
     void set_statistic_collection (bool value);
 
     /**
-     * to_string:
-     * @return std::string
+     * to_string: pass all statistic entries to string-based format.
+     * @return Return resulting string.
      */
     std::string to_string ();
 
     /**
-     * generate_statistics_report:
-     * @param path
+     * generate_statistics_report: generate report for the all statistic containers.
+     * @param path File path to where the report should be stored.
      */
     void generate_statistics_report (const std::string_view& path);
 
@@ -84,8 +90,8 @@ public:
 
     /**
      * PosixPassthrough parameterized constructor.
-     * @param lib
-     * @param log_ptr
+     * @param lib String that respects to the library that will be intercepted.
+     * @param log_ptr Shared pointer to a Logging object.
      */
     explicit PosixPassthrough (const std::string& lib, std::shared_ptr<Log> log_ptr);
 
