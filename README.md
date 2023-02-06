@@ -295,6 +295,11 @@ Connection to control plane and standalone mode
 - option_default_connection_address_env : "cheferd_local_address" # connection to a UNIX Domain Socket (e.g., "/tmp/0.0.0.0:50054.socket")
 ```
 
+**PAIO configurations:**
+```yaml
+- option_default_communication_type : CommunicationType::_unix
+```
+
 ***
 
 ## Acknowledgments
