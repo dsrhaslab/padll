@@ -37,6 +37,8 @@ Ricardo Macedo, Mariana Miranda, Yusuke Tanimura, Jason Haga, Amit Ruhela, Steph
 }
 ```
 
+If you use PADLL, give us some [feedback](mailto:ricardo.g.macedo@inesctec.pt) on how to further improve it!
+
 ***
 
 ## Getting started with PADLL
